@@ -19,7 +19,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
-#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -360,11 +359,6 @@ void ConfigurableStorageDelegate::set_source_event_id_cardinality(
   DCHECK_GT(cardinality, 0u);
 
   source_event_id_cardinality_ = cardinality;
-}
-
-AttributionManager* TestManagerProvider::GetManager(
-    WebContents* web_contents) const {
-  return manager_;
 }
 
 MockAttributionManager::MockAttributionManager() = default;
@@ -1368,17 +1362,15 @@ AttributionTriggerMatcherConfig::~AttributionTriggerMatcherConfig() = default;
 }
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(
-    AttributionManagerImpl* manager,
-    base::Time max_report_time) {
+    AttributionManager* manager) {
   base::RunLoop run_loop;
   std::vector<AttributionReport> attribution_reports;
-  manager->attribution_storage_
-      .AsyncCall(&AttributionStorage::GetAttributionReports)
-      .WithArgs(max_report_time, /*limit=*/-1,
-                AttributionReport::ReportTypes{
-                    AttributionReport::ReportType::kEventLevel,
-                    AttributionReport::ReportType::kAggregatableAttribution})
-      .Then(base::BindOnce(base::BindLambdaForTesting(
+  manager->GetPendingReportsForInternalUse(
+      AttributionReport::ReportTypes{
+          AttributionReport::ReportType::kEventLevel,
+          AttributionReport::ReportType::kAggregatableAttribution},
+      /*limit=*/-1,
+      base::BindOnce(base::BindLambdaForTesting(
           [&](std::vector<AttributionReport> reports) {
             attribution_reports = std::move(reports);
             run_loop.Quit();

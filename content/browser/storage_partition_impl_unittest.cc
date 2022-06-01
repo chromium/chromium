@@ -2020,8 +2020,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
 
-  AttributionManagerImpl* attribution_manager =
-      partition->GetAttributionManager();
+  AttributionManager* attribution_manager = partition->GetAttributionManager();
 
   base::Time now = base::Time::Now();
   auto source = SourceBuilder(now).SetExpiry(base::Days(2)).Build();
@@ -2034,26 +2033,21 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
                        now, run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_TRUE(
-      GetAttributionReportsForTesting(attribution_manager, base::Time::Max())
-          .empty());
+  EXPECT_TRUE(GetAttributionReportsForTesting(attribution_manager).empty());
 }
 
 TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
 
-  AttributionManagerImpl* attribution_manager =
-      partition->GetAttributionManager();
+  AttributionManager* attribution_manager = partition->GetAttributionManager();
 
   base::Time now = base::Time::Now();
   auto source = SourceBuilder(now).SetExpiry(base::Days(2)).Build();
   attribution_manager->HandleSource(source);
   attribution_manager->HandleTrigger(DefaultTrigger());
 
-  EXPECT_FALSE(
-      GetAttributionReportsForTesting(attribution_manager, base::Time::Max())
-          .empty());
+  EXPECT_FALSE(GetAttributionReportsForTesting(attribution_manager).empty());
 
   // Arbitrary non-conversions mask.
   base::RunLoop run_loop;
@@ -2061,17 +2055,14 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
                        source.common_info().impression_origin().GetURL(), now,
                        now, run_loop.QuitClosure());
   run_loop.Run();
-  EXPECT_FALSE(
-      GetAttributionReportsForTesting(attribution_manager, base::Time::Max())
-          .empty());
+  EXPECT_FALSE(GetAttributionReportsForTesting(attribution_manager).empty());
 }
 
 TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
 
-  AttributionManagerImpl* attribution_manager =
-      partition->GetAttributionManager();
+  AttributionManager* attribution_manager = partition->GetAttributionManager();
 
   base::Time now = base::Time::Now();
   for (int i = 0; i < 20; i++) {
@@ -2090,17 +2081,14 @@ TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
                        GURL(), now, now, run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_TRUE(
-      GetAttributionReportsForTesting(attribution_manager, base::Time::Max())
-          .empty());
+  EXPECT_TRUE(GetAttributionReportsForTesting(attribution_manager).empty());
 }
 
 TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
 
-  AttributionManagerImpl* attribution_manager =
-      partition->GetAttributionManager();
+  AttributionManager* attribution_manager = partition->GetAttributionManager();
 
   base::Time now = base::Time::Now();
   for (int i = 0; i < 5; i++) {
@@ -2122,9 +2110,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
                                            .Build());
   }
 
-  EXPECT_EQ(5u, GetAttributionReportsForTesting(attribution_manager,
-                                                base::Time::Max())
-                    .size());
+  EXPECT_EQ(5u, GetAttributionReportsForTesting(attribution_manager).size());
 
   // Match against enough Origins to delete three of the imp/conv pairs.
   base::RunLoop run_loop;
@@ -2138,9 +2124,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0, func,
                        nullptr, false, now, now, run_loop.QuitClosure());
   run_loop.Run();
-  EXPECT_EQ(2u, GetAttributionReportsForTesting(attribution_manager,
-                                                base::Time::Max())
-                    .size());
+  EXPECT_EQ(2u, GetAttributionReportsForTesting(attribution_manager).size());
 }
 
 TEST_F(StoragePartitionImplTest, DataRemovalObserver) {

@@ -956,7 +956,7 @@ class StoragePartitionImpl::DataDeletionHelper {
       storage::FileSystemContext* filesystem_context,
       network::mojom::CookieManager* cookie_manager,
       InterestGroupManagerImpl* interest_group_manager,
-      AttributionManagerImpl* attribution_manager,
+      AttributionManager* attribution_manager,
       AggregationServiceImpl* aggregation_service,
       storage::SharedStorageManager* shared_storage_manager,
       bool perform_storage_cleanup,
@@ -1643,7 +1643,7 @@ StoragePartitionImpl::GetFileSystemAccessManager() {
   return file_system_access_manager_.get();
 }
 
-AttributionManagerImpl* StoragePartitionImpl::GetAttributionManager() {
+AttributionManager* StoragePartitionImpl::GetAttributionManager() {
   DCHECK(initialized_);
   return attribution_manager_.get();
 }
@@ -2391,7 +2391,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     storage::FileSystemContext* filesystem_context,
     network::mojom::CookieManager* cookie_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    AttributionManagerImpl* attribution_manager,
+    AttributionManager* attribution_manager,
     AggregationServiceImpl* aggregation_service,
     storage::SharedStorageManager* shared_storage_manager,
     bool perform_storage_cleanup,
@@ -2790,6 +2790,12 @@ void StoragePartitionImpl::OverrideAggregationServiceForTesting(
     std::unique_ptr<AggregationServiceImpl> aggregation_service) {
   DCHECK(initialized_);
   aggregation_service_ = std::move(aggregation_service);
+}
+
+void StoragePartitionImpl::OverrideAttributionManagerForTesting(
+    std::unique_ptr<AttributionManager> attribution_manager) {
+  DCHECK(initialized_);
+  attribution_manager_ = std::move(attribution_manager);
 }
 
 void StoragePartitionImpl::GetQuotaSettings(

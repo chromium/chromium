@@ -17,7 +17,6 @@
 namespace content {
 
 class AttributionInternalsHandlerImpl;
-class AttributionManagerProvider;
 class AttributionInternalsUI;
 
 // WebUIConfig for chrome://attribution-internals page
@@ -45,9 +44,6 @@ class CONTENT_EXPORT AttributionInternalsUI : public WebUIController {
 
   void BindInterface(
       mojo::PendingReceiver<attribution_internals::mojom::Handler> receiver);
-
-  void SetAttributionManagerProviderForTesting(
-      std::unique_ptr<AttributionManagerProvider> manager_provider);
 
  private:
   std::unique_ptr<AttributionInternalsHandlerImpl> ui_handler_;

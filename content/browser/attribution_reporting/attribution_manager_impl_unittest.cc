@@ -319,8 +319,7 @@ class AttributionManagerImplTest : public testing::Test {
   }
 
   std::vector<AttributionReport> StoredReports() {
-    return GetAttributionReportsForTesting(
-        attribution_manager_.get(), /*max_report_time=*/base::Time::Max());
+    return GetAttributionReportsForTesting(attribution_manager_.get());
   }
 
   void ForceGetReportsToSend() { attribution_manager_->GetReportsToSend(); }

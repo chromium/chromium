@@ -544,12 +544,12 @@ void AttributionManagerImpl::GetActiveSourcesForWebUI(
 }
 
 void AttributionManagerImpl::GetPendingReportsForInternalUse(
-    AttributionReport::ReportType report_type,
+    AttributionReport::ReportTypes report_types,
+    int limit,
     base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
   attribution_storage_.AsyncCall(&AttributionStorage::GetAttributionReports)
       .WithArgs(
-          /*max_report_time=*/base::Time::Max(), /*limit=*/1000,
-          AttributionReport::ReportTypes{report_type})
+          /*max_report_time=*/base::Time::Max(), limit, std::move(report_types))
       .Then(std::move(callback));
 }
 

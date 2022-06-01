@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/storage_partition_impl.h"
@@ -34,12 +34,6 @@ namespace content {
 
 class AttributionHostTestPeer {
  public:
-  static void SetAttributionManagerProvider(
-      AttributionHost* host,
-      std::unique_ptr<AttributionManagerProvider> provider) {
-    host->attribution_manager_provider_ = std::move(provider);
-  }
-
   static void SetCurrentTargetFrameForTesting(
       AttributionHost* conversion_host,
       RenderFrameHost* render_frame_host) {
@@ -66,13 +60,12 @@ class AttributionHostTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
-    AttributionHostTestPeer::SetAttributionManagerProvider(
-        conversion_host(),
-        std::make_unique<TestManagerProvider>(&mock_manager_));
-
     auto data_host_manager = std::make_unique<MockDataHostManager>();
     mock_data_host_manager_ = data_host_manager.get();
-    mock_manager_.SetDataHostManager(std::move(data_host_manager));
+
+    auto mock_manager = std::make_unique<MockAttributionManager>();
+    mock_manager->SetDataHostManager(std::move(data_host_manager));
+    OverrideAttributionManager(std::move(mock_manager));
 
     contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
   }
@@ -94,15 +87,27 @@ class AttributionHostTest : public RenderViewHostTestHarness {
                                                              render_frame_host);
   }
 
- private:
-  MockAttributionManager mock_manager_;
+  void ClearAttributionManager() {
+    mock_data_host_manager_ = nullptr;
+    OverrideAttributionManager(nullptr);
+  }
 
- protected:
-  MockDataHostManager* mock_data_host_manager_;
+  MockDataHostManager* mock_data_host_manager() {
+    return mock_data_host_manager_;
+  }
+
+ private:
+  void OverrideAttributionManager(std::unique_ptr<AttributionManager> manager) {
+    static_cast<StoragePartitionImpl*>(
+        browser_context()->GetDefaultStoragePartition())
+        ->OverrideAttributionManagerForTesting(std::move(manager));
+  }
+
+  raw_ptr<MockDataHostManager> mock_data_host_manager_;
 };
 
 TEST_F(AttributionHostTest, NavigationWithNoImpression_Ignored) {
-  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost).Times(0);
+  EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationForDataHost).Times(0);
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   NavigationSimulatorImpl::NavigateAndCommitFromDocument(GURL(kConversionUrl),
@@ -112,7 +117,7 @@ TEST_F(AttributionHostTest, NavigationWithNoImpression_Ignored) {
 TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
   blink::Impression impression;
 
-  EXPECT_CALL(*mock_data_host_manager_,
+  EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationForDataHost(
                   impression.attribution_src_token,
                   url::Origin::Create(GURL("https://secure_impression.com")),
@@ -126,9 +131,8 @@ TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
   navigation->Commit();
 }
 
-TEST_F(AttributionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
-  AttributionHostTestPeer::SetAttributionManagerProvider(
-      conversion_host(), std::make_unique<TestManagerProvider>(nullptr));
+TEST_F(AttributionHostTest, ImpressionWithNoManagerAvailable_NoCrash) {
+  ClearAttributionManager();
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(kConversionUrl), main_rfh());
@@ -138,7 +142,7 @@ TEST_F(AttributionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
 }
 
 TEST_F(AttributionHostTest, ImpressionInSubframe_Ignored) {
-  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost).Times(0);
+  EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationForDataHost).Times(0);
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -158,7 +162,7 @@ TEST_F(AttributionHostTest, ImpressionInSubframe_Ignored) {
 // Test that if we cannot access the initiator frame of the navigation, we
 // ignore the associated impression.
 TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
-  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost).Times(0);
+  EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationForDataHost).Times(0);
 
   base::HistogramTester histograms;
 
@@ -176,7 +180,7 @@ TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
 }
 
 TEST_F(AttributionHostTest, ImpressionNavigationCommitsToErrorPage_Ignored) {
-  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost).Times(0);
+  EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationForDataHost).Times(0);
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -192,7 +196,7 @@ TEST_F(AttributionHostTest,
        AttributionSrcNavigationCommitsToErrorPage_Ignored) {
   blink::Impression impression;
 
-  EXPECT_CALL(*mock_data_host_manager_,
+  EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationFailure(impression.attribution_src_token));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
@@ -206,7 +210,7 @@ TEST_F(AttributionHostTest,
 }
 
 TEST_F(AttributionHostTest, ImpressionNavigationAborts_Ignored) {
-  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost).Times(0);
+  EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationForDataHost).Times(0);
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -220,7 +224,7 @@ TEST_F(AttributionHostTest, ImpressionNavigationAborts_Ignored) {
 TEST_F(AttributionHostTest, AttributionSrcNavigationAborts_Ignored) {
   blink::Impression impression;
 
-  EXPECT_CALL(*mock_data_host_manager_,
+  EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationFailure(impression.attribution_src_token));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
@@ -234,7 +238,7 @@ TEST_F(AttributionHostTest, AttributionSrcNavigationAborts_Ignored) {
 
 TEST_F(AttributionHostTest,
        CommittedOriginDiffersFromConversionDesintation_Propagated) {
-  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost);
+  EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationForDataHost);
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -282,7 +286,7 @@ TEST_P(AttributionHostOriginTrustworthyChecksTest,
        ImpressionNavigation_OriginTrustworthyChecksPerformed) {
   const OriginTrustworthyChecksTestCase& test_case = GetParam();
 
-  EXPECT_CALL(*mock_data_host_manager_, NotifyNavigationForDataHost)
+  EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationForDataHost)
       .Times(test_case.impression_expected);
 
   contents()->NavigateAndCommit(GURL(test_case.impression_origin));
@@ -301,7 +305,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(AttributionHostTest, DataHost_RegisteredWithContext) {
   EXPECT_CALL(
-      *mock_data_host_manager_,
+      *mock_data_host_manager(),
       RegisterDataHost(_, url::Origin::Create(GURL("https://top.example"))));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
@@ -359,7 +363,7 @@ TEST_F(AttributionHostTest, NavigationDataHostOnInsecurePage_BadMessage) {
 }
 
 TEST_F(AttributionHostTest, DuplicateAttributionSrcToken_BadMessage) {
-  ON_CALL(*mock_data_host_manager_, RegisterNavigationDataHost)
+  ON_CALL(*mock_data_host_manager(), RegisterNavigationDataHost)
       .WillByDefault(Return(false));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
@@ -382,7 +386,7 @@ TEST_F(AttributionHostTest, DuplicateAttributionSrcToken_BadMessage) {
 
 TEST_F(AttributionHostTest, DataHostInSubframe_ContextIsOutermostFrame) {
   EXPECT_CALL(
-      *mock_data_host_manager_,
+      *mock_data_host_manager(),
       RegisterDataHost(_, url::Origin::Create(GURL("https://top.example"))));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));

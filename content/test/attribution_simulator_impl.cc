@@ -533,8 +533,7 @@ base::Value RunAttributionSimulation(
   }
 
   std::vector<AttributionReport> pending_reports =
-      GetAttributionReportsForTesting(manager.get(),
-                                      /*max_report_time=*/base::Time::Max());
+      GetAttributionReportsForTesting(manager.get());
 
   if (!pending_reports.empty()) {
     base::Time last_report_time =

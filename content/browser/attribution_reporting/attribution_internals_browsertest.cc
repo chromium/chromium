@@ -25,9 +25,9 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui.h"
-#include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -67,7 +67,7 @@ auto InvokeCallback(std::vector<StoredSource> value) {
 auto InvokeCallback(std::vector<AttributionReport> value) {
   return
       [value = std::move(value)](
-          AttributionReport::ReportType report_type,
+          AttributionReport::ReportTypes report_types, int limit,
           base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
         std::move(callback).Run(std::move(value));
       };
@@ -91,12 +91,25 @@ AttributionReport IrreleventAggregatableReport() {
 
 class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
  public:
-  AttributionInternalsWebUiBrowserTest() {
-    ON_CALL(manager_, GetActiveSourcesForWebUI)
+  AttributionInternalsWebUiBrowserTest() = default;
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+
+    auto manager = std::make_unique<MockAttributionManager>();
+    manager_ = manager.get();
+
+    ON_CALL(*manager_, GetActiveSourcesForWebUI)
         .WillByDefault(InvokeCallback(std::vector<StoredSource>{}));
 
-    ON_CALL(manager_, GetPendingReportsForInternalUse)
+    ON_CALL(*manager_, GetPendingReportsForInternalUse)
         .WillByDefault(InvokeCallback(std::vector<AttributionReport>{}));
+
+    static_cast<StoragePartitionImpl*>(shell()
+                                           ->web_contents()
+                                           ->GetBrowserContext()
+                                           ->GetDefaultStoragePartition())
+        ->OverrideAttributionManagerForTesting(std::move(manager));
   }
 
   void ClickRefreshButton() {
@@ -109,18 +122,6 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
   bool ExecJsInWebUI(const std::string& script) {
     return ExecJs(shell()->web_contents()->GetMainFrame(), script,
                   EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1);
-  }
-
-  void OverrideWebUIAttributionManager() {
-    content::WebUI* web_ui = shell()->web_contents()->GetWebUI();
-
-    // Performs a safe downcast to the concrete AttributionInternalsUI subclass.
-    AttributionInternalsUI* attribution_internals_ui =
-        web_ui ? web_ui->GetController()->GetAs<AttributionInternalsUI>()
-               : nullptr;
-    EXPECT_TRUE(attribution_internals_ui);
-    attribution_internals_ui->SetAttributionManagerProviderForTesting(
-        std::make_unique<TestManagerProvider>(&manager_));
   }
 
   // Registers a mutation observer that sets the window title to |title| when
@@ -141,11 +142,10 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
         ExecJsInWebUI(JsReplace(kObserveEmptyReportsTableScript, title)));
   }
 
- protected:
-  // The manager must outlive the `AttributionInternalsHandler` so that the
-  // latter can remove itself as an observer of the former on the latter's
-  // destruction.
-  MockAttributionManager manager_;
+  MockAttributionManager* manager() { return manager_; }
+
+ private:
+  raw_ptr<MockAttributionManager> manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
@@ -163,8 +163,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_MeasurementConsideredEnabled) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
-
-  OverrideWebUIAttributionManager();
 
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
@@ -197,8 +195,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  OverrideWebUIAttributionManager();
-
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
   // results are returned in promises.
@@ -223,8 +219,6 @@ IN_PROC_BROWSER_TEST_F(
     WebUIShownWithNoActiveImpression_NoImpressionsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  OverrideWebUIAttributionManager();
-
   static constexpr char wait_script[] = R"(
     let table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
@@ -248,15 +242,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithActiveImpression_ImpressionsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  OverrideWebUIAttributionManager();
-
   const base::Time now = base::Time::Now();
 
   // We use the max values of `uint64_t` and `int64_t` here to ensure that they
   // are properly handled as `bigint` values in JS and don't run into issues
   // with `Number.MAX_SAFE_INTEGER`.
 
-  ON_CALL(manager_, GetActiveSourcesForWebUI)
+  ON_CALL(*manager(), GetActiveSourcesForWebUI)
       .WillByDefault(InvokeCallback(
           {SourceBuilder(now)
                .SetSourceEventId(std::numeric_limits<uint64_t>::max())
@@ -277,25 +269,25 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                                    kReachedEventLevelAttributionLimit)
                .BuildStored()}));
 
-  manager_.NotifySourceDeactivated(
+  manager()->NotifySourceDeactivated(
       SourceBuilder(now + base::Hours(3)).BuildStored());
 
   // This shouldn't result in a row, as registration succeeded.
-  manager_.NotifySourceHandled(SourceBuilder(now).Build(),
-                               StorableSource::Result::kSuccess);
+  manager()->NotifySourceHandled(SourceBuilder(now).Build(),
+                                 StorableSource::Result::kSuccess);
 
-  manager_.NotifySourceHandled(SourceBuilder(now + base::Hours(4)).Build(),
-                               StorableSource::Result::kInternalError);
+  manager()->NotifySourceHandled(SourceBuilder(now + base::Hours(4)).Build(),
+                                 StorableSource::Result::kInternalError);
 
-  manager_.NotifySourceHandled(
+  manager()->NotifySourceHandled(
       SourceBuilder(now + base::Hours(5)).Build(),
       StorableSource::Result::kInsufficientSourceCapacity);
 
-  manager_.NotifySourceHandled(
+  manager()->NotifySourceHandled(
       SourceBuilder(now + base::Hours(6)).Build(),
       StorableSource::Result::kInsufficientUniqueDestinationCapacity);
 
-  manager_.NotifySourceHandled(
+  manager()->NotifySourceHandled(
       SourceBuilder(now + base::Hours(7)).Build(),
       StorableSource::Result::kExcessiveReportingOrigins);
 
@@ -342,8 +334,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithNoReports_NoReportsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  OverrideWebUIAttributionManager();
-
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   SetTitleOnReportsTableEmpty(kCompleteTitle);
   ClickRefreshButton();
@@ -353,8 +343,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_DebugModeDisabled) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
-
-  OverrideWebUIAttributionManager();
 
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
@@ -382,8 +370,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  OverrideWebUIAttributionManager();
-
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
   // results are returned in promises.
@@ -409,9 +395,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   const base::Time now = base::Time::Now();
 
-  OverrideWebUIAttributionManager();
-
-  manager_.NotifyReportSent(
+  manager()->NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(3))
@@ -419,14 +403,14 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       /*is_debug_report=*/false,
       SendResult(SendResult::Status::kSent, net::OK,
                  /*http_response_code=*/200));
-  manager_.NotifyReportSent(
+  manager()->NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(4))
           .SetPriority(-1)
           .Build(),
       /*is_debug_report=*/false, SendResult(SendResult::Status::kDropped));
-  manager_.NotifyReportSent(
+  manager()->NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(5))
@@ -434,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .Build(),
       /*is_debug_report=*/false,
       SendResult(SendResult::Status::kFailure, net::ERR_METHOD_NOT_SUPPORTED));
-  manager_.NotifyReportSent(
+  manager()->NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(11))
@@ -443,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       /*is_debug_report=*/true,
       SendResult(SendResult::Status::kTransientFailure, net::ERR_TIMED_OUT));
 
-  ON_CALL(manager_, GetPendingReportsForInternalUse)
+  ON_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillByDefault(InvokeCallback(
           {ReportBuilder(AttributionInfoBuilder(
                              SourceBuilder(now)
@@ -455,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .SetReportTime(now)
                .SetPriority(13)
                .Build()}));
-  manager_.NotifyTriggerHandled(
+  manager()->NotifyTriggerHandled(
       DefaultTrigger(),
       CreateReportResult(
           /*trigger_time=*/base::Time::Now(),
@@ -585,24 +569,22 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   const base::Time now = base::Time::Now();
 
-  OverrideWebUIAttributionManager();
-
   AttributionReport report =
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now)
           .SetPriority(7)
           .Build();
-  EXPECT_CALL(manager_, GetPendingReportsForInternalUse)
+  EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillOnce(InvokeCallback({report}))
       .WillOnce(InvokeCallback(std::vector<AttributionReport>{}));
   report.set_report_time(report.report_time() + base::Hours(1));
-  manager_.NotifyReportSent(report,
-                            /*is_debug_report=*/false,
-                            SendResult(SendResult::Status::kSent, net::OK,
-                                       /*http_response_code=*/200));
+  manager()->NotifyReportSent(report,
+                              /*is_debug_report=*/false,
+                              SendResult(SendResult::Status::kSent, net::OK,
+                                         /*http_response_code=*/200));
 
-  EXPECT_CALL(manager_, ClearData)
+  EXPECT_CALL(*manager(), ClearData)
       .WillOnce([](base::Time delete_begin, base::Time delete_end,
                    base::RepeatingCallback<bool(const url::Origin&)> filter,
                    base::OnceClosure done) { std::move(done).Run(); });
@@ -641,18 +623,16 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        ClearButton_ClearsSourceTable) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  OverrideWebUIAttributionManager();
-
   base::Time now = base::Time::Now();
 
-  ON_CALL(manager_, GetActiveSourcesForWebUI)
+  ON_CALL(*manager(), GetActiveSourcesForWebUI)
       .WillByDefault(InvokeCallback(
           {SourceBuilder(now).SetSourceEventId(5).BuildStored()}));
 
-  manager_.NotifySourceDeactivated(
+  manager()->NotifySourceDeactivated(
       SourceBuilder(now + base::Hours(2)).SetSourceEventId(6).BuildStored());
 
-  EXPECT_CALL(manager_, ClearData)
+  EXPECT_CALL(*manager(), ClearData)
       .WillOnce([](base::Time delete_begin, base::Time delete_end,
                    base::RepeatingCallback<bool(const url::Origin&)> filter,
                    base::OnceClosure done) { std::move(done).Run(); });
@@ -703,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUISendReports_ReportsRemoved) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  EXPECT_CALL(manager_, GetPendingReportsForInternalUse)
+  EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillOnce(InvokeCallback(
           {ReportBuilder(
                AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
@@ -714,15 +694,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       .WillOnce(InvokeCallback(std::vector<AttributionReport>{}));
 
   EXPECT_CALL(
-      manager_,
+      *manager(),
       SendReportsForWebUI(
           ElementsAre(VariantWith<AttributionReport::EventLevelData::Id>(
               AttributionReport::EventLevelData::Id(5))),
           _))
       .WillOnce([](const std::vector<AttributionReport::Id>& ids,
                    base::OnceClosure done) { std::move(done).Run(); });
-
-  OverrideWebUIAttributionManager();
 
   static constexpr char wait_script[] = R"(
     let table = document.querySelector('#reportTable')
@@ -763,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // The real manager would do this itself, but the test manager requires manual
   // triggering.
-  manager_.NotifyReportsChanged(AttributionReport::ReportType::kEventLevel);
+  manager()->NotifyReportsChanged(AttributionReport::ReportType::kEventLevel);
 
   ASSERT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
 }
@@ -797,12 +775,10 @@ IN_PROC_BROWSER_TEST_F(
 
   const base::Time now = base::Time::Now();
 
-  OverrideWebUIAttributionManager();
-
   std::vector<AggregatableHistogramContribution> contributions{
       AggregatableHistogramContribution(1, 2)};
 
-  manager_.NotifyReportSent(
+  manager()->NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(3))
@@ -811,14 +787,14 @@ IN_PROC_BROWSER_TEST_F(
       /*is_debug_report=*/false,
       SendResult(SendResult::Status::kSent, net::OK,
                  /*http_response_code=*/200));
-  manager_.NotifyReportSent(
+  manager()->NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(4))
           .SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false, SendResult(SendResult::Status::kDropped));
-  manager_.NotifyReportSent(
+  manager()->NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(5))
@@ -826,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
       SendResult(SendResult::Status::kFailedToAssemble));
-  manager_.NotifyReportSent(
+  manager()->NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(6))
@@ -834,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
       SendResult(SendResult::Status::kFailure, net::ERR_INVALID_REDIRECT));
-  manager_.NotifyReportSent(
+  manager()->NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(10))
@@ -843,7 +819,7 @@ IN_PROC_BROWSER_TEST_F(
       /*is_debug_report=*/true,
       SendResult(SendResult::Status::kTransientFailure,
                  net::ERR_INTERNET_DISCONNECTED));
-  ON_CALL(manager_, GetPendingReportsForInternalUse)
+  ON_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillByDefault(InvokeCallback(
           {ReportBuilder(AttributionInfoBuilder(
                              SourceBuilder(now)
@@ -913,8 +889,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       },
       AttributionAggregatableTrigger());
 
-  OverrideWebUIAttributionManager();
-
   static constexpr char kWantEventTriggerJSON[] =
       R"json([ {  "data": "2",  "priority": "3",  "filters": {   "c": [    "d"   ]  } }, {  "data": "4",  "priority": "5",  "deduplication_key": "6",  "not_filters": {   "e": [    "f"   ]  } }])json";
 
@@ -942,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       [&](AttributionTrigger::EventLevelResult event_status,
           AttributionTrigger::AggregatableResult aggregatable_status) {
         static int offset_hours = 0;
-        manager_.NotifyTriggerHandled(
+        manager()->NotifyTriggerHandled(
             trigger,
             CreateReportResult(
                 /*trigger_time=*/now + base::Hours(++offset_hours),
@@ -966,7 +940,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUISendAggregatableReports_ReportsRemoved) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  EXPECT_CALL(manager_, GetPendingReportsForInternalUse)
+  EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillOnce(InvokeCallback(std::vector<AttributionReport>{}))
       .WillOnce(InvokeCallback(
           {ReportBuilder(
@@ -979,7 +953,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       .WillOnce(InvokeCallback(std::vector<AttributionReport>{}));
 
   EXPECT_CALL(
-      manager_,
+      *manager(),
       SendReportsForWebUI(
           ElementsAre(
               VariantWith<AttributionReport::AggregatableAttributionData::Id>(
@@ -987,8 +961,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           _))
       .WillOnce([](const std::vector<AttributionReport::Id>& ids,
                    base::OnceClosure done) { std::move(done).Run(); });
-
-  OverrideWebUIAttributionManager();
 
   static constexpr char wait_script[] = R"(
     let table = document.querySelector('#aggregatableReportTable')
@@ -1033,7 +1005,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // The real manager would do this itself, but the test manager requires manual
   // triggering.
-  manager_.NotifyReportsChanged(
+  manager()->NotifyReportsChanged(
       AttributionReport::ReportType::kAggregatableAttribution);
 
   EXPECT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
@@ -1045,9 +1017,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   const base::Time now = base::Time::Now();
 
-  OverrideWebUIAttributionManager();
-
-  manager_.NotifyReportSent(
+  manager()->NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now)
@@ -1057,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       SendResult(SendResult::Status::kSent, net::OK,
                  /*http_response_code=*/200));
 
-  ON_CALL(manager_, GetPendingReportsForInternalUse)
+  ON_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillByDefault(InvokeCallback(
           {ReportBuilder(
                AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
@@ -1093,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   EXPECT_TRUE(ExecJsInWebUI(R"(
       document.querySelector('#show-debug-event-reports input').click();)"));
 
-  manager_.NotifyReportSent(
+  manager()->NotifyReportSent(
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(2))

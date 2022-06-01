@@ -92,7 +92,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void GetActiveSourcesForWebUI(
       base::OnceCallback<void(std::vector<StoredSource>)> callback) override;
   void GetPendingReportsForInternalUse(
-      AttributionReport::ReportType report_type,
+      AttributionReport::ReportTypes report_types,
+      int limit,
       base::OnceCallback<void(std::vector<AttributionReport>)> callback)
       override;
   void SendReportsForWebUI(const std::vector<AttributionReport::Id>& ids,
@@ -162,11 +163,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void NotifyReportSent(bool is_debug_report, AttributionReport, SendResult);
 
   bool IsReportAllowed(const AttributionReport&) const;
-
-  // Friend to expose the AttributionStorage for certain tests.
-  friend std::vector<AttributionReport> GetAttributionReportsForTesting(
-      AttributionManagerImpl* manager,
-      base::Time max_report_time);
 
   // Never null.
   const raw_ptr<StoragePartitionImpl> storage_partition_;

@@ -30,7 +30,6 @@
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -62,7 +61,6 @@ class PendingReceiver;
 
 namespace content {
 
-class AttributionManagerImpl;
 class AttributionObserver;
 class AttributionTrigger;
 
@@ -294,20 +292,6 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-// Test manager provider which can be used to inject a fake
-// `AttributionManager`.
-class TestManagerProvider : public AttributionManagerProvider {
- public:
-  explicit TestManagerProvider(AttributionManager* manager)
-      : manager_(manager) {}
-  ~TestManagerProvider() override = default;
-
-  AttributionManager* GetManager(WebContents* web_contents) const override;
-
- private:
-  raw_ptr<AttributionManager> manager_ = nullptr;
-};
-
 class MockAttributionManager : public AttributionManager {
  public:
   MockAttributionManager();
@@ -326,7 +310,8 @@ class MockAttributionManager : public AttributionManager {
   MOCK_METHOD(
       void,
       GetPendingReportsForInternalUse,
-      (AttributionReport::ReportType report_type,
+      (AttributionReport::ReportTypes report_types,
+       int limit,
        base::OnceCallback<void(std::vector<AttributionReport>)> callback),
       (override));
 
@@ -731,8 +716,7 @@ std::ostream& operator<<(
     const AttributionAggregatableSource& aggregatable_source);
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(
-    AttributionManagerImpl* manager,
-    base::Time max_report_time);
+    AttributionManager* manager);
 
 std::unique_ptr<MockDataHost> GetRegisteredDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host);

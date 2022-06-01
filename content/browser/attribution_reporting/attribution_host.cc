@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/attribution_reporting/attribution_metrics.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -61,7 +60,6 @@ class ScopedMapDeleter {
 AttributionHost::AttributionHost(WebContents* web_contents)
     : WebContentsObserver(web_contents),
       WebContentsUserData<AttributionHost>(*web_contents),
-      attribution_manager_provider_(AttributionManagerProvider::Default()),
       receivers_(web_contents, this) {
   // TODO(csharrison): When https://crbug.com/1051334 is resolved, add a DCHECK
   // that the kConversionMeasurement feature is enabled.
@@ -75,7 +73,7 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   // Impression navigations need to navigate the primary main frame to be valid.
   if (!navigation_handle->GetImpression() ||
       !navigation_handle->IsInPrimaryMainFrame() ||
-      !attribution_manager_provider_->GetManager(web_contents())) {
+      !AttributionManager::FromWebContents(web_contents())) {
     return;
   }
 
@@ -122,7 +120,7 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   }
 
   AttributionManager* attribution_manager =
-      attribution_manager_provider_->GetManager(web_contents());
+      AttributionManager::FromWebContents(web_contents());
   if (!attribution_manager) {
     DCHECK(navigation_impression_origins_.empty());
     if (navigation_handle->GetImpression())
@@ -174,7 +172,7 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 void AttributionHost::MaybeNotifyFailedSourceNavigation(
     NavigationHandle* navigation_handle) {
   auto* attribution_manager =
-      attribution_manager_provider_->GetManager(web_contents());
+      AttributionManager::FromWebContents(web_contents());
   if (!attribution_manager)
     return;
 
@@ -194,7 +192,7 @@ void AttributionHost::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
   // If there is no attribution manager available, ignore any registrations.
   AttributionManager* attribution_manager =
-      attribution_manager_provider_->GetManager(web_contents());
+      AttributionManager::FromWebContents(web_contents());
   if (!attribution_manager)
     return;
 
@@ -231,7 +229,7 @@ void AttributionHost::RegisterNavigationDataHost(
     const blink::AttributionSrcToken& attribution_src_token) {
   // If there is no attribution manager available, ignore any registrations.
   AttributionManager* attribution_manager =
-      attribution_manager_provider_->GetManager(web_contents());
+      AttributionManager::FromWebContents(web_contents());
   if (!attribution_manager)
     return;
 
