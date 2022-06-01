@@ -120,6 +120,11 @@ class CORE_EXPORT HTMLMediaElement
     kPaused_EndOfPlayback,
     kPaused_RemovedFromDocument,
     kPaused_AutoplayAutoPause,
+    kPaused_BackgroundVideoOptimization,
+    kPaused_SuspendedPlayerIdleTimeout,
+    kPaused_RemotePlayStateChange,
+    kPaused_PauseRequestedByUser,
+    kPaused_PauseRequestedInternally,
   };
 
   bool IsMediaElement() const override { return true; }
@@ -518,7 +523,7 @@ class CORE_EXPORT HTMLMediaElement
   bool WasAutoplayInitiated() override;
   bool IsInAutoPIP() const override { return false; }
   void ResumePlayback() final;
-  void PausePlayback() final;
+  void PausePlayback(PauseReason) final;
   void DidPlayerStartPlaying() override;
   void DidPlayerPaused(bool stream_ended) override;
   void DidPlayerMutedStatusChange(bool muted) override;

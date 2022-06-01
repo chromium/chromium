@@ -4418,38 +4418,53 @@ void HTMLMediaElement::ResolveScheduledPlayPromises() {
 }
 
 void HTMLMediaElement::RejectScheduledPlayPromises() {
-  switch (play_promise_error_code_) {
-    case PlayPromiseError::kNotSupported:
-      return RejectPlayPromisesInternal(
-          DOMExceptionCode::kNotSupportedError,
-          "Failed to load because no supported source was found.");
-    case PlayPromiseError::kPaused_Unknown:
-      return RejectPlayPromisesInternal(
-          DOMExceptionCode::kAbortError,
-          "The play() request was interrupted because the media paused. "
-          "https://goo.gl/LdLk22");
-    case PlayPromiseError::kPaused_PauseCalled:
-      return RejectPlayPromisesInternal(
-          DOMExceptionCode::kAbortError,
-          "The play() request was interrupted by a call to pause(). "
-          "https://goo.gl/LdLk22");
-    case PlayPromiseError::kPaused_EndOfPlayback:
-      return RejectPlayPromisesInternal(
-          DOMExceptionCode::kAbortError,
-          "The play() request was interrupted by end of playback. "
-          "https://goo.gl/LdLk22");
-    case PlayPromiseError::kPaused_RemovedFromDocument:
-      return RejectPlayPromisesInternal(
-          DOMExceptionCode::kAbortError,
-          "The play() request was interrupted because the media was removed "
-          "from the document. https://goo.gl/LdLk22");
-    case PlayPromiseError::kPaused_AutoplayAutoPause:
-      return RejectPlayPromisesInternal(
-          DOMExceptionCode::kAbortError,
-          "The play() request was interrupted because autoplaying media was "
-          "auto-paused. https://goo.gl/LdLk22");
+  if (play_promise_error_code_ == PlayPromiseError::kNotSupported) {
+    RejectPlayPromisesInternal(
+        DOMExceptionCode::kNotSupportedError,
+        "Failed to load because no supported source was found.");
+    return;
   }
-  NOTREACHED();
+
+  const char* reason = "";
+  switch (play_promise_error_code_) {
+    case PlayPromiseError::kPaused_Unknown:
+      reason = " because the media paused";
+      break;
+    case PlayPromiseError::kPaused_PauseCalled:
+      reason = " by a call to pause()";
+      break;
+    case PlayPromiseError::kPaused_EndOfPlayback:
+      reason = " by end of playback";
+      break;
+    case PlayPromiseError::kPaused_RemovedFromDocument:
+      reason = " because the media was removed from the document";
+      break;
+    case PlayPromiseError::kPaused_AutoplayAutoPause:
+      reason = " because autoplaying background media was paused to save power";
+      break;
+    case PlayPromiseError::kPaused_BackgroundVideoOptimization:
+      reason = " because video-only background media was paused to save power";
+      break;
+    case PlayPromiseError::kPaused_SuspendedPlayerIdleTimeout:
+      reason = " because the player was been suspended and became idle";
+      break;
+    case PlayPromiseError::kPaused_RemotePlayStateChange:
+      reason = " by a pause request from a remote media player";
+      break;
+    case PlayPromiseError::kPaused_PauseRequestedByUser:
+      reason = " because a pause was requested by the user";
+      break;
+    case PlayPromiseError::kPaused_PauseRequestedInternally:
+      reason = " because a pause was requested by the browser";
+      break;
+    case PlayPromiseError::kNotSupported:
+      NOTREACHED();
+  }
+  RejectPlayPromisesInternal(
+      DOMExceptionCode::kAbortError,
+      String::Format(
+          "The play() request was interrupted%s. https://goo.gl/LdLk22",
+          reason));
 }
 
 void HTMLMediaElement::RejectPlayPromises(DOMExceptionCode code,
@@ -4569,8 +4584,20 @@ void HTMLMediaElement::ResumePlayback() {
   PlayInternal();
 }
 
-void HTMLMediaElement::PausePlayback() {
-  PauseInternal(PlayPromiseError::kPaused_Unknown);
+void HTMLMediaElement::PausePlayback(PauseReason pause_reason) {
+  switch (pause_reason) {
+    case PauseReason::kUnknown:
+      return PauseInternal(PlayPromiseError::kPaused_Unknown);
+    case PauseReason::kBackgroundVideoOptimization:
+      return PauseInternal(
+          PlayPromiseError::kPaused_BackgroundVideoOptimization);
+    case PauseReason::kSuspendedPlayerIdleTimeout:
+      return PauseInternal(
+          PlayPromiseError::kPaused_SuspendedPlayerIdleTimeout);
+    case PauseReason::kRemotePlayStateChange:
+      return PauseInternal(PlayPromiseError::kPaused_RemotePlayStateChange);
+  }
+  NOTREACHED();
 }
 
 void HTMLMediaElement::DidPlayerStartPlaying() {
@@ -4669,7 +4696,9 @@ void HTMLMediaElement::RequestPause(bool triggered_by_user) {
           frame, mojom::blink::UserActivationNotificationType::kInteraction);
     }
   }
-  PauseInternal(PlayPromiseError::kPaused_Unknown);
+  PauseInternal(triggered_by_user
+                    ? PlayPromiseError::kPaused_PauseRequestedByUser
+                    : PlayPromiseError::kPaused_PauseRequestedInternally);
 }
 
 void HTMLMediaElement::RequestSeekForward(base::TimeDelta seek_time) {

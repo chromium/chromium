@@ -76,6 +76,14 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
     kAudioTrackKindCommentary
   };
 
+  // Reason for a PausePlayback call, for better diagnostic messages.
+  enum class PauseReason {
+    kUnknown,
+    kBackgroundVideoOptimization,
+    kSuspendedPlayerIdleTimeout,
+    kRemotePlayStateChange,
+  };
+
   static const int kMediaRemotingStopNoText = -1;
 
   virtual void NetworkStateChanged() = 0;
@@ -165,7 +173,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   virtual void ResumePlayback() = 0;
 
   // Request the player to pause playback.
-  virtual void PausePlayback() = 0;
+  virtual void PausePlayback(PauseReason) = 0;
 
   // Notify the client that the media player started playing content.
   virtual void DidPlayerStartPlaying() = 0;

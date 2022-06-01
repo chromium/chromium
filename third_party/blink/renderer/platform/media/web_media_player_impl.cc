@@ -2709,7 +2709,8 @@ void WebMediaPlayerImpl::OnRemotePlayStateChange(
     client_->ResumePlayback();
   } else if (state == media::MediaStatus::State::PAUSED && !Paused()) {
     DVLOG(1) << __func__ << " requesting PAUSE.";
-    client_->PausePlayback();
+    client_->PausePlayback(
+        WebMediaPlayerClient::PauseReason::kRemotePlayStateChange);
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -3434,8 +3435,11 @@ void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {
 #endif
 
   // Idle timeout chosen arbitrarily.
-  background_pause_timer_.Start(FROM_HERE, base::Seconds(5), client_,
-                                &WebMediaPlayerClient::PausePlayback);
+  background_pause_timer_.Start(
+      FROM_HERE, base::Seconds(5),
+      base::BindOnce(
+          &WebMediaPlayerClient::PausePlayback, base::Unretained(client_),
+          WebMediaPlayerClient::PauseReason::kSuspendedPlayerIdleTimeout));
 }
 
 void WebMediaPlayerImpl::CreateWatchTimeReporter() {
@@ -3725,7 +3729,8 @@ void WebMediaPlayerImpl::PauseVideoIfNeeded() {
   // client_->PausePlayback() will get `paused_when_hidden_` set to
   // false and UpdatePlayState() called, so set the flag to true after and then
   // return.
-  client_->PausePlayback();
+  client_->PausePlayback(
+      WebMediaPlayerClient::PauseReason::kBackgroundVideoOptimization);
   paused_when_hidden_ = true;
 }
 
