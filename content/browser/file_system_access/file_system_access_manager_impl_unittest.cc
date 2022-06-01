@@ -91,18 +91,18 @@ std::string ReadDataPipe(mojo::ScopedDataPipeConsumerHandle pipe) {
 // `std::string`.
 std::string ReadStringFromFileRemote(
     mojo::Remote<blink::mojom::FileSystemAccessFileHandle> file_remote) {
-  base::RunLoop await_get_blob;
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         base::File::Info, blink::mojom::SerializedBlobPtr>
+      future;
+  file_remote->AsBlob(future.GetCallback<blink::mojom::FileSystemAccessErrorPtr,
+                                         const base::File::Info&,
+                                         blink::mojom::SerializedBlobPtr>());
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  blink::mojom::SerializedBlobPtr received_blob = std::get<2>(future.Take());
+  EXPECT_FALSE(received_blob.is_null());
+
   mojo::Remote<blink::mojom::Blob> blob;
-  file_remote->AsBlob(base::BindLambdaForTesting(
-      [&](blink::mojom::FileSystemAccessErrorPtr result,
-          const base::File::Info& info,
-          blink::mojom::SerializedBlobPtr received_blob) {
-        EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
-        EXPECT_FALSE(received_blob.is_null());
-        blob.Bind(std::move(received_blob->blob));
-        await_get_blob.Quit();
-      }));
-  await_get_blob.Run();
+  blob.Bind(std::move(received_blob->blob));
 
   if (!blob) {
     return "";
@@ -182,15 +182,9 @@ class FileSystemAccessManagerImplTest : public testing::Test {
 
   template <typename HandleType>
   PermissionStatus GetPermissionStatusSync(bool writable, HandleType* handle) {
-    PermissionStatus result;
-    base::RunLoop loop;
-    handle->GetPermissionStatus(
-        writable, base::BindLambdaForTesting([&](PermissionStatus status) {
-          result = status;
-          loop.Quit();
-        }));
-    loop.Run();
-    return result;
+    base::test::TestFuture<PermissionStatus> future;
+    handle->GetPermissionStatus(writable, future.GetCallback());
+    return future.Get();
   }
 
   mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle>
@@ -220,30 +214,19 @@ class FileSystemAccessManagerImplTest : public testing::Test {
   FileSystemAccessTransferTokenImpl* SerializeAndDeserializeToken(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
           token_remote) {
-    std::vector<uint8_t> serialized;
-    base::RunLoop serialize_loop;
+    base::test::TestFuture<std::vector<uint8_t>> serialize_future;
     manager_->SerializeHandle(
         std::move(token_remote),
-        base::BindLambdaForTesting([&](const std::vector<uint8_t>& bits) {
-          EXPECT_FALSE(bits.empty());
-          serialized = bits;
-          serialize_loop.Quit();
-        }));
-    serialize_loop.Run();
+        serialize_future.GetCallback<const std::vector<uint8_t>&>());
+    std::vector<uint8_t> serialized = serialize_future.Take();
+    EXPECT_FALSE(serialized.empty());
 
     manager_->DeserializeHandle(kTestStorageKey, serialized,
                                 token_remote.InitWithNewPipeAndPassReceiver());
-    base::RunLoop resolve_loop;
-    FileSystemAccessTransferTokenImpl* result;
-    manager_->ResolveTransferToken(
-        std::move(token_remote),
-        base::BindLambdaForTesting(
-            [&](FileSystemAccessTransferTokenImpl* token) {
-              result = token;
-              resolve_loop.Quit();
-            }));
-    resolve_loop.Run();
-    return result;
+    base::test::TestFuture<FileSystemAccessTransferTokenImpl*> resolve_future;
+    manager_->ResolveTransferToken(std::move(token_remote),
+                                   resolve_future.GetCallback());
+    return resolve_future.Get();
   }
 
   void GetEntryFromDataTransferTokenFileTest(
@@ -274,17 +257,10 @@ class FileSystemAccessManagerImplTest : public testing::Test {
 
     // Attempt to resolve `token_remote` and store the resulting
     // FileSystemAccessFileHandle in `file_remote`.
-    base::RunLoop await_token_resolution;
-    blink::mojom::FileSystemAccessEntryPtr file_system_access_entry;
-    manager_remote_->GetEntryFromDataTransferToken(
-        std::move(token_remote),
-        base::BindLambdaForTesting([&](blink::mojom::FileSystemAccessEntryPtr
-                                           returned_file_system_access_entry) {
-          file_system_access_entry =
-              std::move(returned_file_system_access_entry);
-          await_token_resolution.Quit();
-        }));
-    await_token_resolution.Run();
+    base::test::TestFuture<blink::mojom::FileSystemAccessEntryPtr> future;
+    manager_remote_->GetEntryFromDataTransferToken(std::move(token_remote),
+                                                   future.GetCallback());
+    auto file_system_access_entry = future.Take();
 
     ASSERT_FALSE(file_system_access_entry.is_null());
     ASSERT_TRUE(file_system_access_entry->entry_handle->is_file());
@@ -324,17 +300,11 @@ class FileSystemAccessManagerImplTest : public testing::Test {
 
     // Attempt to resolve `token_remote` and store the resulting
     // FileSystemAccessDirectoryHandle in `dir_remote`.
-    base::RunLoop await_token_resolution;
-    blink::mojom::FileSystemAccessEntryPtr file_system_access_entry;
+    base::test::TestFuture<blink::mojom::FileSystemAccessEntryPtr>
+        get_entry_future;
     manager_remote_->GetEntryFromDataTransferToken(
-        std::move(token_remote),
-        base::BindLambdaForTesting([&](blink::mojom::FileSystemAccessEntryPtr
-                                           returned_file_system_access_entry) {
-          file_system_access_entry =
-              std::move(returned_file_system_access_entry);
-          await_token_resolution.Quit();
-        }));
-    await_token_resolution.Run();
+        std::move(token_remote), get_entry_future.GetCallback());
+    auto file_system_access_entry = get_entry_future.Take();
 
     ASSERT_FALSE(file_system_access_entry.is_null());
     ASSERT_TRUE(file_system_access_entry->entry_handle->is_directory());
@@ -343,18 +313,14 @@ class FileSystemAccessManagerImplTest : public testing::Test {
 
     // Use `dir_remote` to verify that dir_path contains a child called
     // expected_child_file_name.
-    base::RunLoop await_get_file;
-    dir_remote->GetFile(
-        expected_child_file_name, /*create=*/false,
-        base::BindLambdaForTesting(
-            [&](blink::mojom::FileSystemAccessErrorPtr result,
-                mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>
-                    file_handle) {
-              await_get_file.Quit();
-              ASSERT_EQ(blink::mojom::FileSystemAccessStatus::kOk,
-                        result->status);
-            }));
-    await_get_file.Run();
+    base::test::TestFuture<
+        blink::mojom::FileSystemAccessErrorPtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+        get_file_future;
+    dir_remote->GetFile(expected_child_file_name, /*create=*/false,
+                        get_file_future.GetCallback());
+    ASSERT_EQ(get_file_future.Get<0>()->status,
+              blink::mojom::FileSystemAccessStatus::kOk);
   }
 
  protected:
@@ -402,18 +368,16 @@ class FileSystemAccessManagerImplTest : public testing::Test {
 };
 
 TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CreateBucket) {
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+      future;
+  manager_remote_->GetSandboxedFileSystem(future.GetCallback());
+  blink::mojom::FileSystemAccessErrorPtr get_fs_result;
   mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
       directory_remote;
-  base::RunLoop loop;
-  manager_remote_->GetSandboxedFileSystem(base::BindLambdaForTesting(
-      [&](blink::mojom::FileSystemAccessErrorPtr result,
-          mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
-              handle) {
-        EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOk, result->status);
-        directory_remote = std::move(handle);
-        loop.Quit();
-      }));
-  loop.Run();
+  std::tie(get_fs_result, directory_remote) = future.Take();
+  EXPECT_EQ(get_fs_result->status, blink::mojom::FileSystemAccessStatus::kOk);
   mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> root(
       std::move(directory_remote));
   ASSERT_TRUE(root);
@@ -451,8 +415,8 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CustomBucket) {
       handle_future;
   manager_->GetSandboxedFileSystem(binding_context, bucket->ToBucketLocator(),
                                    handle_future.GetCallback());
-  EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOk,
-            handle_future.Get<0>()->status);
+  EXPECT_EQ(handle_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kOk);
 
   mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> root(
       std::move(std::get<1>(handle_future.Take())));
@@ -464,18 +428,16 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CustomBucket) {
 }
 
 TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_Permissions) {
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+      future;
+  manager_remote_->GetSandboxedFileSystem(future.GetCallback());
+  blink::mojom::FileSystemAccessErrorPtr result;
   mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
       directory_remote;
-  base::RunLoop loop;
-  manager_remote_->GetSandboxedFileSystem(base::BindLambdaForTesting(
-      [&](blink::mojom::FileSystemAccessErrorPtr result,
-          mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
-              handle) {
-        EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOk, result->status);
-        directory_remote = std::move(handle);
-        loop.Quit();
-      }));
-  loop.Run();
+  std::tie(result, directory_remote) = future.Take();
+  EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
   mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> root(
       std::move(directory_remote));
   ASSERT_TRUE(root);
@@ -895,19 +857,16 @@ TEST_F(FileSystemAccessManagerImplTest,
       GetHandleForDirectory(kDirectoryPath);
 
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> file_handle;
-  base::RunLoop get_file_loop;
-  directory_handle->GetFile(
-      kTestName, /*create=*/true,
-      base::BindLambdaForTesting(
-          [&](blink::mojom::FileSystemAccessErrorPtr result,
-              mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>
-                  handle) {
-            get_file_loop.Quit();
-            ASSERT_EQ(blink::mojom::FileSystemAccessStatus::kOk,
-                      result->status);
-            file_handle.Bind(std::move(handle));
-          }));
-  get_file_loop.Run();
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+      future;
+  directory_handle->GetFile(kTestName, /*create=*/true, future.GetCallback());
+  blink::mojom::FileSystemAccessErrorPtr result;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle> handle;
+  std::tie(result, handle) = future.Take();
+  ASSERT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+  file_handle.Bind(std::move(handle));
   ASSERT_TRUE(file_handle.is_bound());
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
@@ -951,19 +910,17 @@ TEST_F(FileSystemAccessManagerImplTest,
       GetHandleForDirectory(kDirectoryPath);
 
   mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> child_handle;
-  base::RunLoop get_directory_loop;
-  directory_handle->GetDirectory(
-      kTestName, /*create=*/true,
-      base::BindLambdaForTesting(
-          [&](blink::mojom::FileSystemAccessErrorPtr result,
-              mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
-                  handle) {
-            get_directory_loop.Quit();
-            ASSERT_EQ(blink::mojom::FileSystemAccessStatus::kOk,
-                      result->status);
-            child_handle.Bind(std::move(handle));
-          }));
-  get_directory_loop.Run();
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+      future;
+  directory_handle->GetDirectory(kTestName, /*create=*/true,
+                                 future.GetCallback());
+  blink::mojom::FileSystemAccessErrorPtr result;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle> handle;
+  std::tie(result, handle) = future.Take();
+  ASSERT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+  child_handle.Bind(std::move(handle));
   ASSERT_TRUE(child_handle.is_bound());
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;

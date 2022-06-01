@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -189,36 +190,34 @@ TEST_F(FileSystemAccessFileHandleImplTest, CreateFileWriterOverLimitNotOK) {
               base::StringPrintf("test.%d.crswap", i)));
     }
 
-    base::RunLoop loop;
+    base::test::TestFuture<
+        blink::mojom::FileSystemAccessErrorPtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+        future;
     handle_->CreateFileWriter(
         /*keep_existing_data=*/false,
-        /*auto_close=*/false,
-        base::BindLambdaForTesting(
-            [&](blink::mojom::FileSystemAccessErrorPtr result,
-                mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>
-                    writer_remote) {
-              EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOk,
-                        result->status);
-              EXPECT_EQ("", ReadFile(swap_url));
-              writers.push_back(std::move(writer_remote));
-              loop.Quit();
-            }));
-    loop.Run();
+        /*auto_close=*/false, future.GetCallback());
+    blink::mojom::FileSystemAccessErrorPtr result;
+    mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> writer_remote;
+    std::tie(result, writer_remote) = future.Take();
+    EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+    EXPECT_EQ("", ReadFile(swap_url));
+    writers.push_back(std::move(writer_remote));
   }
 
-  base::RunLoop loop;
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      future;
   handle_->CreateFileWriter(
       /*keep_existing_data=*/false,
-      /*auto_close=*/false,
-      base::BindLambdaForTesting(
-          [&](blink::mojom::FileSystemAccessErrorPtr result,
-              mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>
-                  writer_remote) {
-            EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOperationFailed,
-                      result->status);
-            loop.Quit();
-          }));
-  loop.Run();
+      /*auto_close=*/false, future.GetCallback());
+  blink::mojom::FileSystemAccessErrorPtr result;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> writer_remote;
+  std::tie(result, writer_remote) = future.Take();
+  EXPECT_EQ(result->status,
+            blink::mojom::FileSystemAccessStatus::kOperationFailed);
+  EXPECT_FALSE(writer_remote.is_valid());
 }
 
 TEST_F(FileSystemAccessFileHandleImplTest, Remove_NoWriteAccess) {
@@ -227,15 +226,11 @@ TEST_F(FileSystemAccessFileHandleImplTest, Remove_NoWriteAccess) {
 
   auto handle = GetHandleWithPermissions(file, /*read=*/true, /*write=*/false);
 
-  base::RunLoop loop;
-  handle->Remove(
-      base::BindLambdaForTesting([&file](blink::mojom::FileSystemAccessErrorPtr
-                                             result) {
-        EXPECT_EQ(result->status,
-                  blink::mojom::FileSystemAccessStatus::kPermissionDenied);
-        EXPECT_TRUE(base::PathExists(file));
-      }).Then(loop.QuitClosure()));
-  loop.Run();
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Remove(future.GetCallback());
+  EXPECT_EQ(future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kPermissionDenied);
+  EXPECT_TRUE(base::PathExists(file));
 }
 
 TEST_F(FileSystemAccessFileHandleImplTest, Remove_HasWriteAccess) {
@@ -244,15 +239,10 @@ TEST_F(FileSystemAccessFileHandleImplTest, Remove_HasWriteAccess) {
 
   auto handle = GetHandleWithPermissions(file, /*read=*/true, /*write=*/true);
 
-  base::RunLoop loop;
-  handle->Remove(base::BindLambdaForTesting(
-                     [&file](blink::mojom::FileSystemAccessErrorPtr result) {
-                       EXPECT_EQ(result->status,
-                                 blink::mojom::FileSystemAccessStatus::kOk);
-                       EXPECT_FALSE(base::PathExists(file));
-                     })
-                     .Then(loop.QuitClosure()));
-  loop.Run();
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Remove(future.GetCallback());
+  EXPECT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(base::PathExists(file));
 }
 
 TEST_F(FileSystemAccessFileHandleImplTest, GetSwapURL) {
@@ -288,47 +278,45 @@ TEST_F(FileSystemAccessFileHandleImplTest, GetSwapURL) {
 }
 
 TEST_F(FileSystemAccessAccessHandleTest, OpenAccessHandle) {
-  base::RunLoop loop;
-  handle_->OpenAccessHandle(
-      base::BindLambdaForTesting(
-          [&](blink::mojom::FileSystemAccessErrorPtr result,
-              blink::mojom::FileSystemAccessAccessHandleFilePtr file,
-              mojo::PendingRemote<
-                  blink::mojom::FileSystemAccessAccessHandleHost>
-                  access_handle_remote) {
-            EXPECT_EQ(result->status,
-                      blink::mojom::FileSystemAccessStatus::kOk);
-            // File should be valid and no incognito remote is needed.
-            EXPECT_TRUE(file->is_regular_file());
-            blink::mojom::FileSystemAccessRegularFilePtr regular_file =
-                std::move(file->get_regular_file());
-            EXPECT_TRUE(regular_file->os_file.IsValid());
-            EXPECT_EQ(regular_file->file_size, 0);
-            EXPECT_TRUE(regular_file->capacity_allocation_host.is_valid());
-            EXPECT_TRUE(access_handle_remote.is_valid());
-          })
-          .Then(loop.QuitClosure()));
-  loop.Run();
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      blink::mojom::FileSystemAccessAccessHandleFilePtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>>
+      future;
+  handle_->OpenAccessHandle(future.GetCallback());
+  blink::mojom::FileSystemAccessErrorPtr result;
+  blink::mojom::FileSystemAccessAccessHandleFilePtr file;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
+      access_handle_remote;
+  std::tie(result, file, access_handle_remote) = future.Take();
+  EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+  // File should be valid and no incognito remote is needed.
+  EXPECT_TRUE(file->is_regular_file());
+  blink::mojom::FileSystemAccessRegularFilePtr regular_file =
+      std::move(file->get_regular_file());
+  EXPECT_TRUE(regular_file->os_file.IsValid());
+  EXPECT_EQ(regular_file->file_size, 0);
+  EXPECT_TRUE(regular_file->capacity_allocation_host.is_valid());
+  EXPECT_TRUE(access_handle_remote.is_valid());
 }
 
 TEST_F(FileSystemAccessAccessHandleIncognitoTest, OpenAccessHandle) {
-  base::RunLoop loop;
-  handle_->OpenAccessHandle(
-      base::BindLambdaForTesting(
-          [&](blink::mojom::FileSystemAccessErrorPtr result,
-              blink::mojom::FileSystemAccessAccessHandleFilePtr file,
-              mojo::PendingRemote<
-                  blink::mojom::FileSystemAccessAccessHandleHost>
-                  access_handle_remote) {
-            EXPECT_EQ(result->status,
-                      blink::mojom::FileSystemAccessStatus::kOk);
-            // Incognito remote should be valid and no file is needed.
-            EXPECT_TRUE(file->is_incognito_file_delegate());
-            EXPECT_TRUE(file->get_incognito_file_delegate().is_valid());
-            EXPECT_TRUE(access_handle_remote.is_valid());
-          })
-          .Then(loop.QuitClosure()));
-  loop.Run();
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      blink::mojom::FileSystemAccessAccessHandleFilePtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>>
+      future;
+  handle_->OpenAccessHandle(future.GetCallback());
+  blink::mojom::FileSystemAccessErrorPtr result;
+  blink::mojom::FileSystemAccessAccessHandleFilePtr file;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
+      access_handle_remote;
+  std::tie(result, file, access_handle_remote) = future.Take();
+  EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+  // Incognito remote should be valid and no file is needed.
+  EXPECT_TRUE(file->is_incognito_file_delegate());
+  EXPECT_TRUE(file->get_incognito_file_delegate().is_valid());
+  EXPECT_TRUE(access_handle_remote.is_valid());
 }
 
 }  // namespace content
