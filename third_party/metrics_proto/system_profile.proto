@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 41
+// Next tag: 42
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -1080,4 +1080,19 @@ message SystemProfileProto {
     optional bool is_messages_enabled = 4;
   }
   optional LinkedAndroidPhoneData linked_android_phone_data = 29;
+
+  // Demo mode related dimension information.
+  // Next Tag: 3
+  message DemoModeDimensions {
+    optional string country = 1;
+
+    // Demo devices retailer id and store id, value is set during demo setup.
+    // Next Tag: 3
+    message Retailer {
+      optional string retailer_id = 1;
+      optional string store_id = 2;
+    }
+    optional Retailer retailer = 2;
+  }
+  optional DemoModeDimensions demo_mode_dimensions = 41;
 }
