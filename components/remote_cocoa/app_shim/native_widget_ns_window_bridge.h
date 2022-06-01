@@ -399,19 +399,15 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // on the first call to SetVisibilityState().
   std::vector<uint8_t> pending_restoration_data_;
 
-  // A structure to hold a headless mode window state. This is present iff the
-  // window has been created in headless mode.
+  // This tracks headless window visibility and fullscreen states.
+  // In headless mode the platform window is never made visible or change its
+  // state, so this structure holds the requested state for reporting.
   struct HeadlessModeWindow {
-    // This tracks headless window visibility state. In headless mode
-    // the platform window is always hidden, so we use this boolean
-    // to track the window's expected visibility state.
     bool visibility_state = false;
-    // This tracks headless window fullscreen state. In headless mode the
-    // platform window is never made fullscreen because AppKit implicitly
-    // makes fullscreen windows visible.
     bool fullscreen_state = false;
   };
 
+  // This is present iff the window has been created in headless mode.
   absl::optional<HeadlessModeWindow> headless_mode_window_;
 
   display::ScopedDisplayObserver display_observer_{this};

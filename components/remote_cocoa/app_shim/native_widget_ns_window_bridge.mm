@@ -1364,6 +1364,16 @@ void NativeWidgetNSWindowBridge::SetCanAppearInExistingFullscreenSpaces(
 }
 
 void NativeWidgetNSWindowBridge::SetMiniaturized(bool miniaturized) {
+  // In headless mode the platform window is always hidden and WebKit
+  // will not deminiaturize hidden windows. So instead of changing the window
+  // miniaturization state just lie to the upper layer pretending the window did
+  // change its state. We don't need to keep track of the requested state here
+  // because the host will do this.
+  if (headless_mode_window_) {
+    host_->OnWindowMiniaturizedChanged(miniaturized);
+    return;
+  }
+
   if (miniaturized) {
     // Calling performMiniaturize: will momentarily highlight the button, but
     // AppKit will reject it if there is no miniaturize button.

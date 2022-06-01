@@ -52,3 +52,26 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(ns_window.visible);
 }
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
+                       MinimizedRestoredWindowVisibility) {
+  gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
+  NSWindow* ns_window = native_window.GetNativeNSWindow();
+
+  // Verify initial state.
+  ASSERT_FALSE(browser()->window()->IsMinimized());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(ns_window.visible);
+
+  // Verify minimized state.
+  browser()->window()->Minimize();
+  ASSERT_TRUE(browser()->window()->IsMinimized());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(ns_window.visible);
+
+  // Verify restored state.
+  browser()->window()->Restore();
+  ASSERT_FALSE(browser()->window()->IsMinimized());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(ns_window.visible);
+}
