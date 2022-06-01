@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -74,7 +75,8 @@ class VpnServiceForExtension
 
 // The class manages the VPN configurations.
 class VpnService : public extensions::api::VpnServiceInterface,
-                   public extensions::ExtensionRegistryObserver {
+                   public extensions::ExtensionRegistryObserver,
+                   public extensions::EventRouter::Observer {
  public:
   explicit VpnService(content::BrowserContext*);
   ~VpnService() override;
@@ -108,6 +110,7 @@ class VpnService : public extensions::api::VpnServiceInterface,
                                     SuccessCallback,
                                     FailureCallback) override;
   std::unique_ptr<content::VpnServiceProxy> GetVpnServiceProxy() override;
+  void Shutdown() override;
 
   // ExtensionRegistryObserver:
   void OnExtensionUninstalled(content::BrowserContext*,
@@ -116,6 +119,9 @@ class VpnService : public extensions::api::VpnServiceInterface,
   void OnExtensionUnloaded(content::BrowserContext*,
                            const extensions::Extension*,
                            extensions::UnloadedExtensionReason) override;
+
+  // EventRouter::Observer:
+  void OnListenerAdded(const extensions::EventListenerInfo&) override;
 
  private:
   class VpnServiceProxyImpl;

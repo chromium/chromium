@@ -14,6 +14,8 @@
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/common/extensions/api/vpn_provider.h"
+#include "chromeos/crosapi/mojom/vpn_service.mojom-test-utils.h"
 #include "chromeos/network/shill_property_handler.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/pepper_vpn_provider_resource_host_proxy.h"
@@ -154,6 +156,8 @@ class VpnProviderApiTestBase : public extensions::ExtensionApiTest {
     return chromeos::VpnServiceFactory::GetForBrowserContext(profile());
   }
 
+  virtual crosapi::mojom::VpnService* service_remote() const = 0;
+
   virtual void OnPlatformMessage(const std::string& configuration_name,
                                  api_vpn::PlatformMessage) = 0;
   virtual void OnPacketReceived(const std::string& configuration_name,
@@ -177,6 +181,11 @@ class VpnProviderApiTestLacros : public VpnProviderApiTestBase {
   void TearDownOnMainThread() override {
     UnloadExtension(extension_id());
     VpnProviderApiTestBase::TearDownOnMainThread();
+  }
+  crosapi::mojom::VpnService* service_remote() const override {
+    return chromeos::LacrosService::Get()
+        ->GetRemote<crosapi::mojom::VpnService>()
+        .get();
   }
   void OnPlatformMessage(const std::string& configuration_name,
                          api_vpn::PlatformMessage message) override {
@@ -220,6 +229,9 @@ class VpnProviderApiTestAsh : public VpnProviderApiTestBase {
   void SetUpOnMainThread() override {
     VpnProviderApiTestBase::SetUpOnMainThread();
     AddNetworkProfileForUser();
+  }
+  crosapi::mojom::VpnService* service_remote() const override {
+    return GetVpnServiceAsh();
   }
   void OnPlatformMessage(const std::string& configuration_name,
                          api_vpn::PlatformMessage message) override {
@@ -602,6 +614,53 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, PepperProxy) {
   OnPlatformMessage(kTestConfig, api_vpn::PLATFORM_MESSAGE_DISCONNECTED);
   ASSERT_TRUE(catcher.GetNextResult());
   ASSERT_TRUE(unbind.Wait());
+}
+
+class TestEventObserverForExtension
+    : public crosapi::mojom::EventObserverForExtension {
+ public:
+  // crosapi::mojom::EventObserverForExtension:
+  void OnAddDialog() override {}
+  void OnConfigureDialog(const std::string& configuration_name) override {}
+  void OnConfigRemoved(const std::string& configuration_name) override {}
+  void OnPlatformMessage(const std::string& configuration_name,
+                         int32_t platform_message,
+                         const absl::optional<std::string>& error) override {}
+  void OnPacketReceived(const std::vector<uint8_t>& data) override {}
+};
+
+// Tests that the per-extension crosapi connection between ash and browser
+// is initialized by the moment ash decides to send a platform message to the
+// browser.
+IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, PlatformMessage) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!InitTestShillController()) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+#endif
+
+  auto test_observer = std::make_unique<TestEventObserverForExtension>();
+  mojo::Remote<crosapi::mojom::VpnServiceForExtension> remote;
+  mojo::Receiver<crosapi::mojom::EventObserverForExtension> receiver{
+      test_observer.get()};
+  service_remote()->RegisterVpnServiceForExtension(
+      extension_id(), remote.BindNewPipeAndPassReceiver(),
+      receiver.BindNewPipeAndPassRemote());
+
+  crosapi::mojom::VpnServiceForExtensionAsyncWaiter waiter{remote.get()};
+  crosapi::mojom::VpnErrorResponsePtr error;
+  waiter.CreateConfiguration(kTestConfig, &error);
+  ASSERT_FALSE(error) << "CreateConfiguration failed with |message| = "
+                      << error->message.value_or(std::string{});
+
+  extensions::ResultCatcher catcher;
+  EXPECT_TRUE(RunTest("platformMessage"));
+  ASSERT_TRUE(catcher.GetNextResult());
+
+  OnPlatformMessage(kTestConfig, api_vpn::PLATFORM_MESSAGE_CONNECTED);
+  ASSERT_TRUE(catcher.GetNextResult());
+  OnPlatformMessage(kTestConfig, api_vpn::PLATFORM_MESSAGE_DISCONNECTED);
+  ASSERT_TRUE(catcher.GetNextResult());
 }
 
 }  // namespace chromeos

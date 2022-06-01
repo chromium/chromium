@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -57,7 +58,9 @@ VpnServiceFactory* VpnServiceFactory::GetInstance() {
 VpnServiceFactory::VpnServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "VpnService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(extensions::EventRouterFactory::GetInstance());
+}
 
 VpnServiceFactory::~VpnServiceFactory() = default;
 

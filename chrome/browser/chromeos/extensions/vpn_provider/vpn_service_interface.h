@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/values.h"
-#include "chrome/common/extensions/api/vpn_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

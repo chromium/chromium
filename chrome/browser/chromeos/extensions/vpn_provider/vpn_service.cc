@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "chrome/common/extensions/api/vpn_provider.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/pepper_vpn_provider_resource_host_proxy.h"
 #include "content/public/browser/vpn_service_proxy.h"
@@ -16,6 +17,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -34,6 +36,16 @@ namespace chromeos {
 namespace {
 
 namespace api_vpn = extensions::api::vpn_provider;
+
+// All events that our EventRouter::Observer should be listening to.
+// api_vpn::OnConfigCreated is intentionally omitted -- it was never
+// implemented.
+const char* const kEventNames[] = {
+    api_vpn::OnUIEvent::kEventName,
+    api_vpn::OnConfigRemoved::kEventName,
+    api_vpn::OnPlatformMessage::kEventName,
+    api_vpn::OnPacketReceived::kEventName,
+};
 
 void RunSuccessCallback(chromeos::VpnService::SuccessCallback success) {
   std::move(success).Run();
@@ -67,6 +79,11 @@ SuccessOrFailureCallback AdaptCallback(
         }
       },
       std::move(success), std::move(failure));
+}
+
+bool IsVpnProvider(const extensions::Extension* extension) {
+  return extension->permissions_data()->HasAPIPermission(
+      extensions::mojom::APIPermissionID::kVpnProvider);
 }
 
 }  // namespace
@@ -199,8 +216,13 @@ void VpnServiceForExtension::DispatchEvent(
 
 VpnService::VpnService(content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
-  extension_registry_observer_.Observe(
-      extensions::ExtensionRegistry::Get(browser_context));
+  auto* registry = extensions::ExtensionRegistry::Get(browser_context);
+  extension_registry_observer_.Observe(registry);
+
+  auto* event_router = extensions::EventRouter::Get(browser_context);
+  for (const char* event_name : kEventNames) {
+    event_router->RegisterObserver(this, event_name);
+  }
 }
 
 VpnService::~VpnService() = default;
@@ -268,9 +290,19 @@ std::unique_ptr<content::VpnServiceProxy> VpnService::GetVpnServiceProxy() {
   return std::make_unique<VpnServiceProxyImpl>(weak_factory_.GetWeakPtr());
 }
 
+void VpnService::Shutdown() {
+  extensions::EventRouter::Get(browser_context_)->UnregisterObserver(this);
+}
+
 void VpnService::OnExtensionUninstalled(content::BrowserContext*,
                                         const extensions::Extension* extension,
                                         extensions::UninstallReason) {
+  // Extension should have a vpnProvider permission in order to use the API;
+  // therefore we can safely ignore all other extensions (because otherwise
+  // we'll just make an unnecessary mojo call).
+  if (!IsVpnProvider(extension)) {
+    return;
+  }
   GetVpnService()->MaybeFailActiveConnectionAndDestroyConfigurations(
       extension->id(), /*destroy_configurations=*/true);
   extension_id_to_service_.erase(extension->id());
@@ -280,6 +312,12 @@ void VpnService::OnExtensionUnloaded(
     content::BrowserContext*,
     const extensions::Extension* extension,
     extensions::UnloadedExtensionReason reason) {
+  // Extension should have a vpnProvider permission in order to use the API;
+  // therefore we can safely ignore all other extensions (because otherwise
+  // we'll just make an unnecessary mojo call).
+  if (!IsVpnProvider(extension)) {
+    return;
+  }
   bool destroy_configurations =
       reason == extensions::UnloadedExtensionReason::DISABLE ||
       reason == extensions::UnloadedExtensionReason::BLOCKLIST;
@@ -290,10 +328,20 @@ void VpnService::OnExtensionUnloaded(
   }
 }
 
+void VpnService::OnListenerAdded(const extensions::EventListenerInfo& details) {
+  // Ensures that the service is created for the extension, so that incoming VPN
+  // events can be dispatched to the extension.
+  GetVpnServiceForExtension(details.extension_id);
+}
+
 // static
 crosapi::mojom::VpnService* VpnService::GetVpnService() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(crosapi::CrosapiManager::IsInitialized());
+  // CrosapiManager may not be initialized.
+  // TODO(crbug.com/1326801): Assert it's only happening in tests.
+  if (!crosapi::CrosapiManager::IsInitialized()) {
+    return nullptr;
+  }
   return crosapi::CrosapiManager::Get()->crosapi_ash()->vpn_service_ash();
 #else
   auto* service = chromeos::LacrosService::Get();

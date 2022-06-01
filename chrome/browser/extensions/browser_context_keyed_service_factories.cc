@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/activity_log_private/activity_log_private_api.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
@@ -143,6 +144,9 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::TtsAPI::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   extensions::VerifyTrustAPI::GetFactoryInstance();
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  chromeos::VpnServiceFactory::GetInstance();
 #endif
   extensions::WarningBadgeServiceFactory::GetInstance();
   extensions::WebAuthenticationProxyAPI::GetFactoryInstance();

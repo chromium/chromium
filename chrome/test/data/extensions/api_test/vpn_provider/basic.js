@@ -302,6 +302,24 @@ var testRoutines = {
       chrome.test.succeed();
     });
   },
+  platformMessage: function () {
+    let i = 0;
+    chrome.vpnProvider.onPlatformMessage.addListener((config_name,
+                                                      message, error) => {
+      chrome.test.assertEq(config_name, 'testconfig');
+      if (message === 'connected') {
+        chrome.test.assertEq(i, 0);
+        chrome.test.succeed();
+        i++;
+      } else {
+        chrome.test.assertEq(i, 1);
+        chrome.test.assertEq(message, 'disconnected');
+        chrome.test.succeed();
+        i++;
+      }
+    });
+    chrome.test.succeed();
+  }
 };
 
 testRoutines[selectedTest]();
