@@ -102,10 +102,7 @@ FullscreenMagnificationController::FullscreenMagnificationController(
       this, gesture_provider_client_.get());
 }
 
-FullscreenMagnificationController::~FullscreenMagnificationController() {
-  // Destroy `gesture_provider_` before `gesture_provider_client_`.
-  gesture_provider_.reset();
-}
+FullscreenMagnificationController::~FullscreenMagnificationController() {}
 
 void FullscreenMagnificationController::SetEnabled(bool enabled) {
   if (is_enabled_ == enabled)

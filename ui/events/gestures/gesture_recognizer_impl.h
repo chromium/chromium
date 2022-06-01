@@ -19,13 +19,6 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 
-namespace aura {
-namespace test {
-FORWARD_DECLARE_TEST(GestureRecognizerTest,
-                     DestroyGestureProviderAuraBeforeAck);
-}  // namespace test
-}  // namespace aura
-
 namespace ui {
 class GestureConsumer;
 class GestureEvent;
@@ -84,9 +77,6 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
                                     GestureConsumer* consumer) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(aura::test::GestureRecognizerTest,
-                           DestroyGestureProviderAuraBeforeAck);
-
   // Sets up the target consumer for gestures based on the touch-event.
   void SetupTargets(const TouchEvent& event, GestureConsumer* consumer);
 
@@ -110,8 +100,6 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
   // Overridden from GestureProviderAuraClient
   void OnGestureEvent(GestureConsumer* raw_input_consumer,
                       GestureEvent* event) override;
-  void OnGestureProviderAuraWillBeDestroyed(
-      GestureProviderAura* gesture_provider) override;
 
   // Convenience method to find the GestureEventHelper that can dispatch events
   // to a specific |consumer|.
