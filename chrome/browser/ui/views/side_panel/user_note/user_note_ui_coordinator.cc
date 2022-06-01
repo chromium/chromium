@@ -151,7 +151,10 @@ void UserNoteUICoordinator::Invalidate() {
     return;
 
   if (!browser_->tab_strip_model()->GetActiveWebContents()) {
-    scroll_view_->contents()->RemoveAllChildViews();
+    if (scroll_view_->contents() &&
+        scroll_view_->contents()->children().size() > 0) {
+      scroll_view_->contents()->RemoveAllChildViews();
+    }
     return;
   }
 
