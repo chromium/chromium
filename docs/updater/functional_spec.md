@@ -8,61 +8,74 @@ and UI.
 
 [TOC]
 
-## Metainstaller
+## Installation
+
+### Metainstaller
 The metainstaller (UpdaterSetup) is a small executable that contains a
 compressed copy of the updater as a resource, extracts it, and triggers
 installation of the updater / an app. The metainstaller is downloaded by the
 user and can be run from any directory.
-
-The size of the metainstaller is less than 1500KiB.
 
 The metainstaller may have a tag attached to it. The tag is a piece of unsigned
 data from which the metainstaller extracts the ID of the application to be
 installed, along with the application's brand code, usage-stats opt-in status,
 and any additional parameters to be associated with the application.
 
+After the metainstaller installs the updater, the updater installs an
+application by connecting to update servers and [downloading and executing an
+application installer](#Updates).
+
 On Windows, the tag is embedded in one of the certificates in the metainstaller
 PE. The tag is supported for both EXE and MSI formats.
 
-### Tag Format
+#### Tag Format
+TODO(crbug.com/1328903) - document the rest of the tag format.
 
-#### Brand code
+##### Brand code
 The brand code is a string of up to 4 characters long. The brand code is
 persisted during the install, over-installs, and updates.
 
-TODO(crbug.com/1328903) - document the rest of the tag format.
-
-
-### Elevation (Windows)
+#### Elevation (Windows)
 The metainstaller parses its tag and re-launches itself at high integrity if
 installing an application with `needsadmin=true` or `needsadmin=prefers`.
 
-### Localization
+#### Localization
 Metainstaller localization presents the metainstaller UI with the user's
 preferred language on the current system. Every string shown in the UI is
 translated.
 
-## Bundle Installer
+### Bundle Installer
 The bundle installer allows installation of more than one application. The
 bundle installer is typically used in software distribution scenarios.
 
 TODO(crbug.com/1035895): Document bundled installers.
 
-
-## Standalone Installer
+### Standalone Installer
 TODO(crbug.com/1035895): Document the standalone installer, including building
 a standalone installer for a given application.
+
+Standalone installers embed all data required to install the application,
+including the payload and various configuration data needed by the application
+setup. Such an install completes even if a network connection is not available.
+
+Standalone installers are used:
+
+1. when an interactive user experience is not needed, such as automated
+deployments in an enterprise.
+2. when downloading the application payload is not desirable for any reason.
+3. during OEM installation.
+
+TODO(crbug.com/1139014): Document OEM.
 
 Applications on macOS frequently install via "drag-install", and then install
 the updater using a standalone installer on the application's first-run. The
 updater app can be embedded in a macOS application bundle as a helper and then
 invoked with appropriate command line arguments to install itself.
 
-## MSI Wrapper
+### MSI Wrapper
 TODO(crbug.com/1327497) - document.
 
-
-## Updater
+### Scope
 The updater is installed in one of the following modes (or scopes):
 1. per-system (or per-machine). This mode requires administrator privileges.
 2. per-user
@@ -75,6 +88,8 @@ Depending on the scope, the updater is installed at:
 * (Windows, System): `%PROGRAM_FILES%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
 * (macOS, User): `~/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
 * (macOS, System): `/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
+
+### Command Line
 
 The updater's functionality is split between several processes. The mode of a
 process is determined by command-line arguments:
@@ -163,142 +178,13 @@ Additionally, the mode may be modified by combining it with:
     *   The updater operates in system scope if and only if this switch is
         present.
 
-### Protocol
-The updater communicates with update servers using the
-[Omaha Protocol](protocol_3_1.md).
-
-#### Security
-It is not possible to MITM the updater even if the network (including TLS) is
-compromised. The integrity of the client-server communication is guaranteed
-by the [Client Update Protocol (CUP)](cup.md).
-
-#### Retries
-The updater does not retry an update check that transacted with the backend,
-even if the response was erroneous (misformatted or unparsable), until the
-next normally scheduled update check.
-
-#### DOS Mitigation
-The updater sends DoS mitigation headers in requests to the server.
-
-When the server responds with an `X-Retry-After header`, the client does not
-issue another update check until the specified period has passed (maximum 24
-hours).
-
-* The updater distinguishes between foreground and background priority: if an
-  `X-Retry-After` was received in the background case, a foreground update is
-  still permitted (but not if it was received in response to a foreground
-  update).
-
-#### Load Smoothing
-TODO(crbug.com/1329868) - implement the algorithm.
-The updater scatters its routine updates:
-* Two updaters installed in identical situations and at the same time, after
-  some period of time, do not have synchronized times at which they check
-  for updates.
-  * For example, the updater may randomly choose to wait 6 hours instead of 5 to
-    perform the next check. The probability of choosing 6 hours is .1.
-  * The change only applies to users who have not overridden their
-    `UpdateCheckMs` feature.
-  * For testing purposes, the feature can be disabled by creating an
-    DWORD value `DisableUpdateAppsHourlyJitter` in `UpdateDev`.
-  * For testing purposes, an `UpdateDev` value can set the jitter time to a
-    constant value, in the same [0, 60) seconds range. The name of the value is
-    `AutoUpdateJitterMs` and it represents the time to wait before an update
-    check is made in milliseconds.
-* The global load from updaters is scattered among the minutes of the hour, the
-  seconds of the minute, and the milliseconds of the second.
-  * For example, load spikes on the first minute of the hour, or
-    the first second of every minute, or even the first millisecond of every
-    second are undesirable.
-
-#### Usage Counts
-TODO(crbug.com/1329328) - document the client responsibilities.
-
-### Update Formats
-The updater accepts updates packaged as CRX₃ files. All files are signed with a
-publisher key. The corresponding public key is hardcoded into the updater.
-
-### Installation
-
-The updater handles the installation of new applications. The updater can
-download, install, and update an applications when the application is running.
-
-One or more applications can be installed at once, as a bundle.
-
-Before installing, the integrity of the payload if verified. The payloads are
-stored in secure locations of the file system for per-system installs.
-
-
-Considering network connectivity, there are two scenarios for installing an
-application:
-
-1. Online
-2. Offline
-
-#### Online Installs
-
-An online install is done with a [metainstaller](#Metainstaller). Every time an
-online installer runs, it sends an install event ping. The update check and
-the install event ping have the same session id. The install ping is lost if the
-network is unreachable for any reason, or the program has crashed.
-
-#### Standalone/Offline Installs
-
-This type of installs is done with a [standalone/offline installer]
-(#Standalone-Installer). This is an installer which embeds all data required to
-install the application, including the payload and various configuration data
-needed by the application setup. Such an install completes even if a network
-connection is not available.
-
-There are a couple of scenarios where the standalone/offline installer is used:
-
-1. when an interactive user experience is not needed, such as automated
-deployments in the enterprise.
-2. when downloading the application payload is not desirable for any reason.
-3. OEM installs.
-
-[installdataindex](#installdataindex) provides a mechanism to specify
-configuration data which is passed to the application installer.
-
-#### User Interface
-TODO(crbug.com/1035895): Document UI/UX
-
-* The install flow can be stopped before the payload finished downloading.
-* The user interface is localized in the following languages: TBD.
-* Has a silent mode where the UI is not displayed at all.
-
-##### Help Button
-If the installation fails, the updater shows an error message with a "Help"
-button. Clicking the help button opens a web page in the user's default browser.
-The page is opened with a query string:
-`?product={AppId}&errorcode={ErrorCode}`.
-
-#### OEM Installs.
-
-TODO(crbug.com/1139014): Document OEM.
-
-#### Install Source
-
-The `installsource` identifies the originator of an install. It is provided on
-the command line of the metainstaller.
-TODO(crbug.com/1327491) - is this needed? If yes, document the algorithm.
-
-#### Installer APIs
-As part of installing or updating an application, the updater executes the
-application's installer. The API for the application installer is platform-
-specific.
-
-The macOS API is [defined here](installer_api_mac.md).
-
-TODO(crbug.com/1035895): Document Windows installer APIs
-
-#### Backward-Compatible Updater Shims
+### Backward-Compatible Updater Shims
 To maintain backwards compatibility with
 [Omaha](https://github.com/google/omaha) and
 [Keystone](https://code.google.com/archive/p/update-engine/), the updater
 installs small versions of those programs that implement a subset of their APIs.
 
-##### Keystone Shims
+#### Keystone Shims
 The updater installs a Keystone-like application that contains these shims:
 
 1.  The Keystone app executable.
@@ -366,14 +252,89 @@ Some of these actions accept parameters:
 *   --xcpath, -x PATH
     *   Set a path to use as an existence checker.
 
-##### Omaha Shims
+#### Omaha Shims
 On Windows, the updater replaces Omaha's files with a copy of the updater, and
 keeps the Omaha registry entry
 (`CLIENTS/{430FD4D0-B729-4F61-AA34-91526481799D}`) up-to-date with the latest
 `pv` value. Additionally, the updater replaces the Omaha uninstall command line
 with its own.
 
-#### Enterprise Policies
+### Installer User Interface
+TODO(crbug.com/1035895): Document UI/UX.
+
+The user interface is localized in the following languages: TBD.
+
+TODO(crbug.com/1014591): Implement install cancellation.
+
+The install flow can be stopped before the payload finished downloading.
+
+TODO(crbug.com/1286580): Implement silent mode.
+
+Has a silent mode where the UI is not displayed at all.
+
+#### Help Button
+If the installation fails, the updater shows an error message with a "Help"
+button. Clicking the help button opens a web page in the user's default browser.
+The page is opened with a query string:
+`?product={AppId}&errorcode={ErrorCode}`.
+
+### Install Source
+
+TODO(crbug.com/1327491) - Implement the following algorithm.
+
+The `installsource` identifies the originator of an install. It is provided on
+the command line of the metainstaller.
+
+TODO(crbug.com/1327491) - is this needed? If yes, document the algorithm.
+
+## Updates
+There is no limit for the number of retries to update an application if the
+update fails repeatedly.
+
+### Protocol
+The updater communicates with update servers using the
+[Omaha Protocol](protocol_3_1.md).
+
+#### Security
+It is not possible to MITM the updater even if the network (including TLS) is
+compromised. The integrity of the client-server communication is guaranteed
+by the [Client Update Protocol (CUP)](cup.md).
+
+#### Retries
+The updater does not retry an update check that transacted with the backend,
+even if the response was erroneous (misformatted or unparsable), until the
+next normally scheduled update check.
+
+#### DOS Mitigation
+The updater sends DoS mitigation headers in requests to the server.
+
+When the server responds with an `X-Retry-After header`, the client does not
+issue another update check until the specified period has passed (maximum 24
+hours).
+
+* The updater distinguishes between foreground and background priority: if an
+  `X-Retry-After` was received in the background case, a foreground update is
+  still permitted (but not if it was received in response to a foreground
+  update).
+
+#### Usage Counts
+TODO(crbug.com/1329328) - document the client responsibilities.
+
+#### Cohort Tracking
+The client records the `cohort`, `cohortname`, and `cohorthint` values from the
+server in each update response (even if there is no-update) and reports them on
+subsequent update checks.
+
+### Installer APIs
+As part of installing or updating an application, the updater executes the
+application's installer. The API for the application installer is platform-
+specific.
+
+The macOS API is [defined here](installer_api_mac.md).
+
+TODO(crbug.com/1035895): Document Windows installer APIs
+
+### Enterprise Policies
 Enterprise policies can prevent the installation of applications:
 *   A per-application setting may specify whether an application is installable.
 *   If no per-application setting specifies otherwise, the default install
@@ -382,9 +343,9 @@ Enterprise policies can prevent the installation of applications:
 
 Refer to chrome/updater/protos/omaha\_settings.proto for more details.
 
-#### Dynamic Install Parameters
+### Dynamic Install Parameters
 
-##### `needsadmin`
+#### `needsadmin`
 
 `needsadmin` is one of the install parameters that can be specified for
 first installs via the
@@ -411,7 +372,7 @@ however, the application is then only installed for the current user. The
 application installer needs to be able to support the installation as system, or
 per-user, or both modes.
 
-##### `installdataindex`
+#### `installdataindex`
 
 `installdataindex` is one of the install parameters that can be specified for
 first installs on the command line or via the
@@ -555,26 +516,40 @@ The updater does not delete this file.
 * This installerdata is not persisted anywhere else, and it is not sent as a
 part of pings to the update server.
 
-## Updates
-There is no limit for the number of retries to update an application if the
-update fails repeatedly.
-
-### Cohort Tracking
-The client records the `cohort`, `cohortname`, and `cohorthint` values from the
-server in each update response (even if there is no-update) and reports them on
-subsequent update checks.
+### Update Formats
+The updater accepts updates packaged as CRX₃ files. All files are signed with a
+publisher key. The corresponding public key is hardcoded into the updater.
 
 ### Differential Updates
 TODO(crbug.com/1035895): Document differential updates.
+
+TODO(crbug.com/1331030): Implement differential update support.
 
 ### Update Timing
 The updater runs periodic tasks every hour, checking its own status, detecting
 application uninstalls, and potential checking for updates (if it has been at
 least 5 hours since the last update check).
 
-For internal users, the period of the scheduled tasks is 30 minutes.
-
-TODO(crbug.com/1328943) - document the jitter for starting updates.
+TODO(crbug.com/1329868): implement the following algorithm.
+The updater scatters its routine updates:
+* Two updaters installed in identical situations and at the same time, after
+  some period of time, do not have synchronized times at which they check
+  for updates.
+  * For example, the updater may randomly choose to wait 6 hours instead of 5 to
+    perform the next check. The probability of choosing 6 hours is .1.
+  * The change only applies to users who have not overridden their
+    `UpdateCheckMs` feature.
+  * For testing purposes, the feature can be disabled by creating an
+    DWORD value `DisableUpdateAppsHourlyJitter` in `UpdateDev`.
+  * For testing purposes, an `UpdateDev` value can set the jitter time to a
+    constant value, in the same [0, 60) seconds range. The name of the value is
+    `AutoUpdateJitterMs` and it represents the time to wait before an update
+    check is made in milliseconds.
+* The global load from updaters is scattered among the minutes of the hour, the
+  seconds of the minute, and the milliseconds of the second.
+  * For example, load spikes on the first minute of the hour, or
+    the first second of every minute, or even the first millisecond of every
+    second are undesirable.
 
 #### Windows Scheduling of Updates
 The update tasks are scheduled using the OS task scheduler.
@@ -582,7 +557,8 @@ The update tasks are scheduled using the OS task scheduler.
 The time resolution for tasks is 1 minute. Tasks are set to run 5 minutes after
 they've been created.
 
-TODO(crbug.com/1328935) - built in task scheduler as a failover mechanism
+TODO(crbug.com/1328935): implement built in task scheduler as a failover
+mechanism
 
 TODO(crbug.com/1035895): Does the updater run at user login on Windows?
 
@@ -653,6 +629,8 @@ any piece of software it manages is permitted to send usage stats.
 TODO(crbug.com/1035895): Document relevant enterprise policies.
 
 #### Windows
+TODO(crbug.com/1035895): Implement this section. (ADMX file export.)
+
 ADMX templates are provided.
 
 ### Telemetry
@@ -672,11 +650,11 @@ When the updater attempts to download a file, it sends an event with
 Multiple events associated with an update session are bundled together into a
 single request.
 
-## Downloading
+### Downloading
 There could be multiple URLs for a given application payload. The URLs are tried
 in the order they are returned in the update response.
 
-The integrity and authenticity of the payload is verified.
+The integrity of the payload is verified.
 
 There is no download cache. Payloads are re-downloaded for applications which
 fail to install.
@@ -810,11 +788,8 @@ overridden by the execution environment:
 *   `group_policies`: Allows setting group policies, such as install and update
     policies.
 
-Windows: these overrides exist in registry, under
-`HKLM\Software\{Company}\Update\Clients\ClientState\UpdateDev`.
-
-macOS: these overrides exist in user defaults, in the `{MAC_BUNDLE_IDENTIFIER}`
-suite. For system installs, the defaults are those of the root user.
+Overrides are specified in an overrides.json file placed in the updater data
+directory.
 
 ### Tagging Tools
 TODO(crbug.com/1035895): Document tagging tools.
