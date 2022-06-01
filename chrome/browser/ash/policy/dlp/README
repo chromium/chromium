@@ -1,0 +1,62 @@
+# Relaunch Notifications Overview
+
+This document is an overview of Data leak prevention concepts, terms, and
+architecture.
+
+## Key Classes
+
+### DlpRulesManager
+
+An instance of this class is created if the primary profile is managed. It's
+responsible for parsing the `DataLeakPreventionRulesList` policy and can be
+queried about the restrictions set by the policy.
+`DlpRulesManagerImpl` is responsible for:
+- The lifetime of `DataTransferDlpController`.
+- The lifetime of `DlpReportingManager`.
+- The instanstiation of DLP daemon (by doing the first dbus call).
+
+### **Files Restriction**
+
+#### DlpFilesController
+
+`DlpFilesController` is used by fileManagerPrivateApi to check whether files
+transfer is allowed. It redirects the call to the DLP daemon if it's alive, and
+replies back to fileManagerPrivateApi once it gets the reply from the daemon.
+
+#### DlpFilesPolicyServiceProvider
+
+It's the Chromium implementation of org.chromium.DlpFilesPolicyService D-Bus
+interface. Any request from the daemon goes through this class.
+
+#### DlpClient
+
+It's the Chromium implementation of org.chromium.Dlp D-Bus interface. Any
+request from Chrome to the daemon goes through this class.
+
+### **Clipboard and DragnDrop Restriction**
+
+#### DataTransferEndpoint
+
+An instance of this class represents one of the endpoints sending or receiving
+the data through clipboard or DragnDrop.
+
+#### DataTransferPolicyController
+
+An instance of this class is created by `DlpRulesManagerImpl` if the clipboard
+restriction is set by the `DataLeakPreventionRulesList` policy. It's responsible
+for the completion/cancellation of the following (according to the DLP
+policy rules):
+- The clipboard read operations
+- The DragnDrop operations.
+
+#### DlpDataTransferNotifier
+
+This class has 2 implementations:
+- DlpClipboardNotifier
+- DlpDragDropNotifier
+<br> They are responsible for showing either the block bubbles, or the warning
+dialogues for both clipboard & DragnDrop operations.
+
+
+<!-- TODO(crbug.com/1327286): Add more details for the remaining DLP
+restrictions. -->
