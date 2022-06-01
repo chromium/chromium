@@ -107,8 +107,10 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   // closed twice (once by ScopedFD and once by the Vulkan implementation).
   int fd = dup(pixmap_->GetDmaBufFd(0));
   descriptor.memoryFD = fd;
-  // stride is not required for multi-planar formats.
-  descriptor.stride = pixmap_->GetDmaBufPitch(0);
+  for (uint32_t plane = 0u; plane < pixmap_->GetNumberOfPlanes(); ++plane) {
+    descriptor.planeLayouts[plane].offset = pixmap_->GetDmaBufOffset(plane);
+    descriptor.planeLayouts[plane].stride = pixmap_->GetDmaBufPitch(plane);
+  }
   descriptor.drmModifier = pixmap_->GetBufferFormatModifier();
   descriptor.waitFDs = {};
 
