@@ -92,7 +92,7 @@ class FakeTransport final : public media::cast::CastTransport {
       const media::cast::ReceiverRtcpEventSubscriber::RtcpEvents& e) override {}
   void AddRtpReceiverReport(const media::cast::RtcpReportBlock& b) override {}
   void SendRtcpFromRtpReceiver() override {}
-  void SetOptions(const base::DictionaryValue& options) override {}
+  void SetOptions(const base::Value::Dict& options) override {}
 
  private:
   std::vector<media::cast::EncodedFrame> sent_frames_;

@@ -8,15 +8,10 @@ namespace media {
 namespace cast {
 namespace transport_util {
 
-int LookupOptionWithDefault(const base::DictionaryValue& options,
+int LookupOptionWithDefault(const base::Value::Dict& options,
                             const std::string& path,
                             int default_value) {
-  int ret;
-  if (options.GetInteger(path, &ret)) {
-    return ret;
-  } else {
-    return default_value;
-  }
+  return options.FindInt(path).value_or(default_value);
 }
 
 }  // namespace transport_util

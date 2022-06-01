@@ -33,10 +33,6 @@
 #include "media/cast/net/rtcp/rtcp_defines.h"
 #include "net/base/ip_endpoint.h"
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace media {
 namespace cast {
 
@@ -159,7 +155,7 @@ class CastTransport {
   virtual void SendRtcpFromRtpReceiver() = 0;
 
   // Set options for the PacedSender and Wifi.
-  virtual void SetOptions(const base::DictionaryValue& options) = 0;
+  virtual void SetOptions(const base::Value::Dict& options) = 0;
 };
 
 }  // namespace cast
