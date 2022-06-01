@@ -1279,9 +1279,11 @@ void PageHandler::GotManifest(std::unique_ptr<GetAppManifestCallback> callback,
 }
 
 Response PageHandler::StopLoading() {
-  WebContentsImpl* web_contents = GetWebContents();
-  if (!web_contents)
-    return Response::InternalError();
+  Response response = AssureTopLevelActiveFrame(host_);
+  if (response.IsError())
+    return response;
+
+  WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
   web_contents->Stop();
   return Response::Success();
 }
