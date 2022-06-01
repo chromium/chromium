@@ -106,8 +106,11 @@ const PrefMappingEntry kPrefMapping[] = {
     {"passwordSavingEnabled",
      password_manager::prefs::kCredentialsEnableService,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
+
+    // Note in Lacros this is Ash-controlled.
     {"protectedContentEnabled", prefs::kProtectedContentDefault,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
+
     {"proxy", proxy_config::prefs::kProxy, APIPermissionID::kProxy,
      APIPermissionID::kProxy},
     {"referrersEnabled", prefs::kEnableReferrers, APIPermissionID::kPrivacy,
@@ -372,7 +375,9 @@ class PrefMapping {
              {chromeos::prefs::kAccessibilitySwitchAccessEnabled,
               crosapi::mojom::PrefPath::kAccessibilitySwitchAccessEnabled},
              {chromeos::prefs::kAccessibilityVirtualKeyboardEnabled,
-              crosapi::mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled}});
+              crosapi::mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled},
+             {prefs::kProtectedContentDefault,
+              crosapi::mojom::PrefPath::kProtectedContentDefault}});
     auto pref_path = name_to_extension_prefpath->find(pref_name);
     return pref_path == name_to_extension_prefpath->end()
                ? crosapi::mojom::PrefPath::kUnknown

@@ -90,7 +90,9 @@ const std::string& GetExtensionPrefNameForPref(mojom::PrefPath path) {
            {mojom::PrefPath::kAccessibilitySwitchAccessEnabled,
             ash::prefs::kAccessibilitySwitchAccessEnabled},
            {mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled,
-            ash::prefs::kAccessibilityVirtualKeyboardEnabled}});
+            ash::prefs::kAccessibilityVirtualKeyboardEnabled},
+           {mojom::PrefPath::kProtectedContentDefault,
+            prefs::kProtectedContentDefault}});
   auto pref_name = extension_prefpath_to_name->find(path);
   DCHECK(pref_name != extension_prefpath_to_name->end());
   return pref_name->second;
@@ -302,7 +304,8 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kExtensionAccessibilitySpokenFeedbackEnabled:
     case mojom::PrefPath::kAccessibilityStickyKeysEnabled:
     case mojom::PrefPath::kAccessibilitySwitchAccessEnabled:
-    case mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled: {
+    case mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled:
+    case mojom::PrefPath::kProtectedContentDefault: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
         return absl::nullopt;
