@@ -232,7 +232,9 @@ class ChromeBrowserCloudManagementController
   // Returns whether the enterprise startup dialog is being diaplayed.
   bool IsEnterpriseStartupDialogShowing();
 
-  void UnenrollBrowser();
+  // Unenrolls the browser from cloud management by either invalidating or
+  // deleting the stored DMToken.
+  void UnenrollBrowser(bool delete_dm_token);
 
   // CloudPolicyClient::Observer implementation:
   void OnPolicyFetched(CloudPolicyClient* client) override;
@@ -266,7 +268,7 @@ class ChromeBrowserCloudManagementController
       const std::string& client_id);
 
   void InvalidatePolicies();
-  void InvalidateDMTokenCallback(bool success);
+  void UnenrollCallback(bool success);
 
   void CreateReportScheduler();
 

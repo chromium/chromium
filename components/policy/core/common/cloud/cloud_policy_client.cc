@@ -1296,7 +1296,8 @@ void CloudPolicyClient::OnPolicyFetchCompleted(
 
     VLOG(2) << "Policy fetch error: " << status;
 
-    if (status == DM_STATUS_SERVICE_DEVICE_NOT_FOUND) {
+    if (status == DM_STATUS_SERVICE_DEVICE_NOT_FOUND ||
+        status == DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
       // Mark as unregistered and initialize re-registration flow.
       reregistration_dm_token_ = dm_token_;
       dm_token_.clear();

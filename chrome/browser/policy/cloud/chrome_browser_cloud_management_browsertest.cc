@@ -86,7 +86,8 @@ constexpr char kEnrollmentToken[] = "enrollment_token";
 constexpr char kMachineName[] = "foo";
 constexpr char kClientID[] = "fake_client_id";
 constexpr char kDMToken[] = "fake_dm_token";
-const char kInvalidDMToken[] = "invalid_dm_token";
+constexpr char kInvalidDMToken[] = "invalid_dm_token";
+constexpr char kDeletionDMToken[] = "deletion_dm_token";
 constexpr char kEnrollmentResultMetrics[] =
     "Enterprise.MachineLevelUserCloudPolicyEnrollment.Result";
 const char kUnenrollmentSuccessMetrics[] =
@@ -226,9 +227,18 @@ class PolicyFetchCoreObserver : public CloudPolicyCore::Observer {
 
   void OnCoreDisconnecting(CloudPolicyCore* core) override {
     // This is called when policy fetching fails and is used in
-    // ChromeBrowserCloudManagementController to unenroll the browser. The
-    // status must be DM_STATUS_SERVICE_DEVICE_NOT_FOUND for this to happen.
-    EXPECT_EQ(core->client()->status(), DM_STATUS_SERVICE_DEVICE_NOT_FOUND);
+    // ChromeBrowserCloudManagementController to unenroll the browser.
+#if BUILDFLAG(IS_CHROMEOS)
+    // The status must be `DM_STATUS_SERVICE_DEVICE_NOT_FOUND` since DMToken
+    // deletion is not supported in ChromeOS.
+    EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, core->client()->status());
+#else   // BUILDFLAG(IS_CHROMEOS)
+    // The status must be either `DM_STATUS_SERVICE_DEVICE_NOT_FOUND` or
+    // `DM_STATUS_SERVICE_DEVICE_NEEDS_RESET` for this to happen.
+    EXPECT_THAT((std::array{DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
+                            DM_STATUS_SERVICE_DEVICE_NEEDS_RESET}),
+                testing::Contains(core->client()->status()));
+#endif  // BUILDFLAG(IS_CHROMEOS)
     std::move(quit_closure_).Run();
   }
 
@@ -695,6 +705,11 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
   void SetUpTestServer() {
     test_server_ = std::make_unique<EmbeddedPolicyTestServer>();
     UpdatePolicyStorage(test_server_->policy_storage());
+    // Configure the policy server to signal that DMToken deletion has been
+    // requested via the DMServer response.
+    if (dm_token() == kDeletionDMToken)
+      test_server_->policy_storage()->set_error_detail(
+          em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN);
     test_server_->client_storage()->RegisterClient(CreateTestClientInfo());
   }
 
@@ -735,7 +750,7 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
     // unenrollment.
     std::unique_ptr<PolicyFetchCoreObserver> core_observer;
     std::unique_ptr<PolicyFetchStoreObserver> store_observer;
-    if (dm_token() == kInvalidDMToken) {
+    if (dm_token() == kInvalidDMToken || dm_token() == kDeletionDMToken) {
       if (storage_enabled()) {
         // |run_loop|'s QuitClosure will be called after the core is
         // disconnected following unenrollment.
@@ -760,14 +775,33 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
       manager->IsInitializationComplete(PolicyDomain::POLICY_DOMAIN_CHROME));
 
   const PolicyMap& policy_map = manager->store()->policy_map();
-  if (dm_token() != kInvalidDMToken) {
+  DMToken token = retrieve_dm_token();
+
+  if (dm_token() == kInvalidDMToken) {
+    EXPECT_EQ(0u, policy_map.size());
+    // The token in storage should be invalid.
+    EXPECT_TRUE(token.is_invalid());
+    histogram_tester_.ExpectUniqueSample(kUnenrollmentSuccessMetrics,
+                                         storage_enabled(), 1);
+  } else if (dm_token() == kDeletionDMToken) {
+    EXPECT_EQ(0u, policy_map.size());
+#if BUILDFLAG(IS_CHROMEOS)
+    // The token in storage should be invalid since DMToken deletion is not
+    // supported in ChromeOS.
+    EXPECT_TRUE(token.is_invalid());
+#else   // BUILDFLAG(IS_CHROMEOS)
+    // The token in storage should be empty.
+    EXPECT_TRUE(token.is_empty());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    histogram_tester_.ExpectUniqueSample(kUnenrollmentSuccessMetrics,
+                                         storage_enabled(), 1);
+  } else {
     EXPECT_EQ(1u, policy_map.size());
     EXPECT_EQ(base::Value(true),
               *(policy_map.Get(key::kSavingBrowserHistoryDisabled)
                     ->value(base::Value::Type::BOOLEAN)));
 
     // The token in storage should be valid.
-    DMToken token = retrieve_dm_token();
     EXPECT_TRUE(token.is_valid());
 
     // The test server will register with kFakeDeviceToken if
@@ -778,15 +812,6 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
       EXPECT_EQ(token.value(), kDMToken);
 
     histogram_tester_.ExpectTotalCount(kUnenrollmentSuccessMetrics, 0);
-  } else {
-    EXPECT_EQ(0u, policy_map.size());
-
-    // The token in storage should be invalid.
-    DMToken token = retrieve_dm_token();
-    EXPECT_TRUE(token.is_invalid());
-
-    histogram_tester_.ExpectUniqueSample(kUnenrollmentSuccessMetrics,
-                                         storage_enabled(), 1);
   }
 }
 
@@ -798,11 +823,13 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
 //  get an error. There should be no more cloud policy applied.
 //  3) Start Chrome without DM token. Chrome will register itself and fetch
 //  policy after it.
-INSTANTIATE_TEST_SUITE_P(
-    MachineLevelUserCloudPolicyPolicyFetchTest,
-    MachineLevelUserCloudPolicyPolicyFetchTest,
-    ::testing::Combine(::testing::Values(kDMToken, kInvalidDMToken, ""),
-                       ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(MachineLevelUserCloudPolicyPolicyFetchTest,
+                         MachineLevelUserCloudPolicyPolicyFetchTest,
+                         ::testing::Combine(::testing::Values(kDMToken,
+                                                              kInvalidDMToken,
+                                                              kDeletionDMToken,
+                                                              ""),
+                                            ::testing::Bool()));
 
 #if !BUILDFLAG(IS_ANDROID)
 class MachineLevelUserCloudPolicyRobotAuthTest : public PlatformBrowserTest {

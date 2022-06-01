@@ -59,11 +59,16 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
   if (!GetDeviceTokenFromRequest(request, &request_device_token))
     return CreateHttpResponse(net::HTTP_UNAUTHORIZED, "Invalid device token.");
 
+  em::DeviceManagementResponse device_management_response;
   const ClientStorage::ClientInfo* client_info =
       client_storage()->GetClientOrNull(
           KeyValueFromUrl(request.GetURL(), dm_protocol::kParamDeviceID));
-  if (!client_info || client_info->device_token != request_device_token)
-    return CreateHttpResponse(net::HTTP_GONE, "Invalid device token.");
+  if (!client_info || client_info->device_token != request_device_token) {
+    device_management_response.add_error_detail(
+        policy_storage()->error_detail());
+    return CreateHttpResponse(net::HTTP_GONE,
+                              device_management_response.SerializeAsString());
+  }
 
   em::DeviceManagementRequest device_management_request;
   device_management_request.ParseFromString(request.content);
@@ -82,7 +87,6 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
     }
   }
 
-  em::DeviceManagementResponse device_management_response;
   for (const auto& fetch_request :
        device_management_request.policy_request().requests()) {
     const std::string& policy_type = fetch_request.policy_type();

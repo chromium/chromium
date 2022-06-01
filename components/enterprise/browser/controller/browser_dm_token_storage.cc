@@ -104,6 +104,8 @@ void BrowserDMTokenStorage::StoreDMToken(const std::string& dm_token,
   store_callback_ = std::move(callback);
 
   if (dm_token.empty()) {
+    // TODO(crbug.com/1318153): Implement DMToken deletion logic once all
+    // delegates have the required handling.
     dm_token_ = CreateEmptyToken();
     SaveDMToken("");
   } else if (dm_token == kInvalidTokenValue) {

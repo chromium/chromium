@@ -272,11 +272,21 @@ bool ChromeBrowserCloudManagementController::
   return delegate_->IsEnterpriseStartupDialogShowing();
 }
 
-void ChromeBrowserCloudManagementController::UnenrollBrowser() {
+void ChromeBrowserCloudManagementController::UnenrollBrowser(
+    bool delete_dm_token) {
+  if (delete_dm_token) {
+    DVLOG(1) << "Browser unenrollment: Attempting DMToken deletion";
+    BrowserDMTokenStorage::Get()->ClearDMToken(base::BindOnce(
+        &ChromeBrowserCloudManagementController::UnenrollCallback,
+        weak_factory_.GetWeakPtr()));
+    return;
+  }
+
   // Invalidate DM token in storage.
-  BrowserDMTokenStorage::Get()->InvalidateDMToken(base::BindOnce(
-      &ChromeBrowserCloudManagementController::InvalidateDMTokenCallback,
-      weak_factory_.GetWeakPtr()));
+  DVLOG(1) << "Browser unenrollment: Attempting DMToken invalidation";
+  BrowserDMTokenStorage::Get()->InvalidateDMToken(
+      base::BindOnce(&ChromeBrowserCloudManagementController::UnenrollCallback,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ChromeBrowserCloudManagementController::InvalidatePolicies() {
@@ -292,17 +302,15 @@ void ChromeBrowserCloudManagementController::InvalidatePolicies() {
     report_scheduler_->OnDMTokenUpdated();
 }
 
-void ChromeBrowserCloudManagementController::InvalidateDMTokenCallback(
-    bool success) {
+void ChromeBrowserCloudManagementController::UnenrollCallback(bool success) {
   UMA_HISTOGRAM_BOOLEAN(
       "Enterprise.MachineLevelUserCloudPolicyEnrollment.UnenrollSuccess",
       success);
-  if (success) {
-    DVLOG(1) << "Successfully invalidated the DM token";
+  DVLOG(1) << "Browser unenrollment: " << (success ? "Successful" : "Failed");
+
+  if (success)
     InvalidatePolicies();
-  } else {
-    DVLOG(1) << "Failed to invalidate the DM token";
-  }
+
   NotifyBrowserUnenrolled(success);
 }
 
@@ -319,9 +327,15 @@ void ChromeBrowserCloudManagementController::OnRegistrationStateChanged(
 void ChromeBrowserCloudManagementController::OnClientError(
     CloudPolicyClient* client) {
   // DM_STATUS_SERVICE_DEVICE_NOT_FOUND being the last status implies the
-  // browser has been unenrolled.
-  if (client->status() == DM_STATUS_SERVICE_DEVICE_NOT_FOUND)
-    UnenrollBrowser();
+  // browser has been unenrolled via DMToken invalidation, so it is not expected
+  // to re-enroll automatically. DM_STATUS_SERVICE_DEVICE_NEEDS_RESET signals
+  // that the browser has been unenrolled via DMToken deletion, and that it will
+  // automatically re-enroll if a valid enrollment token has been set.
+  if (client->status() == DM_STATUS_SERVICE_DEVICE_NOT_FOUND ||
+      client->status() == DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
+    UnenrollBrowser(/*delete_dm_token=*/client->status() ==
+                    DM_STATUS_SERVICE_DEVICE_NEEDS_RESET);
+  }
 }
 
 void ChromeBrowserCloudManagementController::OnServiceAccountSet(

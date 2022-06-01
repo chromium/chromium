@@ -62,6 +62,15 @@ const char kEnrollmentToken[] = "enrollment_token";
 const char kOAuthAuthorizationHeaderPrefix[] = "OAuth ";
 #endif
 
+// Helper function which generates a DMServer response and populates the
+// `error_detail` field.
+std::string GenerateResponseWithErrorDetail(
+    em::DeviceManagementErrorDetail error_detail) {
+  em::DeviceManagementResponse response;
+  response.add_error_detail(error_detail);
+  return response.SerializeAsString();
+}
+
 // Unit tests for the device management policy service. The tests are run
 // against a TestURLLoaderFactory that is used to short-circuit the request
 // without calling into the actual network stack.
@@ -474,6 +483,22 @@ INSTANTIATE_TEST_SUITE_P(
                             net::OK,
                             410,
                             PROTO_STRING(kResponseEmpty)),
+        FailedRequestParams(
+            DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
+            net::OK,
+            410,
+            GenerateResponseWithErrorDetail(
+                em::CBCM_DELETION_POLICY_PREFERENCE_INVALIDATE_TOKEN)),
+        FailedRequestParams(
+#if BUILDFLAG(IS_CHROMEOS)
+            DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
+#else   // BUILDFLAG(IS_CHROMEOS)
+            DM_STATUS_SERVICE_DEVICE_NEEDS_RESET,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+            net::OK,
+            410,
+            GenerateResponseWithErrorDetail(
+                em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN)),
         FailedRequestParams(DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID,
                             net::OK,
                             401,

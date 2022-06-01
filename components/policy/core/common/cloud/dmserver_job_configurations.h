@@ -66,9 +66,10 @@ class POLICY_EXPORT DMServerJobConfiguration : public JobConfigurationBase {
   }
 
  protected:
-  DeviceManagementStatus MapNetErrorAndResponseCodeToDMStatus(
+  DeviceManagementStatus MapNetErrorAndResponseToDMStatus(
       int net_error,
-      int response_code);
+      int response_code,
+      const std::string& response_body);
 
  private:
   // JobConfiguration interface.

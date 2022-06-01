@@ -899,9 +899,10 @@ class POLICY_EXPORT CloudPolicyClient {
   void CreateUniqueRequestJob(
       std::unique_ptr<RegistrationJobConfiguration> config);
 
-  // Used to store a copy of the previously used |dm_token_|. This is used
+  // Used to store a copy of the previously used `dm_token_`. This is used
   // during re-registration, which gets triggered by a failed policy fetch with
-  // error |DM_STATUS_SERVICE_DEVICE_NOT_FOUND|.
+  // errors `DM_STATUS_SERVICE_DEVICE_NOT_FOUND` and
+  // `DM_STATUS_SERVICE_DEVICE_NEEDS_RESET`.
   std::string reregistration_dm_token_;
 
   // Whether extra enterprise connectors URL parameters should be included

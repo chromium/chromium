@@ -157,6 +157,15 @@ class PolicyStorage {
   std::vector<std::string> GetMatchingSerialHashes(uint64_t modulus,
                                                    uint64_t remainder) const;
 
+  void set_error_detail(
+      enterprise_management::DeviceManagementErrorDetail error_detail) {
+    error_detail_ = error_detail;
+  }
+
+  enterprise_management::DeviceManagementErrorDetail error_detail() const {
+    return error_detail_;
+  }
+
  private:
   // Maps policy keys to a serialized proto representing the policies to be
   // applied for the type (e.g. CloudPolicySettings, ChromeDeviceSettingsProto).
@@ -193,6 +202,11 @@ class PolicyStorage {
   // Maps brand serial ID to InitialEnrollmentState.
   base::flat_map<std::string, InitialEnrollmentState>
       initial_enrollment_states_;
+
+  // Determines whether the DMToken should be invalidated or deleted during
+  // browser unenrollment.
+  enterprise_management::DeviceManagementErrorDetail error_detail_ =
+      enterprise_management::CBCM_DELETION_POLICY_PREFERENCE_INVALIDATE_TOKEN;
 };
 
 }  // namespace policy
