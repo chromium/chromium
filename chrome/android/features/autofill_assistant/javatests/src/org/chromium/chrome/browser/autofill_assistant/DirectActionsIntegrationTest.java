@@ -187,7 +187,7 @@ public class DirectActionsIntegrationTest {
         waitUntilViewMatchesCondition(withText("I agree"), isDisplayed());
         onView(withText("I agree")).perform(click());
 
-        waitUntilViewMatchesCondition(withText("Sorry, something went wrong."), isDisplayed());
+        waitUntilViewMatchesCondition(withText("Something went wrong"), isDisplayed());
         verify(mDirectActionResultCallback)
                 .onResult(argThat(bundle -> !bundle.getBoolean("success")));
     }
