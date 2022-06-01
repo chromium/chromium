@@ -125,9 +125,9 @@ void PreferredAppsImpl::RemovePreferredAppForFilter(
 }
 
 void PreferredAppsImpl::SetSupportedLinksPreference(
-    apps::mojom::AppType app_type,
+    AppType app_type,
     const std::string& app_id,
-    std::vector<apps::mojom::IntentFilterPtr> all_link_filters) {
+    IntentFilters all_link_filters) {
   RunAfterPreferredAppsReady(
       base::BindOnce(&PreferredAppsImpl::SetSupportedLinksPreferenceImpl,
                      weak_ptr_factory_.GetWeakPtr(), app_type, app_id,
@@ -325,15 +325,14 @@ void PreferredAppsImpl::RemovePreferredAppForFilterImpl(
 }
 
 void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
-    apps::mojom::AppType mojom_app_type,
+    AppType app_type,
     const std::string& app_id,
-    std::vector<apps::mojom::IntentFilterPtr> all_link_filters) {
+    IntentFilters all_link_filters) {
   auto changes = std::make_unique<PreferredAppChanges>();
   auto& added = changes->added_filters;
   auto& removed = changes->removed_filters;
 
-  for (auto& mojom_filter : all_link_filters) {
-    auto filter = ConvertMojomIntentFilterToIntentFilter(mojom_filter);
+  for (auto& filter : all_link_filters) {
     auto replaced_apps = preferred_apps_list_.AddPreferredApp(app_id, filter);
     added[app_id].push_back(std::move(filter));
 
@@ -375,7 +374,6 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
 
   // Notify publishers: The new app has been set to open links, and all removed
   // apps no longer handle links.
-  AppType app_type = ConvertMojomAppTypToAppType(mojom_app_type);
   if (host_->HasPublisher(app_type)) {
     host_->OnSupportedLinksPreferenceChanged(app_type, app_id,
                                              /*open_in_app=*/true);

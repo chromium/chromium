@@ -659,6 +659,13 @@ void AppServiceProxyBase::AddPreferredApp(
   if (app_id == apps_util::kUseBrowserForLink) {
     std::vector<apps::mojom::IntentFilterPtr> filters;
     filters.push_back(std::move(mojom_intent_filter));
+    if (preferred_apps_impl_) {
+      preferred_apps_impl_->SetSupportedLinksPreference(
+          AppType::kUnknown, app_id,
+          ConvertMojomIntentFiltersToIntentFilters(filters));
+      return;
+    }
+
     app_service_->SetSupportedLinksPreference(apps::mojom::AppType::kUnknown,
                                               app_id, std::move(filters));
     return;
@@ -684,19 +691,25 @@ void AppServiceProxyBase::SetSupportedLinksPreference(
     return;
   }
 
-  std::vector<apps::mojom::IntentFilterPtr> filters;
+  IntentFilters filters;
   AppRegistryCache().ForOneApp(
       app_id, [&app_id, &filters](const AppUpdate& app) {
         for (auto& filter : app.IntentFilters()) {
           if (apps_util::IsSupportedLinkForApp(app_id, filter)) {
-            filters.push_back(ConvertIntentFilterToMojomIntentFilter(filter));
+            filters.push_back(std::move(filter));
           }
         }
       });
 
+  if (preferred_apps_impl_) {
+    preferred_apps_impl_->SetSupportedLinksPreference(
+        app_registry_cache_.GetAppType(app_id), app_id, std::move(filters));
+    return;
+  }
+
   app_service_->SetSupportedLinksPreference(
       ConvertAppTypeToMojomAppType(app_registry_cache_.GetAppType(app_id)),
-      app_id, std::move(filters));
+      app_id, ConvertIntentFiltersToMojomIntentFilters(filters));
 }
 
 void AppServiceProxyBase::RemoveSupportedLinksPreference(

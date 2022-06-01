@@ -79,10 +79,9 @@ class PreferredAppsImpl {
   void RemovePreferredAppForFilter(apps::mojom::AppType app_type,
                                    const std::string& app_id,
                                    apps::mojom::IntentFilterPtr intent_filter);
-  void SetSupportedLinksPreference(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      std::vector<apps::mojom::IntentFilterPtr> all_link_filters);
+  void SetSupportedLinksPreference(AppType app_type,
+                                   const std::string& app_id,
+                                   IntentFilters all_link_filters);
   void RemoveSupportedLinksPreference(AppType app_type,
                                       const std::string& app_id);
 
@@ -121,10 +120,9 @@ class PreferredAppsImpl {
       apps::mojom::AppType app_type,
       const std::string& app_id,
       apps::mojom::IntentFilterPtr intent_filter);
-  void SetSupportedLinksPreferenceImpl(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      std::vector<apps::mojom::IntentFilterPtr> all_link_filters);
+  void SetSupportedLinksPreferenceImpl(AppType app_type,
+                                       const std::string& app_id,
+                                       IntentFilters all_link_filters);
   void RemoveSupportedLinksPreferenceImpl(AppType app_type,
                                           const std::string& app_id);
 

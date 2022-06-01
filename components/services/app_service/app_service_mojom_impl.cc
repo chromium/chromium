@@ -283,7 +283,8 @@ void AppServiceMojomImpl::SetSupportedLinksPreference(
     std::vector<apps::mojom::IntentFilterPtr> all_link_filters) {
   if (preferred_apps_impl_) {
     preferred_apps_impl_->SetSupportedLinksPreference(
-        app_type, app_id, std::move(all_link_filters));
+        ConvertMojomAppTypToAppType(app_type), app_id,
+        ConvertMojomIntentFiltersToIntentFilters(all_link_filters));
   }
 }
 
