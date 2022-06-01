@@ -816,6 +816,8 @@ android_library("common_java") {
 }
 
 android_aidl("common_aidl") {
+  # External code should depend on "common_aidl_java" instead.
+  visibility = [ ":*" ]
   import_include = [ "java/src" ]
   sources = [
     "java/src/org/chromium/android_webview/common/services/ICrashReceiverService.aidl",
