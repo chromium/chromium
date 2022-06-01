@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../../common/testing/accessibility_test_base.js']);
+GEN_INCLUDE(['../../../common/testing/accessibility_test_base.js']);
 
 /**
  * A TTS class implementing speak and stop methods intended only for testing.
@@ -91,7 +91,7 @@ ChromeVoxEditableTextUnitTest = class extends AccessibilityTestBase {
     await importModule('AbstractTts', '/chromevox/common/abstract_tts.js');
     await importModule(
         ['ChromeVoxEditableTextBase', 'TextChangedEvent', 'TypingEcho'],
-        '/chromevox/common/editable_text_base.js');
+        '/chromevox/background/editing/editable_text_base.js');
     await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
 
@@ -118,11 +118,11 @@ ChromeVoxEditableTextUnitTest = class extends AccessibilityTestBase {
 };
 
 ChromeVoxEditableTextUnitTest.prototype.extraLibraries = [
-  '../../common/testing/assert_additions.js',
-  '../../common/closure_shim.js',
-  '../background/chromevox.js',
-  'msgs.js',
-  'tts_interface.js',
+  '../../../common/testing/assert_additions.js',
+  '../../../common/closure_shim.js',
+  '../../common/msgs.js',
+  '../../common/tts_interface.js',
+  '../chromevox.js',
 ];
 
 

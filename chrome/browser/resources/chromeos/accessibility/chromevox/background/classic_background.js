@@ -9,12 +9,12 @@ import {BrailleBackground} from '/chromevox/background/braille/braille_backgroun
 import {BrailleCaptionsBackground} from '/chromevox/background/braille/braille_captions_background.js';
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {ConsoleTts} from '/chromevox/background/console_tts.js';
+import {ChromeVoxEditableTextBase, TypingEcho} from '/chromevox/background/editing/editable_text_base.js';
 import {InjectedScriptLoader} from '/chromevox/background/injected_script_loader.js';
 import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';
 import {TtsBackground} from '/chromevox/background/tts_background.js';
 import {AbstractTts} from '/chromevox/common/abstract_tts.js';
 import {CompositeTts} from '/chromevox/common/composite_tts.js';
-import {ChromeVoxEditableTextBase, TypingEcho} from '/chromevox/common/editable_text_base.js';
 import {ExtensionBridge} from '/chromevox/common/extension_bridge.js';
 
 /**
