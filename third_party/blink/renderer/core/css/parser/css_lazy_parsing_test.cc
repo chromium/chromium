@@ -62,50 +62,6 @@ TEST_F(CSSLazyParsingTest, LazyParseBeforeAfter) {
   EXPECT_FALSE(HasParsedProperties(RuleAt(style_sheet, 1)));
 }
 
-// Test for crbug.com/664115 where |shouldConsiderForMatchingRules| would flip
-// from returning false to true if the lazy property was parsed. This is a
-// dangerous API because callers will expect the set of matching rules to be
-// identical if the stylesheet is not mutated.
-TEST_F(CSSLazyParsingTest, ShouldConsiderForMatchingRulesDoesntChange1) {
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
-
-  String sheet_text = "p::first-letter { ,badness, } ";
-  CSSParser::ParseSheet(context, style_sheet, sheet_text,
-                        CSSDeferPropertyParsing::kYes);
-
-  StyleRule* rule = RuleAt(style_sheet, 0);
-  EXPECT_FALSE(HasParsedProperties(rule));
-  EXPECT_TRUE(
-      rule->ShouldConsiderForMatchingRules(false /* includeEmptyRules */));
-
-  // Parse the rule.
-  rule->Properties();
-
-  // Now, we should still consider this for matching rules even if it is empty.
-  EXPECT_TRUE(HasParsedProperties(rule));
-  EXPECT_TRUE(
-      rule->ShouldConsiderForMatchingRules(false /* includeEmptyRules */));
-}
-
-// Test the same thing as above with lazy parsing off to ensure that we perform
-// the optimization where possible.
-TEST_F(CSSLazyParsingTest, ShouldConsiderForMatchingRulesSimple) {
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
-
-  String sheet_text = "p::before { ,badness, } ";
-  CSSParser::ParseSheet(context, style_sheet, sheet_text,
-                        CSSDeferPropertyParsing::kNo);
-
-  StyleRule* rule = RuleAt(style_sheet, 0);
-  EXPECT_TRUE(HasParsedProperties(rule));
-  EXPECT_FALSE(
-      rule->ShouldConsiderForMatchingRules(false /* includeEmptyRules */));
-}
-
 // Regression test for crbug.com/660290 where we change the underlying owning
 // document from the StyleSheetContents without changing the UseCounter. This
 // test ensures that the new UseCounter is used when doing new parsing work.

@@ -140,26 +140,14 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
 
   static unsigned AverageSizeInBytes();
 
-  // Helper methods to avoid parsing lazy properties when not needed.
+  // Helper function to avoid parsing lazy properties when not needed.
   bool PropertiesHaveFailedOrCanceledSubresources() const;
-  bool ShouldConsiderForMatchingRules(bool include_empty_rules) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   friend class CSSLazyParsingTest;
   bool HasParsedProperties() const;
-
-  // Whether or not we should consider this for matching rules. Usually we try
-  // to avoid considering empty property sets, as an optimization. This is
-  // not possible for lazy properties, which always need to be considered. The
-  // lazy parser does its best to avoid lazy parsing for properties that look
-  // empty due to lack of tokens.
-  enum ConsiderForMatching {
-    kAlwaysConsider,
-    kConsiderIfNonEmpty,
-  };
-  mutable ConsiderForMatching should_consider_for_matching_rules_;
 
   CSSSelectorList selector_list_;
   mutable Member<CSSPropertyValueSet> properties_;

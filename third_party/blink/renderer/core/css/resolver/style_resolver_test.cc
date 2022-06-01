@@ -2167,12 +2167,6 @@ TEST_F(StyleResolverTestCQ, StyleRulesForElementContainerQuery) {
   auto* rule_list = resolver.StyleRulesForElement(
       target,
       StyleResolver::kAuthorCSSRules | StyleResolver::kCrossOriginCSSRules);
-  ASSERT_FALSE(rule_list) << "A nullptr is returned if no rules were collected";
-
-  rule_list = resolver.StyleRulesForElement(
-      target, StyleResolver::kAuthorCSSRules |
-                  StyleResolver::kCrossOriginCSSRules |
-                  StyleResolver::kEmptyCSSRules);
   ASSERT_TRUE(rule_list);
   ASSERT_EQ(rule_list->size(), 1u)
       << "The empty #target rule in the container query should be collected";

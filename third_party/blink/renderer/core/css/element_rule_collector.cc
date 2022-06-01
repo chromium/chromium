@@ -262,7 +262,6 @@ ElementRuleCollector::ElementRuleCollector(
           selector_filter_.ParentStackIsConsistent(context.ParentNode())),
       same_origin_only_(false),
       matching_ua_rules_(false),
-      include_empty_rules_(false),
       inside_link_(inside_link),
       result_(result) {
   if (!g_selector_stats_tracing_enabled) {
@@ -431,22 +430,6 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
         }
       }
     }
-
-    // If the rule has no properties to apply, then ignore it in the non-debug
-    // mode. We put this test last because a) it rarely rejects anything, and
-    // b) it's the only thing that touches the memory for the property set.
-    //
-    // If the rule matches, we'll need those properties, so we can just as well
-    // take the cache misses anyway, but otherwise, we're better off rejecting
-    // the rule in some other way first.
-    //
-    // TODO(sesse): See if we can get the property set allocated on the same
-    // cache line as the StyleRule, to reduce the impact further. Also, consider
-    // just taking empty rules out of the RuleSet altogether, although that
-    // would entail doing something to get them back for debug mode.
-    StyleRule* rule = rule_data.Rule();
-    if (!rule->ShouldConsiderForMatchingRules(include_empty_rules_))
-      continue;
 
     matched++;
     if (perf_trace_enabled)

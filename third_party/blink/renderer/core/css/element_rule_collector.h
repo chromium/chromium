@@ -166,8 +166,6 @@ class CORE_EXPORT ElementRuleCollector {
   void FinishAddingAuthorRulesForTreeScope(const TreeScope& tree_scope) {
     result_.FinishAddingAuthorRulesForTreeScope(tree_scope);
   }
-  void SetIncludeEmptyRules(bool include) { include_empty_rules_ = include; }
-  bool IncludeEmptyRules() const { return include_empty_rules_; }
 
   // Return the pseudo id if the style request is for rules associated with a
   // pseudo element, or kPseudoNone if not.
@@ -265,7 +263,6 @@ class CORE_EXPORT ElementRuleCollector {
   bool can_use_fast_reject_;
   bool same_origin_only_;
   bool matching_ua_rules_;
-  bool include_empty_rules_;
   EInsideLink inside_link_;
 
   HeapVector<MatchedRule, 32> matched_rules_;

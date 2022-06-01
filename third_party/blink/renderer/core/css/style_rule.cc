@@ -354,14 +354,12 @@ unsigned StyleRule::AverageSizeInBytes() {
 StyleRule::StyleRule(CSSSelectorList selector_list,
                      CSSPropertyValueSet* properties)
     : StyleRuleBase(kStyle),
-      should_consider_for_matching_rules_(kConsiderIfNonEmpty),
       selector_list_(std::move(selector_list)),
       properties_(properties) {}
 
 StyleRule::StyleRule(CSSSelectorList selector_list,
                      CSSLazyPropertyParser* lazy_property_parser)
     : StyleRuleBase(kStyle),
-      should_consider_for_matching_rules_(kAlwaysConsider),
       selector_list_(std::move(selector_list)),
       lazy_property_parser_(lazy_property_parser) {}
 
@@ -375,7 +373,6 @@ const CSSPropertyValueSet& StyleRule::Properties() const {
 
 StyleRule::StyleRule(const StyleRule& o)
     : StyleRuleBase(o),
-      should_consider_for_matching_rules_(kConsiderIfNonEmpty),
       selector_list_(o.selector_list_.Copy()),
       properties_(o.Properties().MutableCopy()) {}
 
@@ -388,13 +385,6 @@ MutableCSSPropertyValueSet& StyleRule::MutableProperties() {
 
 bool StyleRule::PropertiesHaveFailedOrCanceledSubresources() const {
   return properties_ && properties_->HasFailedOrCanceledSubresources();
-}
-
-bool StyleRule::ShouldConsiderForMatchingRules(bool include_empty_rules) const {
-  DCHECK(should_consider_for_matching_rules_ == kAlwaysConsider || properties_);
-  return include_empty_rules ||
-         should_consider_for_matching_rules_ == kAlwaysConsider ||
-         !properties_->IsEmpty();
 }
 
 bool StyleRule::HasParsedProperties() const {
