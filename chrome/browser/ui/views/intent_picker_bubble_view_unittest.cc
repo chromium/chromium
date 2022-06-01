@@ -11,9 +11,11 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -62,7 +64,8 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
 
   void TearDown() override {
     // Make sure the bubble is destroyed before the profile to avoid a crash.
-    bubble_->GetWidget()->CloseNow();
+    if (bubble_)
+      bubble_->GetWidget()->CloseNow();
 
     TestWithBrowserView::TearDown();
   }
@@ -131,12 +134,17 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
       app.icon_model = dummy_icon_model;
   }
 
-  views::LabelButton* GetButtonAtIndex(size_t index) {
+  views::Button* GetButtonAtIndex(size_t index) {
     auto children =
         bubble_->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
             ->children();
     CHECK_LT(index, children.size());
-    return static_cast<views::LabelButton*>(children[index]);
+    return static_cast<views::Button*>(children[index]);
+  }
+
+  views::LabelButton* GetLabelButtonAtIndex(size_t index) {
+    CHECK(!apps::features::LinkCapturingUiUpdateEnabled());
+    return static_cast<views::LabelButton*>(GetButtonAtIndex(index));
   }
 
   void ClickApp(size_t index) {
@@ -166,7 +174,7 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
     last_selection_should_persist_ = should_persist;
   }
 
-  raw_ptr<IntentPickerBubbleView> bubble_;
+  raw_ptr<IntentPickerBubbleView> bubble_ = nullptr;
   raw_ptr<views::View> anchor_view_;
   std::vector<AppInfo> app_info_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
@@ -184,7 +192,7 @@ TEST_F(IntentPickerBubbleViewTest, NullIcons) {
   size_t size = GetScrollViewSize();
   for (size_t i = 0; i < size; ++i) {
     gfx::ImageSkia image =
-        GetButtonAtIndex(i)->GetImage(views::Button::STATE_NORMAL);
+        GetLabelButtonAtIndex(i)->GetImage(views::Button::STATE_NORMAL);
     EXPECT_TRUE(image.isNull()) << i;
   }
 }
@@ -197,7 +205,7 @@ TEST_F(IntentPickerBubbleViewTest, NonNullIcons) {
   size_t size = GetScrollViewSize();
   for (size_t i = 0; i < size; ++i) {
     gfx::ImageSkia image =
-        GetButtonAtIndex(i)->GetImage(views::Button::STATE_NORMAL);
+        GetLabelButtonAtIndex(i)->GetImage(views::Button::STATE_NORMAL);
     EXPECT_FALSE(image.isNull()) << i;
   }
 }
@@ -326,7 +334,29 @@ TEST_F(IntentPickerBubbleViewTest, InitiatingOriginView) {
   EXPECT_EQ(children_without_origin, children_with_same_origin);
 }
 
-TEST_F(IntentPickerBubbleViewTest, RememberCheckbox) {
+enum class BubbleInterfaceType { kListView, kGridView };
+
+class IntentPickerBubbleViewLayoutTest
+    : public IntentPickerBubbleViewTest,
+      public ::testing::WithParamInterface<BubbleInterfaceType> {
+ public:
+  void SetUp() override {
+    if (GetParam() == BubbleInterfaceType::kGridView) {
+      feature_list_.InitAndEnableFeature(
+          apps::features::kLinkCapturingUiUpdate);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          apps::features::kLinkCapturingUiUpdate);
+    }
+
+    IntentPickerBubbleViewTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(IntentPickerBubbleViewLayoutTest, RememberCheckbox) {
   AddApp(apps::PickerEntryType::kDevice, "device_id", "Android Phone");
   AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
   AddApp(apps::PickerEntryType::kArc, "arc_app_id", "Arc App");
@@ -351,7 +381,7 @@ TEST_F(IntentPickerBubbleViewTest, RememberCheckbox) {
   ASSERT_TRUE(checkbox->GetEnabled());
 }
 
-TEST_F(IntentPickerBubbleViewTest, AcceptDialog) {
+TEST_P(IntentPickerBubbleViewLayoutTest, AcceptDialog) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_1", "Web App");
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_2", "Web App");
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
@@ -366,7 +396,7 @@ TEST_F(IntentPickerBubbleViewTest, AcceptDialog) {
   EXPECT_EQ(last_close_reason_, apps::IntentPickerCloseReason::OPEN_APP);
 }
 
-TEST_F(IntentPickerBubbleViewTest, AcceptDialogWithRememberSelection) {
+TEST_P(IntentPickerBubbleViewLayoutTest, AcceptDialogWithRememberSelection) {
   AddApp(apps::PickerEntryType::kArc, "arc_app_id", "ARC App");
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
                    BubbleType::kLinkCapturing,
@@ -383,7 +413,7 @@ TEST_F(IntentPickerBubbleViewTest, AcceptDialogWithRememberSelection) {
   EXPECT_EQ(last_close_reason_, apps::IntentPickerCloseReason::OPEN_APP);
 }
 
-TEST_F(IntentPickerBubbleViewTest, CancelDialog) {
+TEST_P(IntentPickerBubbleViewLayoutTest, CancelDialog) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_1", "Web App");
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_2", "Web App");
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
@@ -398,7 +428,7 @@ TEST_F(IntentPickerBubbleViewTest, CancelDialog) {
   EXPECT_EQ(last_close_reason_, apps::IntentPickerCloseReason::STAY_IN_CHROME);
 }
 
-TEST_F(IntentPickerBubbleViewTest, CloseDialog) {
+TEST_P(IntentPickerBubbleViewLayoutTest, CloseDialog) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_1", "Web App");
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
                    BubbleType::kLinkCapturing,
@@ -416,7 +446,11 @@ TEST_F(IntentPickerBubbleViewTest, CloseDialog) {
 #else
 #define MAYBE_KeyboardNavigation KeyboardNavigation
 #endif
-TEST_F(IntentPickerBubbleViewTest, MAYBE_KeyboardNavigation) {
+TEST_P(IntentPickerBubbleViewLayoutTest, MAYBE_KeyboardNavigation) {
+  if (GetParam() == BubbleInterfaceType::kGridView) {
+    // TODO(crbug.com/1321501): Support keyboard navigation in grid view.
+    GTEST_SKIP();
+  }
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
@@ -437,7 +471,7 @@ TEST_F(IntentPickerBubbleViewTest, MAYBE_KeyboardNavigation) {
   EXPECT_EQ(bubble_->GetSelectedIndex(), 0u);
 }
 
-TEST_F(IntentPickerBubbleViewTest, DoubleClickToAccept) {
+TEST_P(IntentPickerBubbleViewLayoutTest, DoubleClickToAccept) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
                    BubbleType::kLinkCapturing,
@@ -450,3 +484,8 @@ TEST_F(IntentPickerBubbleViewTest, DoubleClickToAccept) {
   EXPECT_EQ(last_selected_launch_name_, "web_app_id");
   EXPECT_EQ(last_close_reason_, apps::IntentPickerCloseReason::OPEN_APP);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         IntentPickerBubbleViewLayoutTest,
+                         testing::Values(BubbleInterfaceType::kListView,
+                                         BubbleInterfaceType::kGridView));

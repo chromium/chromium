@@ -289,6 +289,12 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorInfoBarContentAreaSeparator] =
       ui::AlphaBlend(kColorToolbarButtonIcon, kColorInfoBarBackground, 0x3A);
   mixer[kColorInfoBarForeground] = {kColorToolbarText};
+  mixer[kColorIntentPickerItemBackgroundHovered] = ui::SetAlpha(
+      ui::GetColorWithMaxContrast(ui::kColorDialogBackground), 0x0F);  // 6%.
+  // TODO(crbug.com/1330183): Improve selection color.
+  mixer[kColorIntentPickerItemBackgroundSelected] = ui::BlendForMinContrast(
+      ui::kColorDialogBackground, ui::kColorDialogBackground, ui::kColorAccent,
+      1.2);
   mixer[kColorLocationBarBorder] = {SkColorSetA(SK_ColorBLACK, 0x4D)};
   mixer[kColorLocationBarBorderOpaque] =
       ui::GetResultingPaintColor(kColorLocationBarBorder, kColorToolbar);

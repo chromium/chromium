@@ -406,12 +406,12 @@ class IntentPickerDialogTest : public DialogBrowserTest {
 
     std::vector<apps::IntentPickerAppInfo> app_info;
     const auto add_entry = [&app_info](const std::string& str) {
+      auto icon_size = apps::GetIntentPickerBubbleIconSize();
       app_info.emplace_back(
           apps::PickerEntryType::kUnknown,
           ui::ImageModel::FromImage(
               gfx::Image::CreateFrom1xBitmap(favicon::GenerateMonogramFavicon(
-                  GURL("https://" + str + ".com"), gfx::kFaviconSize,
-                  gfx::kFaviconSize))),
+                  GURL("https://" + str + ".com"), icon_size, icon_size))),
           "Launch name " + str, "Display name " + str);
     };
     add_entry("a");
@@ -464,5 +464,6 @@ class IntentPickerDialogGridViewTest : public IntentPickerDialogTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IntentPickerDialogGridViewTest, InvokeUi_default) {
+  set_baseline("3652664");
   ShowAndVerifyUi();
 }
