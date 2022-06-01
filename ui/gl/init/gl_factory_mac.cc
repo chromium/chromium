@@ -166,7 +166,7 @@ void SetDisabledExtensionsPlatform(const std::string& disabled_extensions) {
   // TODO(zmo): Implement this if needs arise.
 }
 
-bool InitializeExtensionSettingsOneOffPlatform(GLDisplay* display) {
+bool InitializeExtensionSettingsOneOffPlatform() {
   GLImplementation implementation = GetGLImplementation();
   DCHECK_NE(kGLImplementationNone, implementation);
   // TODO(zmo): Implement this if needs arise.

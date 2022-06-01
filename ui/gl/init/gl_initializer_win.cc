@@ -18,7 +18,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/windows_version.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_display_manager.h"
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -123,27 +122,25 @@ bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
 
 }  // namespace
 
-GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) {
+bool InitializeGLOneOffPlatform(uint64_t system_device_id) {
   VSyncProviderWin::InitializeOneOff();
 
   switch (GetGLImplementation()) {
-    case kGLImplementationEGLANGLE: {
-      GLDisplayEGL* display = GLSurfaceEGL::InitializeOneOff(
-          EGLDisplayPlatform(GetDC(nullptr)), system_device_id);
-      if (!display) {
+    case kGLImplementationEGLANGLE:
+      if (!GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform(GetDC(nullptr)),
+                                          system_device_id)) {
         LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
-        return nullptr;
+        return false;
       }
-      DirectCompositionSurfaceWin::InitializeOneOff(display);
-      return display;
-    }
+      DirectCompositionSurfaceWin::InitializeOneOff();
+      break;
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
       break;
     default:
       NOTREACHED();
   }
-  return GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
+  return true;
 }
 
 bool InitializeStaticGLBindings(GLImplementationParts implementation) {
@@ -173,9 +170,9 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
   return false;
 }
 
-void ShutdownGLPlatform(GLDisplay* display) {
+void ShutdownGLPlatform() {
   DirectCompositionSurfaceWin::ShutdownOneOff();
-  GLSurfaceEGL::ShutdownOneOff(static_cast<GLDisplayEGL*>(display));
+  GLSurfaceEGL::ShutdownOneOff();
   ClearBindingsEGL();
   ClearBindingsGL();
 }

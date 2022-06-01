@@ -47,7 +47,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/buildflags.h"
-#include "ui/gl/gl_display_manager.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 
@@ -128,9 +127,7 @@ GpuFeatureStatus GetAndroidSurfaceControlFeatureStatus(
   // synchronization, this is based on Android native fence sync
   // support. If that is unavailable, i.e. on emulator or SwiftShader,
   // don't claim SurfaceControl support.
-  if (!gl::GLDisplayManagerEGL::GetInstance()
-           ->GetDisplay(gl::GpuPreference::kDefault)
-           ->IsAndroidNativeFenceSyncSupported())
+  if (!gl::GLSurfaceEGL::GetGLDisplayEGL()->IsAndroidNativeFenceSyncSupported())
     return kGpuFeatureStatusDisabled;
 
   DCHECK(gfx::SurfaceControl::IsSupported());
@@ -750,10 +747,10 @@ bool PopGpuFeatureInfoCache(GpuFeatureInfo* gpu_feature_info) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-gl::GLDisplay* InitializeGLThreadSafe(base::CommandLine* command_line,
-                                      const GpuPreferences& gpu_preferences,
-                                      GPUInfo* out_gpu_info,
-                                      GpuFeatureInfo* out_gpu_feature_info) {
+bool InitializeGLThreadSafe(base::CommandLine* command_line,
+                            const GpuPreferences& gpu_preferences,
+                            GPUInfo* out_gpu_info,
+                            GpuFeatureInfo* out_gpu_feature_info) {
   static base::NoDestructor<base::Lock> gl_bindings_initialization_lock;
   base::AutoLock auto_lock(*gl_bindings_initialization_lock);
   DCHECK(command_line);
@@ -764,23 +761,15 @@ gl::GLDisplay* InitializeGLThreadSafe(base::CommandLine* command_line,
   if (gpu_info_cached) {
     // GL bindings have already been initialized in another thread.
     DCHECK_NE(gl::kGLImplementationNone, gl::GetGLImplementation());
-    return gl::GLDisplayManagerEGL::GetInstance()->GetDisplay(
-        gl::GpuPreference::kDefault);
+    return true;
   }
-
-  gl::GLDisplay* gl_display = nullptr;
   if (gl::GetGLImplementation() == gl::kGLImplementationNone) {
     // Some tests initialize bindings by themselves.
-    gl_display =
-        gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
-                                                 /*system_device_id=*/0);
-    if (!gl_display) {
+    if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
+                                                  /*system_device_id=*/0)) {
       VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
-      return nullptr;
+      return false;
     }
-  } else {
-    gl_display = gl::GLDisplayManagerEGL::GetInstance()->GetDisplay(
-        gl::GpuPreference::kDefault);
   }
   CollectContextGraphicsInfo(out_gpu_info);
   *out_gpu_feature_info = ComputeGpuFeatureInfo(*out_gpu_info, gpu_preferences,
@@ -789,13 +778,13 @@ gl::GLDisplay* InitializeGLThreadSafe(base::CommandLine* command_line,
     gl::init::SetDisabledExtensionsPlatform(
         out_gpu_feature_info->disabled_extensions);
   }
-  if (!gl::init::InitializeExtensionSettingsOneOffPlatform(gl_display)) {
+  if (!gl::init::InitializeExtensionSettingsOneOffPlatform()) {
     VLOG(1) << "gl::init::InitializeExtensionSettingsOneOffPlatform failed";
-    return nullptr;
+    return false;
   }
   CacheGPUInfo(*out_gpu_info);
   CacheGpuFeatureInfo(*out_gpu_feature_info);
-  return gl_display;
+  return true;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

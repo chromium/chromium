@@ -25,8 +25,7 @@
 namespace gl {
 
 namespace {
-
-GLDisplay* InitializeOneOffHelper(bool init_extensions) {
+void InitializeOneOffHelper(bool init_extensions) {
   DCHECK_EQ(kGLImplementationNone, GetGLImplementation());
 
 #if defined(USE_OZONE)
@@ -70,70 +69,70 @@ GLDisplay* InitializeOneOffHelper(bool init_extensions) {
 
   CHECK(gl::init::InitializeStaticGLBindingsImplementation(
       impl, fallback_to_software_gl));
-  GLDisplay* display = gl::init::InitializeGLOneOffPlatformImplementation(
+  CHECK(gl::init::InitializeGLOneOffPlatformImplementation(
       fallback_to_software_gl, disable_gl_drawing, init_extensions,
-      /*system_device_id=*/0);
-  CHECK(display);
-  return display;
+      /*system_device_id=*/0));
 }
 }  // namespace
 
 // static
-GLDisplay* GLSurfaceTestSupport::InitializeOneOff() {
-  return InitializeOneOffHelper(true);
+void GLSurfaceTestSupport::InitializeOneOff() {
+  InitializeOneOffHelper(true);
 }
 
 // static
-GLDisplay* GLSurfaceTestSupport::InitializeNoExtensionsOneOff() {
-  return InitializeOneOffHelper(false);
+void GLSurfaceTestSupport::InitializeNoExtensionsOneOff() {
+  InitializeOneOffHelper(false);
 }
 
 // static
-GLDisplay* GLSurfaceTestSupport::InitializeOneOffImplementation(
+void GLSurfaceTestSupport::InitializeOneOffImplementation(
     GLImplementationParts impl,
     bool fallback_to_software_gl) {
   DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseGL))
       << "kUseGL has not effect in tests";
+
+  // This method may be called multiple times in the same process to set up
+  // bindings in different ways.
+  init::ShutdownGL(false);
 
   bool disable_gl_drawing = false;
   bool init_extensions = true;
 
   CHECK(gl::init::InitializeStaticGLBindingsImplementation(
       impl, fallback_to_software_gl));
-  GLDisplay* display = gl::init::InitializeGLOneOffPlatformImplementation(
+  CHECK(gl::init::InitializeGLOneOffPlatformImplementation(
       fallback_to_software_gl, disable_gl_drawing, init_extensions,
-      /*system_device_id=*/0);
-  CHECK(display);
-  return display;
+      /*system_device_id=*/0));
 }
 
 // static
-GLDisplay* GLSurfaceTestSupport::InitializeOneOffWithMockBindings() {
+void GLSurfaceTestSupport::InitializeOneOffWithMockBindings() {
 #if defined(USE_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
 
-  return InitializeOneOffImplementation(
-      GLImplementationParts(kGLImplementationMockGL), false);
+  InitializeOneOffImplementation(GLImplementationParts(kGLImplementationMockGL),
+                                 false);
 }
 
 // static
-GLDisplay* GLSurfaceTestSupport::InitializeOneOffWithStubBindings() {
+void GLSurfaceTestSupport::InitializeOneOffWithStubBindings() {
 #if defined(USE_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
 
-  return InitializeOneOffImplementation(
-      GLImplementationParts(kGLImplementationStubGL), false);
+  InitializeOneOffImplementation(GLImplementationParts(kGLImplementationStubGL),
+                                 false);
 }
 
 // static
-void GLSurfaceTestSupport::ShutdownGL(GLDisplay* display) {
-  init::ShutdownGL(display, false);
+void GLSurfaceTestSupport::ShutdownGL() {
+  init::ShutdownGL(false);
 }
 
 }  // namespace gl

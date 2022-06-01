@@ -29,9 +29,9 @@ GpuServiceWebView* GpuServiceWebView::CreateGpuServiceWebView() {
   gpu::GpuPreferences gpu_preferences =
       content::GetGpuPreferencesFromCommandLine();
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  gl::GLDisplay* display = gpu::InitializeGLThreadSafe(
-      command_line, gpu_preferences, &gpu_info, &gpu_feature_info);
-  if (!display) {
+  bool success = gpu::InitializeGLThreadSafe(command_line, gpu_preferences,
+                                             &gpu_info, &gpu_feature_info);
+  if (!success) {
     LOG(FATAL) << "gpu::InitializeGLThreadSafe() failed.";
   }
   auto sync_point_manager = std::make_unique<gpu::SyncPointManager>();

@@ -120,9 +120,9 @@ void SetDisabledExtensionsPlatform(const std::string& disabled_extensions) {
   }
 }
 
-bool InitializeExtensionSettingsOneOffPlatform(GLDisplay* display) {
+bool InitializeExtensionSettingsOneOffPlatform() {
   if (HasGLOzone())
-    return GetGLOzone()->InitializeExtensionSettingsOneOffPlatform(display);
+    return GetGLOzone()->InitializeExtensionSettingsOneOffPlatform();
 
   switch (GetGLImplementation()) {
     case kGLImplementationMockGL:

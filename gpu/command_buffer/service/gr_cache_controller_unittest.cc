@@ -26,7 +26,7 @@ namespace raster {
 class GrCacheControllerTest : public testing::Test {
  public:
   void SetUp() override {
-    display_ = gl::GLSurfaceTestSupport::InitializeOneOffWithStubBindings();
+    gl::GLSurfaceTestSupport::InitializeOneOffWithStubBindings();
     gpu::GpuDriverBugWorkarounds workarounds;
 
     scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
@@ -53,7 +53,7 @@ class GrCacheControllerTest : public testing::Test {
     controller_ = nullptr;
     context_state_ = nullptr;
     task_runner_ = nullptr;
-    gl::GLSurfaceTestSupport::ShutdownGL(display_);
+    gl::init::ShutdownGL(false);
   }
 
   GrDirectContext* gr_context() { return context_state_->gr_context(); }
@@ -62,7 +62,6 @@ class GrCacheControllerTest : public testing::Test {
   scoped_refptr<SharedContextState> context_state_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<GrCacheController> controller_;
-  gl::GLDisplay* display_ = nullptr;
 };
 
 TEST_F(GrCacheControllerTest, PurgeGrCache) {

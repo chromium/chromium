@@ -16,11 +16,11 @@ ExoTestSuiteAura::~ExoTestSuiteAura() = default;
 
 void ExoTestSuiteAura::Initialize() {
   base::TestSuite::Initialize();
-  display_ = gl::GLSurfaceTestSupport::InitializeOneOff();
+  gl::GLSurfaceTestSupport::InitializeOneOff();
 }
 
 void ExoTestSuiteAura::Shutdown() {
-  gl::GLSurfaceTestSupport::ShutdownGL(display_);
+  gl::GLSurfaceTestSupport::ShutdownGL();
   base::TestSuite::Shutdown();
 }
 

@@ -19,14 +19,13 @@ class GLOzoneGLX : public GLOzone {
 
   ~GLOzoneGLX() override {}
 
-  gl::GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) override;
+  bool InitializeGLOneOffPlatform() override;
   bool InitializeStaticGLBindings(
       const gl::GLImplementationParts& implementation) override;
   void SetDisabledExtensionsPlatform(
       const std::string& disabled_extensions) override;
-  bool InitializeExtensionSettingsOneOffPlatform(
-      gl::GLDisplay* display) override;
-  void ShutdownGL(gl::GLDisplay* display) override;
+  bool InitializeExtensionSettingsOneOffPlatform() override;
+  void ShutdownGL() override;
   bool GetGLWindowSystemBindingInfo(
       const gl::GLVersionInfo& gl_info,
       gl::GLWindowSystemBindingInfo* info) override;

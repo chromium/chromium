@@ -86,9 +86,9 @@ GpuChannelTestCommon::GpuChannelTestCommon(
           new TestGpuChannelManagerDelegate(scheduler_.get())) {
   // We need GL bindings to actually initialize command buffers.
   if (use_stub_bindings) {
-    display_ = gl::GLSurfaceTestSupport::InitializeOneOffWithStubBindings();
+    gl::GLSurfaceTestSupport::InitializeOneOffWithStubBindings();
   } else {
-    display_ = gl::GLSurfaceTestSupport::InitializeOneOff();
+    gl::GLSurfaceTestSupport::InitializeOneOff();
   }
 
   GpuFeatureInfo feature_info;
@@ -110,7 +110,7 @@ GpuChannelTestCommon::~GpuChannelTestCommon() {
   // Command buffers can post tasks and run GL in destruction so do this first.
   channel_manager_ = nullptr;
   task_environment_.RunUntilIdle();
-  gl::GLSurfaceTestSupport::ShutdownGL(display_);
+  gl::init::ShutdownGL(false);
 }
 
 GpuChannel* GpuChannelTestCommon::CreateChannel(int32_t client_id,

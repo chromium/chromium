@@ -11,7 +11,6 @@
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gpu_preference.h"
 
@@ -38,8 +37,7 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
       const gl::GLImplementationParts& implementation) = 0;
 
   // Performs any one off initialization for GL implementation.
-  virtual gl::GLDisplay* InitializeGLOneOffPlatform(
-      uint64_t system_device_id) = 0;
+  virtual bool InitializeGLOneOffPlatform() = 0;
 
   // Disables the specified extensions in the window system bindings,
   // e.g., GLX, EGL, etc. This is part of the GPU driver bug workarounds
@@ -50,11 +48,10 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
   // Initializes extension related settings for window system bindings that
   // will be affected by SetDisabledExtensionsPlatform(). This function is
   // called after SetDisabledExtensionsPlatform() to finalize the bindings.
-  virtual bool InitializeExtensionSettingsOneOffPlatform(
-      gl::GLDisplay* display) = 0;
+  virtual bool InitializeExtensionSettingsOneOffPlatform() = 0;
 
   // Clears static GL bindings.
-  virtual void ShutdownGL(gl::GLDisplay* display) = 0;
+  virtual void ShutdownGL() = 0;
 
   // Returns information about the GL window system binding implementation (eg.
   // EGL, GLX, WGL). Returns true if the information was retrieved successfully.

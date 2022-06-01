@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/native_library.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_display_manager.h"
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -77,20 +76,18 @@ bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
 
 }  // namespace
 
-GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) {
+bool InitializeGLOneOffPlatform(uint64_t system_device_id) {
   switch (GetGLImplementation()) {
     case kGLImplementationEGLGLES2:
-    case kGLImplementationEGLANGLE: {
-      GLDisplay* display = GLSurfaceEGL::InitializeOneOff(
-          EGLDisplayPlatform(EGL_DEFAULT_DISPLAY), system_device_id);
-      if (!display) {
+    case kGLImplementationEGLANGLE:
+      if (!GLSurfaceEGL::InitializeOneOff(
+              EGLDisplayPlatform(EGL_DEFAULT_DISPLAY), system_device_id)) {
         LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
-        return nullptr;
+        return false;
       }
-      return display;
-    }
+      return true;
     default:
-      return GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
+      return true;
   }
 }
 
@@ -116,8 +113,8 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
   return false;
 }
 
-void ShutdownGLPlatform(GLDisplay* display) {
-  GLSurfaceEGL::ShutdownOneOff(static_cast<GLDisplayEGL*>(display));
+void ShutdownGLPlatform() {
+  GLSurfaceEGL::ShutdownOneOff();
   ClearBindingsEGL();
   ClearBindingsGL();
 }

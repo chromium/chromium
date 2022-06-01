@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_display_manager.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface.h"
 
@@ -20,20 +19,20 @@
 namespace gl {
 namespace init {
 
-GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) {
+bool InitializeGLOneOffPlatform(uint64_t) {
   if (HasGLOzone()) {
     gl::GLDisplayEglUtil::SetInstance(gl::GLDisplayEglUtilOzone::GetInstance());
-    return GetGLOzone()->InitializeGLOneOffPlatform(system_device_id);
+    return GetGLOzone()->InitializeGLOneOffPlatform();
   }
 
   switch (GetGLImplementation()) {
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
-      return GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
+      return true;
     default:
       NOTREACHED();
   }
-  return nullptr;
+  return false;
 }
 
 bool InitializeStaticGLBindings(GLImplementationParts implementation) {
@@ -59,9 +58,9 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
   return false;
 }
 
-void ShutdownGLPlatform(GLDisplay* display) {
+void ShutdownGLPlatform() {
   if (HasGLOzone()) {
-    GetGLOzone()->ShutdownGL(display);
+    GetGLOzone()->ShutdownGL();
     return;
   }
 

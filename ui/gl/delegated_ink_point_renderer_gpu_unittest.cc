@@ -97,8 +97,8 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
  protected:
   void SetUp() override {
     // Without this, the following check always fails.
-    display_ = gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
-                                                        /*system_device_id=*/0);
+    gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
+                                             /*system_device_id=*/0);
     if (!gl::DirectCompositionSurfaceWin::GetDirectCompositionDevice()) {
       LOG(WARNING)
           << "GL implementation not using DirectComposition, skipping test.";
@@ -124,7 +124,7 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
     context_ = nullptr;
     if (surface_)
       DestroySurface(std::move(surface_));
-    gl::init::ShutdownGL(display_, false);
+    gl::init::ShutdownGL(false);
   }
 
  private:
@@ -164,7 +164,6 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
   HWND parent_window_;
   scoped_refptr<DirectCompositionSurfaceWin> surface_;
   scoped_refptr<GLContext> context_;
-  GLDisplay* display_ = nullptr;
 
   // Used as a reference when making DelegatedInkMetadatas based on previously
   // sent points.

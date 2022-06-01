@@ -410,7 +410,7 @@ DirectCompositionSurfaceWin::~DirectCompositionSurfaceWin() {
 }
 
 // static
-void DirectCompositionSurfaceWin::InitializeOneOff(GLDisplayEGL* display) {
+void DirectCompositionSurfaceWin::InitializeOneOff() {
   DCHECK(!g_dcomp_device);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -431,7 +431,7 @@ void DirectCompositionSurfaceWin::InitializeOneOff(GLDisplayEGL* display) {
 
   // EGL_KHR_no_config_context surface compatibility is required to be able to
   // MakeCurrent with the default pbuffer surface.
-  if (!display->IsEGLNoConfigContextSupported()) {
+  if (!GLSurfaceEGL::GetGLDisplayEGL()->IsEGLNoConfigContextSupported()) {
     DLOG(ERROR) << "EGL_KHR_no_config_context not supported";
     return;
   }

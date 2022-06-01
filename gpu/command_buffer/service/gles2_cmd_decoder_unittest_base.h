@@ -42,7 +42,6 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/gl_version_info.h"
@@ -703,7 +702,6 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
   std::unique_ptr<MockGLES2Decoder> mock_decoder_;
   std::unique_ptr<GLES2Decoder> decoder_;
   std::unique_ptr<MemoryTracker> memory_tracker_;
-  gl::GLDisplay* display_ = nullptr;
 
   bool surface_supports_draw_rectangle_ = false;
 
@@ -1037,7 +1035,6 @@ class GLES2DecoderPassthroughTestBase : public testing::Test,
   TraceOutputter outputter_;
   std::unique_ptr<GLES2DecoderPassthroughImpl> decoder_;
   scoped_refptr<ContextGroup> group_;
-  gl::GLDisplay* display_ = nullptr;
 };
 
 }  // namespace gles2

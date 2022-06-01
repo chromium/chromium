@@ -185,6 +185,8 @@ using ui::PlatformEvent;
 
 namespace gl {
 
+bool GLSurfaceEGL::initialized_ = false;
+
 namespace {
 
 class EGLGpuSwitchingObserver;
@@ -992,39 +994,35 @@ GLDisplayEGL* GLSurfaceEGL::GetGLDisplayEGL() {
 }
 
 // static
-GLDisplayEGL* GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform native_display,
-                                             uint64_t system_device_id) {
-  GLDisplayEGL* display =
-      GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
-  if (display->GetDisplay() == EGL_NO_DISPLAY) {
-    // Must be called before InitializeDisplay().
-    g_driver_egl.InitializeClientExtensionBindings();
+bool GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform native_display,
+                                    uint64_t system_device_id) {
+  if (initialized_)
+    return true;
 
-    display = InitializeDisplay(native_display, system_device_id);
-    if (display->GetDisplay() == EGL_NO_DISPLAY)
-      return nullptr;
+  // Must be called before InitializeDisplay().
+  g_driver_egl.InitializeClientExtensionBindings();
 
-    // Must be called after InitializeDisplay().
-    g_driver_egl.InitializeExtensionBindings();
+  GLDisplayEGL* display = InitializeDisplay(native_display, system_device_id);
+  if (display->GetDisplay() == EGL_NO_DISPLAY)
+    return false;
 
-    InitializeOneOffCommon(display);
-  }
-  return display;
+  // Must be called after InitializeDisplay().
+  g_driver_egl.InitializeExtensionBindings();
+
+  return InitializeOneOffCommon(display);
 }
 
 // static
-GLDisplayEGL* GLSurfaceEGL::InitializeOneOffForTesting() {
+bool GLSurfaceEGL::InitializeOneOffForTesting() {
   g_driver_egl.InitializeClientExtensionBindings();
-  GLDisplayEGL* display =
-      GLDisplayManagerEGL::GetInstance()->GetDisplay(GpuPreference::kDefault);
+  GLDisplayEGL* display = GetGLDisplayEGL();
   display->SetDisplay(eglGetCurrentDisplay());
   g_driver_egl.InitializeExtensionBindings();
-  InitializeOneOffCommon(display);
-  return display;
+  return InitializeOneOffCommon(display);
 }
 
 // static
-void GLSurfaceEGL::InitializeOneOffCommon(GLDisplayEGL* display) {
+bool GLSurfaceEGL::InitializeOneOffCommon(GLDisplayEGL* display) {
   display->egl_client_extensions =
       eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);
   display->egl_extensions =
@@ -1163,25 +1161,27 @@ void GLSurfaceEGL::InitializeOneOffCommon(GLDisplayEGL* display) {
     ui::GpuSwitchingManager::GetInstance()->AddObserver(
         g_egl_gpu_switching_observer);
   }
+
+  initialized_ = true;
+  return true;
 }
 
 // static
-bool GLSurfaceEGL::InitializeExtensionSettingsOneOff(GLDisplayEGL* display) {
-  DCHECK(display);
-  if (display->GetDisplay() == EGL_NO_DISPLAY)
+bool GLSurfaceEGL::InitializeExtensionSettingsOneOff() {
+  if (!initialized_)
     return false;
   g_driver_egl.UpdateConditionalExtensionBindings();
-  display->egl_client_extensions =
+  GetGLDisplayEGL()->egl_client_extensions =
       eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);
-  display->egl_extensions =
-      eglQueryString(display->GetDisplay(), EGL_EXTENSIONS);
+  GetGLDisplayEGL()->egl_extensions =
+      eglQueryString(GetGLDisplayEGL()->GetDisplay(), EGL_EXTENSIONS);
 
   return true;
 }
 
 // static
-void GLSurfaceEGL::ShutdownOneOff(GLDisplayEGL* display) {
-  if (!display || display->GetDisplay() == EGL_NO_DISPLAY) {
+void GLSurfaceEGL::ShutdownOneOff() {
+  if (!initialized_) {
     return;
   }
 
@@ -1191,10 +1191,13 @@ void GLSurfaceEGL::ShutdownOneOff(GLDisplayEGL* display) {
     delete g_egl_gpu_switching_observer;
     g_egl_gpu_switching_observer = nullptr;
   }
+  GLDisplayEGL* display = GetGLDisplayEGL();
   angle::ResetPlatform(display->GetDisplay());
-  DCHECK(g_driver_egl.fn.eglTerminateFn);
-  eglTerminate(display->GetDisplay());
-  display->SetDisplay(EGL_NO_DISPLAY);
+  if (display->GetDisplay() != EGL_NO_DISPLAY) {
+    DCHECK(g_driver_egl.fn.eglTerminateFn);
+    eglTerminate(display->GetDisplay());
+    display->SetDisplay(EGL_NO_DISPLAY);
+  }
 
   display->egl_client_extensions = nullptr;
   display->egl_extensions = nullptr;
@@ -1211,6 +1214,8 @@ void GLSurfaceEGL::ShutdownOneOff(GLDisplayEGL* display) {
   display->egl_display_texture_share_group_supported = false;
   display->egl_create_context_client_arrays_supported = false;
   display->egl_angle_feature_control_supported = false;
+
+  initialized_ = false;
 }
 
 GLSurfaceEGL::~GLSurfaceEGL() = default;
@@ -1220,8 +1225,7 @@ GLSurfaceEGL::~GLSurfaceEGL() = default;
 // static
 GLDisplayEGL* GLSurfaceEGL::InitializeDisplay(EGLDisplayPlatform native_display,
                                               uint64_t system_device_id) {
-  GLDisplayEGL* gl_display =
-      GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
+  GLDisplayEGL* gl_display = GetGLDisplayEGL();
   if (gl_display->GetDisplay() != EGL_NO_DISPLAY) {
     return gl_display;
   }
@@ -1308,17 +1312,17 @@ GLDisplayEGL* GLSurfaceEGL::InitializeDisplay(EGLDisplayPlatform native_display,
 
   for (size_t disp_index = 0; disp_index < init_displays.size(); ++disp_index) {
     DisplayType display_type = init_displays[disp_index];
-    EGLDisplay egl_display = GetDisplayFromType(
+    EGLDisplay display = GetDisplayFromType(
         display_type, gl_display, enabled_angle_features,
         disabled_angle_features, disable_all_angle_features, system_device_id);
-    if (egl_display == EGL_NO_DISPLAY) {
+    if (display == EGL_NO_DISPLAY) {
       LOG(ERROR) << "EGL display query failed with error "
                  << GetLastEGLErrorString();
     }
 
     // Init ANGLE platform now that we have the global display.
     if (supports_angle) {
-      if (!angle::InitializePlatform(egl_display)) {
+      if (!angle::InitializePlatform(display)) {
         LOG(ERROR) << "ANGLE Platform initialization failed.";
       }
 
@@ -1334,7 +1338,7 @@ GLDisplayEGL* GLSurfaceEGL::InitializeDisplay(EGLDisplayPlatform native_display,
                           ->MaybeGetScopedDisplayUnsetForVulkan();
     }
 
-    if (!eglInitialize(egl_display, nullptr, nullptr)) {
+    if (!eglInitialize(display, nullptr, nullptr)) {
       bool is_last = disp_index == init_displays.size() - 1;
 
       LOG(ERROR) << "eglInitialize " << DisplayTypeString(display_type)
@@ -1357,7 +1361,7 @@ GLDisplayEGL* GLSurfaceEGL::InitializeDisplay(EGLDisplayPlatform native_display,
 
     UMA_HISTOGRAM_ENUMERATION("GPU.EGLDisplayType", display_type,
                               DISPLAY_TYPE_MAX);
-    gl_display->SetDisplay(egl_display);
+    gl_display->SetDisplay(display);
     gl_display->display_type = display_type;
     break;
   }
@@ -1388,7 +1392,7 @@ bool NativeViewGLSurfaceEGL::Initialize(GLSurfaceFormat format) {
   DCHECK(!surface_);
   format_ = format;
 
-  if (display_->GetDisplay() == EGL_NO_DISPLAY) {
+  if (!display_->GetDisplay()) {
     LOG(ERROR) << "Trying to create surface with invalid display.";
     return false;
   }

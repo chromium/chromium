@@ -16,7 +16,6 @@
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_display.h"
 
 namespace base {
 namespace trace_event {
@@ -68,7 +67,6 @@ class GpuChannelTestCommon : public testing::Test {
   std::unique_ptr<Scheduler> scheduler_;
   std::unique_ptr<TestGpuChannelManagerDelegate> channel_manager_delegate_;
   std::unique_ptr<GpuChannelManager> channel_manager_;
-  gl::GLDisplay* display_ = nullptr;
 };
 
 }  // namespace gpu

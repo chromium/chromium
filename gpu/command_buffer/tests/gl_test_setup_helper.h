@@ -7,7 +7,6 @@
 
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_display.h"
 
 namespace gpu {
 
@@ -27,7 +26,6 @@ class GLTestSetupHelper : public testing::EmptyTestEventListener {
 
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
-  gl::GLDisplay* display_ = nullptr;
 };
 
 }  // namespace gpu

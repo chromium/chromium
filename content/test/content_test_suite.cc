@@ -63,12 +63,11 @@ void ContentTestSuite::Initialize() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool is_child_process = command_line->HasSwitch(switches::kTestChildProcess);
   if (!is_child_process) {
-    gl::GLDisplay* display =
-        gl::GLSurfaceTestSupport::InitializeNoExtensionsOneOff();
+    gl::GLSurfaceTestSupport::InitializeNoExtensionsOneOff();
     auto* gpu_feature_info = gpu::GetTestGpuThreadHolder()->GetGpuFeatureInfo();
     gl::init::SetDisabledExtensionsPlatform(
         gpu_feature_info->disabled_extensions);
-    gl::init::InitializeExtensionSettingsOneOffPlatform(display);
+    gl::init::InitializeExtensionSettingsOneOffPlatform();
   }
 
   RegisterContentWebUIConfigs();

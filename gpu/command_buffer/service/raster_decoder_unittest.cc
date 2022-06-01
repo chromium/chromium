@@ -198,7 +198,7 @@ TEST_P(RasterDecoderManualInitTest, GetCapabilitiesNorm16) {
 class RasterDecoderOOPTest : public testing::Test, DecoderClient {
  public:
   void SetUp() override {
-    display_ = gl::GLSurfaceTestSupport::InitializeOneOff();
+    gl::GLSurfaceTestSupport::InitializeOneOff();
     gpu::GpuDriverBugWorkarounds workarounds;
 
     scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
@@ -252,7 +252,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
 
     context_state_.reset();
     context_state_ = nullptr;
-    gl::GLSurfaceTestSupport::ShutdownGL(display_);
+    gl::init::ShutdownGL(false);
   }
 
   RasterDecoderOOPTest() : memory_tracker_(nullptr) {
@@ -368,7 +368,6 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
   SharedImageManager shared_image_manager_;
   gles2::MailboxManagerImpl mailbox_manager_;
-  gl::GLDisplay* display_ = nullptr;
 };
 
 TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DSizeMismatch) {

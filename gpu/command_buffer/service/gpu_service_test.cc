@@ -29,7 +29,7 @@ void GpuServiceTest::SetUpWithGLVersion(const char* gl_version,
   testing::Test::SetUp();
 
   gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
-  display_ = gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
+  gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
   gl_ = std::make_unique<::testing::StrictMock<::gl::MockGLInterface>>();
   ::gl::MockGLInterface::SetGLInterface(gl_.get());
 
@@ -51,7 +51,7 @@ void GpuServiceTest::TearDown() {
   surface_ = nullptr;
   ::gl::MockGLInterface::SetGLInterface(nullptr);
   gl_.reset();
-  gl::GLSurfaceTestSupport::ShutdownGL(display_);
+  gl::init::ShutdownGL(false);
   ran_teardown_ = true;
 
   testing::Test::TearDown();
