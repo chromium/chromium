@@ -101,7 +101,7 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl
       PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
       VideoPixelFormat pixel_format,
       OverlayMode overlay_mode,
-      const absl::optional<VideoFrameMetadata::CopyMode>& copy_mode,
+      bool video_frame_copy_required,
       scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
       std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer,
       FrameInfoHelper::FrameInfo frame_info,
@@ -122,8 +122,8 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl
 
   OverlayMode overlay_mode_ = OverlayMode::kDontRequestPromotionHints;
 
-  // Indicates how video frame needs to be copied when required.
-  absl::optional<VideoFrameMetadata::CopyMode> copy_mode_;
+  // Is the video frame copy required?
+  bool video_frame_copy_required_ = false;
 
   // Current group that new CodecImages should belong to.  Do not use this on
   // our thread; everything must be posted to the gpu main thread, including

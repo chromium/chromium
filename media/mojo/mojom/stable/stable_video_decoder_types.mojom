@@ -425,7 +425,7 @@ struct GpuMemoryBufferVideoFrameData {
 };
 
 // Based on |media.mojom.VideoFrameMetadata| but does not depend on
-// |media.mojom.VideoTransformation| or |media.mojom.CopyMode|.
+// |media.mojom.VideoTransformation|.
 // Next min field ID: 6
 [Stable]
 struct VideoFrameMetadata {

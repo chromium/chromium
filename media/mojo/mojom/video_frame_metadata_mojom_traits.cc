@@ -37,6 +37,7 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
 
   // bool.
   output->allow_overlay = input.allow_overlay();
+  output->copy_required = input.copy_required();
   output->end_of_stream = input.end_of_stream();
   output->texture_owner = input.texture_owner();
   output->wants_promotion_hint = input.wants_promotion_hint();
@@ -59,13 +60,6 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
 
   READ_AND_ASSIGN_OPT(media::VideoTransformation, transformation,
                       Transformation);
-
-  if (input.has_copy_mode()) {
-    media::VideoFrameMetadata::CopyMode copy_mode;
-    if (!input.ReadCopyMode(&copy_mode))
-      return false;
-    output->copy_mode = copy_mode;
-  }
 
   READ_AND_ASSIGN_OPT(base::UnguessableToken, overlay_plane_id, OverlayPlaneId);
 

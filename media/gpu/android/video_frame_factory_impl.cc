@@ -34,22 +34,6 @@
 namespace media {
 namespace {
 
-// The frames must be copied when threaded texture mailboxes are in use
-// (http://crbug.com/582170). This texture copy can be avoided if
-// AImageReader/AHardwareBuffer is supported and AImageReader
-// max size is not limited to 1 (crbug.com/1091945).
-absl::optional<VideoFrameMetadata::CopyMode> GetVideoFrameCopyMode(
-    bool enable_threaded_texture_mailboxes) {
-  if (!enable_threaded_texture_mailboxes)
-    return absl::nullopt;
-
-  // If we can run thread-safe, we don't need to copy.
-  if (features::NeedThreadSafeAndroidMedia())
-    return absl::nullopt;
-
-  return VideoFrameMetadata::CopyMode::kCopyToNewTexture;
-}
-
 gpu::TextureOwner::Mode GetTextureOwnerMode(
     VideoFrameFactory::OverlayMode overlay_mode) {
   switch (overlay_mode) {
@@ -102,13 +86,11 @@ VideoFrameFactoryImpl::VideoFrameFactoryImpl(
     : gpu::RefCountedLockHelperDrDc(std::move(drdc_lock)),
       image_provider_(std::move(image_provider)),
       gpu_task_runner_(std::move(gpu_task_runner)),
-      copy_mode_(GetVideoFrameCopyMode(
-          gpu_preferences.enable_threaded_texture_mailboxes)),
+      video_frame_copy_required_(
+          gpu_preferences.enable_threaded_texture_mailboxes &&
+          !features::NeedThreadSafeAndroidMedia()),
       mre_manager_(std::move(mre_manager)),
-      frame_info_helper_(std::move(frame_info_helper)) {
-  DCHECK(!copy_mode_.has_value() ||
-         *copy_mode_ != VideoFrameMetadata::CopyMode::kCopyMailboxesOnly);
-}
+      frame_info_helper_(std::move(frame_info_helper)) {}
 
 VideoFrameFactoryImpl::~VideoFrameFactoryImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -190,11 +172,12 @@ void VideoFrameFactoryImpl::CreateVideoFrame(
     return;
   }
 
-  auto image_ready_cb = base::BindOnce(
-      &VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady,
-      weak_factory_.GetWeakPtr(), std::move(output_cb), timestamp, natural_size,
-      !!codec_buffer_wait_coordinator_, std::move(promotion_hint_cb),
-      pixel_format, overlay_mode_, copy_mode_, gpu_task_runner_);
+  auto image_ready_cb =
+      base::BindOnce(&VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady,
+                     weak_factory_.GetWeakPtr(), std::move(output_cb),
+                     timestamp, natural_size, !!codec_buffer_wait_coordinator_,
+                     std::move(promotion_hint_cb), pixel_format, overlay_mode_,
+                     video_frame_copy_required_, gpu_task_runner_);
 
   RequestImage(std::move(output_buffer_renderer), std::move(image_ready_cb));
 }
@@ -251,7 +234,7 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
     PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
     VideoPixelFormat pixel_format,
     OverlayMode overlay_mode,
-    const absl::optional<VideoFrameMetadata::CopyMode>& copy_mode,
+    bool video_frame_copy_required,
     scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
     std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer,
     FrameInfoHelper::FrameInfo frame_info,
@@ -302,7 +285,9 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
     std::move(output_cb).Run(nullptr);
     return;
   }
-  frame->metadata().copy_mode = copy_mode;
+
+  frame->metadata().copy_required = video_frame_copy_required;
+
   const bool is_surface_control =
       overlay_mode == OverlayMode::kSurfaceControlSecure ||
       overlay_mode == OverlayMode::kSurfaceControlInsecure;

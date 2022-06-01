@@ -76,12 +76,6 @@ enum VideoRotation {
   kVideoRotation270,
 };
 
-// see media/base/video_frame_metadata.h for descriptions.
-enum CopyMode {
-  kCopyToNewTexture,
-  kCopyMailboxesOnly,
-};
-
 // see third_party/blink/public/platform/web_fullscreen_video_status.h for
 // descriptions.
 [Native]
@@ -311,8 +305,7 @@ struct VideoFrameMetadata {
   gfx.mojom.Rect? region_capture_rect;
   uint32 crop_version;
 
-  bool has_copy_mode;
-  CopyMode copy_mode;
+  bool copy_required;
 
   bool end_of_stream;
 
