@@ -54685,6 +54685,7 @@ from previous Chrome versions.
   <int value="-2073402331"
       label="BrokerFileOperationsOnDiskCacheInNetworkService:disabled"/>
   <int value="-2072471036" label="OobeHidDetectionRevamp:disabled"/>
+  <int value="-2072181147" label="WebContentsCaptureHiDPI:enabled"/>
   <int value="-2071515296" label="allow-sync-xhr-in-page-dismissal"/>
   <int value="-2071202821" label="CopyLinkToText:enabled"/>
   <int value="-2068490665" label="PasswordChange:enabled"/>
@@ -59356,6 +59357,7 @@ from previous Chrome versions.
   <int value="981818901" label="AppBanners:enabled"/>
   <int value="982032277" label="NTPOfflineBadge:disabled"/>
   <int value="982511393" label="NTPArticleSuggestions:disabled"/>
+  <int value="982932009" label="WebContentsCaptureHiDPI:disabled"/>
   <int value="983084316" label="SyncUSSNigori:disabled"/>
   <int value="983311394" label="tab-management-experiment-type"/>
   <int value="985127848"

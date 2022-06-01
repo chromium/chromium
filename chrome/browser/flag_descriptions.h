@@ -1581,6 +1581,9 @@ extern const char kWebBluetoothNewPermissionsBackendDescription[];
 extern const char kWebBundlesName[];
 extern const char kWebBundlesDescription[];
 
+extern const char kWebContentsCaptureHiDpiName[];
+extern const char kWebContentsCaptureHiDpiDescription[];
+
 extern const char kWebMidiName[];
 extern const char kWebMidiDescription[];
 

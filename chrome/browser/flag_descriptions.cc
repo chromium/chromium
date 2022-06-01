@@ -2821,6 +2821,12 @@ const char kWebBundlesDescription[] =
     "Enables experimental supports for Web Bundles (Bundled HTTP Exchanges) "
     "navigation.";
 
+const char kWebContentsCaptureHiDpiName[] = "HiDPI Tab Capture";
+const char kWebContentsCaptureHiDpiDescription[] =
+    "Enables HiDPI rendering for tab capture if the displayed content's "
+    "resolution is low compared to the capture size. This improves "
+    "legibility for viewers with higher-resolution screens.";
+
 const char kWebMidiName[] = "Web MIDI";
 const char kWebMidiDescription[] =
     "Enables the implementation of the Web MIDI API. When disabled the "

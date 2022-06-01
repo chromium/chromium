@@ -3552,6 +3552,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "hidpi-capture",
+    "owners": [ "//content/browser/media/capture/OWNERS" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "history-journeys",
     "owners": [ "tommycli", "chrome-journeys@google.com" ],
     "expiry_milestone": 110
