@@ -165,8 +165,8 @@ MockFeedback = class {
     Array.prototype.forEach.call(arguments, function(text) {
       this.pendingActions_.push({
         perform: function() {
-          return !!MockFeedback.matchAndConsume_(
-              text, {}, this.pendingUtterances_);
+          return Boolean(
+              MockFeedback.matchAndConsume_(text, {}, this.pendingUtterances_));
         }.bind(this),
         toString() {
           return 'Speak \'' + text + '\'';
@@ -239,8 +239,8 @@ MockFeedback = class {
     Array.prototype.forEach.call(rest, function(text) {
       this.pendingActions_.push({
         perform: function() {
-          return !!MockFeedback.matchAndConsume_(
-              text, expectedProps, this.pendingUtterances_);
+          return Boolean(MockFeedback.matchAndConsume_(
+              text, expectedProps, this.pendingUtterances_));
         }.bind(this),
         toString() {
           return 'Speak \'' + text + '\' with props ' +
@@ -305,7 +305,7 @@ MockFeedback = class {
         if (match) {
           this.lastMatchedBraille_ = match;
         }
-        return !!match;
+        return Boolean(match);
       }.bind(this),
       toString() {
         return 'Braille \'' + text + '\' ' + JSON.stringify(props);
@@ -326,7 +326,7 @@ MockFeedback = class {
       perform: function() {
         const match =
             MockFeedback.matchAndConsume_(earconName, {}, this.pendingEarcons_);
-        return !!match;
+        return Boolean(match);
       }.bind(this),
       toString() {
         return 'Earcon \'' + earconName + '\'';

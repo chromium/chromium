@@ -180,9 +180,9 @@ Output = class {
 
       // These attributes default to false for empty strings.
       case 'roleDescription':
-        return !!node.roleDescription;
+        return Boolean(node.roleDescription);
       case 'value':
-        return !!node.value;
+        return Boolean(node.value);
       case 'selected':
         return node.selected === true;
       default:
@@ -1829,7 +1829,7 @@ Output = class {
     }
 
     const info = new OutputAncestryInfo(
-        node, prevNode, !!optionalArgs.suppressStartEndAncestry);
+        node, prevNode, Boolean(optionalArgs.suppressStartEndAncestry));
 
     // Enter, leave ancestry.
     this.ancestryHelper_({
@@ -2347,7 +2347,7 @@ Output = class {
     }
     if (uniqueAncestors.find(
             /** @type {function(?) : boolean} */ (function(n) {
-              return !!n.details;
+              return Boolean(n.details);
             }))) {
       ret.push({msgId: 'hint_details'});
     }

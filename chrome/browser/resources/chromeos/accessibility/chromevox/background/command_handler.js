@@ -37,7 +37,7 @@ export class CommandHandler extends CommandHandlerInterface {
     super();
 
     /** @private {boolean} */
-    this.isIncognito_ = !!chrome.runtime.getManifest()['incognito'];
+    this.isIncognito_ = Boolean(chrome.runtime.getManifest()['incognito']);
 
     /** @private {boolean} */
     this.languageLoggingEnabled_ = false;
@@ -868,7 +868,7 @@ export class CommandHandler extends CommandHandlerInterface {
           // Search for a root window with a title.
           while (target) {
             const isNamedWindow =
-                !!target.name && target.role === RoleType.WINDOW;
+                Boolean(target.name) && target.role === RoleType.WINDOW;
             const isRootView = target.className === 'RootView';
             if (isNamedWindow && !firstWindow) {
               firstWindow = target;

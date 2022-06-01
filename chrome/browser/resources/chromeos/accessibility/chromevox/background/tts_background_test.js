@@ -438,7 +438,7 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'InterjectUtterances', function() {
       [{textString: 'Sorry; busy!', queueMode: QueueMode.INTERJECT}]);
 
   // The above call should have resulted in a setTimeout; call it.
-  assertTrue(!!lastSetTimeoutCallback);
+  assertTrue(Boolean(lastSetTimeoutCallback));
   lastSetTimeoutCallback();
   lastSetTimeoutCallback = undefined;
 
@@ -472,7 +472,7 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'InterjectUtterances', function() {
   ]);
 
   // The above call should have resulted in a setTimeout; call it.
-  assertTrue(!!lastSetTimeoutCallback);
+  assertTrue(Boolean(lastSetTimeoutCallback));
   lastSetTimeoutCallback();
   lastSetTimeoutCallback = undefined;
 
@@ -495,7 +495,7 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'InterjectUtterances', function() {
   tts.speak('Sorry! Gotta go!', QueueMode.INTERJECT, {});
   this.expectUtteranceQueueIsLike(
       [{textString: 'Sorry! Gotta go!', queueMode: QueueMode.INTERJECT}]);
-  assertTrue(!!lastSetTimeoutCallback);
+  assertTrue(Boolean(lastSetTimeoutCallback));
   lastSetTimeoutCallback();
   lastSetTimeoutCallback = undefined;
 
@@ -529,7 +529,7 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Mute', function() {
   tts.toggleSpeechOnOrOff();
 
   // The above call should have resulted in a setTimeout; call it.
-  assertTrue(!!lastSetTimeoutCallback);
+  assertTrue(Boolean(lastSetTimeoutCallback));
   lastSetTimeoutCallback();
   lastSetTimeoutCallback = undefined;
 

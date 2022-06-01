@@ -545,7 +545,7 @@ export class TtsBackground extends ChromeTtsBase {
   /** @override */
   isSpeaking() {
     super.isSpeaking();
-    return !!this.currentUtterance_;
+    return Boolean(this.currentUtterance_);
   }
 
   /** @override */

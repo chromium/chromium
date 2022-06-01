@@ -67,7 +67,7 @@ export class MathHandler {
     } else {
       MathHandler.instance = undefined;
     }
-    return !!MathHandler.instance;
+    return Boolean(MathHandler.instance);
   }
 
   /**

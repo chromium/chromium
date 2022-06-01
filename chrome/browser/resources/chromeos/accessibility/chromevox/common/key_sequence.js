@@ -47,21 +47,21 @@ KeySequence = class {
       originalEvent, opt_cvoxModifier, opt_doubleTap, opt_skipStripping,
       opt_requireStickyMode) {
     /** @type {boolean} */
-    this.doubleTap = !!opt_doubleTap;
+    this.doubleTap = Boolean(opt_doubleTap);
 
     /** @type {boolean} */
-    this.requireStickyMode = !!opt_requireStickyMode;
+    this.requireStickyMode = Boolean(opt_requireStickyMode);
 
     /** @type {boolean} */
-    this.skipStripping = !!opt_skipStripping;
+    this.skipStripping = Boolean(opt_skipStripping);
 
     if (opt_cvoxModifier === undefined) {
       this.cvoxModifier = this.isCVoxModifierActive(originalEvent);
     } else {
       this.cvoxModifier = opt_cvoxModifier;
     }
-    this.stickyMode = !!originalEvent['stickyMode'];
-    this.prefixKey = !!originalEvent['keyPrefix'];
+    this.stickyMode = Boolean(originalEvent['stickyMode']);
+    this.prefixKey = Boolean(originalEvent['keyPrefix']);
 
     if (this.stickyMode && this.prefixKey) {
       throw 'Prefix key and sticky mode cannot both be enabled: ' +

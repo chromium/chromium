@@ -50,7 +50,8 @@ TEST_F('ChromeVoxBrailleTableTest', 'testGetAllAndValidate', function() {
       // Try getting a display name for a non-English language.
       chrome.i18n.getUILanguage = () => 'fr';
       displayName = BrailleTable.getDisplayName(table);
-      assertTrue(!!displayName, 'No display name for table: ' + table.id);
+      assertTrue(
+          Boolean(displayName), 'No display name for table: ' + table.id);
       assertTrue(displayName.length > 0);
 
       // Other languages only use the enDisplayName if they need to disambiguate

@@ -57,7 +57,8 @@ export class SmartStickyMode {
     // Several cases arise which may lead to a sticky mode toggle:
     // The node is either editable itself or a descendant of an editable.
     // The node is a relation target of an editable.
-    const shouldTurnOffStickyMode = !!this.getEditableOrRelatedEditable_(node);
+    const shouldTurnOffStickyMode =
+        Boolean(this.getEditableOrRelatedEditable_(node));
 
     // This toggler should not make any changes when the range isn't what we're
     // lloking for and we haven't previously tracked any sticky mode state from

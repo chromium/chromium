@@ -3555,17 +3555,20 @@ TEST_F(
           .call(clearCurrentRange)
           .call(toggleTalkBack)
           .call(nextObjectKeyboard)
-          .call(() => assertFalse(!!ChromeVoxState.instance.currentRange))
+          .call(
+              () => assertFalse(Boolean(ChromeVoxState.instance.currentRange)))
 
           .call(nextObjectBraille)
-          .call(() => assertFalse(!!ChromeVoxState.instance.currentRange))
+          .call(
+              () => assertFalse(Boolean(ChromeVoxState.instance.currentRange)))
 
           .call(nextObjectGesture)
-          .call(() => assertFalse(!!ChromeVoxState.instance.currentRange))
+          .call(
+              () => assertFalse(Boolean(ChromeVoxState.instance.currentRange)))
 
           .call(toggleTalkBack)
           .call(nextObjectKeyboard)
-          .call(() => assertTrue(!!ChromeVoxState.instance.currentRange))
+          .call(() => assertTrue(Boolean(ChromeVoxState.instance.currentRange)))
 
           .replay();
     });

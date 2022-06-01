@@ -688,7 +688,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
           walker = walker.parent;
         }
 
-        override = !!walker || override;
+        override = Boolean(walker) || override;
       }
 
       // Autofill popup menu items are always announced on selection events,
@@ -807,7 +807,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       this.textEditHandler_ = TextEditHandler.createForNode(target);
     }
 
-    return !!this.textEditHandler_;
+    return Boolean(this.textEditHandler_);
   }
 
   /**

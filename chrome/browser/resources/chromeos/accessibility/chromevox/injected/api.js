@@ -206,7 +206,7 @@ cvox.Api.internalEnable = function() {
  * @return {boolean} True if ChromeVox is currently active.
  */
 cvox.Api.isChromeVoxActive = function() {
-  return !!channel;
+  return Boolean(channel);
 };
 
 /**

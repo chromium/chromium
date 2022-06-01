@@ -230,7 +230,7 @@ export class ChromeVoxEditableTextBase {
    *     if the previous word should be spoken.
    */
   isWordBreakChar(ch) {
-    return !!ch.match(/^\W$/);
+    return Boolean(ch.match(/^\W$/));
   }
 
   /**

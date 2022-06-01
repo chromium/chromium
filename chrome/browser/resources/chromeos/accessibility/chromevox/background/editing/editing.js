@@ -392,9 +392,9 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       return true;
     }
     const exited = AutomationUtil.getUniqueAncestors(next, deep);
-    return !!exited.find(function(item) {
+    return Boolean(exited.find(function(item) {
       return item === this.node_;
-    }.bind(this));
+    }.bind(this)));
   }
 
   /** @override */
@@ -410,9 +410,9 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       return true;
     }
     const exited = AutomationUtil.getUniqueAncestors(next, deep);
-    return !!exited.find(function(item) {
+    return Boolean(exited.find(function(item) {
       return item === this.node_;
-    }.bind(this));
+    }.bind(this)));
   }
 
   /** @override */

@@ -95,7 +95,7 @@ CommandStore.denyOOBE = function(command) {
   if (!CommandStore.CMD_ALLOWLIST[command]) {
     return false;
   }
-  return !!CommandStore.CMD_ALLOWLIST[command].denyOOBE;
+  return Boolean(CommandStore.CMD_ALLOWLIST[command].denyOOBE);
 };
 
 
