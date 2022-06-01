@@ -1967,29 +1967,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PasswordManager.PasswordCheckup.GetIntent.Latency" units="ms"
-    expires_after="M105">
-  <owner>ioanap@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    Records the time(ms) elapsed between asking Google Play Services for the
-    intent used to open the Password Checkup and receiving it. It includes
-    synchronous calls made to get the PasswordCheckupClient. Recorded when the
-    asynchronous call comes back and only on success.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.PasswordCheckup.GetIntent.Success"
-    enum="BooleanSuccess" expires_after="M105">
-  <owner>ioanap@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    Records whether fetching the Password Checkup launch intent from Google Play
-    Services was successful or not. Recorded when the asynchronous call comes
-    back.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.PasswordCheckup.Launch.Success"
     enum="BooleanSuccess" expires_after="2022-11-13">
   <owner>ioanap@chromium.org</owner>
@@ -2027,6 +2004,47 @@ chromium-metrics-reviews@google.com.
     reported. This is recorded either before making the actual request (if the
     preconditions are not met) or after the asynchronous call comes back with an
     error. This is currently only recorded on Android.
+  </summary>
+  <token key="Operation" variants="PasswordCheckupOperation"/>
+</histogram>
+
+<histogram name="PasswordManager.PasswordCheckup.{Operation}.ErrorLatency"
+    units="ms" expires_after="M105">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>maxan@google.com</owner>
+  <summary>
+    Records the time(ms) elapsed between asking Google Play Services to
+    {Operation} and recieving the error response. This is recorded either before
+    making the actual request (if the preconditions are not met) or after the
+    asynchronous call comes back with an error. This is currently only recorded
+    on Android.
+  </summary>
+  <token key="Operation" variants="PasswordCheckupOperation"/>
+</histogram>
+
+<histogram name="PasswordManager.PasswordCheckup.{Operation}.Latency"
+    units="ms" expires_after="M105">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>maxan@google.com</owner>
+  <summary>
+    Records the time(ms) elapsed between asking Google Play Services to
+    {Operation} and recieving the response. It includes synchronous calls made
+    to get the PasswordCheckupClient. Recorded when the asynchronous call comes
+    back and only on success. This is currently only recorded on Android.
+  </summary>
+  <token key="Operation" variants="PasswordCheckupOperation"/>
+</histogram>
+
+<histogram name="PasswordManager.PasswordCheckup.{Operation}.Success"
+    enum="BooleanSuccess" expires_after="M105">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>maxan@google.com</owner>
+  <summary>
+    Records whether attempt to {Operation} using the Google Play Services was
+    successful or not. Recorded when the asynchronous call comes back.
   </summary>
   <token key="Operation" variants="PasswordCheckupOperation"/>
 </histogram>

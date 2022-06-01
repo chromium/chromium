@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import android.os.SystemClock;
+
 import com.google.common.base.Optional;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -12,10 +14,8 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.Passwo
 
 /**
  * Records metrics for an asynchronous job or a series of jobs. The job is expected to have started
- * when the {@link PasswordCheckupClientMetricsRecorder} instance is created. Histograms are
- * recorded in {@link #recordMetrics(Exception) recordMetrics}.
- *
- * TODO(crbug.com/1326151): Report success and latency metrics.
+ * when the {@link PasswordCheckupClientMetricsRecorder} instance is created. Latency is reported
+ * in {@link #recordMetrics(Optional<Exception>) recordMetrics} under that assumption.
  */
 class PasswordCheckupClientMetricsRecorder {
     private static final String PASSWORD_CHECKUP_HISTOGRAM_BASE = "PasswordManager.PasswordCheckup";
@@ -25,20 +25,27 @@ class PasswordCheckupClientMetricsRecorder {
     private static final String GET_PASSWORD_CHECKUP_INTENT_OPERATION_SUFFIX = "GetIntent";
 
     private final @PasswordCheckOperation int mOperation;
+    private final long mStartTimeMs;
 
     PasswordCheckupClientMetricsRecorder(@PasswordCheckOperation int operation) {
         mOperation = operation;
+        mStartTimeMs = SystemClock.elapsedRealtime();
     }
 
     /**
      * Records the metrics depending on {@link Exception} provided.
-     * Error codes are reported for all errors. For GMS errors, API error code is additionally
-     * reported.
+     * Success metric is always reported. Latency is reported separately for
+     * successful and failed operations.
+     * Error codes are reported for failed operations only. For GMS errors, API error code is
+     * additionally reported.
      *
-     * @param exception {@link Exception} instance corresponding to the occurred error
+     * @param exception {@link Optional<Exception>} instance corresponding to the occurred error
      */
     void recordMetrics(Optional<Exception> exception) {
-        // TODO(crbug.com/1326506): Record success and latency metrics.
+        RecordHistogram.recordBooleanHistogram(getHistogramName("Success"), !exception.isPresent());
+        RecordHistogram.recordTimesHistogram(
+                getHistogramName(exception.isPresent() ? "ErrorLatency" : "Latency"),
+                SystemClock.elapsedRealtime() - mStartTimeMs);
         if (exception.isPresent()) {
             recordErrorMetrics(exception.get());
         }

@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,7 +28,7 @@ import java.util.OptionalInt;
  * Tests that metric reporter correctly writes the histograms depending on the operation and error.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class, ShadowSystemClock.class})
 public class PasswordCheckupClientMetricsRecorderTest {
     private static final String PASSWORD_CHECKUP_HISTOGRAM_BASE = "PasswordManager.PasswordCheckup";
 
@@ -52,6 +53,15 @@ public class PasswordCheckupClientMetricsRecorderTest {
     private void checkHistogramsOnSuccess(@PasswordCheckOperation int operation) {
         final String nameWithSuffix =
                 PASSWORD_CHECKUP_HISTOGRAM_BASE + "." + getSuffixForOperation(operation);
+        assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        nameWithSuffix + ".Success", 1));
+        assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        nameWithSuffix + ".Latency", 0));
+        assertEquals(0,
+                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                        nameWithSuffix + ".ErrorLatency"));
         assertEquals(0,
                 ShadowRecordHistogram.getHistogramTotalCountForTesting(nameWithSuffix + ".Error"));
         assertEquals(0,
@@ -63,6 +73,15 @@ public class PasswordCheckupClientMetricsRecorderTest {
             @PasswordCheckOperation int operation, int errorCode, OptionalInt apiErrorCode) {
         final String nameWithSuffix =
                 PASSWORD_CHECKUP_HISTOGRAM_BASE + "." + getSuffixForOperation(operation);
+        assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        nameWithSuffix + ".Success", 0));
+        assertEquals(0,
+                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                        nameWithSuffix + ".Latency"));
+        assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        nameWithSuffix + ".ErrorLatency", 0));
         assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffix + ".Error", errorCode));

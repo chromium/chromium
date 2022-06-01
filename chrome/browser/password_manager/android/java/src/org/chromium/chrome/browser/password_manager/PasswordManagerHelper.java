@@ -85,10 +85,6 @@ public class PasswordManagerHelper {
     private static final String LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.CredentialManager.LocalProfile.Launch.Success";
 
-    private static final String PASSWORD_CHECKUP_GET_INTENT_LATENCY_HISTOGRAM =
-            "PasswordManager.PasswordCheckup.GetIntent.Latency";
-    private static final String PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM =
-            "PasswordManager.PasswordCheckup.GetIntent.Success";
     private static final String PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.PasswordCheckup.Launch.Success";
 
@@ -193,8 +189,13 @@ public class PasswordManagerHelper {
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         PasswordCheckOperation.RUN_PASSWORD_CHECKUP);
-        checkupClient.runPasswordCheckupInBackground(
-                referrer, accountName, successCallback, error -> {
+        checkupClient.runPasswordCheckupInBackground(referrer, accountName,
+                result
+                -> {
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.absent());
+                    successCallback.onResult(result);
+                },
+                error -> {
                     passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
                     failureCallback.onResult(error);
                 });
@@ -217,10 +218,16 @@ public class PasswordManagerHelper {
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT);
-        checkupClient.getBreachedCredentialsCount(referrer, accountName, successCallback, error -> {
-            passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
-            failureCallback.onResult(error);
-        });
+        checkupClient.getBreachedCredentialsCount(referrer, accountName,
+                result
+                -> {
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.absent());
+                    successCallback.onResult(result);
+                },
+                error -> {
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
+                    failureCallback.onResult(error);
+                });
     }
 
     /**
@@ -316,14 +323,15 @@ public class PasswordManagerHelper {
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         (PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT));
-        long startTimeMs = SystemClock.elapsedRealtime();
         checkupClient.getPasswordCheckupIntent(referrer, account,
                 (intent)
-                        -> PasswordManagerHelper.launchPasswordCheckupIntent(
-                                intent, startTimeMs, loadingDialogCoordinator),
+                        -> {
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.absent());
+                    maybeLaunchIntentWithLoadingDialog(loadingDialogCoordinator, intent,
+                            PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
+                            LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM);
+                },
                 (error) -> {
-                    RecordHistogram.recordBooleanHistogram(
-                            PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, false);
                     passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
                     recordLoadingDialogMetrics(LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
                             loadingDialogCoordinator.getState());
@@ -389,17 +397,6 @@ public class PasswordManagerHelper {
                 forAccount ? ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM
                            : LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
                 LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM);
-    }
-
-    private static void launchPasswordCheckupIntent(PendingIntent intent, long startTimeMs,
-            LoadingModalDialogCoordinator loadingDialogCoordinator) {
-        RecordHistogram.recordTimesHistogram(PASSWORD_CHECKUP_GET_INTENT_LATENCY_HISTOGRAM,
-                SystemClock.elapsedRealtime() - startTimeMs);
-        RecordHistogram.recordBooleanHistogram(PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, true);
-
-        maybeLaunchIntentWithLoadingDialog(loadingDialogCoordinator, intent,
-                PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
-                LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM);
     }
 
     private static void recordSuccessMetrics(long elapsedTimeMs, boolean forAccount) {
