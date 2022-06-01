@@ -14,7 +14,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -25,8 +25,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/image_model.h"
@@ -649,8 +647,9 @@ TaskManagerMac::TaskManagerMac()
   table_model_.SetObserver(this);  // Hook up the ui::TableModelObserver.
   table_model_.RetrieveSavedColumnsSettingsAndUpdateTable();
 
-  registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &TaskManagerMac::OnAppTerminating, base::Unretained(this)));
 }
 
 // static
@@ -723,10 +722,7 @@ NSImage* TaskManagerMac::GetImageForRow(int row) {
   return image;
 }
 
-void TaskManagerMac::Observe(int type,
-                             const content::NotificationSource& source,
-                             const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+void TaskManagerMac::OnAppTerminating() {
   Hide();
 }
 
