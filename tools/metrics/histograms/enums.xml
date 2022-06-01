@@ -102505,6 +102505,8 @@ Called by update_scheduler_enums.py.-->
   <int value="3" label="Backed by TPM/GSC bound to PCR"/>
   <int value="4" label="Backed by TPM/GSC not bound to PCR"/>
   <int value="5" label="(Deprecated) Backed by scrypt and TPM/GSC"/>
+  <int value="6" label="Recovery key, backed by TPM/GSC and Mediator Service"/>
+  <int value="7" label="Backed by GSC with elliptic-curve algorithm"/>
 </enum>
 
 <enum name="WrenchMenuAction">
