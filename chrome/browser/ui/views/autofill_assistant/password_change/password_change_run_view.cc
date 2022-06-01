@@ -78,11 +78,23 @@ void PasswordChangeRunView::SetTopIcon(
 }
 
 // TODO(crbug.com/1322419): Implement set methods.
-void PasswordChangeRunView::SetTitle(std::u16string body_title) {}
+void PasswordChangeRunView::SetTitle(const std::u16string& body_title) {}
+
 void PasswordChangeRunView::SetDescription(
-    std::u16string progress_description) {}
+    const std::u16string& progress_description) {}
+
 void PasswordChangeRunView::SetProgressBarStep(
     autofill_assistant::password_change::ProgressStep progress_step) {}
+
+void PasswordChangeRunView::ShowBasePrompt(
+    const std::vector<std::string>& options) {
+  controller_->OnBasePromptOptionSelected(0);
+}
+
+void PasswordChangeRunView::ShowSuggestedPasswordPrompt(
+    const std::u16string& suggested_password) {
+  controller_->OnSuggestedPasswordSelected(true);
+}
 
 void PasswordChangeRunView::OnControllerGone() {
   Close();

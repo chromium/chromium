@@ -41,11 +41,17 @@ class ApcExternalActionDelegate
   // PasswordChangeRunController
   void SetTopIcon(
       autofill_assistant::password_change::TopIcon top_icon) override;
-  void SetTitle(std::u16string title) override;
-  void SetDescription(std::u16string description) override;
+  void SetTitle(const std::u16string& title) override;
+  void SetDescription(const std::u16string& description) override;
   void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep progress_step) override;
   base::WeakPtr<PasswordChangeRunController> GetWeakPtr() override;
+  void ShowBasePrompt(const autofill_assistant::password_change::BasePrompt&
+                          base_prompt) override;
+  void OnBasePromptOptionSelected(int option_index) override;
+  void ShowSuggestedPasswordPrompt(
+      const std::u16string& suggested_password) override;
+  void OnSuggestedPasswordSelected(bool selected) override;
 
  private:
   // PasswordChangeRunController

@@ -32,10 +32,13 @@ class PasswordChangeRunDisplay {
   // sibling view methods.
   virtual void SetTopIcon(
       autofill_assistant::password_change::TopIcon top_icon) = 0;
-  virtual void SetTitle(std::u16string title) = 0;
-  virtual void SetDescription(std::u16string progress_description) = 0;
+  virtual void SetTitle(const std::u16string& title) = 0;
+  virtual void SetDescription(const std::u16string& progress_description) = 0;
   virtual void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep progress_step) = 0;
+  virtual void ShowBasePrompt(const std::vector<std::string>& options) = 0;
+  virtual void ShowSuggestedPasswordPrompt(
+      const std::u16string& suggested_password) = 0;
 
   // TODO(crbug.com/1322419): Configure prompts
 

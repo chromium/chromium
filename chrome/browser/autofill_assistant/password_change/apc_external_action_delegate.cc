@@ -54,13 +54,14 @@ void ApcExternalActionDelegate::SetTopIcon(
   password_change_run_display_->SetTopIcon(top_icon);
 }
 
-void ApcExternalActionDelegate::SetTitle(std::u16string title) {
+void ApcExternalActionDelegate::SetTitle(const std::u16string& title) {
   DCHECK(password_change_run_display_);
   model_.title = title;
   password_change_run_display_->SetTitle(title);
 }
 
-void ApcExternalActionDelegate::SetDescription(std::u16string description) {
+void ApcExternalActionDelegate::SetDescription(
+    const std::u16string& description) {
   DCHECK(password_change_run_display_);
   model_.description = description;
   password_change_run_display_->SetDescription(description);
@@ -72,6 +73,16 @@ void ApcExternalActionDelegate::SetProgressBarStep(
   model_.progress_step = progress_step;
   password_change_run_display_->SetProgressBarStep(progress_step);
 }
+
+void ApcExternalActionDelegate::ShowBasePrompt(
+    const autofill_assistant::password_change::BasePrompt& base_prompt) {}
+
+void ApcExternalActionDelegate::OnBasePromptOptionSelected(int option_index) {}
+
+void ApcExternalActionDelegate::ShowSuggestedPasswordPrompt(
+    const std::u16string& suggested_password) {}
+
+void ApcExternalActionDelegate::OnSuggestedPasswordSelected(bool selected) {}
 
 base::WeakPtr<PasswordChangeRunController>
 ApcExternalActionDelegate::GetWeakPtr() {

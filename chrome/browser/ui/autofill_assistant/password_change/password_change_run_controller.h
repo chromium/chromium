@@ -40,10 +40,16 @@ class PasswordChangeRunController {
   // sibling view methods.
   virtual void SetTopIcon(
       autofill_assistant::password_change::TopIcon top_icon) = 0;
-  virtual void SetTitle(std::u16string title) = 0;
-  virtual void SetDescription(std::u16string description) = 0;
+  virtual void SetTitle(const std::u16string& title) = 0;
+  virtual void SetDescription(const std::u16string& description) = 0;
   virtual void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep progress_step) = 0;
+  virtual void ShowBasePrompt(
+      const autofill_assistant::password_change::BasePrompt& base_prompt) = 0;
+  virtual void OnBasePromptOptionSelected(int option_index) = 0;
+  virtual void ShowSuggestedPasswordPrompt(
+      const std::u16string& suggested_password) = 0;
+  virtual void OnSuggestedPasswordSelected(bool selected) = 0;
 
   // Returns a weak pointer to this controller.
   virtual base::WeakPtr<PasswordChangeRunController> GetWeakPtr() = 0;

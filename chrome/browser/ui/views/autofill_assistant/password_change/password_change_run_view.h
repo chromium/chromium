@@ -37,10 +37,13 @@ class PasswordChangeRunView : public views::View,
   void Show() override;
   void SetTopIcon(
       autofill_assistant::password_change::TopIcon top_icon) override;
-  void SetTitle(std::u16string title) override;
-  void SetDescription(std::u16string progress_description) override;
+  void SetTitle(const std::u16string& title) override;
+  void SetDescription(const std::u16string& progress_description) override;
   void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep progress_step) override;
+  void ShowBasePrompt(const std::vector<std::string>& options) override;
+  void ShowSuggestedPasswordPrompt(
+      const std::u16string& suggested_password) override;
   void OnControllerGone() override;
 
   // Returns a weak pointer to itself.
