@@ -4,6 +4,7 @@
 
 module.exports = {
   'rules' : {
+    'arrow-spacing' : ['error'],
     'brace-style' : ['error', '1tbs'],
     'curly' : ['error', 'multi-line', 'consistent'],
     'eqeqeq' : ['error', 'always', {'null' : 'ignore'}],
