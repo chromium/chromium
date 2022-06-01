@@ -61,26 +61,11 @@
 
 namespace {
 
-const char kOldOptimizationGuideHintStore[] = "previews_hint_cache_store";
-
 const char kOldOptimizationGuidePredictionModelAndFeaturesStore[] =
     "optimization_guide_model_and_features_store";
 
 // Deletes old store paths that were written in incorrect locations.
 void DeleteOldStorePaths(const base::FilePath& profile_path) {
-  // Added 04/2021.
-
-  // Delete profile_path.<other path> as that was not actually in the profile
-  // dir.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::GetDeletePathRecursivelyCallback(
-          profile_path.AddExtensionASCII(kOldOptimizationGuideHintStore)));
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::GetDeletePathRecursivelyCallback(profile_path.AddExtensionASCII(
-          kOldOptimizationGuidePredictionModelAndFeaturesStore)));
-
   // Added 05/2022.
 
   // Delete profile_path/optimization_guide_model_and_features_store/...
