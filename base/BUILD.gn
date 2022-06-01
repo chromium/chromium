@@ -4002,6 +4002,7 @@ if (is_android) {
     sources = [
       "android/base_features.cc",
       "features.cc",
+      "task/task_features.cc",
     ]
     template = "android/java/src/org/chromium/base/BaseFeatures.java.tmpl"
   }

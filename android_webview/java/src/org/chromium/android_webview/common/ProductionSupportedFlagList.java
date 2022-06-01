@@ -334,6 +334,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.PRECOMPILE_INLINE_SCRIPTS,
                     "If enabled, inline scripts will be stream compiled using a background HTML"
                             + " scanner."),
+            Flag.baseFeature(BaseFeatures.RUN_TASKS_BY_BATCHES,
+                    "Run tasks in queue for 8ms before before sending a system message."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
