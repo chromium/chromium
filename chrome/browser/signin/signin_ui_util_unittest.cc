@@ -78,21 +78,6 @@ TEST_F(GetAllowedDomainTest, WithValidPattern) {
 
 namespace {
 
-class SigninUiUtilTestBrowserWindow : public TestBrowserWindow {
- public:
-  SigninUiUtilTestBrowserWindow() = default;
-
-  SigninUiUtilTestBrowserWindow(const SigninUiUtilTestBrowserWindow&) = delete;
-  SigninUiUtilTestBrowserWindow& operator=(
-      const SigninUiUtilTestBrowserWindow&) = delete;
-
-  ~SigninUiUtilTestBrowserWindow() override = default;
-  void set_browser(Browser* browser) { browser_ = browser; }
-
- private:
-  raw_ptr<Browser> browser_ = nullptr;
-};
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class MockSigninUiDelegate : public SigninUiDelegate {
  public:
@@ -155,21 +140,9 @@ class SigninUiUtilTest : public BrowserWithTestWindowTest {
 
  protected:
   // BrowserWithTestWindowTest:
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    static_cast<SigninUiUtilTestBrowserWindow*>(browser()->window())
-        ->set_browser(browser());
-  }
-
-  // BrowserWithTestWindowTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
     return IdentityTestEnvironmentProfileAdaptor::
         GetIdentityTestEnvironmentFactories();
-  }
-
-  // BrowserWithTestWindowTest:
-  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
-    return std::make_unique<SigninUiUtilTestBrowserWindow>();
   }
 
   // Returns the identity manager.
