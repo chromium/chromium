@@ -20,8 +20,6 @@
 #include "chrome/browser/ash/input_method/candidate_window_controller.h"
 #include "chrome/browser/ash/input_method/ime_service_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/ime_engine_handler_interface.h"
@@ -42,8 +40,7 @@ namespace input_method {
 // The implementation of InputMethodManager.
 class InputMethodManagerImpl : public InputMethodManager,
                                public CandidateWindowController::Observer,
-                               public AssistiveWindowControllerDelegate,
-                               public content::NotificationObserver {
+                               public AssistiveWindowControllerDelegate {
  public:
   class StateImpl : public InputMethodManager::State {
    public:
@@ -237,10 +234,7 @@ class InputMethodManagerImpl : public InputMethodManager,
   void SetState(scoped_refptr<InputMethodManager::State> state) override;
   void ImeMenuActivationChanged(bool is_active) override;
 
-  // content::NotificationObserver overrides:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  void OnAppTerminating();
 
  private:
   // CandidateWindowController::Observer overrides:
@@ -330,7 +324,7 @@ class InputMethodManagerImpl : public InputMethodManager,
           ImeServiceConnectorMap;
   ImeServiceConnectorMap ime_service_connectors_;
 
-  content::NotificationRegistrar notification_registrar_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
 };
 
 }  // namespace input_method
