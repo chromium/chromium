@@ -141,7 +141,7 @@ class CORE_EXPORT MessagePort : public EventTargetWithInlineData,
   std::unique_ptr<mojo::Connector> connector_;
 
   bool started_ = false;
-  bool closed_ = false;
+  bool closed_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
