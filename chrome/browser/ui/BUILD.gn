@@ -1748,6 +1748,7 @@ static_library("ui") {
       "//chrome/browser:theme_properties",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/autofill_assistant/password_change/proto:proto",
+      "//chrome/browser/autofill_assistant/password_change/vector_icons",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/cart:mojo_bindings",
       "//chrome/browser/image_editor",

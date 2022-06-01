@@ -9,15 +9,24 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/background.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
+
+namespace {
+
+// TODO(crbug.com/1322419): Where possible, replace these constants by values
+// obtained from the global layout provider.
+constexpr int kTopIconSize = 96;
+
+}  // namespace
 
 PasswordChangeRunView::PasswordChangeRunView(
     base::WeakPtr<PasswordChangeRunController> controller,
@@ -36,32 +45,39 @@ void PasswordChangeRunView::Show() {
 }
 
 void PasswordChangeRunView::CreateView() {
+  // TODO(crbug.com/1322419): Add IDs to elements.
   DCHECK(controller_);
-  // TODO(crbug.com/1322419): Add proper icons, sizes, style etc.
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets()));
-  SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+  views::BoxLayout* layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  layout->set_inside_border_insets(
+      views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
+  layout->set_between_child_spacing(
+      views::LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
-  // Set up top container.
-  std::unique_ptr<views::View> top_container = std::make_unique<views::View>();
-  top_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets()));
+  top_icon_ = AddChildView(views::Builder<views::ImageView>().Build());
 
-  top_icon_ = top_container->AddChildView(std::make_unique<views::ImageView>());
-  top_icon_->SetImage(
-      ui::ImageModel::FromVectorIcon(kKeyIcon, ui::kColorIcon, 64));
-  top_icon_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
-  // TODO(brunobraga): Initialise progress bar.
+  // TODO(crbug.com/1322419): Adjust style (multiline, font style, etc.)
   title_ = AddChildView(std::make_unique<views::Label>());
-  description_ = AddChildView(std::make_unique<views::Label>());
-  body_ = AddChildView(std::make_unique<views::View>());
 
-  AddChildView(std::move(top_container));
+  // TODO(crbug.com/1322419): Add and initialize progress bar.
+
+  // TODO(crbug.com/1322419): Adjust style (multiline, font style, etc.)
+  description_ = AddChildView(std::make_unique<views::Label>());
+
+  // TODO(crbug.com/1322419): Add appropriate layout manager.
+  body_ = AddChildView(std::make_unique<views::View>());
+}
+
+void PasswordChangeRunView::SetTopIcon(
+    autofill_assistant::password_change::TopIcon top_icon) {
+  DCHECK(top_icon_);
+  top_icon_->SetImage(gfx::CreateVectorIcon(
+      GetApcTopIconFromEnum(top_icon), kTopIconSize, gfx::kPlaceholderColor));
 }
 
 // TODO(crbug.com/1322419): Implement set methods.
-void PasswordChangeRunView::SetTopIcon(
-    autofill_assistant::password_change::TopIcon top_icon) {}
 void PasswordChangeRunView::SetTitle(std::u16string body_title) {}
 void PasswordChangeRunView::SetDescription(
     std::u16string progress_description) {}

@@ -3,6 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/autofill_assistant/password_change/apc_external_action_delegate.h"
+
+#include <string>
+
+#include "base/bind.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/assistant_display_delegate.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
 
 // TODO(crbug.com/1324089): Implement once the side panel and
