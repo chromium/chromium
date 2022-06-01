@@ -128,14 +128,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceId) {
   RunTest(base::StringPrintf(kTest, kAssertions));
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1222670
-#define MAYBE_GetPersistentSecret DISABLED_GetPersistentSecret
-#else
-#define MAYBE_GetPersistentSecret GetPersistentSecret
-#endif
-IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
-                       MAYBE_GetPersistentSecret) {
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetPersistentSecret) {
   constexpr char kAssertions[] =
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       "chrome.test.assertNoLastError();"
@@ -143,11 +136,13 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 #else
       "chrome.test.assertLastError('Access to extension API denied.');";
 #endif
+  // Pass `true` as recreate on error to ensure that any keychain ACLs are fixed
+  // by this call instead of failing the test (makes the test more robust).
   constexpr char kTest[] = R"(
       chrome.test.assertEq(
         'function',
         typeof chrome.enterprise.reportingPrivate.getPersistentSecret);
-      chrome.enterprise.reportingPrivate.getPersistentSecret((secret) => {
+      chrome.enterprise.reportingPrivate.getPersistentSecret(true, (secret) => {
         %s
         chrome.test.notifyPass();
       });
