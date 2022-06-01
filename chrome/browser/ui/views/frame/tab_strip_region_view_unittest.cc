@@ -16,12 +16,14 @@
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 // TabStripRegionViewTestBase contains no test cases.
@@ -263,6 +265,55 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
   EXPECT_GT(tab_strip_->width(), tab_strip_region_view_->width());
   EXPECT_TRUE(
       tab_strip_->tab_at(tab_strip_->GetModelCount() - 1)->GetVisible());
+}
+
+TEST_F(TabStripRegionViewTestWithScrollingEnabled,
+       TabStripScrollButtonsNotInWindowCaption) {
+  const int minimum_active_width = TabStyleViews::GetMinimumInactiveWidth();
+  controller_->AddTab(0, true);
+  CompleteAnimationAndLayout();
+
+  // Add tabs to the tabstrip until it is full and should start overflowing.
+  while (GetInactiveTabWidth() > minimum_active_width) {
+    controller_->AddTab(0, false);
+    CompleteAnimationAndLayout();
+  }
+
+  // Add a few more tabs after the tabstrip is full to ensure the tabstrip
+  // starts scrolling. This needs to expand the tabstrip width by a decent
+  // amount in order to get the tabstrip to be wider than the entire tabstrip
+  // region, not just the portion of that that's allocated to the tabstrip
+  // itself (e.g. some of that space is for the NTB).
+  for (int i = 0; i < 10; i++) {
+    controller_->AddTab(0, false);
+    CompleteAnimationAndLayout();
+  }
+
+  raw_ptr<TabStripScrollContainer> scroll_container =
+      views::AsViewClass<TabStripScrollContainer>(
+          tab_strip_region_view_->GetTabStripContainerForTesting());
+  raw_ptr<views::ImageButton> leading_scroll_button_ =
+      scroll_container->GetLeadingScrollButtonForTesting();
+  raw_ptr<views::ImageButton> trailing_scroll_button_ =
+      scroll_container->GetTrailingScrollButtonForTesting();
+
+  // Check to see if children are visible
+  EXPECT_TRUE(leading_scroll_button_ != nullptr &&
+              leading_scroll_button_->IsDrawn());
+  EXPECT_TRUE(trailing_scroll_button_ != nullptr &&
+              trailing_scroll_button_->IsDrawn());
+
+  gfx::Point scrolling_button_point =
+      leading_scroll_button_->bounds().CenterPoint();
+  gfx::Rect scrolling_button_rect =
+      gfx::Rect(scrolling_button_point, gfx::Size(1, 1));
+  gfx::RectF floating_rect_in_target_coords_f(scrolling_button_rect);
+  views::View::ConvertRectToTarget(leading_scroll_button_,
+                                   tab_strip_region_view_,
+                                   &floating_rect_in_target_coords_f);
+
+  EXPECT_FALSE(tab_strip_region_view_->IsRectInWindowCaption(
+      gfx::ToEnclosingRect(floating_rect_in_target_coords_f)));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

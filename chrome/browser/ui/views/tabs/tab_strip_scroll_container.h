@@ -31,6 +31,16 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(View* view) override;
 
+  bool IsRectInWindowCaption(const gfx::Rect& rect);
+
+  raw_ptr<views::ImageButton> GetLeadingScrollButtonForTesting() {
+    return leading_scroll_button_;
+  }
+
+  raw_ptr<views::ImageButton> GetTrailingScrollButtonForTesting() {
+    return trailing_scroll_button_;
+  }
+
  private:
   int GetTabStripAvailableWidth() const;
 
