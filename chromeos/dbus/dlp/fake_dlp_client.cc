@@ -63,6 +63,15 @@ void FakeDlpClient::GetFilesSources(const dlp::GetFilesSourcesRequest request,
   std::move(callback).Run(response);
 }
 
+void FakeDlpClient::CheckFilesTransfer(
+    const dlp::CheckFilesTransferRequest request,
+    CheckFilesTransferCallback callback) const {
+  dlp::CheckFilesTransferResponse response;
+  if (check_files_transfer_response_.has_value())
+    response = check_files_transfer_response_.value();
+  std::move(callback).Run(response);
+}
+
 bool FakeDlpClient::IsAlive() const {
   return true;
 }
@@ -77,6 +86,11 @@ int FakeDlpClient::GetSetDlpFilesPolicyCount() const {
 
 void FakeDlpClient::SetFakeSource(const std::string& fake_source) {
   fake_source_ = fake_source;
+}
+
+void FakeDlpClient::SetCheckFilesTransferResponse(
+    dlp::CheckFilesTransferResponse response) {
+  check_files_transfer_response_ = response;
 }
 
 }  // namespace chromeos

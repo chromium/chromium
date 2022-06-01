@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/dbus/dlp/fake_dlp_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -116,6 +117,27 @@ class DlpClientImpl : public DlpClient {
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void CheckFilesTransfer(const dlp::CheckFilesTransferRequest request,
+                          CheckFilesTransferCallback callback) const override {
+    dbus::MethodCall method_call(dlp::kDlpInterface,
+                                 dlp::kCheckFilesTransferMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      dlp::CheckFilesTransferResponse response;
+      response.set_error_message(base::StrCat(
+          {"Failure to call d-bus method: ", dlp::kCheckFilesTransferMethod}));
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), response));
+      return;
+    }
+
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DlpClientImpl::HandleCheckFilesTransferResponse,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   bool IsAlive() const override { return is_alive_; }
 
  private:
@@ -147,6 +169,16 @@ class DlpClientImpl : public DlpClient {
   void HandleGetFilesSourcesResponse(GetFilesSourcesCallback callback,
                                      dbus::Response* response) {
     dlp::GetFilesSourcesResponse response_proto;
+    const char* error_message = DeserializeProto(response, &response_proto);
+    if (error_message) {
+      response_proto.set_error_message(error_message);
+    }
+    std::move(callback).Run(response_proto);
+  }
+
+  void HandleCheckFilesTransferResponse(CheckFilesTransferCallback callback,
+                                        dbus::Response* response) {
+    dlp::CheckFilesTransferResponse response_proto;
     const char* error_message = DeserializeProto(response, &response_proto);
     if (error_message) {
       response_proto.set_error_message(error_message);

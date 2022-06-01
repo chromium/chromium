@@ -760,19 +760,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockCopy) {
           chromeos::DEVICE_TYPE_UNKNOWN,
           /*read_only=*/false);
 
-  // Set the file source in DlpClient
-  base::MockCallback<chromeos::DlpClient::AddFileCallback> add_file_cb;
-  EXPECT_CALL(add_file_cb, Run(testing::_));
-
-  dlp::AddFileRequest add_file_req;
-  add_file_req.set_file_path(test_file_path.value());
-  add_file_req.set_source_url("example1.com");
-  chromeos::DlpClient::Get()->AddFile(std::move(add_file_req),
-                                      add_file_cb.Get());
-  ::testing::Mock::VerifyAndClearExpectations(&add_file_cb);
-
-  EXPECT_CALL(*mock_rules_manager_, IsRestrictedDestination(_, _, _, _, _))
-      .WillOnce(::testing::Return(policy::DlpRulesManager::Level::kBlock));
+  dlp::CheckFilesTransferResponse check_files_response;
+  check_files_response.add_files_paths(test_file_path.value());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      std::move(check_files_response));
 
   EXPECT_TRUE(RunExtensionTest("file_browser/dlp_block", {},
                                {.load_as_component = true}));

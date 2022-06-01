@@ -25,7 +25,9 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -34,6 +36,7 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/drive/drive_pref_names.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -48,6 +51,13 @@ namespace policy {
 
 namespace {
 
+constexpr char kEmailId[] = "test@example.com";
+constexpr char kGaiaId[] = "12345";
+
+constexpr char kExample1[] = "https://example1.com";
+constexpr char kExample2[] = "https://example2.com";
+constexpr char kExample3[] = "https://example3.com";
+
 bool CreateDummyFile(const base::FilePath& path) {
   return WriteFile(path, "42", sizeof("42")) == sizeof("42");
 }
@@ -58,7 +68,9 @@ class DlpFilesControllerTest : public testing::Test {
  protected:
   DlpFilesControllerTest()
       : profile_(std::make_unique<TestingProfile>()),
-        files_controller_(profile_.get(), &rules_manager_) {}
+        user_manager_(new ash::FakeChromeUserManager()),
+        scoped_user_manager_(std::make_unique<user_manager::ScopedUserManager>(
+            base::WrapUnique(user_manager_))) {}
 
   DlpFilesControllerTest(const DlpFilesControllerTest&) = delete;
   DlpFilesControllerTest& operator=(const DlpFilesControllerTest&) = delete;
@@ -66,6 +78,23 @@ class DlpFilesControllerTest : public testing::Test {
   ~DlpFilesControllerTest() override {}
 
   void SetUp() override {
+    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
+    profile_->SetIsNewProfile(true);
+    user_manager::User* user =
+        user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+            account_id, /*is_affiliated=*/false,
+            user_manager::USER_TYPE_REGULAR, profile_.get());
+    user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                /*browser_restart=*/false,
+                                /*is_child=*/false);
+
+    policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+        profile_.get(),
+        base::BindRepeating(&DlpFilesControllerTest::SetDlpRulesManager,
+                            base::Unretained(this)));
+    ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+    ASSERT_TRUE(rules_manager_);
+
     chromeos::DlpClient::InitializeFake();
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -74,9 +103,17 @@ class DlpFilesControllerTest : public testing::Test {
   }
 
   void TearDown() override {
+    scoped_user_manager_.reset();
     profile_.reset();
 
     chromeos::DlpClient::Shutdown();
+  }
+
+  std::unique_ptr<KeyedService> SetDlpRulesManager(
+      content::BrowserContext* context) {
+    auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>();
+    rules_manager_ = dlp_rules_manager.get();
+    return dlp_rules_manager;
   }
 
   storage::FileSystemURL CreateFileSystemURL(const std::string& path) {
@@ -102,21 +139,21 @@ class DlpFilesControllerTest : public testing::Test {
     ASSERT_TRUE(CreateDummyFile(file1));
     dlp::AddFileRequest add_file_req1;
     add_file_req1.set_file_path(file1.value());
-    add_file_req1.set_source_url("example1.com");
+    add_file_req1.set_source_url(kExample1);
     chromeos::DlpClient::Get()->AddFile(add_file_req1, add_file_cb.Get());
 
     const base::FilePath file2 = path.AppendASCII("test2.txt");
     ASSERT_TRUE(CreateDummyFile(file2));
     dlp::AddFileRequest add_file_req2;
     add_file_req2.set_file_path(file2.value());
-    add_file_req2.set_source_url("example2.com");
+    add_file_req2.set_source_url(kExample2);
     chromeos::DlpClient::Get()->AddFile(add_file_req2, add_file_cb.Get());
 
     const base::FilePath file3 = path.AppendASCII("test3.txt");
     ASSERT_TRUE(CreateDummyFile(file3));
     dlp::AddFileRequest add_file_req3;
     add_file_req3.set_file_path(file3.value());
-    add_file_req3.set_source_url("example3.com");
+    add_file_req3.set_source_url(kExample3);
     chromeos::DlpClient::Get()->AddFile(add_file_req3, add_file_cb.Get());
 
     testing::Mock::VerifyAndClearExpectations(&add_file_cb);
@@ -130,9 +167,12 @@ class DlpFilesControllerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
 
-  testing::StrictMock<MockDlpRulesManager> rules_manager_;
+  std::unique_ptr<TestingProfile> profile_;
+  ash::FakeChromeUserManager* user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+
+  MockDlpRulesManager* rules_manager_ = nullptr;
   DlpFilesController files_controller_;
 
   scoped_refptr<storage::FileSystemContext> file_system_context_;
@@ -153,10 +193,13 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_DiffFileSystem) {
   std::vector<storage::FileSystemURL> disallowed_files(
       {file_url1_, file_url3_});
 
-  EXPECT_CALL(rules_manager_, IsRestrictedDestination)
-      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
-      .WillOnce(testing::Return(DlpRulesManager::Level::kAllow))
-      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+  dlp::CheckFilesTransferResponse check_files_transfer_response;
+  for (const auto& file : disallowed_files) {
+    check_files_transfer_response.add_files_paths(file.path().value());
+  }
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
 
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
@@ -198,10 +241,7 @@ class DlpFilesExternalDestinationTest
       public ::testing::WithParamInterface<
           std::tuple<std::string, std::string, DlpRulesManager::Component>> {
  protected:
-  DlpFilesExternalDestinationTest() {
-    user_manager_.AddUser(AccountId::FromUserEmailGaiaId(
-        profile_->GetProfileUserName(), "12345"));
-  }
+  DlpFilesExternalDestinationTest() = default;
 
   DlpFilesExternalDestinationTest(const DlpFilesExternalDestinationTest&) =
       delete;
@@ -277,7 +317,6 @@ class DlpFilesExternalDestinationTest
   }
 
   storage::ExternalMountPoints* mount_points_ = nullptr;
-  ash::FakeChromeUserManager user_manager_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -297,17 +336,14 @@ INSTANTIATE_TEST_SUITE_P(
                         "root/path/in/mydrive",
                         DlpRulesManager::Component::kDrive)));
 
-TEST_P(DlpFilesExternalDestinationTest, GetDisallowedTransfers_Component) {
+TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
   auto [mount_name, path, expected_component] = GetParam();
 
-  AddFilesToDlpClient();
+  std::vector<GURL> files_sources(
+      {GURL(kExample1), GURL(kExample2), GURL(kExample3)});
+  std::vector<GURL> disallowed_sources({GURL(kExample1), GURL(kExample3)});
 
-  std::vector<storage::FileSystemURL> transferred_files(
-      {file_url1_, file_url2_, file_url3_});
-  std::vector<storage::FileSystemURL> disallowed_files(
-      {file_url1_, file_url3_});
-
-  EXPECT_CALL(rules_manager_,
+  EXPECT_CALL(*rules_manager_,
               IsRestrictedComponent(_, expected_component, _, _))
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
       .WillOnce(testing::Return(DlpRulesManager::Level::kAllow))
@@ -317,11 +353,9 @@ TEST_P(DlpFilesExternalDestinationTest, GetDisallowedTransfers_Component) {
       blink::StorageKey(), mount_name, base::FilePath(path));
   ASSERT_TRUE(dst_url.is_valid());
 
-  base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
-  files_controller_.GetDisallowedTransfers(transferred_files, dst_url,
-                                           future.GetCallback());
-  EXPECT_TRUE(future.Wait());
-  EXPECT_EQ(disallowed_files, future.Take());
+  EXPECT_EQ(disallowed_sources,
+            files_controller_.IsFilesTransferRestricted(
+                profile_.get(), files_sources, dst_url.path().value()));
 }
 
 }  // namespace policy

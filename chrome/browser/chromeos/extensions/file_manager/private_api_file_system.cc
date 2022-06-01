@@ -952,8 +952,7 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
     return RespondNow(Error("File URL was invalid"));
   }
 
-  files_controller_ =
-      std::make_unique<policy::DlpFilesController>(profile_, rules_manager);
+  files_controller_ = std::make_unique<policy::DlpFilesController>();
   files_controller_->GetDisallowedTransfers(
       source_urls_, destination_url_,
       base::BindOnce(&FileManagerPrivateInternalGetDisallowedTransfersFunction::
@@ -1033,8 +1032,7 @@ FileManagerPrivateInternalGetFilesRestrictedByDlpFunction::Run() {
     source_urls_.push_back(file_system_url);
   }
 
-  files_controller_ = std::make_unique<policy::DlpFilesController>(
-      Profile::FromBrowserContext(browser_context()), rules_manager);
+  files_controller_ = std::make_unique<policy::DlpFilesController>();
   files_controller_->GetFilesRestrictedByAnyRule(
       source_urls_,
       base::BindOnce(
