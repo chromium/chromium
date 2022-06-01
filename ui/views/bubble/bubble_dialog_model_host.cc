@@ -494,6 +494,9 @@ void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
       break;
   }
   UpdateSpacingAndMargins();
+
+  if (GetBubbleFrameView())
+    SizeToContents();
 }
 
 void BubbleDialogModelHost::AddInitialFields() {
