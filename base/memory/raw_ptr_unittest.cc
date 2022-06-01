@@ -15,6 +15,7 @@
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/cpu.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_asan_service.h"
 #include "build/build_config.h"
@@ -1058,6 +1059,7 @@ static constexpr PartitionOptions kOpts = {
 TEST(BackupRefPtrImpl, Basic) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
   // new/delete once PartitionAlloc Everywhere is fully enabled.
+  base::CPU cpu;
   PartitionAllocGlobalInit(HandleOOM);
   PartitionAllocator allocator;
   allocator.init(kOpts);
@@ -1075,18 +1077,25 @@ TEST(BackupRefPtrImpl, Basic) {
   // In debug builds, the use-after-free should be caught immediately.
   EXPECT_DEATH_IF_SUPPORTED(g_volatile_int_to_ignore = *wrapped_ptr1, "");
 #else   // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-  // The allocation should be poisoned since there's a raw_ptr alive.
-  EXPECT_NE(*wrapped_ptr1, 42);
+  if (cpu.has_mte()) {
+    // If the hardware supports MTE, the use-after-free should also be caught.
+    EXPECT_DEATH_IF_SUPPORTED(g_volatile_int_to_ignore = *wrapped_ptr1, "");
+  } else {
+    // The allocation should be poisoned since there's a raw_ptr alive.
+    EXPECT_NE(*wrapped_ptr1, 42);
+  }
 
   // The allocator should not be able to reuse the slot at this point.
   void* raw_ptr2 = allocator.root()->Alloc(sizeof(int), "");
-  EXPECT_NE(raw_ptr1, raw_ptr2);
+  EXPECT_NE(::partition_alloc::internal::UnmaskPtr(raw_ptr1),
+            ::partition_alloc::internal::UnmaskPtr(raw_ptr2));
   allocator.root()->Free(raw_ptr2);
 
   // When the last reference is released, the slot should become reusable.
   wrapped_ptr1 = nullptr;
   void* raw_ptr3 = allocator.root()->Alloc(sizeof(int), "");
-  EXPECT_EQ(raw_ptr1, raw_ptr3);
+  EXPECT_EQ(::partition_alloc::internal::UnmaskPtr(raw_ptr1),
+            ::partition_alloc::internal::UnmaskPtr(raw_ptr3));
   allocator.root()->Free(raw_ptr3);
 #endif  // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 }

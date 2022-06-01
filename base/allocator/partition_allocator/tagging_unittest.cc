@@ -8,6 +8,7 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,6 +16,7 @@ namespace partition_alloc::internal {
 
 // Check whether we can call the tagging intrinsics safely on all architectures.
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlySafe) {
+  ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   uintptr_t buffer = AllocPages(
       PageAllocationGranularity(), PageAllocationGranularity(),
       PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
@@ -29,6 +31,7 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlySafe) {
 }
 
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementSafe) {
+  ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
   uintptr_t buffer = AllocPages(
       PageAllocationGranularity(), PageAllocationGranularity(),
@@ -48,6 +51,7 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementSafe) {
 #if defined(ARCH_CPU_64_BITS)
 // Size / alignment constraints are only enforced on 64-bit architectures.
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeBadSz) {
+  ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
   uintptr_t buffer = AllocPages(
       PageAllocationGranularity(), PageAllocationGranularity(),
@@ -62,6 +66,7 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeBadSz) {
 }
 
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlyNoSz) {
+  ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
   uintptr_t buffer = AllocPages(
       PageAllocationGranularity(), PageAllocationGranularity(),
@@ -75,6 +80,7 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlyNoSz) {
 }
 
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlyBadAlign) {
+  ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
   uintptr_t buffer = AllocPages(
       PageAllocationGranularity(), PageAllocationGranularity(),
@@ -89,6 +95,7 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlyBadAlign) {
 }
 
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementBadSz) {
+  ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
   uintptr_t buffer = AllocPages(
       PageAllocationGranularity(), PageAllocationGranularity(),
@@ -103,6 +110,7 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementBadSz) {
 }
 
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementNoSz) {
+  ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
   uintptr_t buffer = AllocPages(
       PageAllocationGranularity(), PageAllocationGranularity(),
@@ -116,6 +124,7 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementNoSz) {
 }
 
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementBadAlign) {
+  ::partition_alloc::internal::InitializeMTESupportIfNeeded();
   base::CPU cpu;
   uintptr_t buffer = AllocPages(
       PageAllocationGranularity(), PageAllocationGranularity(),
