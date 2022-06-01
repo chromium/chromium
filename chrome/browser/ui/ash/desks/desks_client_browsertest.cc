@@ -2077,6 +2077,21 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateAndCleanUpDesk) {
   EXPECT_EQ(1, desks_controller->desks().size());
 }
 
+// Tests trying to remove an invalid desk Id should return error.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, RemoveWithInvalidDeskId) {
+  auto* desks_controller = ash::DesksController::Get();
+  // Should have 1 default desk.
+  EXPECT_EQ(1, desks_controller->desks().size());
+  // Construct an empty invalid desk_id.
+  base::GUID desk_id{};
+  DesksClient::Get()->RemoveDesk(
+      desk_id, false, base::BindLambdaForTesting([](std::string error) {
+        EXPECT_EQ("The desk id is not valid.", error);
+      }));
+
+  EXPECT_EQ(1, desks_controller->desks().size());
+}
+
 class DesksTemplatesClientArcTest : public InProcessBrowserTest {
  public:
   DesksTemplatesClientArcTest() {

@@ -51,6 +51,7 @@ constexpr char kBadProfileError[] =
     "Either the profile is not valid or there is not an active proflile.";
 constexpr char kNoSavedTemplatesError[] = "You can create up to 6 templates.";
 constexpr char kNoSuchDeskError[] = "The desk cannot be found.";
+constexpr char kInvalidDeskIdError[] = "The desk id is not valid.";
 constexpr char kCantCloseDeskError[] = "The desk cannot be closed.";
 
 // Timeout time used in LaunchPerformanceTracker.
@@ -316,6 +317,12 @@ void DesksClient::LaunchDeskTemplate(const std::string& template_uuid,
 void DesksClient::RemoveDesk(const base::GUID& desk_uuid,
                              bool combine_desk,
                              CloseAllCallBack callback) {
+  // Return error if `desk_uuid` is invalid.
+  if (!desk_uuid.is_valid()) {
+    std::move(callback).Run(kInvalidDeskIdError);
+    return;
+  }
+
   ash::Desk* desk = desks_controller_->GetDeskByUuid(desk_uuid);
   // Can't clean up desk when desk identifier is incorrect.
   if (!desk) {
