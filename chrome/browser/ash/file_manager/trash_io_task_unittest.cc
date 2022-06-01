@@ -10,15 +10,23 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time_override.h"
 #include "base/time/time_to_iso8601.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
@@ -42,6 +50,7 @@ using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::Return;
 
 // Matcher that only verifies the `url` field from a `std::vector<EntryStatus>`
@@ -67,7 +76,6 @@ MATCHER_P(EntryStatusErrors, matcher, "") {
 }
 
 constexpr size_t kTestFileSize = 32;
-
 class TrashIOTaskTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -82,7 +90,6 @@ class TrashIOTaskTest : public testing::Test {
     service_factory_for_test_ = std::make_unique<
         drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
         &create_drive_integration_service_);
-
     // Create the profile and add it to the user manager for DriveFS.
     profile_ =
         std::make_unique<TestingProfile>(base::FilePath(temp_dir_.GetPath()));
@@ -106,11 +113,47 @@ class TrashIOTaskTest : public testing::Test {
     // `my_files_dir_.
     downloads_dir_ = my_files_dir_.Append("Downloads");
     ASSERT_TRUE(base::CreateDirectory(downloads_dir_));
+
+    chromeos::DBusThreadManager::Initialize();
+    ash::CiceroneClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
+    ash::SeneschalClient::InitializeFake();
+
+    // Ensure Crostini is setup correctly.
+    crostini_manager_ =
+        crostini::CrostiniManager::GetForProfile(profile_.get());
+    crostini_manager_->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
+    crostini_manager_->AddRunningContainerForTesting(
+        crostini::kCrostiniDefaultVmName,
+        crostini::ContainerInfo(crostini::kCrostiniDefaultContainerName,
+                                "testuser", "/remote/mount", "PLACEHOLDER_IP"));
+
+    crostini_dir_ = temp_dir_.GetPath().Append("crostini");
+    ASSERT_TRUE(base::CreateDirectory(crostini_dir_));
+
+    VolumeManagerFactory::GetInstance()->SetTestingFactory(
+        profile_.get(),
+        base::BindLambdaForTesting([this](content::BrowserContext* context) {
+          return std::unique_ptr<KeyedService>(std::make_unique<VolumeManager>(
+              Profile::FromBrowserContext(context), nullptr, nullptr,
+              &disk_mount_manager_, nullptr,
+              VolumeManager::GetMtpStorageInfoCallback()));
+        }));
+    crostini_remote_mount_ = base::FilePath("/remote/mount");
+    auto* volume_manager = VolumeManager::Get(profile_.get());
+    volume_manager->AddVolumeForTesting(
+        Volume::CreateForSshfsCrostini(crostini_dir_, crostini_remote_mount_));
   }
 
   void TearDown() override {
     // Ensure any previously registered mount points for Downloads are revoked.
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
+    scoped_user_manager_.reset();
+    profile_.reset();
+    ash::SeneschalClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
+    chromeos::DBusThreadManager::Shutdown();
   }
 
   drive::DriveIntegrationService* CreateDriveIntegrationService(
@@ -127,7 +170,6 @@ class TrashIOTaskTest : public testing::Test {
 
   storage::FileSystemURL CreateFileSystemURL(
       const base::FilePath& absolute_path) {
-    // FileSystemURLs in test must be relative to the `temp_dir_`.
     std::string relative_path = absolute_path.value();
     EXPECT_TRUE(file_manager::util::ReplacePrefix(
         &relative_path, temp_dir_.GetPath().AsEndingWithSeparator().value(),
@@ -149,12 +191,27 @@ class TrashIOTaskTest : public testing::Test {
   }
 
   const std::string CreateTrashInfoContentsFromPath(
-      const base::FilePath& file_path) {
+      const base::FilePath& file_path,
+      const base::FilePath& base_path,
+      const base::FilePath& prefix_path) {
     std::string relative_restore_path = file_path.value();
-    EXPECT_TRUE(file_manager::util::ReplacePrefix(&relative_restore_path,
-                                                  my_files_dir_.value(), ""));
-    return base::StrCat({"[Trash Info]\nPath=", relative_restore_path,
-                         "\nDeletionDate=", base::TimeToISO8601(base::Time())});
+    EXPECT_TRUE(file_manager::util::ReplacePrefix(
+        &relative_restore_path, base_path.AsEndingWithSeparator().value(), ""));
+
+    base::FilePath prefix = (prefix_path.IsAbsolute())
+                                ? prefix_path
+                                : base::FilePath("/").Append(prefix_path);
+
+    return base::StrCat(
+        {"[Trash Info]\nPath=", prefix.AsEndingWithSeparator().value(),
+         relative_restore_path,
+         "\nDeletionDate=", base::TimeToISO8601(base::Time())});
+  }
+
+  const std::string CreateTrashInfoContentsFromPath(
+      const base::FilePath& file_path) {
+    return CreateTrashInfoContentsFromPath(file_path, my_files_dir_,
+                                           base::FilePath("/"));
   }
 
   bool EnsureTrashDirectorySetup(const base::FilePath& parent_path) {
@@ -183,10 +240,15 @@ class TrashIOTaskTest : public testing::Test {
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
       service_factory_for_test_;
 
+  crostini::CrostiniManager* crostini_manager_;
+  file_manager::FakeDiskMountManager disk_mount_manager_;
+
   base::ScopedTempDir temp_dir_;
   base::FilePath downloads_dir_;
   base::FilePath my_files_dir_;
   base::FilePath drive_dir_;
+  base::FilePath crostini_dir_;
+  base::FilePath crostini_remote_mount_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 };
 
@@ -269,7 +331,6 @@ TEST_F(TrashIOTaskTest, MixedUnsupportedAndSupportedDirectoriesShouldError) {
 TEST_F(TrashIOTaskTest, SupportedDirectoryShouldSucceed) {
   // Force the drive integration service to be created, this ensures the code
   // path that adds the drive mount point is exercised.
-  ash::DBusThreadManager::Initialize();
   drive::DriveIntegrationServiceFactory::GetForProfile(profile_.get());
 
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
@@ -433,6 +494,112 @@ TEST_F(TrashIOTaskTest, MultipleFilesInvokeProgress) {
   ExpectFileContents(GenerateInfoPath(file_name_2), file_trashinfo_contents_2);
   ExpectFileContents(GenerateFilesPath(file_name_1), foo_contents);
   ExpectFileContents(GenerateFilesPath(file_name_2), foo_contents);
+}
+
+TEST_F(TrashIOTaskTest, WhenCrostiniContainerIsRunningPathsShouldTrash) {
+  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+  std::string file_name("foo.txt");
+  const base::FilePath file_path = crostini_dir_.Append(file_name);
+
+  // The .trashinfo file gets prepended with the users home directory, the file
+  // foo.txt might look like Path=/home/<username>/foo.txt as the restore path.
+  const std::string file_trashinfo_contents = CreateTrashInfoContentsFromPath(
+      file_path, crostini_dir_, crostini_remote_mount_);
+  const size_t total_expected_bytes =
+      kTestFileSize + file_trashinfo_contents.size();
+  ASSERT_TRUE(base::WriteFile(file_path, foo_contents));
+
+  base::RunLoop run_loop;
+  std::vector<storage::FileSystemURL> source_urls = {
+      CreateFileSystemURL(file_path),
+  };
+
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  // Completion callback should contain the one metadata file written with the
+  // `total_expected_bytes` containing the size of both the file to trash and
+  // the size of the metadata.
+  EXPECT_CALL(
+      complete_callback,
+      Run(AllOf(Field(&ProgressStatus::state, State::kSuccess),
+                Field(&ProgressStatus::bytes_transferred, total_expected_bytes),
+                Field(&ProgressStatus::total_bytes, total_expected_bytes),
+                Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusErrors(ElementsAre(base::File::FILE_OK,
+                                                    base::File::FILE_OK))))))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  {
+    base::subtle::ScopedTimeClockOverrides mock_time_now(
+        []() { return base::Time(); }, nullptr, nullptr);
+    TrashIOTask task(source_urls, profile_.get(), file_system_context_,
+                     temp_dir_.GetPath());
+    task.Execute(progress_callback.Get(), complete_callback.Get());
+    run_loop.Run();
+  }
+
+  // Ensure the contents of the files at .local/share/Trash/files/foo.txt
+  // contains the expected content.
+  const base::FilePath trash_path =
+      crostini_dir_.AppendASCII(".local/share/Trash");
+  const base::FilePath files_path =
+      GenerateTrashPath(trash_path, kFilesFolderName, file_name);
+  ExpectFileContents(files_path, foo_contents);
+
+  // Ensure the contents of the files at
+  // .local/share/Trash/info/foo.txt.trashinfo contains the expected content.
+  const base::FilePath info_path =
+      GenerateTrashPath(trash_path, kInfoFolderName, file_name);
+  ExpectFileContents(info_path, file_trashinfo_contents);
+}
+
+TEST_F(TrashIOTaskTest,
+       WhenCrostiniContainerIsStoppedPathsShouldNotBeTrashable) {
+  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+  std::string file_name("foo.txt");
+  const base::FilePath file_path = crostini_dir_.Append(file_name);
+  ASSERT_TRUE(base::WriteFile(file_path, foo_contents));
+
+  base::RunLoop run_loop;
+  std::vector<storage::FileSystemURL> source_urls = {
+      CreateFileSystemURL(file_path),
+  };
+
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  // Ensure the container is stopped before running the IOTask.
+  base::RunLoop crostini_stop;
+  crostini_manager_->StopVm(
+      crostini::kCrostiniDefaultVmName,
+      base::BindLambdaForTesting(
+          [&crostini_stop](crostini::CrostiniResult result) {
+            crostini_stop.QuitClosure().Run();
+            ASSERT_EQ(result, crostini::CrostiniResult::SUCCESS);
+          }));
+  crostini_stop.Run();
+
+  // The supplied files match on a mounted crostini container, however, by
+  // stopping the container we expect the paths to no longer match as we check
+  // if the container is running.
+  EXPECT_CALL(
+      complete_callback,
+      Run(AllOf(Field(&ProgressStatus::state, State::kError),
+                Field(&ProgressStatus::bytes_transferred, 0),
+                Field(&ProgressStatus::total_bytes, 0),
+                Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
+                Field(&ProgressStatus::sources,
+                      EntryStatusErrors(ElementsAre(
+                          base::File::FILE_ERROR_INVALID_OPERATION))),
+                Field(&ProgressStatus::outputs, IsEmpty()))))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  TrashIOTask task(source_urls, profile_.get(), file_system_context_,
+                   temp_dir_.GetPath());
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  run_loop.Run();
 }
 
 }  // namespace

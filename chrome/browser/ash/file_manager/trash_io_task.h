@@ -52,11 +52,11 @@ struct TrashEntry {
 };
 
 struct TrashLocation {
-  TrashLocation(const char* supplied_folder_name,
+  TrashLocation(const base::FilePath supplied_relative_folder_path,
                 const base::FilePath parent_path,
                 const base::FilePath prefix_path);
   // Constructor used when no prefix path is required.
-  TrashLocation(const char* supplied_folder_name,
+  TrashLocation(const base::FilePath supplied_relative_folder_path,
                 const base::FilePath parent_path);
   ~TrashLocation();
 
@@ -69,8 +69,11 @@ struct TrashLocation {
   // The location of the .Trash/info folder.
   storage::FileSystemURL trash_info;
 
-  // The folder name for trash, this can be .Trash or .Trash-1000.
-  std::string folder_name;
+  // The folder path for the Trash folder. This is parented by
+  // `trash_parent_path` and typically represents the .Trash folder. However, in
+  // some cases this can represent a path instead. This path must be relative
+  // from the `trash_parent_path`, i.e. not an absolute path.
+  base::FilePath relative_folder_path;
 
   // The parent folder path of this trash entry.
   base::FilePath trash_parent_path;
@@ -92,9 +95,6 @@ struct TrashLocation {
 
 // Constant representing the Trash folder name.
 extern const char kTrashFolderName[];
-
-// Constant representing the Trash folder name with the chronos UID suffix.
-extern const char kTrashUIDFolderName[];
 
 // Constant representing the "info" folder name inside .Trash.
 extern const char kInfoFolderName[];

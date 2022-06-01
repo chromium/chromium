@@ -11,10 +11,13 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time_to_iso8601.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
@@ -23,7 +26,6 @@ namespace file_manager {
 namespace io_task {
 
 constexpr char kTrashFolderName[] = ".Trash";
-constexpr char kTrashUIDFolderName[] = ".Trash-1000";
 constexpr char kInfoFolderName[] = "info";
 constexpr char kFilesFolderName[] = "files";
 
@@ -37,13 +39,18 @@ bool UpdateTrashInfoContents(const base::FilePath& original_path,
                              const base::FilePath& prefix_restore_path,
                              TrashEntry& entry) {
   std::string relative_restore_path = original_path.value();
-  if (!file_manager::util::ReplacePrefix(&relative_restore_path,
-                                         trash_parent_path.value(), "")) {
+  if (!file_manager::util::ReplacePrefix(
+          &relative_restore_path,
+          trash_parent_path.AsEndingWithSeparator().value(), "")) {
     return false;
   }
 
+  base::FilePath prefix = (prefix_restore_path.IsAbsolute())
+                              ? prefix_restore_path
+                              : base::FilePath("/").Append(prefix_restore_path);
+
   entry.trash_info_contents = base::StrCat(
-      {"[Trash Info]\nPath=/", prefix_restore_path.value(),
+      {"[Trash Info]\nPath=", prefix.AsEndingWithSeparator().value(),
        relative_restore_path,
        "\nDeletionDate=", base::TimeToISO8601(entry.deletion_time)});
   return true;
@@ -87,15 +94,17 @@ TrashEntry::~TrashEntry() = default;
 TrashEntry::TrashEntry(TrashEntry&& other) = default;
 TrashEntry& TrashEntry::operator=(TrashEntry&& other) = default;
 
-TrashLocation::TrashLocation(const char* supplied_folder_name,
+TrashLocation::TrashLocation(const base::FilePath supplied_relative_folder_path,
                              const base::FilePath parent_path,
                              const base::FilePath prefix_path)
-    : folder_name(supplied_folder_name),
+    : relative_folder_path(supplied_relative_folder_path),
       trash_parent_path(parent_path),
       prefix_restore_path(prefix_path) {}
-TrashLocation::TrashLocation(const char* supplied_folder_name,
+
+TrashLocation::TrashLocation(const base::FilePath supplied_relative_folder_path,
                              const base::FilePath parent_path)
-    : folder_name(supplied_folder_name), trash_parent_path(parent_path) {}
+    : relative_folder_path(supplied_relative_folder_path),
+      trash_parent_path(parent_path) {}
 TrashLocation::~TrashLocation() = default;
 
 TrashLocation::TrashLocation(TrashLocation&& other) = default;
@@ -156,11 +165,11 @@ void TrashIOTask::Execute(IOTask::ProgressCallback progress_callback,
   // mount at MyFiles/Downloads so treat them as separate volumes.
   free_space_map_.try_emplace(
       util::GetMyFilesFolderForProfile(profile_),
-      TrashLocation(kTrashFolderName,
+      TrashLocation(base::FilePath(kTrashFolderName),
                     util::GetMyFilesFolderForProfile(profile_)));
   free_space_map_.try_emplace(
       util::GetDownloadsFolderForProfile(profile_),
-      TrashLocation(kTrashFolderName,
+      TrashLocation(base::FilePath(kTrashFolderName),
                     util::GetDownloadsFolderForProfile(profile_),
                     util::GetDownloadsFolderForProfile(profile_).BaseName()));
 
@@ -169,11 +178,32 @@ void TrashIOTask::Execute(IOTask::ProgressCallback progress_callback,
   if (integration_service) {
     free_space_map_.try_emplace(
         integration_service->GetMountPointPath(),
-        TrashLocation(kTrashUIDFolderName,
+        TrashLocation(base::FilePath(".Trash-1000"),
                       integration_service->GetMountPointPath()));
   }
 
-  // TODO(b/231830443): Add in support for crostini.
+  // Ensure Crostini is running before adding it as an enabled path.
+  file_manager::VolumeManager* const volume_manager =
+      file_manager::VolumeManager::Get(profile_);
+  if (crostini::CrostiniManager::GetForProfile(profile_) &&
+      crostini::IsCrostiniRunning(profile_) && volume_manager) {
+    // A `base_path_` is supplied in tests to ensure files are only added to
+    // temporary directories. If `base_path_` has been supplied, use the mocked
+    // volume mount path instead of the real mount path.
+    const base::FilePath crostini_mount_point =
+        (base_path_.empty())
+            ? file_manager::util::GetCrostiniMountDirectory(profile_)
+            : base_path_.Append("crostini");
+    base::WeakPtr<file_manager::Volume> volume =
+        volume_manager->FindVolumeFromPath(crostini_mount_point);
+    if (volume) {
+      free_space_map_.try_emplace(
+          crostini_mount_point,
+          TrashLocation(
+              base::FilePath(".local").Append("share").Append("Trash"),
+              crostini_mount_point, volume->remote_mount_path()));
+    }
+  }
 
   progress_.state = State::kInProgress;
 
@@ -218,7 +248,8 @@ void TrashIOTask::UpdateTrashEntry(size_t source_idx) {
   TrashLocation& trash_location = trash_parent_path_it->second;
   const base::FilePath trash_parent_path = trash_parent_path_it->first;
   TrashEntry& entry = trash_entries_[source_idx];
-  entry.trash_path = trash_parent_path.Append(trash_location.folder_name);
+  entry.trash_path =
+      trash_parent_path.Append(trash_location.relative_folder_path);
 
   if (!UpdateTrashInfoContents(source_path, trash_parent_path,
                                trash_location.prefix_restore_path, entry)) {
@@ -328,8 +359,9 @@ void TrashIOTask::GotFreeDiskSpace(size_t source_idx,
                                    const TrashPathsMap::reverse_iterator& it,
                                    int64_t free_space) {
   auto& trash_location = it->second;
-  base::FilePath trash_path = MakeRelativeFromBasePath(
-      trash_location.trash_parent_path.Append(trash_location.folder_name));
+  base::FilePath trash_path =
+      MakeRelativeFromBasePath(trash_location.trash_parent_path.Append(
+          trash_location.relative_folder_path));
   trash_location.trash_files = CreateFileSystemURL(
       progress_.sources[source_idx].url, trash_path.Append(kFilesFolderName));
   trash_location.trash_info = CreateFileSystemURL(
