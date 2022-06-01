@@ -36,12 +36,12 @@ import org.chromium.webapk.lib.runtime_library.IWebApkApi;
  */
 public class WebApkServiceClient {
     // Callback which catches RemoteExceptions thrown due to IWebApkApi failure.
-    private abstract static class ApiUseCallback
-            implements WebApkServiceConnectionManager.ConnectionCallback {
-        public abstract void useApi(IWebApkApi api) throws RemoteException;
+    @FunctionalInterface
+    private interface ApiUseCallback extends WebApkServiceConnectionManager.ConnectionCallback {
+        void useApi(IWebApkApi api) throws RemoteException;
 
         @Override
-        public void onConnected(IBinder api) {
+        default void onConnected(IBinder api) {
             if (api == null) {
                 WebApkUmaRecorder.recordBindToWebApkServiceSucceeded(false);
                 return;
@@ -85,34 +85,27 @@ public class WebApkServiceClient {
     public void notifyNotification(final String webApkPackage,
             final NotificationBuilderBase notificationBuilder, final String platformTag,
             final int platformID) {
-        final ApiUseCallback connectionCallback = new ApiUseCallback() {
-            @Override
-            public void useApi(IWebApkApi api) throws RemoteException {
-                fallbackToWebApkIconIfNecessary(notificationBuilder, webApkPackage,
-                        api.getSmallIconId());
+        connect(webApkPackage, api -> {
+            fallbackToWebApkIconIfNecessary(
+                    notificationBuilder, webApkPackage, api.getSmallIconId());
 
-                boolean notificationPermissionEnabled = api.notificationPermissionEnabled();
-                if (notificationPermissionEnabled) {
-                    String channelName = null;
-                    if (webApkTargetsAtLeastO(webApkPackage)) {
-                        notificationBuilder.setChannelId(
-                                ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
-                        channelName = ContextUtils.getApplicationContext().getString(
-                                org.chromium.chrome.R.string.webapk_notification_channel_name);
-                    }
-                    NotificationMetadata metadata = new NotificationMetadata(
-                            NotificationUmaTracker.SystemNotificationType.WEBAPK, platformTag,
-                            platformID);
-
-                    api.notifyNotificationWithChannel(platformTag, platformID,
-                            notificationBuilder.build(metadata).getNotification(), channelName);
+            boolean notificationPermissionEnabled = api.notificationPermissionEnabled();
+            if (notificationPermissionEnabled) {
+                String channelName = null;
+                if (webApkTargetsAtLeastO(webApkPackage)) {
+                    notificationBuilder.setChannelId(ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
+                    channelName = ContextUtils.getApplicationContext().getString(
+                            org.chromium.chrome.R.string.webapk_notification_channel_name);
                 }
-                WebApkUmaRecorder.recordNotificationPermissionStatus(notificationPermissionEnabled);
-            }
-        };
+                NotificationMetadata metadata = new NotificationMetadata(
+                        NotificationUmaTracker.SystemNotificationType.WEBAPK, platformTag,
+                        platformID);
 
-        mConnectionManager.connect(
-                ContextUtils.getApplicationContext(), webApkPackage, connectionCallback);
+                api.notifyNotificationWithChannel(platformTag, platformID,
+                        notificationBuilder.build(metadata).getNotification(), channelName);
+            }
+            WebApkUmaRecorder.recordNotificationPermissionStatus(notificationPermissionEnabled);
+        });
     }
 
     private void fallbackToWebApkIconIfNecessary(NotificationBuilderBase builder,
@@ -129,35 +122,21 @@ public class WebApkServiceClient {
     /** Cancels notification previously shown by WebAPK. */
     public void cancelNotification(
             String webApkPackage, final String platformTag, final int platformID) {
-        final ApiUseCallback connectionCallback = new ApiUseCallback() {
-            @Override
-            public void useApi(IWebApkApi api) throws RemoteException {
-                api.cancelNotification(platformTag, platformID);
-            }
-        };
-
-        mConnectionManager.connect(
-                ContextUtils.getApplicationContext(), webApkPackage, connectionCallback);
+        connect(webApkPackage, api -> api.cancelNotification(platformTag, platformID));
     }
 
     /** Finishes and removes the WebAPK's task. */
     @RequiresApi(Build.VERSION_CODES.M)
     public void finishAndRemoveTaskSdk23(final Activity activity, WebApkExtras webApkExtras) {
-        final ApiUseCallback connectionCallback = new ApiUseCallback() {
-            @Override
-            public void useApi(IWebApkApi api) throws RemoteException {
-                if (activity.isFinishing() || activity.isDestroyed()) return;
+        connect(webApkExtras.webApkPackageName, api -> {
+            if (activity.isFinishing() || activity.isDestroyed()) return;
 
-                if (!api.finishAndRemoveTaskSdk23()) {
-                    // If |activity| is not the root of the task, hopefully the activities below
-                    // this one will close themselves.
-                    activity.finish();
-                }
+            if (!api.finishAndRemoveTaskSdk23()) {
+                // If |activity| is not the root of the task, hopefully the activities below
+                // this one will close themselves.
+                activity.finish();
             }
-        };
-
-        mConnectionManager.connect(ContextUtils.getApplicationContext(),
-                webApkExtras.webApkPackageName, connectionCallback);
+        });
     }
 
     /** Returns whether there are any WebAPK service API calls in progress. */
@@ -195,5 +174,10 @@ public class WebApkServiceClient {
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         }
+    }
+
+    private void connect(String webApkPackage, ApiUseCallback connectionCallback) {
+        mConnectionManager.connect(
+                ContextUtils.getApplicationContext(), webApkPackage, connectionCallback);
     }
 }
