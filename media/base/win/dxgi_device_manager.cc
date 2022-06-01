@@ -97,9 +97,13 @@ HRESULT DXGIDeviceManager::ResetDevice(
     Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device) {
   constexpr uint32_t kDeviceFlags =
       D3D11_CREATE_DEVICE_VIDEO_SUPPORT | D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-  HRESULT hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-                                 kDeviceFlags, nullptr, 0, D3D11_SDK_VERSION,
-                                 &d3d_device, nullptr, nullptr);
+  const D3D_FEATURE_LEVEL kFeatureLevels[] = {
+      D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1,
+      D3D_FEATURE_LEVEL_10_0};
+  HRESULT hr =
+      D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
+                        kDeviceFlags, kFeatureLevels, std::size(kFeatureLevels),
+                        D3D11_SDK_VERSION, &d3d_device, nullptr, nullptr);
   RETURN_ON_HR_FAILURE(hr, "D3D11 device creation failed", hr);
   RETURN_ON_HR_FAILURE(
       hr, media::SetDebugName(d3d_device.Get(), "Media_DXGIDeviceManager"), hr);
