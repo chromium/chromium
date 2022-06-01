@@ -3432,9 +3432,13 @@
                     "name": "UseDnsHttpsSvcb",
                     "params": {
                         "UseDnsHttpsSvcbEnableInsecure": "true",
-                        "UseDnsHttpsSvcbExtraTimeAbsolute": "500ms",
-                        "UseDnsHttpsSvcbExtraTimePercent": "50",
-                        "UseDnsHttpsSvcbHttpUpgrade": "true"
+                        "UseDnsHttpsSvcbHttpUpgrade": "true",
+                        "UseDnsHttpsSvcbInsecureExtraTimeMax": "500ms",
+                        "UseDnsHttpsSvcbInsecureExtraTimeMin": "300ms",
+                        "UseDnsHttpsSvcbInsecureExtraTimePercent": "50",
+                        "UseDnsHttpsSvcbSecureExtraTimeMax": "500ms",
+                        "UseDnsHttpsSvcbSecureExtraTimeMin": "300ms",
+                        "UseDnsHttpsSvcbSecureExtraTimePercent": "50"
                     },
                     "enable_features": [
                         "UseDnsHttpsSvcb"
