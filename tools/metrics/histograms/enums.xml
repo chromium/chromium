@@ -54054,6 +54054,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
              browser/webview process"/>
 </enum>
 
+<enum name="LoadPoint">
+  <int value="0" label="Native initializition"/>
+  <int value="1" label="Policy load"/>
+  <int value="2" label="Child account status load"/>
+</enum>
+
 <enum name="LoadRulesetResult">
   <int value="0" label="Load succeeded"/>
   <int value="1" label="Load failed - Invalid path"/>

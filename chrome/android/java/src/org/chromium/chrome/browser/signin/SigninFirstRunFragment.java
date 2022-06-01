@@ -17,12 +17,14 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.FirstRunFragment;
@@ -38,6 +40,9 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * This fragment handles the sign-in without sync consent during the FRE.
  */
@@ -47,11 +52,27 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     @VisibleForTesting
     static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
+    /**
+     * Used for MobileFre.SlowestLoadPoint histogram. Should be treated as append-only.
+     * See {@code LoadPoint} in tools/metrics/histograms/enums.xml.
+     */
+    @VisibleForTesting
+    @IntDef({LoadPoint.NATIVE_INITIALIZATION, LoadPoint.POLICY_LOAD, LoadPoint.CHILD_STATUS_LOAD,
+            LoadPoint.MAX})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface LoadPoint {
+        int NATIVE_INITIALIZATION = 0;
+        int POLICY_LOAD = 1;
+        int CHILD_STATUS_LOAD = 2;
+        int MAX = 3;
+    }
+
     // Used as a view holder for the current orientation of the device.
     private FrameLayout mFragmentView;
     private ModalDialogManager mModalDialogManager;
     private SkipTosDialogPolicyListener mSkipTosDialogPolicyListener;
     private @Nullable SigninFirstRunCoordinator mSigninFirstRunCoordinator;
+    private @LoadPoint int mSlowestLoadPoint;
     private boolean mExitFirstRunCalled;
     private boolean mNativeInitialized;
     private boolean mNativePolicyAndChildStatusLoaded;
@@ -62,10 +83,9 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        getPageDelegate().getPolicyLoadListener().onAvailable(
-                hasPolicies -> notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded());
+        getPageDelegate().getPolicyLoadListener().onAvailable(hasPolicies -> onPolicyLoad());
         getPageDelegate().getChildAccountStatusSupplier().onAvailable(
-                ignored -> notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded());
+                ignored -> onChildAccountStatusAvailable());
         if (getPageDelegate().isLaunchedFromCct()) {
             mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(
                     getPageDelegate().getPolicyLoadListener(), EnterpriseInfo.getInstance(), null);
@@ -136,7 +156,11 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     /** Implements {@link FirstRunFragment}. */
     @Override
     public void onNativeInitialized() {
+        if (mNativeInitialized) return;
+
         mNativeInitialized = true;
+        mSlowestLoadPoint = LoadPoint.NATIVE_INITIALIZATION;
+        getPageDelegate().recordNativeInitializedHistogram();
         notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded();
     }
 
@@ -228,6 +252,16 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         }
     }
 
+    private void onChildAccountStatusAvailable() {
+        mSlowestLoadPoint = LoadPoint.CHILD_STATUS_LOAD;
+        notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded();
+    }
+
+    private void onPolicyLoad() {
+        mSlowestLoadPoint = LoadPoint.POLICY_LOAD;
+        notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded();
+    }
+
     /**
      * Notifies the coordinator that native, policies and child account status has been loaded.
      * This method may be called multiple times after all 3 wait conditions have been satisfied.
@@ -248,6 +282,8 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
                 mSigninFirstRunCoordinator.onNativePolicyAndChildStatusLoaded(
                         getPageDelegate().getPolicyLoadListener().get());
                 getPageDelegate().recordNativePolicyAndChildStatusLoadedHistogram();
+                RecordHistogram.recordEnumeratedHistogram(
+                        "MobileFre.SlowestLoadPoint", mSlowestLoadPoint, LoadPoint.MAX);
             }
         }
     }

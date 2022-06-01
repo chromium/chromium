@@ -793,6 +793,8 @@ chromium-metrics-reviews@google.com.
   <token key="Target">
     <variant name="ActivityInflated"
         summary="the activity is ready to be drawn, although likely empty"/>
+    <variant name="ChildStatusAvailable"
+        summary="the child account status is loaded"/>
     <variant name="FirstFragmentInflatedV2"
         summary="the first fragment is ready to be drawn, the first
                  meaningful paint. Version V2 fixed an issue that previous
@@ -804,9 +806,11 @@ chromium-metrics-reviews@google.com.
         Removed in 2022/05. Replaced by NativePolicyAndChildStatusLoaded.
       </obsolete>
     </variant>
+    <variant name="NativeInitialized" summary="the native code is initialized"/>
     <variant name="NativePolicyAndChildStatusLoaded"
         summary="the native code, policies and child account status are
                  loaded"/>
+    <variant name="PoliciesLoaded" summary="policies are loaded"/>
     <variant name="TosAccepted" summary="the ToS is accepted"/>
     <variant name="TriggerLayoutInflation"
         summary="layout inflation is triggered"/>
@@ -900,6 +904,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Android: How the user left the sign-in part of the &quot;first run
     experience&quot; activity (M-38+).
+  </summary>
+</histogram>
+
+<histogram name="MobileFre.SlowestLoadPoint" enum="LoadPoint"
+    expires_after="2022-11-01">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>chrome-signin-team@google.org</owner>
+  <summary>
+    Slowest loading point among native, policy and child account status in the
+    signin mobile FRE. Not emitted for the light-weight FRE. Android chrome
+    only.
   </summary>
 </histogram>
 
