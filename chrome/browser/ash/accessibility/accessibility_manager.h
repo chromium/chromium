@@ -27,8 +27,6 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/soda/soda_installer.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -104,8 +102,7 @@ enum class PlaySoundOption {
 // watching profile notifications and pref-changes.
 // TODO(yoshiki): merge MagnificationManager with AccessibilityManager.
 class AccessibilityManager
-    : public content::NotificationObserver,
-      public session_manager::SessionManagerObserver,
+    : public session_manager::SessionManagerObserver,
       public extensions::api::braille_display_private::BrailleObserver,
       public extensions::ExtensionRegistryObserver,
       public user_manager::UserManager::UserSessionStateObserver,
@@ -457,11 +454,6 @@ class AccessibilityManager
 
   void PlayVolumeAdjustSound();
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // session_manager::SessionManagerObserver:
   void OnLoginOrLockScreenVisible() override;
 
@@ -512,6 +504,8 @@ class AccessibilityManager
   void OnPumpkinInstalled(bool success);
   void OnPumpkinError(const std::string& error);
 
+  void OnAppTerminating();
+
   // Profile which has the current a11y context.
   Profile* profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
@@ -520,7 +514,6 @@ class AccessibilityManager
                           session_manager::SessionManagerObserver>
       session_observation_{this};
 
-  content::NotificationRegistrar notification_registrar_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<PrefChangeRegistrar> local_state_pref_change_registrar_;
 
@@ -603,6 +596,8 @@ class AccessibilityManager
   bool is_pumpkin_installed_for_testing_ = false;
 
   base::CallbackListSubscription focus_changed_subscription_;
+
+  base::CallbackListSubscription on_app_terminating_subscription_;
 
   base::WeakPtrFactory<AccessibilityManager> weak_ptr_factory_{this};
 

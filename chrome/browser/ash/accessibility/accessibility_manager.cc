@@ -47,10 +47,10 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -78,9 +78,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/media_session_service.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
@@ -289,8 +286,9 @@ void AccessibilityManager::ShowAccessibilityHelp() {
 AccessibilityManager::AccessibilityManager() {
   session_observation_.Observe(session_manager::SessionManager::Get());
 
-  notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                              content::NotificationService::AllSources());
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &AccessibilityManager::OnAppTerminating, base::Unretained(this)));
 
   focus_changed_subscription_ =
       content::BrowserAccessibilityState::GetInstance()
@@ -1513,11 +1511,7 @@ void AccessibilityManager::PlayVolumeAdjustSound() {
   }
 }
 
-void AccessibilityManager::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+void AccessibilityManager::OnAppTerminating() {
   app_terminating_ = true;
 }
 
