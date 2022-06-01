@@ -12,8 +12,7 @@
   #dialog {
     background-color: var(--md-background-color);
     border: 0;
-    display: flex;
-    flex-direction: column;
+    display: block;
     height: 100vh;
     margin: 0;
     max-height: 100vh;
@@ -22,14 +21,10 @@
     width: 100vw;
   }
 
-  settings-privacy-guide-page {
-    margin-inline-end: auto;
-    margin-inline-start: auto;
-  }
-
   settings-privacy-guide-page::part(privacyGuideCard) {
     background-color: transparent;
     box-shadow: none;
+    margin: auto;
     max-width: 680px;
     min-width: 550px;
   }
