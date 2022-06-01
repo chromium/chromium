@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,8 +65,6 @@
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -1039,10 +1036,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   WaitForAppLaunchInfoSaved();
 
   // Simulate the system shutdown process, and the window is closed.
-  FullRestoreService::GetForProfile(profile())->Observe(
-      chrome::NOTIFICATION_APP_TERMINATING,
-      content::Source<extensions::AppWindow>(app_window),
-      content::NotificationDetails());
+  FullRestoreService::GetForProfile(profile())->OnAppTerminating();
   CloseAppWindow(app_window);
   WaitForAppLaunchInfoSaved();
 
@@ -1565,9 +1559,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   WaitForAppLaunchInfoSaved();
 
   // Simulate the system shutdown process, and the window is closed.
-  FullRestoreService::GetForProfile(profile())->Observe(
-      chrome::NOTIFICATION_APP_TERMINATING,
-      content::Source<aura::Window>(window), content::NotificationDetails());
+  FullRestoreService::GetForProfile(profile())->OnAppTerminating();
   widget->CloseNow();
   WaitForAppLaunchInfoSaved();
 
