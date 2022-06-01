@@ -84,9 +84,6 @@
 -org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessoryIntegrationTest.testFillsSuggestionOnClick
 -org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessoryIntegrationTest.testFillsSuggestionOnClick
 
-# crbug.com/1231646
--org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsMediatorTest.testShowAreaSelectionDone
-
 # crbug.com/1231652
 -org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragmentTest.testKeyboardShownOnDpadCenter
 

@@ -69,13 +69,6 @@ public class LongScreenshotsMediatorTest {
 
     @Test
     @MediumTest
-    public void testShowAreaSelectionDone() {
-        mMediator.showAreaSelectionDialog(mBitmap);
-        Assert.assertTrue(mMediator.getDialog().isShowing());
-    }
-
-    @Test
-    @MediumTest
     public void testAreaSelectionDone() {
         mMediator.showAreaSelectionDialog(mBitmap);
         Assert.assertTrue(mMediator.getDialog().isShowing());
