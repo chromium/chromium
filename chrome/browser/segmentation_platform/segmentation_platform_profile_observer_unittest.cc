@@ -33,12 +33,12 @@ class MockSegmentationPlatformService : public SegmentationPlatformService {
   MOCK_METHOD(SegmentSelectionResult,
               GetCachedSegmentResult,
               (const std::string&));
-  MOCK_METHOD(int,
+  MOCK_METHOD(CallbackId,
               RegisterOnDemandSegmentSelectionCallback,
               (const std::string&, const OnDemandSegmentSelectionCallback&));
   MOCK_METHOD(void,
               UnregisterOnDemandSegmentSelectionCallback,
-              (int, const std::string&));
+              (CallbackId, const std::string&));
   MOCK_METHOD(void, OnTrigger, (TriggerType, const TriggerContext&));
   MOCK_METHOD(void, EnableMetrics, (bool));
   MOCK_METHOD(void, GetServiceStatus, ());

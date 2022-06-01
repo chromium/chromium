@@ -249,7 +249,8 @@ void SegmentSelectorImpl::GetRankForNextSegment(
     SegmentSelectionResult result;
     result.is_ready = true;
     result.segment = selected_segment;
-    std::move(callback).Run(result);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), result));
   } else {
     DCHECK(callback.is_null());
     UpdateSelectedSegment(selected_segment);

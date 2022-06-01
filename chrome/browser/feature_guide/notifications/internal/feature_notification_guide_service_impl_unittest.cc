@@ -110,13 +110,13 @@ class TestSegmentationPlatformService
         OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
     return result;
   }
-  int RegisterOnDemandSegmentSelectionCallback(
+  segmentation_platform::CallbackId RegisterOnDemandSegmentSelectionCallback(
       const std::string& segmentation_key,
       const OnDemandSegmentSelectionCallback& callback) override {
-    return 0;
+    return segmentation_platform::CallbackId::FromUnsafeValue(0);
   }
   void UnregisterOnDemandSegmentSelectionCallback(
-      int callback_id,
+      segmentation_platform::CallbackId callback_id,
       const std::string& segmentation_key) override {}
   void OnTrigger(
       segmentation_platform::TriggerType trigger,

@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
+#include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/segmentation_platform/public/trigger.h"
@@ -24,6 +25,8 @@ namespace segmentation_platform {
 class ServiceProxy;
 struct SegmentSelectionResult;
 struct TriggerContext;
+
+using CallbackId = base::IdType32<class OnDemandSegmentSelectionCallbackTag>;
 
 // The core class of segmentation platform that integrates all the required
 // pieces on the client side.
@@ -71,13 +74,13 @@ class SegmentationPlatformService : public KeyedService,
   using OnDemandSegmentSelectionCallback =
       base::RepeatingCallback<void(const SegmentSelectionResult&,
                                    const TriggerContext&)>;
-  virtual int RegisterOnDemandSegmentSelectionCallback(
+  virtual CallbackId RegisterOnDemandSegmentSelectionCallback(
       const std::string& segmentation_key,
       const OnDemandSegmentSelectionCallback& callback) = 0;
 
   // Called to unregister the callback with the given callback_id.
   virtual void UnregisterOnDemandSegmentSelectionCallback(
-      int callback_id,
+      CallbackId callback_id,
       const std::string& segmentation_key) = 0;
 
   // Called when a trigger event happens.

@@ -106,11 +106,12 @@ int SegmentationPlatformServiceAndroid::
         const JavaParamRef<jobject>& jcaller,
         const JavaParamRef<jstring>& j_segmentation_key,
         const JavaParamRef<jobject>& jcallback) {
-  return segmentation_platform_service_
-      ->RegisterOnDemandSegmentSelectionCallback(
+  CallbackId callback_id =
+      segmentation_platform_service_->RegisterOnDemandSegmentSelectionCallback(
           ConvertJavaStringToUTF8(env, j_segmentation_key),
           base::BindRepeating(&RunOnDemandSegmentSelectionCallback,
                               ScopedJavaGlobalRef<jobject>(jcallback)));
+  return callback_id.value();
 }
 
 void SegmentationPlatformServiceAndroid::
@@ -120,7 +121,8 @@ void SegmentationPlatformServiceAndroid::
         const JavaParamRef<jstring>& j_segmentation_key,
         jint j_callback_id) {
   segmentation_platform_service_->UnregisterOnDemandSegmentSelectionCallback(
-      (int)j_callback_id, ConvertJavaStringToUTF8(env, j_segmentation_key));
+      CallbackId::FromUnsafeValue(j_callback_id),
+      ConvertJavaStringToUTF8(env, j_segmentation_key));
 }
 
 ScopedJavaLocalRef<jobject>

@@ -101,6 +101,9 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
             init_params->profile_prefs, config.get(),
             field_trial_register_.get(), init_params->clock, platform_options_,
             storage_service_->default_model_manager());
+    if (config->trigger != TriggerType::kNone) {
+      clients_for_trigger_[config->trigger].insert(config->segmentation_key);
+    }
   }
 
   proxy_ = std::make_unique<ServiceProxyImpl>(
@@ -136,20 +139,54 @@ SegmentSelectionResult SegmentationPlatformServiceImpl::GetCachedSegmentResult(
   return selector->GetCachedSegmentResult();
 }
 
-int SegmentationPlatformServiceImpl::RegisterOnDemandSegmentSelectionCallback(
+CallbackId
+SegmentationPlatformServiceImpl::RegisterOnDemandSegmentSelectionCallback(
     const std::string& segmentation_key,
     const OnDemandSegmentSelectionCallback& callback) {
-  return 0;
+  static auto callback_id_generator = CallbackId::Generator();
+  const CallbackId callback_id = callback_id_generator.GenerateNextId();
+  callback_map_[callback_id] = callback;
+  segment_selection_callback_ids_[segmentation_key].insert(callback_id);
+  return callback_id;
 }
 
 void SegmentationPlatformServiceImpl::
     UnregisterOnDemandSegmentSelectionCallback(
-        int callback_id,
-        const std::string& segmentation_key) {}
+        CallbackId callback_id,
+        const std::string& segmentation_key) {
+  segment_selection_callback_ids_[segmentation_key].erase(callback_id);
+  if (segment_selection_callback_ids_[segmentation_key].empty()) {
+    segment_selection_callback_ids_.erase(segmentation_key);
+  }
+}
 
 void SegmentationPlatformServiceImpl::OnTrigger(
     TriggerType trigger,
-    const TriggerContext& trigger_context) {}
+    const TriggerContext& trigger_context) {
+  if (clients_for_trigger_.find(trigger) == clients_for_trigger_.end())
+    return;
+  scoped_refptr<InputContext> input_context;
+  for (const auto& segmentation_key : clients_for_trigger_[trigger]) {
+    CHECK(segment_selectors_.find(segmentation_key) !=
+          segment_selectors_.end());
+    auto& selector = segment_selectors_.at(segmentation_key);
+    selector->GetSelectedSegmentOnDemand(
+        input_context,
+        base::BindOnce(
+            &SegmentationPlatformServiceImpl::OnSegmentSelectionForTrigger,
+            weak_ptr_factory_.GetWeakPtr(), segmentation_key, trigger_context));
+  }
+}
+
+void SegmentationPlatformServiceImpl::OnSegmentSelectionForTrigger(
+    const std::string& segmentation_key,
+    const TriggerContext& trigger_context,
+    const SegmentSelectionResult& selected_segment) {
+  for (auto callback_id : segment_selection_callback_ids_[segmentation_key]) {
+    const auto& callback = callback_map_[callback_id];
+    callback.Run(selected_segment, trigger_context);
+  }
+}
 
 void SegmentationPlatformServiceImpl::EnableMetrics(
     bool signal_collection_allowed) {

@@ -92,11 +92,11 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
                           SegmentSelectionCallback callback) override;
   SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) override;
-  int RegisterOnDemandSegmentSelectionCallback(
+  CallbackId RegisterOnDemandSegmentSelectionCallback(
       const std::string& segmentation_key,
       const OnDemandSegmentSelectionCallback& callback) override;
   void UnregisterOnDemandSegmentSelectionCallback(
-      int callback_id,
+      CallbackId callback_id,
       const std::string& segmentation_key) override;
   void OnTrigger(TriggerType trigger,
                  const TriggerContext& trigger_context) override;
@@ -123,6 +123,12 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // Task that runs every day or at startup to keep the platform data updated.
   void RunDailyTasks(bool is_startup);
 
+  // Callback to run after on-demand segment selection.
+  void OnSegmentSelectionForTrigger(
+      const std::string& segmentation_key,
+      const TriggerContext& trigger_context,
+      const SegmentSelectionResult& selected_segment);
+
   std::unique_ptr<ModelProviderFactory> model_provider_factory_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -145,6 +151,14 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // SegmentSelectorImpl and ModelExecutionSchedulerImpl.
   base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>
       segment_selectors_;
+
+  // On-demand segment selection.
+  base::flat_map<std::string, base::flat_set<CallbackId>>
+      segment_selection_callback_ids_;
+  base::flat_map<CallbackId, OnDemandSegmentSelectionCallback> callback_map_;
+
+  // Clients registered for trigger events.
+  base::flat_map<TriggerType, base::flat_set<std::string>> clients_for_trigger_;
 
   // Segment results.
   std::unique_ptr<SegmentScoreProvider> segment_score_provider_;

@@ -32,15 +32,16 @@ SegmentSelectionResult DummySegmentationPlatformService::GetCachedSegmentResult(
   return SegmentSelectionResult();
 }
 
-int DummySegmentationPlatformService::RegisterOnDemandSegmentSelectionCallback(
+CallbackId
+DummySegmentationPlatformService::RegisterOnDemandSegmentSelectionCallback(
     const std::string& segmentation_key,
     const OnDemandSegmentSelectionCallback& callback) {
-  return 0;
+  return CallbackId::FromUnsafeValue(0);
 }
 
 void DummySegmentationPlatformService::
     UnregisterOnDemandSegmentSelectionCallback(
-        int callback_id,
+        CallbackId callback_id,
         const std::string& segmentation_key) {}
 
 void DummySegmentationPlatformService::OnTrigger(
