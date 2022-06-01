@@ -61,7 +61,6 @@
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browsing_data_remover.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1279,9 +1278,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventOnShutdown) {
   message.sender_id = GetTestApplicationServerKey();
   message.raw_data = "testdata";
   message.decrypted = true;
-  push_service()->Observe(chrome::NOTIFICATION_APP_TERMINATING,
-                          content::NotificationService::AllSources(),
-                          content::NotificationService::NoDetails());
+  push_service()->OnAppTerminating();
   push_service()->OnMessage(app_identifier.app_id(), message);
   EXPECT_TRUE(IsRegisteredKeepAliveEqualTo(false));
 }
