@@ -408,6 +408,18 @@ void GestureRecognizerImpl::OnGestureEvent(GestureConsumer* raw_input_consumer,
   DispatchGestureEvent(raw_input_consumer, event);
 }
 
+void GestureRecognizerImpl::OnGestureProviderAuraWillBeDestroyed(
+    GestureProviderAura* gesture_provider) {
+  // Clean `event_to_gesture_provider_` by removing invalid raw pointers.
+  for (auto iter = event_to_gesture_provider_.begin();
+       iter != event_to_gesture_provider_.end();) {
+    if (iter->second == gesture_provider)
+      iter = event_to_gesture_provider_.erase(iter);
+    else
+      ++iter;
+  }
+}
+
 GestureEventHelper* GestureRecognizerImpl::FindDispatchHelperForConsumer(
     GestureConsumer* consumer) {
   std::vector<GestureEventHelper*>::iterator it;

@@ -27,6 +27,10 @@ class EVENTS_EXPORT GestureProviderAuraClient {
   virtual ~GestureProviderAuraClient() {}
   virtual void OnGestureEvent(GestureConsumer* consumer,
                               GestureEvent* event) = 0;
+
+  // Called when `gesture_provider` will be destroyed.
+  virtual void OnGestureProviderAuraWillBeDestroyed(
+      GestureProviderAura* gesture_provider) {}
 };
 
 // Provides gesture detection and dispatch given a sequence of touch events
