@@ -482,7 +482,8 @@ IN_PROC_BROWSER_TEST_F(WebUsbChromeAppTest, AllowProtectedInterfaces) {
   )");
 
   // Launch the test app.
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   extensions::ResultCatcher result_catcher;
   scoped_refptr<const extensions::Extension> extension =
       LoadExtension(dir.UnpackedPath());

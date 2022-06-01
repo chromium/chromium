@@ -2105,7 +2105,7 @@ class PackagedAppTest : public extensions::ExtensionBrowserTest {
   }
 
   void RunTests(const std::string& extension_dirname) {
-    ExtensionTestMessageListener listener("PASS", false);
+    ExtensionTestMessageListener listener("PASS");
     LaunchTestingApp(extension_dirname);
     EXPECT_TRUE(listener.WaitUntilSatisfied());
   }

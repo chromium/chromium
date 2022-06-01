@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
       test_data_dir_.AppendASCII("preference/lacros");
   {
     extensions::ResultCatcher catcher;
-    ExtensionTestMessageListener listener("ready", true);
+    ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
     EXPECT_TRUE(LoadExtension(extension_path)) << message_;
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     // Run the tests.
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
 
   // The settings should not be reset when the extension is reloaded.
   {
-    ExtensionTestMessageListener listener("ready", true);
+    ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
     ReloadExtension(last_loaded_extension_id());
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     listener.Reply("");
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
   CheckPreferencesCleared();
 
   {
-    ExtensionTestMessageListener listener("ready", true);
+    ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
     EXPECT_TRUE(LoadExtension(extension_path));
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     listener.Reply("");

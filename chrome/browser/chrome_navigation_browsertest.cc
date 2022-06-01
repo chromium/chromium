@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
         chrome.test.sendMessage('ready');
       )");
 
-  ExtensionTestMessageListener ready_listener("ready", false /* will_reply */);
+  ExtensionTestMessageListener ready_listener("ready");
   extensions::ChromeTestExtensionLoader extension_loader(browser()->profile());
   extension_loader.LoadExtension(test_extension_dir.UnpackedPath());
 
@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(
   extensions::TestExtensionDir ext_dir;
   ext_dir.WriteManifest(kManifest);
   ext_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kRulesScript);
-  ExtensionTestMessageListener ready_listener("ready", false /* will_reply */);
+  ExtensionTestMessageListener ready_listener("ready");
   extensions::ChromeTestExtensionLoader extension_loader(browser()->profile());
   scoped_refptr<const extensions::Extension> extension =
       extension_loader.LoadExtension(ext_dir.UnpackedPath());
@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(
   ext_dir.WriteFile(
       FILE_PATH_LITERAL("background.js"),
       content::JsReplace(kRulesScriptTemplate, kRedirectTargetUrl));
-  ExtensionTestMessageListener ready_listener("ready", false /* will_reply */);
+  ExtensionTestMessageListener ready_listener("ready");
   extensions::ChromeTestExtensionLoader extension_loader(browser()->profile());
   scoped_refptr<const extensions::Extension> extension =
       extension_loader.LoadExtension(ext_dir.UnpackedPath());

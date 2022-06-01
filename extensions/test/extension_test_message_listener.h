@@ -125,20 +125,6 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
   // the specified `reply_behavior`.
   explicit ExtensionTestMessageListener(
       ReplyBehavior reply_behavior = ReplyBehavior::kWontReply);
-  // Temporary helper constructor. This disambiguates a caller like:
-  // ExtensionTestMessageListener listener("my message")
-  // Since otherwise it could either invoke the constructor above (by
-  // converting the const char* to a std::string) or the deprecated constructor
-  // below (by converting the const char* to a bool). This can be removed once
-  // the two constructors below are removed.
-  explicit ExtensionTestMessageListener(const char* expected_message);
-
-  // DEPRECATED.
-  // TODO(https://crbug.com/1324791): Convert all callers to the above
-  // constructors and remove these.
-  ExtensionTestMessageListener(const std::string& expected_message,
-                               bool will_reply);
-  explicit ExtensionTestMessageListener(bool will_reply);
 
   ~ExtensionTestMessageListener() override;
 
