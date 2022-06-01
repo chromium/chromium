@@ -672,10 +672,7 @@ TEST_F(TouchToFillControllerTest, ShowWebAuthnCredential) {
   ON_CALL(*webauthn_credentials_delegate(), IsWebAuthnAutofillEnabled)
       .WillByDefault(Return(true));
 
-  TouchToFillWebAuthnCredential credential(
-      TouchToFillWebAuthnCredential::Username(u"alice@example.com"),
-      TouchToFillWebAuthnCredential::DisplayName(u"alice"),
-      TouchToFillWebAuthnCredential::BackendId("12345"));
+  TouchToFillWebAuthnCredential credential(u"alice", "12345");
   std::vector<TouchToFillWebAuthnCredential> credentials({credential});
 
   EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
@@ -687,7 +684,7 @@ TEST_F(TouchToFillControllerTest, ShowWebAuthnCredential) {
       autofill::mojom::SubmissionReadinessState::kNoInformation);
 
   EXPECT_CALL(*webauthn_credentials_delegate(),
-              SelectWebAuthnCredential(credential.id().value()));
+              SelectWebAuthnCredential(credential.id()));
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
   touch_to_fill_controller().OnWebAuthnCredentialSelected(credentials[0]);
   histogram_tester().ExpectUniqueSample(

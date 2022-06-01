@@ -19,7 +19,6 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SH
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.ON_WEBAUTHN_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_CREDENTIAL;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_ICON;
 
 import androidx.annotation.Px;
 
@@ -202,10 +201,8 @@ class TouchToFillMediator {
     }
 
     private PropertyModel createWebAuthnModel(WebAuthnCredential credential) {
-        TouchToFillResourceProvider resourceProvider = new TouchToFillResourceProviderImpl();
         return new PropertyModel.Builder(WebAuthnCredentialProperties.ALL_KEYS)
                 .with(WEBAUTHN_CREDENTIAL, credential)
-                .with(WEBAUTHN_ICON, resourceProvider.getWebAuthnIconId())
                 .with(ON_WEBAUTHN_CLICK_LISTENER, this::onSelectedWebAuthnCredential)
                 .build();
     }

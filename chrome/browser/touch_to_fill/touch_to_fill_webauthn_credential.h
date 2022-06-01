@@ -7,19 +7,12 @@
 
 #include <string>
 
-#include "base/types/strong_alias.h"
-
 // Represents a Web Authentication credential to be displayed on the
 // Touch-To-Fill sheet for user selection.
 class TouchToFillWebAuthnCredential {
  public:
-  using Username = base::StrongAlias<struct UsernameTag, std::u16string>;
-  using DisplayName = base::StrongAlias<struct DisplayNameTag, std::u16string>;
-  using BackendId = base::StrongAlias<struct BackendIdTag, std::string>;
-
-  TouchToFillWebAuthnCredential(const Username& username,
-                                const DisplayName& display_name,
-                                const BackendId& backend_id);
+  TouchToFillWebAuthnCredential(const std::u16string& username,
+                                const std::string& backend_id);
   ~TouchToFillWebAuthnCredential();
 
   TouchToFillWebAuthnCredential(const TouchToFillWebAuthnCredential&);
@@ -29,16 +22,13 @@ class TouchToFillWebAuthnCredential {
   TouchToFillWebAuthnCredential(TouchToFillWebAuthnCredential&&);
   TouchToFillWebAuthnCredential& operator=(TouchToFillWebAuthnCredential&&);
 
-  const Username& username() const { return username_; }
+  const std::u16string& username() const { return username_; }
 
-  const DisplayName& display_name() const { return display_name_; }
-
-  const BackendId& id() const { return backend_id_; }
+  const std::string& id() const { return backend_id_; }
 
  private:
-  Username username_;
-  DisplayName display_name_;
-  BackendId backend_id_;
+  std::u16string username_;
+  std::string backend_id_;
 };
 
 bool operator==(const TouchToFillWebAuthnCredential& lhs,
