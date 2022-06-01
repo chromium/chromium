@@ -652,7 +652,8 @@ void ChromeExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
   auto* telemetry_service =
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled()) {
+  if (!telemetry_service || !telemetry_service->enabled() ||
+      !IsExtensionTelemetryRemoteHostContactedSignalEnabled()) {
     return;
   }
   auto remote_host_signal =
