@@ -1066,8 +1066,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorkerCache.Cache.Browser.Match.Initialized" units="ms"
-    expires_after="2022-06-08">
-  <owner>wanderview@chromium.org</owner>
+    expires_after="2023-05-26">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The time to perform a 'match' operation on a given Cache when that cache is
@@ -1129,8 +1129,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorkerCache.ListOriginsIndexValidity"
-    enum="CacheStorageIndexResult" expires_after="2022-06-08">
-  <owner>wanderview@chromium.org</owner>
+    enum="CacheStorageIndexResult" expires_after="2023-05-26">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The result from parsing and validating the index protobuf while calculating
@@ -1139,8 +1139,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorkerCache.Scheduler.OperationDuration2" units="ms"
-    expires_after="2022-06-08">
-  <owner>wanderview@chromium.org</owner>
+    expires_after="2023-05-26">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The time in ms from when an operation is started until it completes. This
@@ -1150,8 +1150,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorkerCache.Scheduler.QueueDuration2" units="ms"
-    expires_after="2022-06-08">
-  <owner>wanderview@chromium.org</owner>
+    expires_after="2023-05-26">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The time in ms from when an operation was queued until its task is posted.
@@ -1161,8 +1161,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorkerCache.Scheduler.QueueLength" units="operations"
-    expires_after="2022-06-08">
-  <owner>wanderview@chromium.org</owner>
+    expires_after="2023-05-26">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The number of operations in the scheduling queue just before enqueuing a new
