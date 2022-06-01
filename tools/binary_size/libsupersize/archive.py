@@ -373,9 +373,10 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
     apk_infolist = apk_file_manager.InfoList(apk_spec.apk_path)
     dex_total_size = sum(i.file_size for i in apk_infolist
                          if i.filename.endswith('.dex'))
-    add_syms(*apkanalyzer.CreateDexSymbols(apk_analyzer_results[container_name],
-                                           dex_total_size,
-                                           apk_spec.size_info_prefix))
+    if dex_total_size > 0:
+      add_syms(*apkanalyzer.CreateDexSymbols(
+          apk_analyzer_results[container_name], dex_total_size,
+          apk_spec.size_info_prefix))
   if pak_spec:
     add_syms(*_CreatePakSymbols(pak_spec=pak_spec,
                                 pak_id_map=pak_id_map,
@@ -745,7 +746,7 @@ def _CreateNativeSpecs(*, tentative_output_dir, apk_infolist, elf_path,
 
 # Cache to prevent excess log messages.
 @functools.lru_cache
-def _DeduceAuxPaths(mapping_path, resources_pathmap_path, apk_prefix):
+def _DeduceMappingPath(mapping_path, apk_prefix):
   if apk_prefix:
     if not mapping_path:
       possible_mapping_path = apk_prefix + '.mapping'
@@ -755,6 +756,13 @@ def _DeduceAuxPaths(mapping_path, resources_pathmap_path, apk_prefix):
       else:
         logging.warning('Could not find proguard mapping file at %s',
                         possible_mapping_path)
+  return mapping_path
+
+
+# Cache to prevent excess log messages.
+@functools.lru_cache
+def _DeducePathmapPath(resources_pathmap_path, apk_prefix):
+  if apk_prefix:
     if not resources_pathmap_path:
       possible_pathmap_path = apk_prefix + '.pathmap.txt'
       # This could be pointing to a stale pathmap file if path shortening was
@@ -766,7 +774,8 @@ def _DeduceAuxPaths(mapping_path, resources_pathmap_path, apk_prefix):
         resources_pathmap_path = possible_pathmap_path
         logging.debug('Detected --resources-pathmap-file=%s',
                       resources_pathmap_path)
-  return mapping_path, resources_pathmap_path
+      # Path shortening is optional, so do not warn for missing file.
+  return resources_pathmap_path
 
 
 def _ReadMultipleArgsFromStream(lines, base_dir, err_prefix, on_config_error):
@@ -828,9 +837,11 @@ def _CreateContainerSpecs(apk_file_manager,
     apk_prefix = apk_prefix.replace('.minimal.apks', '.aab')
     apk_prefix = apk_prefix.replace('.apks', '.aab')
 
-  mapping_path, resources_pathmap_path = _DeduceAuxPaths(
-      sub_args.mapping_file, sub_args.resources_pathmap_file, apk_prefix)
-
+  mapping_path = None
+  if analyze_dex:
+    mapping_path = _DeduceMappingPath(sub_args.mapping_file, apk_prefix)
+  resources_pathmap_path = _DeducePathmapPath(sub_args.resources_pathmap_file,
+                                              apk_prefix)
   apk_spec = None
   if apk_prefix:
     apk_spec = ApkSpec(apk_path=apk_path,

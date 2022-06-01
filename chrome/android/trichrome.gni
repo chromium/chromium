@@ -58,6 +58,7 @@ template("trichrome_library_apk_tmpl") {
     # leave out the build hooks and let them get compiled into each APK. Later
     # this should probably be in the library.
     no_build_hooks = true
+    include_size_info = is_official_build
 
     alternative_android_sdk_dep = webview_framework_dep
     if (trichrome_synchronized_proguard) {
@@ -240,7 +241,7 @@ template("write_ssargs_trichrome") {
   # by SuperSize.
   _lines = [
     "# Written by build target \"${target_name}.\"",
-    "Library -f ${invoker.trichrome_library_basename}$_extra_args",
+    "Library -f ${invoker.trichrome_library_basename}$_extra_args --no-java",
     "Chrome -f ${invoker.trichrome_chrome_basename}$_extra_args",
     "WebView -f ${invoker.trichrome_webview_basename}$_extra_args",
   ]
