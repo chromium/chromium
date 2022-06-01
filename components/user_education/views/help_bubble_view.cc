@@ -199,6 +199,7 @@ class ClosePromoButton : public views::ImageButton {
         this,
         std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
     SetAccessibleName(accessible_name);
+    SetTooltipText(accessible_name);
 
     constexpr int kIconSize = 16;
     SetImageModel(views::ImageButton::STATE_NORMAL,
