@@ -40,6 +40,7 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   void ClickButton(const ui::ime::AssistiveWindowButton& button) override;
   bool AcceptSuggestionCandidate(int context_id,
                                  const std::u16string& candidate,
+                                 size_t delete_previous_utf16_len,
                                  std::string* error) override;
   bool SetAssistiveWindowProperties(
       int context_id,
@@ -54,6 +55,7 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
     return accepted_suggestion_text_;
   }
   size_t GetConfirmedLength() { return confirmed_length_; }
+  size_t GetDeletePreviousUtf16Len() { return delete_previous_utf16_len_; }
   bool GetShowingSuggestion() { return showing_suggestion_; }
   bool GetAcceptedSuggestion() { return accepted_suggestion_; }
   bool GetDismissedSuggestion() { return dismissed_suggestion_; }
@@ -75,6 +77,7 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   std::u16string suggestion_text_;
   std::u16string accepted_suggestion_text_;
   size_t confirmed_length_ = 0;
+  size_t delete_previous_utf16_len_ = 0;
   bool showing_suggestion_ = false;
   bool accepted_suggestion_ = false;
   bool dismissed_suggestion_ = false;

@@ -154,10 +154,9 @@ bool LongpressDiacriticsSuggester::AcceptSuggestion(size_t index) {
     return false;
   }
   std::string error;
-  // TODO(b/217560706): Accept should also delete the previous character instead
-  // of just appending.
   suggestion_handler_->AcceptSuggestionCandidate(
-      *focused_context_id_, current_suggestions[index], &error);
+      *focused_context_id_, current_suggestions[index],
+      /* delete_previous_utf16_len=*/1, &error);
 
   if (!error.empty()) {
     LOG(ERROR) << "Failed to accept suggestion. " << error;

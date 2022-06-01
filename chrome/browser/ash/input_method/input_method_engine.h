@@ -258,6 +258,7 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
   void ClickButton(const ui::ime::AssistiveWindowButton& button) override;
   bool AcceptSuggestionCandidate(int context_id,
                                  const std::u16string& candidate,
+                                 size_t delete_previous_utf16_len,
                                  std::string* error) override;
   bool SetAssistiveWindowProperties(
       int context_id,

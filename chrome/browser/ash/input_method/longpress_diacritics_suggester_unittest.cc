@@ -325,6 +325,7 @@ TEST_P(LongpressDiacriticsSuggesterTest, AcceptsOnEnterKeyPress) {
   EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler.GetAcceptedSuggestionText(),
             GetParam().candidates[0]);
+  EXPECT_EQ(suggestion_handler.GetDeletePreviousUtf16Len(), 1);
 }
 
 TEST_P(LongpressDiacriticsSuggesterTest,
