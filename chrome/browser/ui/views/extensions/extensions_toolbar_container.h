@@ -258,7 +258,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       model_observation_{this};
   // TODO(emiliapaz): Remove `extensions_button_` once
-  // `features::kExtensionsMenuAccessControl` experiment is released.
+  // `extensions_features::kExtensionsMenuAccessControl` experiment is released.
   // Exactly one of `extensions_button_ and `extensions_controls_` is created;
   // the other is null.
   const raw_ptr<ExtensionsToolbarButton> extensions_button_;

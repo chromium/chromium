@@ -8234,10 +8234,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kTrafficCountersEnabled)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     {"extensions-menu-access-control",
      flag_descriptions::kExtensionsMenuAccessControlName,
      flag_descriptions::kExtensionsMenuAccessControlDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kExtensionsMenuAccessControl)},
+     FEATURE_VALUE_TYPE(extensions_features::kExtensionsMenuAccessControl)},
+#endif
 
     {"persistent-quota-is-temporary-quota",
      flag_descriptions::kPersistentQuotaIsTemporaryQuotaName,

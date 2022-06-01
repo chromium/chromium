@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
 
 #include "chrome/browser/extensions/extension_context_menu_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/notification_types.h"
+#include "extensions/common/extension_features.h"
 #include "ui/views/view_utils.h"
 
 class ExtensionsToolbarControlsUnitTest : public ExtensionsToolbarUnitTest {
@@ -38,7 +38,7 @@ class ExtensionsToolbarControlsUnitTest : public ExtensionsToolbarUnitTest {
 
 ExtensionsToolbarControlsUnitTest::ExtensionsToolbarControlsUnitTest() {
   scoped_feature_list_.InitAndEnableFeature(
-      features::kExtensionsMenuAccessControl);
+      extensions_features::kExtensionsMenuAccessControl);
 }
 
 ExtensionsRequestAccessButton*

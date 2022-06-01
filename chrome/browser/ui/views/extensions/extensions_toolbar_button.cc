@@ -10,7 +10,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_view.h"
@@ -18,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -150,7 +150,8 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
   extensions_container_->OnMenuOpening();
   base::RecordAction(base::UserMetricsAction("Extensions.Toolbar.MenuOpened"));
   views::Widget* menu;
-  if (base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl)) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
     menu = ExtensionsTabbedMenuView::ShowBubble(
         this, browser_, extensions_container_, button_type_,
         extensions_container_->CanShowIconInToolbar());

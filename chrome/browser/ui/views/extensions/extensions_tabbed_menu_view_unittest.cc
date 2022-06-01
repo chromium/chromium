@@ -12,7 +12,6 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -24,6 +23,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
@@ -186,7 +186,7 @@ class ExtensionsTabbedMenuViewUnitTest : public ExtensionsToolbarUnitTest {
 
 ExtensionsTabbedMenuViewUnitTest::ExtensionsTabbedMenuViewUnitTest() {
   scoped_feature_list_.InitAndEnableFeature(
-      features::kExtensionsMenuAccessControl);
+      extensions_features::kExtensionsMenuAccessControl);
 }
 
 void ExtensionsTabbedMenuViewUnitTest::SetUp() {

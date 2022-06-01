@@ -90,4 +90,9 @@ const base::Feature kNewExtensionFaviconHandling{
 const base::Feature kExtensionDynamicURLRedirection{
     "kExtensionDynamicURLRedirection", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables enhanced site control for extensions and allowing the user to control
+// site permissions.
+const base::Feature kExtensionsMenuAccessControl{
+    "ExtensionsMenuAccessControl", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace extensions_features

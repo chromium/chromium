@@ -20,7 +20,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_browser_constants.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
@@ -363,9 +362,9 @@ content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
 
   source->AddString(kLoadTimeClassesKey, GetLoadTimeClasses(in_dev_mode));
 
-  source->AddBoolean(
-      kEnableEnhancedSiteControls,
-      base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl));
+  source->AddBoolean(kEnableEnhancedSiteControls,
+                     base::FeatureList::IsEnabled(
+                         extensions_features::kExtensionsMenuAccessControl));
 
   return source;
 }

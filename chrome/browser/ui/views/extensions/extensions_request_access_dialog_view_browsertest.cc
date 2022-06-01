@@ -6,11 +6,11 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_browsertest.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension_features.h"
 
 class ExtensionsRequestAccessDialogViewBrowserTest
     : public ExtensionsDialogBrowserTest {
@@ -35,7 +35,7 @@ class ExtensionsRequestAccessDialogViewBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::kExtensionsMenuAccessControl};
+      extensions_features::kExtensionsMenuAccessControl};
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionsRequestAccessDialogViewBrowserTest, InvokeUi) {

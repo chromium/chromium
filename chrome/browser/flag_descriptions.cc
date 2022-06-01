@@ -1337,11 +1337,13 @@ const char kExtensionContentVerificationEnforce[] =
 const char kExtensionContentVerificationEnforceStrict[] =
     "Enforce strict (hard fail if we can't get hashes)";
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 const char kExtensionsMenuAccessControlName[] =
     "Extensions Menu Access Control";
 const char kExtensionsMenuAccessControlDescription[] =
     "Enables a redesigned extensions menu that allows the user to control "
     "extensions site access.";
+#endif
 
 const char kExtensionsOnChromeUrlsName[] = "Extensions on chrome:// URLs";
 const char kExtensionsOnChromeUrlsDescription[] =

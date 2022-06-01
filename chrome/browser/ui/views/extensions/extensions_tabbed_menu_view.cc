@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -33,6 +32,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -268,7 +268,8 @@ views::Widget* ExtensionsTabbedMenuView::ShowBubble(
     ExtensionsToolbarButton::ButtonType button_type,
     bool allow_pining) {
   DCHECK(!g_extensions_dialog);
-  DCHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl));
+  DCHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControl));
   g_extensions_dialog = new ExtensionsTabbedMenuView(
       anchor_view, browser, extensions_container_, button_type, allow_pining);
   views::Widget* widget =
@@ -284,7 +285,8 @@ bool ExtensionsTabbedMenuView::IsShowing() {
 
 // static
 void ExtensionsTabbedMenuView::Hide() {
-  DCHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl));
+  DCHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControl));
   if (IsShowing()) {
     g_extensions_dialog->GetWidget()->Close();
     // Set the dialog to nullptr since `GetWidget->Close()` is not synchronous.

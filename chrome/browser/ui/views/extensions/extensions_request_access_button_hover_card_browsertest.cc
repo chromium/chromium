@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
 
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_browsertest.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 
 class ExtensionsRequestAccessButtonHoverCardBrowserTest
     : public ExtensionsDialogBrowserTest {
@@ -41,7 +41,7 @@ class ExtensionsRequestAccessButtonHoverCardBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::kExtensionsMenuAccessControl};
+      extensions_features::kExtensionsMenuAccessControl};
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionsRequestAccessButtonHoverCardBrowserTest,

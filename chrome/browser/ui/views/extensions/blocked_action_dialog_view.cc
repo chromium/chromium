@@ -10,11 +10,11 @@
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "extensions/common/extension_features.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -58,7 +58,8 @@ void ShowBlockedActionDialogView(Browser* browser,
   };
 
   ui::DialogModel::Builder dialog_builder;
-  if (base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl)) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
     ToolbarActionViewController* extension =
         container->GetActionForId(extension_id);
     content::WebContents* web_contents =

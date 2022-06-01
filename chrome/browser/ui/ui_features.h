@@ -47,8 +47,6 @@ extern const base::Feature kDisplayOpenLinkAsProfile;
 
 extern const base::Feature kEvDetailsInPageInfo;
 
-extern const base::Feature kExtensionsMenuAccessControl;
-
 extern const base::Feature kForceSignInReauth;
 
 extern const base::Feature kProminentDarkModeActiveTabTitle;

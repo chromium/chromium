@@ -66,11 +66,6 @@ const base::Feature kDisplayOpenLinkAsProfile{
 const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables showing the new extensions menu and toolbar that allows the user to
-// access control permissions.
-const base::Feature kExtensionsMenuAccessControl{
-    "ExtensionsMenuAccessControl", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the reauth flow for authenticated profiles with invalid credentials
 // when the force sign-in policy is enabled.
 const base::Feature kForceSignInReauth{"ForceSignInReauth",
