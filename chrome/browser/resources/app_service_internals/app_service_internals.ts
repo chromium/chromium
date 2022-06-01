@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './app_service_internals.html.js';
 import {AppInfo, AppServiceInternalsPageHandler, PreferredAppInfo} from './app_service_internals.mojom-webui.js';
 
 export class AppServiceInternalsElement extends PolymerElement {
@@ -12,7 +13,7 @@ export class AppServiceInternalsElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

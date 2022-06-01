@@ -3,23 +3,21 @@
 # found in the LICENSE file.
 
 import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("./launcher_internals.gni")
 
 assert(is_chromeos, "Launcher internals is Chrome OS only.")
 
 resources_grd_file = "$target_gen_dir/resources.grd"
 
-html_to_js("web_components") {
-  js_files = [
-    "launcher_internals.ts",
-    "results_table.ts",
-  ]
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
-copy("copy_browser_proxy") {
-  sources = [ "browser_proxy.ts" ]
+copy("copy_src") {
+  sources = ts_files
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
@@ -33,19 +31,15 @@ copy("copy_mojo") {
 ts_library("build_ts") {
   deps = [ "//third_party/polymer/v3_0:library" ]
   extra_deps = [
-    ":copy_browser_proxy",
     ":copy_mojo",
-    ":web_components",
+    ":copy_src",
+    ":html_wrapper_files",
   ]
-  root_dir = "$target_gen_dir"
+  root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "browser_proxy.ts",
-    "launcher_internals.mojom-webui.js",
-    "launcher_internals.ts",
-    "results_table.ts",
-  ]
+  in_files =
+      ts_files + html_wrapper_files + [ "launcher_internals.mojom-webui.js" ]
 }
 
 generate_grd("build_grd") {

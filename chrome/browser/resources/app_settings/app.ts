@@ -18,7 +18,9 @@ import {App} from 'chrome://resources/cr_components/app_management/app_managemen
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './app.html.js';
 
 // TODO(crbug.com/1294060): Investigate end-to-end WebAppSettings tests
 export class WebAppSettingsAppElement extends PolymerElement {
@@ -27,7 +29,7 @@ export class WebAppSettingsAppElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

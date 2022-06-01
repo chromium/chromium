@@ -4,42 +4,31 @@
 
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("./identity_internals.gni")
 
 assert(!is_android)
 
-preprocess_folder = "preprocessed"
-html_to_js("web_components") {
-  js_files = [ "token_list_item.ts" ]
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
+  template = "native"
 }
 
-preprocess_if_expr("preprocess_src") {
-  in_folder = "."
-  in_files = [ "identity_internals.ts" ]
-  out_folder = "$target_gen_dir/$preprocess_folder"
-}
-
-preprocess_if_expr("preprocess_gen") {
-  in_folder = target_gen_dir
-  in_files = [ "token_list_item.ts" ]
-  deps = [ ":web_components" ]
-  out_folder = "$target_gen_dir/$preprocess_folder"
+copy("copy_src") {
+  sources = ts_files
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
+  root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
-  in_files = [
-    "identity_internals.ts",
-    "token_list_item.ts",
-  ]
+  in_files = ts_files + html_wrapper_files
   deps = [ "//ui/webui/resources:library" ]
   extra_deps = [
-    ":preprocess_gen",
-    ":preprocess_src",
+    ":copy_src",
+    ":html_wrapper_files",
   ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 }

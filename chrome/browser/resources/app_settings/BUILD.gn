@@ -4,37 +4,25 @@
 
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("./app_settings.gni")
 
 assert(is_win || is_mac || is_linux || is_fuchsia)
-preprocess_folder = "preprocessed"
+
 resources_grd_file = "$target_gen_dir/resources.grd"
 
-web_component_files = [ "app.ts" ]
-
-html_to_js("web_components") {
-  js_files = web_component_files
-}
-
-preprocess_if_expr("preprocess_web_components") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = web_component_files
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
 ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
+  root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = web_component_files + [
-               "app_management.mojom-webui.js",
-               "web_app_settings.ts",
-             ]
+  in_files = ts_files + html_wrapper_files + [ "app_management.mojom-webui.js" ]
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
@@ -42,20 +30,20 @@ ts_library("build_ts") {
   ]
   extra_deps = [
     ":copy_mojo",
-    ":copy_ts",
-    ":preprocess_web_components",
+    ":copy_src",
+    ":html_wrapper_files",
   ]
 }
 
-copy("copy_ts") {
-  sources = [ "web_app_settings.ts" ]
-  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
+copy("copy_src") {
+  sources = ts_files
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 copy("copy_mojo") {
   deps = [ "//ui/webui/resources/cr_components/app_management:mojo_bindings_js__generator" ]
   sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/app_management/app_management.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 generate_grd("build_grd") {

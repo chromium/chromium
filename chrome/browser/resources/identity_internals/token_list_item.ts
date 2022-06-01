@@ -5,7 +5,8 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+
+import {getTemplate} from './token_list_item.html.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -25,7 +26,7 @@ function dashToCamelCase(dashId: string): string {
 
 class TokenListItemElement extends CustomElement {
   static override get template() {
-    return getTrustedHTML`{__html_template__}`;
+    return getTemplate();
   }
 
   extensionId: string = '';
