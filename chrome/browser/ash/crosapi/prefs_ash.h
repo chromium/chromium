@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,8 +18,6 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_pref_store.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
@@ -37,8 +36,7 @@ namespace crosapi {
 // This class must only be used from the main thread.
 class PrefsAsh : public mojom::Prefs,
                  public ProfileManagerObserver,
-                 public ProfileObserver,
-                 public content::NotificationObserver {
+                 public ProfileObserver {
  public:
   PrefsAsh(ProfileManager* profile_manager, PrefService* local_state);
   PrefsAsh(const PrefsAsh&) = delete;
@@ -68,11 +66,6 @@ class PrefsAsh : public mojom::Prefs,
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // Used to inject |profile| as a primary profile for testing.
   void OnPrimaryProfileReadyForTesting(Profile* profile) {
     OnPrimaryProfileReady(profile);
@@ -95,6 +88,8 @@ class PrefsAsh : public mojom::Prefs,
   // Called when Primary logged in user profile is ready.
   void OnPrimaryProfileReady(Profile* profile);
 
+  void OnAppTerminating();
+
   // In production, owned by g_browser_process, which does not outlives this
   // object.
   ProfileManager* profile_manager_;
@@ -114,7 +109,7 @@ class PrefsAsh : public mojom::Prefs,
   // Observe profile destruction to reset prefs observation.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
-  content::NotificationRegistrar notification_registrar_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
   // Map of extension pref paths to preference names.
   std::map<mojom::PrefPath, std::string> extension_prefpath_to_name_;
 };

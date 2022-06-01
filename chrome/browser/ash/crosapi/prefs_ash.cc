@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
@@ -20,7 +20,6 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_service.h"
 
 namespace crosapi {
 namespace {
@@ -116,8 +115,9 @@ PrefsAsh::PrefsAsh(ProfileManager* profile_manager, PrefService* local_state)
   DCHECK(profile_manager_);
   DCHECK(local_state_);
 
-  notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                              content::NotificationService::AllSources());
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(
+          base::BindOnce(&PrefsAsh::OnAppTerminating, base::Unretained(this)));
 
   profile_manager_->AddObserver(this);
   local_state_registrar_.Init(local_state_);
@@ -322,13 +322,6 @@ void PrefsAsh::OnProfileWillBeDestroyed(Profile* profile) {
   profile_prefs_registrar_.reset();
 }
 
-void PrefsAsh::Observe(int type,
-                       const content::NotificationSource& source,
-                       const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
-  profile_prefs_registrar_.reset();
-}
-
 void PrefsAsh::OnPrefChanged(mojom::PrefPath path) {
   auto state = GetState(path);
   const base::Value* value =
@@ -354,6 +347,10 @@ void PrefsAsh::OnPrimaryProfileReady(Profile* profile) {
   profile_manager_->RemoveObserver(this);
   profile_prefs_registrar_ = std::make_unique<PrefChangeRegistrar>();
   profile_prefs_registrar_->Init(profile->GetPrefs());
+}
+
+void PrefsAsh::OnAppTerminating() {
+  profile_prefs_registrar_.reset();
 }
 
 }  // namespace crosapi
