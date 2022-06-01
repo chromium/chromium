@@ -299,6 +299,14 @@ void XDGToplevelWrapperImpl::SetTopLevelDecorationMode(
     DecorationMode requested_mode) {
   if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode_)
     return;
+  // TODO(crbug.com/1261321): Server side decoration decoration will not work
+  // when the screen coordinate is enabled.
+  if (SupportsScreenCoordinates() &&
+      requested_mode == DecorationMode::kServerSide) {
+    LOG(WARNING) << "Server side decoration is not supported when window "
+                    "positioning is enabled";
+    return;
+  }
 
   zxdg_toplevel_decoration_v1_set_mode(zxdg_toplevel_decoration_.get(),
                                        ToInt32(requested_mode));
@@ -383,6 +391,9 @@ void XDGToplevelWrapperImpl::RequestWindowBounds(const gfx::Rect& bounds) {
     LOG(WARNING) << "Output Not found for id=" << id;
     output = connection_->wayland_output_manager()->GetPrimaryOutput();
   }
+  // `output` can be null in unit tests where it doesn't wait for output events.
+  if (!output)
+    return;
   zaura_toplevel_set_window_bounds(aura_toplevel_.get(), bounds.x(), bounds.y(),
                                    bounds.width(), bounds.height(),
                                    output->get_output());

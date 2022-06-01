@@ -431,12 +431,11 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(int32_t x,
 }
 
 void WaylandToplevelWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
-  if (!shell_toplevel_ || !screen_coordinates_enabled_) {
-    WaylandWindow::SetBoundsInPixels(bounds);
-    return;
+  WaylandWindow::SetBoundsInPixels(bounds);
+  if (shell_toplevel_ && screen_coordinates_enabled_) {
+    gfx::Rect bounds_in_dip = delegate()->ConvertRectToDIP(bounds);
+    shell_toplevel_->RequestWindowBounds(bounds_in_dip);
   }
-  gfx::Rect bounds_in_dip = delegate()->ConvertRectToDIP(bounds);
-  shell_toplevel_->RequestWindowBounds(bounds_in_dip);
 }
 
 void WaylandToplevelWindow::SetOrigin(const gfx::Point& origin) {
