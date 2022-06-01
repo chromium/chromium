@@ -13,9 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_side_panel_coordinator.h"
+#include "components/autofill_assistant/browser/public/external_script_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
+
+class ApcExternalActionDelegate;
 
 // TODO(crbug.com/1322419): Observe the SidePanel so that we can destruct
 // Onboarding, ScriptExecution, etc. on close.
@@ -44,6 +47,11 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   virtual std::unique_ptr<ApcOnboardingCoordinator>
   CreateOnboardingCoordinator();
 
+  // Creates an external script controller. Protected to allow for overrides
+  // by test classes.
+  virtual std::unique_ptr<autofill_assistant::ExternalScriptController>
+  CreateExternalScriptController();
+
   explicit ApcClientImpl(content::WebContents* web_contents);
 
  private:
@@ -54,10 +62,31 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   void OnOnboardingComplete(bool success);
 
   // Registers when a run is complete. Used in callbacks.
-  void OnRunComplete();
+  void OnRunComplete(
+      autofill_assistant::ExternalScriptController::ScriptResult result);
 
   // AssistantSidePanelCoordinator::Observer:
   void OnHidden() override;
+
+  // The delegate is responsible for handling protos received from backend DSL
+  // actions and UI updates.
+  std::unique_ptr<ApcExternalActionDelegate> apc_external_action_delegate_;
+
+  // Controls a script run triggered by the headless API. This class is
+  // responsible for handling the forwarding of action to
+  // `apc_external_action_delegate_` and managing the run lifetime.
+  std::unique_ptr<autofill_assistant::ExternalScriptController>
+      external_script_controller_;
+
+  // The username for which `Start()` was triggered.
+  std::string username_;
+
+  // The url for which `Start()` was triggered.
+  GURL url_;
+
+  // Whether the login step of a script run should be skipped.
+  // This is used during triggers from the leak warning.
+  bool skip_login_;
 
   // The state of the `ApcClient` to avoid that a run is started while
   // another is already ongoing in the tab.

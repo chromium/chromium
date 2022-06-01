@@ -10,12 +10,36 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
+#include "chrome/browser/autofill_assistant/password_change/apc_external_action_delegate.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_display_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/channel_info.h"
+#include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
+#include "components/autofill_assistant/browser/public/external_script_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+
+// TODO(b/234418435): Remove these values from here once exposed in
+// autofill_assistant/browser/public.
+namespace {
+constexpr char kPasswordChangeUsername[] = "PASSWORD_CHANGE_USERNAME";
+constexpr char kPasswordChangeSkipLoginParameter[] =
+    "PASSWORD_CHANGE_SKIP_LOGIN";
+constexpr char kIntentParameter[] = "INTENT";
+constexpr char kSourceParameter[] = "SOURCE";
+constexpr char kIntent[] = "PASSWORD_CHANGE";
+constexpr char kParameterStartImediately[] = "START_IMMEDIATELY";
+constexpr char kParameterOriginalDeepLink[] = "ORIGINAL_DEEPLINK";
+constexpr char kParameterEnabled[] = "ENABLED";
+constexpr char kParameterCaller[] = "CALLER";
+
+constexpr int kInChromeCaller = 7;
+constexpr int kSourcePasswordChangeLeakWarning = 10;
+constexpr int kSourcePasswordChangeSettings = 11;
+}  // namespace
 
 ApcClientImpl::ApcClientImpl(content::WebContents* web_contents)
     : content::WebContentsUserData<ApcClientImpl>(*web_contents) {}
@@ -35,6 +59,10 @@ bool ApcClientImpl::Start(const GURL& url,
     return false;
   is_running_ = true;
 
+  url_ = url;
+  username_ = username;
+  skip_login_ = skip_login;
+
   // The coordinator takes care of checking whether a user has previously given
   // consent and, if not, prompts the user to give consent now.
   onboarding_coordinator_ = CreateOnboardingCoordinator();
@@ -46,7 +74,7 @@ bool ApcClientImpl::Start(const GURL& url,
 
 void ApcClientImpl::Stop() {
   onboarding_coordinator_.reset();
-
+  external_script_controller_.reset();
   is_running_ = false;
 }
 
@@ -62,12 +90,28 @@ void ApcClientImpl::OnOnboardingComplete(bool success) {
     return;
   }
 
-  // TODO(crbug.com/1324089): Start execution. For now, immediately mark the run
-  // as complete.
-  OnRunComplete();
+  base::flat_map<std::string, std::string> params_map;
+  params_map[kPasswordChangeUsername] = username_;
+  params_map[kIntentParameter] = kIntent;
+  params_map[kParameterStartImediately] = "true";
+  params_map[kParameterOriginalDeepLink] = url_.spec();
+  params_map[kPasswordChangeSkipLoginParameter] =
+      skip_login_ ? "true" : "false";
+  params_map[kParameterEnabled] = "true";
+  params_map[kParameterCaller] = base::NumberToString(kInChromeCaller);
+  params_map[kSourceParameter] =
+      skip_login_ ? base::NumberToString(kSourcePasswordChangeLeakWarning)
+                  : base::NumberToString(kSourcePasswordChangeSettings);
+
+  external_script_controller_ = CreateExternalScriptController();
+  external_script_controller_->StartScript(
+      params_map,
+      base::BindOnce(&ApcClientImpl::OnRunComplete, base::Unretained(this)));
 }
 
-void ApcClientImpl::OnRunComplete() {
+void ApcClientImpl::OnRunComplete(
+    autofill_assistant::ExternalScriptController::ScriptResult result) {
+  // TODO(crbug.com/1324089): Handle failed result.
   Stop();
 }
 
@@ -84,6 +128,22 @@ void ApcClientImpl::OnHidden() {
 std::unique_ptr<ApcOnboardingCoordinator>
 ApcClientImpl::CreateOnboardingCoordinator() {
   return ApcOnboardingCoordinator::Create(&GetWebContents());
+}
+
+std::unique_ptr<autofill_assistant::ExternalScriptController>
+ApcClientImpl::CreateExternalScriptController() {
+  side_panel_coordinator_ =
+      AssistantSidePanelCoordinator::Create(&GetWebContents());
+  apc_external_action_delegate_ = std::make_unique<ApcExternalActionDelegate>(
+      side_panel_coordinator_.get());
+  apc_external_action_delegate_->SetupDisplay();
+
+  std::unique_ptr<autofill_assistant::AutofillAssistant> autofill_assistant =
+      autofill_assistant::AutofillAssistantFactory::CreateForBrowserContext(
+          GetWebContents().GetBrowserContext(),
+          std::make_unique<autofill_assistant::CommonDependenciesChrome>());
+  return autofill_assistant->CreateExternalScriptController(
+      &GetWebContents(), apc_external_action_delegate_.get());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ApcClientImpl);

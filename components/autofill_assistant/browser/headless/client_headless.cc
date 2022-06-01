@@ -123,8 +123,7 @@ autofill::PersonalDataManager* ClientHeadless::GetPersonalDataManager() const {
 }
 
 WebsiteLoginManager* ClientHeadless::GetWebsiteLoginManager() const {
-  // TODO(b/201964911): return instance.
-  return nullptr;
+  return website_login_manager_.get();
 }
 
 password_manager::PasswordChangeSuccessTracker*

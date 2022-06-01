@@ -49,6 +49,8 @@ static_library("unit_test_support") {
   sources = [
     "mock_autofill_assistant.cc",
     "mock_autofill_assistant.h",
+    "mock_external_script_controller.cc",
+    "mock_external_script_controller.h",
     "mock_runtime_manager.cc",
     "mock_runtime_manager.h",
   ]
