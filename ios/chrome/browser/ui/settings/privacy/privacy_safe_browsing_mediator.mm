@@ -6,6 +6,8 @@
 
 #include "base/auto_reset.h"
 #include "base/mac/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -276,22 +278,32 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemType type = static_cast<ItemType>(item.type);
   if (type == ItemTypeSafeBrowsingEnhancedProtection) {
     if ([self shouldItemTypeHaveCheckmark:type]) {
+      base::RecordAction(base::UserMetricsAction(
+          "SafeBrowsing.Settings.EnhancedProtectionExpandArrowClicked"));
       [self.handler showSafeBrowsingEnhancedProtection];
     } else {
+      base::RecordAction(base::UserMetricsAction(
+          "SafeBrowsing.Settings.EnhancedProtectionClicked"));
       [self selectSettingItem:item];
     }
   }
 
   if (type == ItemTypeSafeBrowsingStandardProtection) {
     if ([self shouldItemTypeHaveCheckmark:type]) {
+      base::RecordAction(base::UserMetricsAction(
+          "SafeBrowsing.Settings.StandardProtectionExpandArrowClicked"));
       [self.handler showSafeBrowsingStandardProtection];
     } else {
+      base::RecordAction(base::UserMetricsAction(
+          "SafeBrowsing.Settings.StandardProtectionClicked"));
       [self selectSettingItem:item];
     }
   }
 
   if (type == ItemTypeSafeBrowsingNoProtection &&
       ![self shouldItemTypeHaveCheckmark:type]) {
+    base::RecordAction(base::UserMetricsAction(
+        "SafeBrowsing.Settings.DisableSafeBrowsingClicked"));
     [self.handler showSafeBrowsingNoProtectionPopUp:item];
   }
 }
@@ -306,9 +318,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemType type = static_cast<ItemType>(item.type);
   switch (type) {
     case ItemTypeSafeBrowsingEnhancedProtection:
+      base::RecordAction(base::UserMetricsAction(
+          "SafeBrowsing.Settings.EnhancedProtectionExpandArrowClicked"));
       [self.handler showSafeBrowsingEnhancedProtection];
       break;
     case ItemTypeSafeBrowsingStandardProtection:
+      base::RecordAction(base::UserMetricsAction(
+          "SafeBrowsing.Settings.StandardProtectionExpandArrowClicked"));
       [self.handler showSafeBrowsingStandardProtection];
       break;
     default:

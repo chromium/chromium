@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 
 #include "base/mac/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
@@ -129,19 +131,25 @@
       IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_CONFIRM);
   [self.alertCoordinator addItemWithTitle:actionTitle
                                    action:^{
+                                     base::RecordAction(base::UserMetricsAction(
+                                         "SafeBrowsing.Settings."
+                                         "DisableSafeBrowsingDialogConfirmed"));
                                      [weakSelf.mediator selectSettingItem:item];
                                      [weakSelf.alertCoordinator stop];
                                      weakSelf.alertCoordinator = nil;
                                    }
                                     style:UIAlertActionStyleDefault];
 
-  [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                                   action:^{
-                                     [weakSelf.mediator selectSettingItem:nil];
-                                     [weakSelf.alertCoordinator stop];
-                                     weakSelf.alertCoordinator = nil;
-                                   }
-                                    style:UIAlertActionStyleCancel];
+  [self.alertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                action:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "SafeBrowsing.Settings.DisableSafeBrowsingDialogDenied"));
+                  [weakSelf.mediator selectSettingItem:nil];
+                  [weakSelf.alertCoordinator stop];
+                  weakSelf.alertCoordinator = nil;
+                }
+                 style:UIAlertActionStyleCancel];
 
   [self.alertCoordinator start];
 }

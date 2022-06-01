@@ -385,6 +385,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       [self.handler showClearBrowsingData];
       break;
     case ItemTypePrivacySafeBrowsing:
+      base::RecordAction(base::UserMetricsAction(
+          "SafeBrowsing.Settings.ShowedFromParentSettings"));
       [self.handler showSafeBrowsing];
       break;
     default:
