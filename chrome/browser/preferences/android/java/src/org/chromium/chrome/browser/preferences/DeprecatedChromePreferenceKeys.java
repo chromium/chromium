@@ -123,6 +123,8 @@ public class DeprecatedChromePreferenceKeys {
                 "prefetch_notification_offline_counter",
                 "prefetch_notification_shown_time",
                 "prioritize_bootstrap_tasks",
+                "service_manager_for_background_prefetch",
+                "service_manager_for_download_resumption",
                 "signin_promo_impressions_count_bookmarks",
                 "signin_promo_impressions_count_settings",
                 "sole_integration_enabled",

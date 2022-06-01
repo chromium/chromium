@@ -51,8 +51,6 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, true)
                     .put(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID, false)
                     .put(ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH, false)
-                    .put(ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD, true)
-                    .put(ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH, true)
                     .put(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED, false)
                     .put(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE, true)
                     .put(ChromeFeatureList.EARLY_LIBRARY_LOAD, true)
@@ -112,12 +110,6 @@ public class CachedFeatureFlags {
      */
     private static final Map<String, String> sNonDynamicPrefKeys =
             ImmutableMap.<String, String>builder()
-                    .put(ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD,
-                            ChromePreferenceKeys
-                                    .FLAGS_CACHED_SERVICE_MANAGER_FOR_DOWNLOAD_RESUMPTION)
-                    .put(ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH,
-                            ChromePreferenceKeys
-                                    .FLAGS_CACHED_SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH)
                     .put(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED,
                             ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED)
                     .put(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE,

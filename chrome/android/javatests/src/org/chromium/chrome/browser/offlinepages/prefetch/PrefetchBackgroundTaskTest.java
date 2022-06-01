@@ -195,8 +195,6 @@ public class PrefetchBackgroundTaskTest {
         });
         OfflineTestUtil.setPrefetchingEnabledByServer(true);
         OfflineTestUtil.setGCMTokenForTesting("dummy_gcm_token");
-
-        PrefetchBackgroundTask.alwaysSupportMinimalBrowserForTesting();
     }
 
     @After

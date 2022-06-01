@@ -341,19 +341,6 @@ public final class ChromePreferenceKeys {
     public static final String FLAGS_CACHED_NETWORK_SERVICE_WARM_UP_ENABLED =
             "network_service_warm_up_enabled";
     /**
-     * Key for whether PrefetchBackgroundTask should load native in service manager only mode.
-     * Default value is false.
-     */
-    public static final String FLAGS_CACHED_SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH =
-            "service_manager_for_background_prefetch";
-    /**
-     * Key for whether DownloadResumptionBackgroundTask should load native in service manager only
-     * mode.
-     * Default value is false.
-     */
-    public static final String FLAGS_CACHED_SERVICE_MANAGER_FOR_DOWNLOAD_RESUMPTION =
-            "service_manager_for_download_resumption";
-    /**
      * Whether or not the start surface is enabled.
      * Default value is false.
      */

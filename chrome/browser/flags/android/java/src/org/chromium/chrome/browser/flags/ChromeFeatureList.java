@@ -487,9 +487,6 @@ public abstract class ChromeFeatureList {
             "SearchEnginePromo.NewDeviceVer2";
     public static final String SEND_TAB_TO_SELF_SIGNIN_PROMO = "SendTabToSelfSigninPromo";
     public static final String SEND_TAB_TO_SELF_V2 = "SendTabToSelfV2";
-    public static final String SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH =
-            "ServiceManagerForBackgroundPrefetch";
-    public static final String SERVICE_MANAGER_FOR_DOWNLOAD = "ServiceManagerForDownload";
     public static final String SHARE_BUTTON_IN_TOP_TOOLBAR = "ShareButtonInTopToolbar";
     public static final String SHARE_CROW_BUTTON = "ShareCrowButton";
     public static final String SHARED_CLIPBOARD_UI = "SharedClipboardUI";

@@ -266,8 +266,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSearchEnginePromoExistingDeviceV2,
     &kSearchEnginePromoNewDevice,
     &kSearchEnginePromoNewDeviceV2,
-    &kServiceManagerForBackgroundPrefetch,
-    &kServiceManagerForDownload,
     &kShareButtonInTopToolbar,
     &kSharedClipboardUI,
     &kShowScrollableMVTOnNTPAndroid,
@@ -740,12 +738,6 @@ const base::Feature kRelatedSearchesSimplifiedUx{
 
 const base::Feature kRelatedSearchesUi{"RelatedSearchesUi",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kServiceManagerForBackgroundPrefetch{
-    "ServiceManagerForBackgroundPrefetch", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kServiceManagerForDownload{
-    "ServiceManagerForDownload", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kShareButtonInTopToolbar{"ShareButtonInTopToolbar",
                                              base::FEATURE_DISABLED_BY_DEFAULT};

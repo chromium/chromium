@@ -217,11 +217,7 @@ public class ChromeCachedFlags {
 
         // TODO(crbug.com/995355): Move other related flags from cacheNativeFlags() to here.
         List<String> featuresToCache = new ArrayList<String>() {
-            {
-                add(ChromeFeatureList.EXPERIMENTS_FOR_AGSA);
-                add(ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD);
-                add(ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH);
-            }
+            { add(ChromeFeatureList.EXPERIMENTS_FOR_AGSA); }
         };
         CachedFeatureFlags.cacheNativeFlags(featuresToCache);
 

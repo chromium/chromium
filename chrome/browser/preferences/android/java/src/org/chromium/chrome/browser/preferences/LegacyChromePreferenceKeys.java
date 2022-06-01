@@ -65,8 +65,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.FLAGS_CACHED_GRID_TAB_SWITCHER_ENABLED,
                 ChromePreferenceKeys.FLAGS_CACHED_IMMERSIVE_UI_MODE_ENABLED,
                 ChromePreferenceKeys.FLAGS_CACHED_NETWORK_SERVICE_WARM_UP_ENABLED,
-                ChromePreferenceKeys.FLAGS_CACHED_SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH,
-                ChromePreferenceKeys.FLAGS_CACHED_SERVICE_MANAGER_FOR_DOWNLOAD_RESUMPTION,
                 ChromePreferenceKeys.FLAGS_CACHED_START_SURFACE_ENABLED,
                 ChromePreferenceKeys.FLAGS_CACHED_SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
                 ChromePreferenceKeys.FLAGS_CACHED_TAB_GROUPS_ANDROID_ENABLED,

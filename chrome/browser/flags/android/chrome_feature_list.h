@@ -127,8 +127,6 @@ extern const base::Feature kSearchEnginePromoExistingDevice;
 extern const base::Feature kSearchEnginePromoExistingDeviceV2;
 extern const base::Feature kSearchEnginePromoNewDevice;
 extern const base::Feature kSearchEnginePromoNewDeviceV2;
-extern const base::Feature kServiceManagerForBackgroundPrefetch;
-extern const base::Feature kServiceManagerForDownload;
 extern const base::Feature kShareButtonInTopToolbar;
 extern const base::Feature kSharingHubLinkToggle;
 extern const base::Feature kShowScrollableMVTOnNTPAndroid;
