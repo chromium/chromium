@@ -391,19 +391,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Cors.AccessCheckError" enum="CorsAccessCheckError"
-    expires_after="2022-07-11">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>yhirano@chromium.org</owner>
-  <summary>
-    The distribution of CORS error types on the original network requests. This
-    reports whenever CORS checks detect an error on the original network
-    requests.
-  </summary>
-</histogram>
-
 <histogram name="Net.Cors.AccessCheckResult" enum="CorsAccessCheckResult"
-    expires_after="M102">
+    expires_after="2022-09-18">
   <owner>toyoshim@chromium.org</owner>
   <owner>yhirano@chromium.org</owner>
   <summary>
