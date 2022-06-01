@@ -243,6 +243,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//android_webview/js_sandbox:js_sandbox_java",
     "//android_webview/nonembedded:devui_java",
     "//android_webview/nonembedded:services_java",
+    "//android_webview/nonembedded:util_java",
     "//android_webview/proto:aw_variations_seed_proto_java",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//android_webview/test/embedded_test_server:aw_net_java_test_support",
