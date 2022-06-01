@@ -15,6 +15,7 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -274,11 +275,27 @@ BubbleDialogModelHost::BubbleDialogModelHost(
     std::unique_ptr<ui::DialogModel> model,
     View* anchor_view,
     BubbleBorder::Arrow arrow)
+    : BubbleDialogModelHost(base::PassKey<BubbleDialogModelHost>(),
+                            std::move(model),
+                            anchor_view,
+                            arrow,
+                            ui::ModalType::MODAL_TYPE_NONE) {}
+
+BubbleDialogModelHost::BubbleDialogModelHost(
+    base::PassKey<BubbleDialogModelHost>,
+    std::unique_ptr<ui::DialogModel> model,
+    View* anchor_view,
+    BubbleBorder::Arrow arrow,
+    ui::ModalType modal_type)
     : BubbleDialogDelegate(anchor_view, arrow),
       model_(std::move(model)),
       contents_view_(
           SetContentsView(std::make_unique<ContentsView>(this, model_.get()))) {
   model_->set_host(GetPassKey(), this);
+
+  // Note that this needs to be called before IsModalDialog() is called later in
+  // this constructor.
+  SetModalType(modal_type);
 
   // Dialog callbacks can safely refer to |model_|, they can't be called after
   // Widget::Close() calls WidgetWillClose() synchronously so there shouldn't
@@ -376,10 +393,9 @@ std::unique_ptr<BubbleDialogModelHost> BubbleDialogModelHost::CreateModal(
     std::unique_ptr<ui::DialogModel> model,
     ui::ModalType modal_type) {
   DCHECK_NE(modal_type, ui::MODAL_TYPE_NONE);
-  auto dialog = std::make_unique<BubbleDialogModelHost>(
-      std::move(model), nullptr, BubbleBorder::Arrow::NONE);
-  dialog->SetModalType(modal_type);
-  return dialog;
+  return std::make_unique<BubbleDialogModelHost>(
+      base::PassKey<BubbleDialogModelHost>(), std::move(model), nullptr,
+      BubbleBorder::Arrow::NONE, modal_type);
 }
 
 View* BubbleDialogModelHost::GetInitiallyFocusedView() {

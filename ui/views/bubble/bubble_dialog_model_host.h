@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
@@ -56,6 +57,15 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   BubbleDialogModelHost(std::unique_ptr<ui::DialogModel> model,
                         View* anchor_view,
                         BubbleBorder::Arrow arrow);
+
+  // "Private" constructor (uses base::PassKey), use another constructor or
+  // ::CreateModal().
+  BubbleDialogModelHost(base::PassKey<BubbleDialogModelHost>,
+                        std::unique_ptr<ui::DialogModel> model,
+                        View* anchor_view,
+                        BubbleBorder::Arrow arrow,
+                        ui::ModalType modal_type);
+
   ~BubbleDialogModelHost() override;
 
   static std::unique_ptr<BubbleDialogModelHost> CreateModal(

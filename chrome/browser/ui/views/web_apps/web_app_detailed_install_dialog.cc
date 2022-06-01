@@ -74,7 +74,6 @@ void ShowWebAppDetailedInstallDialog(
           .AddCancelButton(base::BindOnce(
               &web_app::WebAppDetailedInstallDialogDelegate::OnCancel,
               base::Unretained(delegate_ptr)))
-          .OverrideShowCloseButton(false)
           .Build();
 
   constrained_window::ShowWebModal(std::move(dialog_model), web_contents);
