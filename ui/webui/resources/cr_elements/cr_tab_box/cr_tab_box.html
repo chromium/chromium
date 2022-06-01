@@ -17,6 +17,12 @@
     padding-top: 14px;
   }
 
+  :host([sticky-tabs]) #tablist {
+    position: sticky;
+    top: 0;
+    z-index: var(--cr-tab-box-tabs-z-index, 1);
+  }
+
   #tablist ::slotted(*) {
     background: var(--tabs-background-color);
     border: 1px solid var(--tabs-background-color);

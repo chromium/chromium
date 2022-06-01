@@ -3,11 +3,9 @@
  * found in the LICENSE file.
  */
 
-tabs {
-  position: sticky;
-  top: 0;
+cr-tab-box {
   /* selected treeItem is 2 */
-  z-index: 3;
+  --cr-tab-box-tabs-z-index: 3;
 }
 
 /* Devices Tab */

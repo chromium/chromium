@@ -9,13 +9,11 @@
 
 import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {Tab, TabPanel} from 'chrome://resources/js/cr/ui/tabs.js';
 import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 import {DescriptorPanel, renderClassCodeWithDescription} from './descriptor_panel.js';
-
 import {UsbAlternateInterfaceInfo, UsbConfigurationInfo, UsbDeviceInfo, UsbDeviceRemote, UsbEndpointInfo, UsbInterfaceInfo, UsbTransferDirection, UsbTransferType} from './usb_device.mojom-webui.js';
 import {UsbDeviceManagerRemote} from './usb_manager.mojom-webui.js';
 
@@ -87,12 +85,16 @@ export class DevicesPage {
    * @private
    */
   switchToTab_(device) {
+    const tabs = Array.from(this.root.querySelectorAll('div[slot=\'tab\']'));
     const tabId = device.guid;
+    let index = tabs.findIndex(tab => tab.id === tabId);
 
-    if (null == this.root.getElementById(tabId)) {
+    if (index === -1) {
       const devicePage = new DevicePage(this.usbManager_, device, this.root);
+      index = tabs.length;
     }
-    this.root.getElementById(tabId).selected = true;
+    const tabBox = this.root.querySelector('cr-tab-box');
+    tabBox.setAttribute('selected-index', index);
   }
 }
 
@@ -118,13 +120,13 @@ class DevicePage {
    * @private
    */
   renderTab_(device) {
-    const tabs = queryRequiredElement('tabs', this.root);
+    const tabBox = this.root.querySelector('cr-tab-box');
 
     const tabTemplate = queryRequiredElement('#tab-template', this.root);
     /** @type {DocumentFragment|Node} */
     const tabClone = document.importNode(tabTemplate.content, true);
 
-    const tab = tabClone.querySelector('tab');
+    const tab = tabClone.querySelector('div[slot=\'tab\']');
     if (device.productName && device.productName.data.length > 0) {
       tab.textContent = decodeString16(device.productName);
     } else {
@@ -134,10 +136,9 @@ class DevicePage {
     }
     tab.id = device.guid;
 
-    tabs.appendChild(tabClone);
-    decorate(tab, Tab);
+    const firstPanel = tabBox.querySelector('div[slot=\'panel\']');
+    tabBox.insertBefore(tab, firstPanel);
 
-    const tabPanels = queryRequiredElement('tabpanels', this.root);
     const tabPanelTemplate =
         queryRequiredElement('#device-tabpanel-template', this.root);
     /** @type {DocumentFragment|Node} */
@@ -154,12 +155,11 @@ class DevicePage {
     treeViewRoot.innerText = '';
     renderDeviceTree(device, treeViewRoot);
 
-    const tabPanel =
-        assertInstanceof(tabPanelClone.querySelector('tabpanel'), HTMLElement);
+    const tabPanel = assertInstanceof(
+        tabPanelClone.querySelector('div[slot=\'panel\']'), HTMLElement);
     this.initializeDescriptorPanels_(tabPanel, device.guid);
 
-    tabPanels.appendChild(tabPanelClone);
-    decorate(tabPanel, TabPanel);
+    tabBox.appendChild(tabPanel);
   }
 
   /**

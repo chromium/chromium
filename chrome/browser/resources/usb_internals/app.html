@@ -1,108 +1,103 @@
-<link rel="stylesheet" href="chrome://resources/css/tabs.css">
 <link rel="stylesheet" href="chrome://resources/css/tree.css">
 <link rel="stylesheet" href="usb_internals.css">
-<tabbox>
-  <tabs>
-    <tab>Test Devices</tab>
-    <tab>Devices</tab>
-  </tabs>
-  <tabpanels>
-    <tabpanel>
-      <!-- Test Devices -->
-      <h2>Test Devices</h2>
-      <p>
-        <table class="styled-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Serial number</th>
-              <th>Landing page</th>
-              <th>
-            </tr>
-          </thead>
-          <tbody id="test-device-list">
-          </tbody>
-
-          <template id="test-device-row">
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td><button>Remove</button></td>
-            </tr>
-          </template>
-
-        </table>
-      </p>
-      <div class="page-section">
-        <strong>Add a test device:</strong>
-        <form id="add-test-device-form" action="">
-          <p>
-            <label>
-              Name: <input id="test-device-name" type="text" size="40">
-            </label>
-          </p>
-          <p>
-            <label>
-              Serial number:
-              <input id="test-device-serial" type="text" size="40">
-            </label>
-          </p>
-          <p>
-            <label>
-              Landing page:
-              <input id="test-device-landing-page" type="text" size="40">
-            </label>
-          </p>
-          <button type="submit">Add</button>
-          <span id="add-test-device-result"></span>
-        </form>
-      </div>
-    </tabpanel>
-
-    <tabpanel>
-      <!-- Devices -->
-      <h2>Devices</h2>
+<cr-tab-box sticky-tabs hidden>
+  <div slot="tab">Test Devices</div>
+  <div slot="tab">Devices</div>
+  <div slot="panel">
+    <!-- Test Devices -->
+    <h2>Test Devices</h2>
+    <p>
       <table class="styled-table">
         <thead>
           <tr>
-            <th>Bus Number</th>
-            <th>Port Number</th>
-            <th>Vendor Id</th>
-            <th>Product Id</th>
-            <th>Manufacturer Name</th>
-            <th>Product Name</th>
-            <th>Serial Number</th>
+            <th>Name</th>
+            <th>Serial number</th>
+            <th>Landing page</th>
             <th>
           </tr>
         </thead>
-        <tbody id="device-list"></tbody>
+        <tbody id="test-device-list">
+        </tbody>
 
-        <template id="device-row">
+        <template id="test-device-row">
           <tr>
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><button>Inspect</button></td>
+            <td><button>Remove</button></td>
           </tr>
         </template>
 
       </table>
-    </tabpanel>
-  </tabpanels>
-</tabbox>
+    </p>
+    <div class="page-section">
+      <strong>Add a test device:</strong>
+      <form id="add-test-device-form" action="">
+        <p>
+          <label>
+            Name: <input id="test-device-name" type="text" size="40">
+          </label>
+        </p>
+        <p>
+          <label>
+            Serial number:
+            <input id="test-device-serial" type="text" size="40">
+          </label>
+        </p>
+        <p>
+          <label>
+            Landing page:
+            <input id="test-device-landing-page" type="text" size="40">
+          </label>
+        </p>
+        <button type="submit">Add</button>
+        <span id="add-test-device-result"></span>
+      </form>
+    </div>
+  </div>
+
+  <div slot="panel">
+    <!-- Devices -->
+    <h2>Devices</h2>
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Bus Number</th>
+          <th>Port Number</th>
+          <th>Vendor Id</th>
+          <th>Product Id</th>
+          <th>Manufacturer Name</th>
+          <th>Product Name</th>
+          <th>Serial Number</th>
+          <th>
+        </tr>
+      </thead>
+      <tbody id="device-list"></tbody>
+
+      <template id="device-row">
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><button>Inspect</button></td>
+        </tr>
+      </template>
+
+    </table>
+  </div>
+</cr-tab-box>
 
 
 <template id="tab-template">
-  <tab></tab>
+  <div slot="tab"></div>
 </template>
 
 <template id="device-tabpanel-template">
-  <tabpanel>
+  <div slot="panel">
     <tree class="tree-view"></tree>
     <div class="descriptor-button">
       <button class="device-descriptor-button">Get Device Descriptor</button>
@@ -192,7 +187,7 @@
         <textarea cols="31"></textarea>
       </div>
     </div>
-  </tabpanel>
+  </div>
 </template>
 
 <template id="descriptor-panel-template">

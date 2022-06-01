@@ -72,7 +72,6 @@ js_library("app") {
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:tabs",
   ]
 }
 
@@ -83,7 +82,6 @@ js_library("devices_page") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:tabs",
     "//ui/webui/resources/js/cr/ui:tree",
   ]
 }

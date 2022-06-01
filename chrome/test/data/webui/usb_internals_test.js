@@ -289,9 +289,9 @@ suite('UsbInternalsUITest', function() {
     assertEquals(2, tables.length);
 
     // Only 2 tabs after loading page.
-    const tabs = app.shadowRoot.querySelectorAll('tab');
+    const tabs = app.shadowRoot.querySelectorAll('div[slot=\'tab\']');
     assertEquals(2, tabs.length);
-    const tabPanels = app.shadowRoot.querySelectorAll('tabpanel');
+    const tabPanels = app.shadowRoot.querySelectorAll('div[slot=\'panel\']');
     assertEquals(2, tabPanels.length);
 
     // The second is the devices table, which has 8 columns.
@@ -311,25 +311,31 @@ suite('UsbInternalsUITest', function() {
     // Click the inspect button to open information about the first device.
     // The device info is opened as a third tab panel.
     devicesTable.querySelectorAll('button')[0].click();
-    assertEquals(3, app.shadowRoot.querySelectorAll('tab').length);
-    assertEquals(3, app.shadowRoot.querySelectorAll('tabpanel').length);
-    assertTrue(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
+    assertEquals(
+        3, app.shadowRoot.querySelectorAll('div[slot=\'tab\']').length);
+    let panels = app.shadowRoot.querySelectorAll('div[slot=\'panel\']');
+    assertEquals(3, panels.length);
+    assertTrue(panels[2].hasAttribute('selected'));
 
     // Check that clicking the inspect button for another device will open a
     // new tabpanel.
     devicesTable.querySelectorAll('button')[1].click();
-    assertEquals(4, app.shadowRoot.querySelectorAll('tab').length);
-    assertEquals(4, app.shadowRoot.querySelectorAll('tabpanel').length);
-    assertTrue(app.shadowRoot.querySelectorAll('tabpanel')[3].selected);
-    assertFalse(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
+    assertEquals(
+        4, app.shadowRoot.querySelectorAll('div[slot=\'tab\']').length);
+    panels = app.shadowRoot.querySelectorAll('div[slot=\'panel\']');
+    assertEquals(4, panels.length);
+    assertTrue(panels[3].hasAttribute('selected'));
+    assertFalse(panels[2].hasAttribute('selected'));
 
     // Check that clicking the inspect button for the same device a second
     // time will open the same tabpanel.
     devicesTable.querySelectorAll('button')[0].click();
-    assertEquals(4, app.shadowRoot.querySelectorAll('tab').length);
-    assertEquals(4, app.shadowRoot.querySelectorAll('tabpanel').length);
-    assertTrue(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
-    assertFalse(app.shadowRoot.querySelectorAll('tabpanel')[3].selected);
+    assertEquals(
+        4, app.shadowRoot.querySelectorAll('div[slot=\'tab\']').length);
+    panels = app.shadowRoot.querySelectorAll('div[slot=\'panel\']');
+    assertEquals(4, panels.length);
+    assertTrue(panels[2].hasAttribute('selected'));
+    assertFalse(panels[3].hasAttribute('selected'));
   });
 
   test('RenderDeviceInfoTree', function() {
@@ -337,7 +343,7 @@ suite('UsbInternalsUITest', function() {
     // showing WebUSB information. Check the tree displays correct data.
     // The tab panel of the first device is opened in previous test as the
     // third tab panel.
-    const deviceTab = app.shadowRoot.querySelectorAll('tabpanel')[2];
+    const deviceTab = app.shadowRoot.querySelectorAll('div[slot=\'panel\']')[2];
     const tree = deviceTab.querySelector('tree');
     const treeItems = tree.querySelectorAll('.tree-item');
     assertEquals(11, treeItems.length);
@@ -361,7 +367,7 @@ suite('UsbInternalsUITest', function() {
     await deviceTabInitializedResolver.promise;
     // The tab panel of the first device is opened in previous test as the
     // third tab panel. This device has correct device descriptor.
-    const deviceTab = app.shadowRoot.querySelectorAll('tabpanel')[2];
+    const deviceTab = app.shadowRoot.querySelectorAll('div[slot=\'panel\']')[2];
     deviceTab.querySelector('.device-descriptor-button').click();
 
     await deviceDescriptorRenderResolver.promise;
@@ -427,7 +433,7 @@ suite('UsbInternalsUITest', function() {
     // Inspect the second device, which has short device descriptor.
     devicesTable.querySelectorAll('button')[1].click();
     // The fourth is the device tab (a third tab was opened in a previous test).
-    const deviceTab = app.shadowRoot.querySelectorAll('tabpanel')[3];
+    const deviceTab = app.shadowRoot.querySelectorAll('div[slot=\'panel\']')[3];
 
     await deviceTabInitializedResolver.promise;
     deviceDescriptorRenderResolver = new PromiseResolver();

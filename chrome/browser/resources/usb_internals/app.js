@@ -6,9 +6,9 @@
  * Javascript for usb_internals.html, served from chrome://usb-internals/.
  */
 
+import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
+
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 
 import {DevicesPage} from './devices_page.js';
@@ -69,7 +69,8 @@ class UsbInternalsAppElement extends HTMLElement {
     });
     this.refreshTestDeviceList();
 
-    decorate(assert(this.$('tabbox')), TabBox);
+    const tabbox = this.$('cr-tab-box');
+    tabbox.hidden = false;
   }
 
   async refreshTestDeviceList() {

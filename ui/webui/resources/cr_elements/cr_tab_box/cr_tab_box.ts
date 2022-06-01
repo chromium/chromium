@@ -28,6 +28,18 @@ export class CrTabBoxElement extends CustomElement {
     assert(tabs);
     this.tabs_ = tabs;
     this.tabs_.addEventListener('keydown', e => this.onKeydown_(e));
+    this.tabs_.addEventListener('click', (e: MouseEvent) => {
+      const tabs = this.getTabs_();
+      for (let i = 0; i < e.composedPath().length; i++) {
+        const el = e.composedPath()[i] as HTMLElement;
+        const index = tabs.findIndex(tab => tab === el);
+        if (index !== -1) {
+          this.setAttribute('selected-index', index.toString());
+          break;
+        }
+      }
+    });
+
     const panels = this.$<HTMLElement>('#tabpanels');
     assert(panels);
     this.panels_ = panels;
@@ -36,12 +48,6 @@ export class CrTabBoxElement extends CustomElement {
 
   connectedCallback() {
     this.setAttribute('selected-index', '0');
-
-    this.getTabs_().forEach((panel: Element, index: number) => {
-      panel.addEventListener('click', () => {
-        this.setAttribute('selected-index', index.toString());
-      });
-    });
   }
 
   attributeChangedCallback(name: string, _oldValue: string, newValue: string) {
