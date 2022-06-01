@@ -348,11 +348,10 @@ void InputMethodAuraLinux::UpdateContextFocusState() {
   text_input_type_ = GetTextInputType();
 
   // We only focus in |context_| when the focus is in a textfield.
-  if (old_text_input_type != TEXT_INPUT_TYPE_NONE &&
-      text_input_type_ == TEXT_INPUT_TYPE_NONE) {
+  if (old_text_input_type != TEXT_INPUT_TYPE_NONE) {
     context_->Blur();
-  } else if (old_text_input_type == TEXT_INPUT_TYPE_NONE &&
-             text_input_type_ != TEXT_INPUT_TYPE_NONE) {
+  }
+  if (text_input_type_ != TEXT_INPUT_TYPE_NONE) {
     context_->Focus();
   }
 
