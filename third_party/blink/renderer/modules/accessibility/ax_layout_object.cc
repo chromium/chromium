@@ -264,7 +264,8 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObjectOrNode() const {
     }
     if (layout_object_->IsSVGShape())
       return ax::mojom::blink::Role::kGraphicsSymbol;
-    if (layout_object_->IsSVGForeignObject() || IsA<SVGGElement>(node))
+    if (layout_object_->IsSVGForeignObjectIncludingNG() ||
+        IsA<SVGGElement>(node))
       return ax::mojom::blink::Role::kGroup;
     if (IsA<SVGUseElement>(node))
       return ax::mojom::blink::Role::kGraphicsObject;
@@ -514,7 +515,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   }
 
   // The SVG-AAM says the foreignObject element is normally presentational.
-  if (layout_object_->IsSVGForeignObject()) {
+  if (layout_object_->IsSVGForeignObjectIncludingNG()) {
     if (ignored_reasons)
       ignored_reasons->push_back(IgnoredReason(kAXPresentational));
     return true;

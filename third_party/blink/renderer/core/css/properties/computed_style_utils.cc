@@ -1570,7 +1570,8 @@ CSSValue* ComputedStyleUtils::ValueForGridPosition(
 
 static bool IsSVGObjectWithWidthAndHeight(const LayoutObject& layout_object) {
   DCHECK(layout_object.IsSVGChild());
-  return layout_object.IsSVGImage() || layout_object.IsSVGForeignObject() ||
+  return layout_object.IsSVGImage() ||
+         layout_object.IsSVGForeignObjectIncludingNG() ||
          (layout_object.IsSVGShape() &&
           IsA<SVGRectElement>(layout_object.GetNode()));
 }

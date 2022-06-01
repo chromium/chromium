@@ -156,7 +156,7 @@ static gfx::RectF ObjectBoundsForPropagation(const LayoutObject& object) {
   // The local-to-parent transform for <foreignObject> contains a zoom inverse,
   // so we need to apply zoom to the bounding box that we use for propagation to
   // be in the correct coordinate space.
-  if (IsA<LayoutSVGForeignObject>(object))
+  if (object.IsSVGForeignObjectIncludingNG())
     bounds.Scale(object.StyleRef().EffectiveZoom());
   return bounds;
 }

@@ -25,14 +25,15 @@ absl::optional<gfx::RectF> CSSMaskPainter::MaskBoundingBox(
       if (masker) {
         const gfx::RectF reference_box =
             SVGResources::ReferenceBoxForEffects(object);
-        const float reference_box_zoom =
-            object.IsSVGForeignObject() ? object.StyleRef().EffectiveZoom() : 1;
+        const float reference_box_zoom = object.IsSVGForeignObjectIncludingNG()
+                                             ? object.StyleRef().EffectiveZoom()
+                                             : 1;
         return masker->ResourceBoundingBox(reference_box, reference_box_zoom);
       }
     }
   }
 
-  if (object.IsSVGChild() && !object.IsSVGForeignObject())
+  if (object.IsSVGChild() && !object.IsSVGForeignObjectIncludingNG())
     return absl::nullopt;
 
   if (!style.HasMask())

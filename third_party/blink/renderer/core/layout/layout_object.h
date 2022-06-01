@@ -1289,6 +1289,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectSVGForeignObject);
   }
+  bool IsSVGForeignObjectIncludingNG() const {
+    NOT_DESTROYED();
+    return IsOfType(kLayoutObjectSVGForeignObject) ||
+           IsOfType(kLayoutObjectNGSVGForeignObject);
+  }
   bool IsSVGResourceContainer() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectSVGResourceContainer);
@@ -1320,7 +1325,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool IsBlendingAllowed() const {
     NOT_DESTROYED();
     return !IsSVG() || IsSVGShape() || IsSVGImage() || IsSVGText() ||
-           IsSVGInline() || IsSVGRoot() || IsSVGForeignObject() ||
+           IsSVGInline() || IsSVGRoot() || IsSVGForeignObjectIncludingNG() ||
            IsNGSVGText() ||
            // Blending does not apply to non-renderable elements such as
            // patterns (see: https://github.com/w3c/fxtf-drafts/issues/309).
