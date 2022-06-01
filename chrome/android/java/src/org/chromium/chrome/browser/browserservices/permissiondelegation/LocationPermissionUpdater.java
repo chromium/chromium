@@ -31,12 +31,12 @@ public class LocationPermissionUpdater {
 
     private static final @ContentSettingsType int TYPE = ContentSettingsType.GEOLOCATION;
 
-    private final TrustedWebActivityPermissionManager mPermissionManager;
+    private final InstalledWebappPermissionManager mPermissionManager;
     private final TrustedWebActivityClient mTrustedWebActivityClient;
     private final TrustedWebActivityUmaRecorder mUmaRecorder;
 
     @Inject
-    public LocationPermissionUpdater(TrustedWebActivityPermissionManager permissionManager,
+    public LocationPermissionUpdater(InstalledWebappPermissionManager permissionManager,
             TrustedWebActivityClient trustedWebActivityClient,
             TrustedWebActivityUmaRecorder umaRecorder) {
         mPermissionManager = permissionManager;

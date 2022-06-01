@@ -15,7 +15,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionStore;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
@@ -67,8 +67,8 @@ public class ChromeAppModule {
 
     @Provides
     @Singleton
-    public TrustedWebActivityPermissionStore providesTwaPermissionStore() {
-        return WebappRegistry.getInstance().getTrustedWebActivityPermissionStore();
+    public InstalledWebappPermissionStore providesTwaPermissionStore() {
+        return WebappRegistry.getInstance().getPermissionStore();
     }
 
     @Provides

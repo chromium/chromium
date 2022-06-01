@@ -8,8 +8,8 @@ import org.chromium.chrome.browser.AppHooksModule;
 import org.chromium.chrome.browser.browserservices.ClearDataDialogResultRecorder;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
 import org.chromium.chrome.browser.customtabs.CustomTabsClientFileProcessor;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
@@ -36,7 +36,7 @@ public interface ChromeAppComponent {
     CustomTabsConnection resolveCustomTabsConnection();
     SharedPreferencesManager resolveSharedPreferencesManager();
     ClearDataDialogResultRecorder resolveTwaClearDataDialogRecorder();
-    TrustedWebActivityPermissionManager resolveTwaPermissionManager();
+    InstalledWebappPermissionManager resolvePermissionManager();
     PermissionUpdater resolveTwaPermissionUpdater();
     TrustedWebActivityClient resolveTrustedWebActivityClient();
     ExternalAuthUtils resolveExternalAuthUtils();

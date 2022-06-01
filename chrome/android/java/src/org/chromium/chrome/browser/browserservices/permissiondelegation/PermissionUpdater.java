@@ -26,13 +26,13 @@ import javax.inject.Singleton;
 public class PermissionUpdater {
     private static final String TAG = "TWAPermission";
 
-    private final TrustedWebActivityPermissionManager mPermissionManager;
+    private final InstalledWebappPermissionManager mPermissionManager;
 
     private final NotificationPermissionUpdater mNotificationPermissionUpdater;
     private final LocationPermissionUpdater mLocationPermissionUpdater;
 
     @Inject
-    public PermissionUpdater(TrustedWebActivityPermissionManager permissionManager,
+    public PermissionUpdater(InstalledWebappPermissionManager permissionManager,
             NotificationPermissionUpdater notificationPermissionUpdater,
             LocationPermissionUpdater locationPermissionUpdater) {
         mPermissionManager = permissionManager;

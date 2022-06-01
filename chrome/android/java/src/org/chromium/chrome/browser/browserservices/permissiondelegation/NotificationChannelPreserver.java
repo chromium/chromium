@@ -31,12 +31,12 @@ import dagger.Lazy;
  */
 @Singleton
 public class NotificationChannelPreserver {
-    private final TrustedWebActivityPermissionStore mStore;
+    private final InstalledWebappPermissionStore mStore;
     private final SiteChannelsManager mSiteChannelsManager;
 
     @Inject
-    NotificationChannelPreserver(TrustedWebActivityPermissionStore store,
-            SiteChannelsManager siteChannelsManager) {
+    NotificationChannelPreserver(
+            InstalledWebappPermissionStore store, SiteChannelsManager siteChannelsManager) {
         assert !beforeAndroidO()
                 : "This class should not be instantiated on Android versions before O";
 

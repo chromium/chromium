@@ -133,7 +133,7 @@ public class TrustedWebActivityClientTest {
         mClient = component.resolveTrustedWebActivityClient();
 
         // TestTrustedWebActivityService is in the test support apk.
-        component.resolveTwaPermissionManager().addDelegateApp(ORIGIN, TEST_SUPPORT_PACKAGE);
+        component.resolvePermissionManager().addDelegateApp(ORIGIN, TEST_SUPPORT_PACKAGE);
 
         // The MessengerService lives in the same package as the TestTrustedWebActivityService.
         // We use it as a side channel to verify what the TestTrustedWebActivityService does.
@@ -258,7 +258,7 @@ public class TrustedWebActivityClientTest {
         Assert.assertNull(TrustedWebActivityClient.createLaunchIntentForTwa(
                 context, SCOPE.toString(), Collections.singletonList(resolveInfo)));
 
-        ChromeApplicationImpl.getComponent().resolveTwaPermissionManager().addDelegateApp(
+        ChromeApplicationImpl.getComponent().resolvePermissionManager().addDelegateApp(
                 Origin.create(SCOPE), targetPackageName);
 
         Assert.assertNotNull(TrustedWebActivityClient.createLaunchIntentForTwa(

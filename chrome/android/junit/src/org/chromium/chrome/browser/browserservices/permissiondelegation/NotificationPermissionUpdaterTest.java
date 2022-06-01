@@ -52,7 +52,7 @@ public class NotificationPermissionUpdaterTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock public TrustedWebActivityPermissionManager mPermissionManager;
+    @Mock public InstalledWebappPermissionManager mPermissionManager;
     @Mock public TrustedWebActivityClient mTrustedWebActivityClient;
 
     private NotificationPermissionUpdater mNotificationPermissionUpdater;

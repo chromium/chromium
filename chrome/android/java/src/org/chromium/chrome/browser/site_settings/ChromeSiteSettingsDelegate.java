@@ -15,7 +15,7 @@ import androidx.preference.Preference;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -196,7 +196,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Nullable
     public String getDelegateAppNameForOrigin(Origin origin, @ContentSettingsType int type) {
         if (type == ContentSettingsType.NOTIFICATIONS) {
-            return TrustedWebActivityPermissionManager.get().getDelegateAppName(origin);
+            return InstalledWebappPermissionManager.get().getDelegateAppName(origin);
         }
 
         return null;
@@ -206,7 +206,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Nullable
     public String getDelegatePackageNameForOrigin(Origin origin, @ContentSettingsType int type) {
         if (type == ContentSettingsType.NOTIFICATIONS) {
-            return TrustedWebActivityPermissionManager.get().getDelegatePackageName(origin);
+            return InstalledWebappPermissionManager.get().getDelegatePackageName(origin);
         }
 
         return null;
@@ -239,7 +239,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public Set<String> getAllDelegatedNotificationOrigins() {
-        return TrustedWebActivityPermissionManager.get().getAllDelegatedOrigins();
+        return InstalledWebappPermissionManager.get().getAllDelegatedOrigins();
     }
 
     @Override

@@ -37,7 +37,7 @@ public class NotificationChannelPreserverTest {
     private static final String CHANNEL_ID = "red-channel-id";
     private static final Origin ORIGIN_WITHOUT_CHANNEL = Origin.create("https://www.blue.com");
 
-    @Mock TrustedWebActivityPermissionStore mStore;
+    @Mock InstalledWebappPermissionStore mStore;
     @Mock SiteChannelsManager mSiteChannelsManager;
 
     private NotificationChannelPreserver mPreserver;

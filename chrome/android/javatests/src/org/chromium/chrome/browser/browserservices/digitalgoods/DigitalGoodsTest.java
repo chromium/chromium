@@ -73,7 +73,7 @@ public class DigitalGoodsTest {
         LibraryLoader.getInstance().ensureInitialized();
 
         ChromeAppComponent component = ChromeApplicationImpl.getComponent();
-        component.resolveTwaPermissionManager().addDelegateApp(
+        component.resolvePermissionManager().addDelegateApp(
                 Origin.createOrThrow(TWA_SERVICE_SCOPE), "org.chromium.chrome.tests.support");
         mClient = component.resolveTrustedWebActivityClient();
 

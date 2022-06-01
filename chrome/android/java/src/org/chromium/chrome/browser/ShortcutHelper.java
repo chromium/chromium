@@ -257,7 +257,7 @@ public class ShortcutHelper {
     @CalledByNative
     @VisibleForTesting
     public static boolean doesOriginContainAnyInstalledTwa(String origin) {
-        return WebappRegistry.getInstance().getTrustedWebActivityPermissionStore().isTwaInstalled(
+        return WebappRegistry.getInstance().getPermissionStore().isTwaInstalled(
                 origin.toLowerCase(Locale.getDefault()));
     }
 

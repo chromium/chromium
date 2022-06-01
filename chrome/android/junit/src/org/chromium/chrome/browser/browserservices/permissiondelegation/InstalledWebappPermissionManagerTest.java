@@ -47,11 +47,11 @@ import org.chromium.components.embedder_support.util.Origin;
 import dagger.Lazy;
 
 /**
- * Tests for {@link TrustedWebActivityPermissionManager}.
+ * Tests for {@link InstalledWebappPermissionManager}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TrustedWebActivityPermissionManagerTest {
+public class InstalledWebappPermissionManagerTest {
     private static final Origin ORIGIN = Origin.create("https://www.website.com");
     private static final String PACKAGE_NAME = "com.package.name";
 
@@ -59,13 +59,13 @@ public class TrustedWebActivityPermissionManagerTest {
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
-    public TrustedWebActivityPermissionStore mStore;
+    public InstalledWebappPermissionStore mStore;
     @Mock
     public Lazy<NotificationChannelPreserver> mPreserver;
     @Mock
     TrustedWebActivityUmaRecorder mUmaRecorder;
 
-    private TrustedWebActivityPermissionManager mPermissionManager;
+    private InstalledWebappPermissionManager mPermissionManager;
 
     private ShadowPackageManager mShadowPackageManager;
 
@@ -81,7 +81,7 @@ public class TrustedWebActivityPermissionManagerTest {
         when(mStore.getDelegatePackageName(eq(ORIGIN))).thenReturn(PACKAGE_NAME);
 
         mPermissionManager =
-                new TrustedWebActivityPermissionManager(context, mStore, mPreserver, mUmaRecorder);
+                new InstalledWebappPermissionManager(context, mStore, mPreserver, mUmaRecorder);
     }
 
     @Test

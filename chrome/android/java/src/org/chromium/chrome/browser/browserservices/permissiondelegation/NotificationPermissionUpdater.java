@@ -34,12 +34,11 @@ public class NotificationPermissionUpdater {
 
     private static final @ContentSettingsType int TYPE = ContentSettingsType.NOTIFICATIONS;
 
-    private final TrustedWebActivityPermissionManager mPermissionManager;
+    private final InstalledWebappPermissionManager mPermissionManager;
     private final TrustedWebActivityClient mTrustedWebActivityClient;
 
     @Inject
-    public NotificationPermissionUpdater(
-            TrustedWebActivityPermissionManager permissionManager,
+    public NotificationPermissionUpdater(InstalledWebappPermissionManager permissionManager,
             TrustedWebActivityClient trustedWebActivityClient) {
         mPermissionManager = permissionManager;
         mTrustedWebActivityClient = trustedWebActivityClient;

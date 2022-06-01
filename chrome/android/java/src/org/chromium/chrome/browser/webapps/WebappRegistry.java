@@ -21,7 +21,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionStore;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
 import org.chromium.chrome.browser.browsing_data.UrlFilter;
 import org.chromium.chrome.browser.browsing_data.UrlFilterBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -75,7 +75,7 @@ public class WebappRegistry {
 
     private HashMap<String, WebappDataStorage> mStorages;
     private SharedPreferences mPreferences;
-    private TrustedWebActivityPermissionStore mTrustedWebActivityPermissionStore;
+    private InstalledWebappPermissionStore mPermissionStore;
 
     /**
      * Callback run when a WebappDataStorage object is registered for the first time. The storage
@@ -88,7 +88,7 @@ public class WebappRegistry {
     private WebappRegistry() {
         mPreferences = openSharedPreferences();
         mStorages = new HashMap<>();
-        mTrustedWebActivityPermissionStore = new TrustedWebActivityPermissionStore();
+        mPermissionStore = new InstalledWebappPermissionStore();
     }
 
     /**
@@ -246,7 +246,7 @@ public class WebappRegistry {
     public Set<String> getOriginsWithInstalledApp() {
         HashSet<String> origins = new HashSet<String>();
         origins.addAll(getOriginsWithWebApk());
-        origins.addAll(mTrustedWebActivityPermissionStore.getStoredOrigins());
+        origins.addAll(mPermissionStore.getStoredOrigins());
         return origins;
     }
 
@@ -344,8 +344,8 @@ public class WebappRegistry {
                 ContextUtils.getApplicationContext(), webApkPackageName);
     }
 
-    public TrustedWebActivityPermissionStore getTrustedWebActivityPermissionStore() {
-        return mTrustedWebActivityPermissionStore;
+    public InstalledWebappPermissionStore getPermissionStore() {
+        return mPermissionStore;
     }
 
     /**
@@ -400,7 +400,7 @@ public class WebappRegistry {
 
     private static SharedPreferences openSharedPreferences() {
         // TODO(peconn): Don't open general WebappRegistry preferences when we just need the
-        // TrustedWebActivityPermissionStore.
+        // InstalledWebappPermissionStore.
         // This is required to fix https://crbug.com/952841.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             return ContextUtils.getApplicationContext().getSharedPreferences(
@@ -419,7 +419,7 @@ public class WebappRegistry {
         boolean initializing = initAll && !mIsInitialized;
 
         if (initAll && !mIsInitialized) {
-            mTrustedWebActivityPermissionStore.initStorage();
+            mPermissionStore.initStorage();
             mIsInitialized = true;
         }
 

@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsD
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
@@ -238,7 +238,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             if ((mActivity instanceof CustomTabActivity)
                     && ((CustomTabActivity) mActivity).isInTwaMode()) {
                 // Whether the corresponding TWA client app enrolled in location delegation.
-                return TrustedWebActivityPermissionManager.hasAndroidLocationPermission(
+                return InstalledWebappPermissionManager.hasAndroidLocationPermission(
                                ((CustomTabActivity) mActivity).getTwaPackage())
                         != null;
             }

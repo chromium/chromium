@@ -41,8 +41,8 @@ import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrapp
 import org.chromium.chrome.browser.browserservices.constants.LocationUpdateError;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder.DelegatedNotificationSmallIconFallback;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionStatus;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -84,7 +84,7 @@ public class TrustedWebActivityClient {
     private static final String EXTRA_MESSENGER = "messenger";
 
     private final ConnectionPool mConnectionPool;
-    private final TrustedWebActivityPermissionManager mDelegatesManager;
+    private final InstalledWebappPermissionManager mPermissionManager;
     private final TrustedWebActivityUmaRecorder mRecorder;
 
     /**
@@ -134,19 +134,19 @@ public class TrustedWebActivityClient {
      */
     @Inject
     public TrustedWebActivityClient(TrustedWebActivityServiceConnectionPool connectionPool,
-            TrustedWebActivityPermissionManager delegatesManager,
+            InstalledWebappPermissionManager permissionManager,
             TrustedWebActivityUmaRecorder recorder) {
-        this(TrustedWebActivityClientWrappers.wrap(connectionPool), delegatesManager, recorder);
+        this(TrustedWebActivityClientWrappers.wrap(connectionPool), permissionManager, recorder);
     }
 
     /**
      * Creates a TrustedWebActivityService for tests.
      */
     public TrustedWebActivityClient(ConnectionPool connectionPool,
-            TrustedWebActivityPermissionManager delegatesManager,
+            InstalledWebappPermissionManager permissionManager,
             TrustedWebActivityUmaRecorder recorder) {
         mConnectionPool = connectionPool;
-        mDelegatesManager = delegatesManager;
+        mPermissionManager = permissionManager;
         mRecorder = recorder;
     }
 
@@ -159,7 +159,7 @@ public class TrustedWebActivityClient {
     public boolean twaExistsForScope(Uri scope) {
         Origin origin = Origin.create(scope);
         if (origin == null) return false;
-        Set<Token> possiblePackages = mDelegatesManager.getAllDelegateApps(origin);
+        Set<Token> possiblePackages = mPermissionManager.getAllDelegateApps(origin);
         if (possiblePackages == null) return false;
         return mConnectionPool.serviceExistsForScope(scope, possiblePackages);
     }
@@ -168,7 +168,7 @@ public class TrustedWebActivityClient {
      * Checks whether the TWA of the given origin has the notification permission granted.
      * @param callback Will be called on a background thread with whether the permission is granted.
      * @return {@code false} if no such TWA exists (in which case the callback will not be called).
-     *         Ensure that the app has been added to the {@link TrustedWebActivityPermissionManager}
+     *         Ensure that the app has been added to the {@link InstalledWebappPermissionManager}
      *         before calling this.
      * TODO(crbug.com/1320272): Delete this method once the new flow has shipped.
      */
@@ -300,7 +300,7 @@ public class TrustedWebActivityClient {
      * Check location permission for the TWA of the given origin.
      * @param callback Will be called on a background thread with whether the permission is granted.
      * @return {@code false} if no such TWA exists (in which case the callback will not be called).
-     *         Ensure that the app has been added to the {@link TrustedWebActivityPermissionManager}
+     *         Ensure that the app has been added to the {@link InstalledWebappPermissionManager}
      *         before calling this.
      */
     public void checkLocationPermission(Origin origin, PermissionCheckCallback callback) {
@@ -384,7 +384,7 @@ public class TrustedWebActivityClient {
 
         connectAndExecute(scope, (origin, service) -> {
             if (!service.areNotificationsEnabled(channelDisplayName)) {
-                mDelegatesManager.updatePermission(origin,
+                mPermissionManager.updatePermission(origin,
                         service.getComponentName().getPackageName(),
                         ContentSettingsType.NOTIFICATIONS, false);
 
@@ -455,7 +455,7 @@ public class TrustedWebActivityClient {
             return;
         }
 
-        Set<Token> possiblePackages = mDelegatesManager.getAllDelegateApps(origin);
+        Set<Token> possiblePackages = mPermissionManager.getAllDelegateApps(origin);
         if (possiblePackages == null || possiblePackages.isEmpty()) {
             callback.onNoTwaFound();
             return;
@@ -488,7 +488,7 @@ public class TrustedWebActivityClient {
         if (!UrlConstants.HTTPS_SCHEME.equals(origin.uri().getScheme())) return null;
 
         ComponentName componentName = searchVerifiedApps(appContext.getPackageManager(),
-                mDelegatesManager.getAllDelegateApps(origin), resolveInfosForUrl);
+                mPermissionManager.getAllDelegateApps(origin), resolveInfosForUrl);
 
         if (componentName == null) return null;
 

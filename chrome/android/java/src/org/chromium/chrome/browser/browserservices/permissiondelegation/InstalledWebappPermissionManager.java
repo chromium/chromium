@@ -46,8 +46,8 @@ import javax.inject.Singleton;
 import dagger.Lazy;
 
 /**
- * Handles the preserving and surfacing the permissions of TWA client apps for their associated
- * websites. Communicates with the {@link TrustedWebActivityPermissionStore} and
+ * Handles preserving and surfacing the permissions of installed webapps (TWAs and WebAPKs) for
+ * their associated websites. Communicates with the {@link InstalledWebappPermissionStore} and
  * {@link InstalledWebappBridge}.
  *
  * Lifecycle: This is a singleton.
@@ -55,23 +55,23 @@ import dagger.Lazy;
  * Native: Does not require native.
  */
 @Singleton
-public class TrustedWebActivityPermissionManager {
-    private static final String TAG = "TwaPermissionManager";
+public class InstalledWebappPermissionManager {
+    private static final String TAG = "PermissionManager";
 
-    private final TrustedWebActivityPermissionStore mStore;
+    private final InstalledWebappPermissionStore mStore;
     private final PackageManager mPackageManager;
     private final TrustedWebActivityUmaRecorder mUmaRecorder;
 
     // Use a Lazy instance so we don't instantiate it on Android versions pre-O.
     private final Lazy<NotificationChannelPreserver> mPermissionPreserver;
 
-    public static TrustedWebActivityPermissionManager get() {
-        return ChromeApplicationImpl.getComponent().resolveTwaPermissionManager();
+    public static InstalledWebappPermissionManager get() {
+        return ChromeApplicationImpl.getComponent().resolvePermissionManager();
     }
 
     @Inject
-    public TrustedWebActivityPermissionManager(@Named(APP_CONTEXT) Context context,
-            TrustedWebActivityPermissionStore store, Lazy<NotificationChannelPreserver> preserver,
+    public InstalledWebappPermissionManager(@Named(APP_CONTEXT) Context context,
+            InstalledWebappPermissionStore store, Lazy<NotificationChannelPreserver> preserver,
             TrustedWebActivityUmaRecorder umaRecorder) {
         mPackageManager = context.getPackageManager();
         mStore = store;
@@ -239,7 +239,7 @@ public class TrustedWebActivityPermissionManager {
             String appLabel = pm.getApplicationLabel(ai).toString();
 
             if (TextUtils.isEmpty(appLabel)) {
-                Log.e(TAG,"Invalid details for client package: %s", appLabel);
+                Log.e(TAG, "Invalid details for client package: %s", appLabel);
                 return null;
             }
 
