@@ -186,12 +186,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_PARSE_MERCHANT_PROMO_CODE_FIELDS,
                     "When enabled, Autofill will attempt to find merchant promo/coupon/gift code "
                             + "fields when parsing forms."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_UPSTREAM_ALLOW_ADDITIONAL_EMAIL_DOMAINS,
-                    "When enabled, Autofill will allow credit card upload save for select "
-                            + "non-Google-based accounts."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_UPSTREAM_ALLOW_ALL_EMAIL_DOMAINS,
-                    "When enabled, Autofill will allow credit card upload save for all "
-                            + "non-Google-based accounts."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_NAME_SURENAME_PARSING,
                     "Adds new name surname field combinations to the parsing logic"),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_RATIONALIZE_STREET_ADDRESS_AND_ADDRESS_LINE,
