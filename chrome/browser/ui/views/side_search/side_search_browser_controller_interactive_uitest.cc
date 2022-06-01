@@ -1206,8 +1206,8 @@ IN_PROC_BROWSER_TEST_P(SideSearchExtensionsTest,
   NavigateInSideContents(third_url, third_url);
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1305891): Test is flaky on Mac bots.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1305891): Test is flaky on Mac and Windows bots.
 #define MAYBE_DeclarativeNetRequestInterceptsSidePanelNavigations \
   DISABLED_DeclarativeNetRequestInterceptsSidePanelNavigations
 #else
