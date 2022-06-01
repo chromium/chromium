@@ -71,6 +71,7 @@ class CORE_EXPORT TextDecorationInfo {
   void SetLineData(TextDecorationLine line, float line_offset);
   void SetUnderlineLineData(const AppliedTextDecoration& decoration,
                             const TextDecorationOffsetBase& decoration_offset);
+  void SetLineThroughLineData();
 
   // These methods do not depend on SetDecorationIndex
   LayoutUnit Width() const { return width_; }

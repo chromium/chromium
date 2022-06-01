@@ -576,13 +576,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
       accumulated_bound.Union(decoration_info.Bounds());
     }
     if (EnumHasFlags(lines, TextDecorationLine::kLineThrough)) {
-      // For increased line thickness, the line-through decoration needs to grow
-      // in both directions from its origin, subtract half the thickness to keep
-      // it centered at the same origin.
-      const float line_through_offset =
-          2 * decoration_info.Baseline() / 3 - resolved_thickness / 2;
-      decoration_info.SetLineData(TextDecorationLine::kLineThrough,
-                                  line_through_offset);
+      decoration_info.SetLineThroughLineData();
       accumulated_bound.Union(decoration_info.Bounds());
     }
   }

@@ -261,6 +261,15 @@ void TextDecorationInfo::SetUnderlineLineData(
   SetLineData(TextDecorationLine::kUnderline, paint_underline_offset);
 }
 
+void TextDecorationInfo::SetLineThroughLineData() {
+  // For increased line thickness, the line-through decoration needs to grow
+  // in both directions from its origin, subtract half the thickness to keep
+  // it centered at the same origin.
+  const float line_through_offset =
+      2 * Baseline() / 3 - ResolvedThickness() / 2;
+  SetLineData(TextDecorationLine::kLineThrough, line_through_offset);
+}
+
 ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
   if (IsSpellingOrGrammarError()) {
 #if BUILDFLAG(IS_MAC)
