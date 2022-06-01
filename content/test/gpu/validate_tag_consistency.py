@@ -38,8 +38,8 @@ TAG_HEADER = """\
 #         apple apple-apple-m1 apple-angle-metal-renderer:-apple-m1
 #         arm
 #         google google-0xffff
-#         intel intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92 intel-0x3e9b
-#               intel-0x5912
+#         intel intel-hd-630-family intel-0xa2e intel-0xd26 intel-0xa011
+#               intel-0x3e92 intel-0x3e9b intel-0x5912
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
 #         qualcomm ]
 # Decoder
