@@ -103,7 +103,9 @@ export class BrowsingContextProcessor {
   }
 
   private async _getKnownContext(contextId: string): Promise<Context> {
-    if (!this._hasKnownContext(contextId)) throw new Error('context not found');
+    if (!this._hasKnownContext(contextId)) {
+      throw new Error('context not found');
+    }
     return await this._contexts.get(contextId)!;
   }
 
@@ -113,7 +115,9 @@ export class BrowsingContextProcessor {
     logContext('AttachedToTarget event received', params);
 
     const { sessionId, targetInfo } = params;
-    if (!this._isValidTarget(targetInfo)) return;
+    if (!this._isValidTarget(targetInfo)) {
+      return;
+    }
 
     const context = await this._getOrCreateContext(
       targetInfo.targetId,
@@ -133,7 +137,9 @@ export class BrowsingContextProcessor {
     logContext('infoChangedEvent event received', params);
 
     const targetInfo = params.targetInfo;
-    if (!this._isValidTarget(targetInfo)) return;
+    if (!this._isValidTarget(targetInfo)) {
+      return;
+    }
 
     const context = await this._tryGetContext(targetInfo.targetId);
     if (context) {
@@ -156,7 +162,9 @@ export class BrowsingContextProcessor {
     const targetId = params.targetId!;
     const context = await this._tryGetContext(targetId);
     if (context) {
-      if (context._sessionId) this._sessionToTargets.delete(context._sessionId);
+      if (context._sessionId) {
+        this._sessionToTargets.delete(context._sessionId);
+      }
       this._contexts.delete(context.id);
       await this._onContextDestroyed(context);
     }
@@ -182,7 +190,9 @@ export class BrowsingContextProcessor {
       .browserClient()
       .Target.getTargets();
     // TODO sadym: implement.
-    if (commandData.params.maxDepth) throw new Error('not implemented yet');
+    if (commandData.params.maxDepth) {
+      throw new Error('not implemented yet');
+    }
     const contexts = targetInfos
       // Don't expose any information about the tab with Mapper running.
       .filter((target) => this._isValidTarget(target))
@@ -249,9 +259,8 @@ export class BrowsingContextProcessor {
   }
 
   async process_script_evaluate(
-    commandData: Script.EvaluateCommand
+    params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {
-    const params = commandData.params;
     const context = await this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );
@@ -326,8 +335,12 @@ export class BrowsingContextProcessor {
   }
 
   private _isValidTarget(target: Protocol.Target.TargetInfo) {
-    if (target.targetId === this._selfTargetId) return false;
-    if (!target.type || target.type !== 'page') return false;
+    if (target.targetId === this._selfTargetId) {
+      return false;
+    }
+    if (!target.type || target.type !== 'page') {
+      return false;
+    }
     return true;
   }
 
@@ -345,7 +358,9 @@ export class BrowsingContextProcessor {
   async process_PROTO_cdp_getSession(commandData: CDP.PROTO.GetSessionCommand) {
     const context = commandData.params.context;
     const sessionId = (await this._getKnownContext(context))._sessionId;
-    if (sessionId === undefined) return { result: { session: null } };
+    if (sessionId === undefined) {
+      return { result: { session: null } };
+    }
     return { result: { session: sessionId } };
   }
 }

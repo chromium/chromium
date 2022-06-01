@@ -31,8 +31,6 @@ import {
   UnknownCommandErrorResponse,
   UnknownErrorResponse,
 } from './domains/protocol/error';
-import { SessionParser } from './domains/protocol/parsers/sessionParser';
-import { BrowsingContextParser } from './domains/protocol/parsers/browsingContextParser';
 
 export class CommandProcessor {
   #contextProcessor: BrowsingContextProcessor;
@@ -112,20 +110,20 @@ export class CommandProcessor {
         );
       case 'session.subscribe':
         return await this.#process_session_subscribe(
-          SessionParser.SubscribeCommand.parseParams(commandData.params)
+          Session.parseSubscribeParameters(commandData.params)
         );
       case 'session.unsubscribe':
         return await this.#process_session_unsubscribe(
-          SessionParser.SubscribeCommand.parseParams(commandData.params)
+          Session.parseSubscribeParameters(commandData.params)
         );
 
       case 'browsingContext.create':
         return await this.#contextProcessor.process_browsingContext_create(
-          BrowsingContextParser.CreateCommand.parseParams(commandData.params)
+          BrowsingContext.parseCreateParameters(commandData.params)
         );
       case 'browsingContext.close':
         return await this.#contextProcessor.process_browsingContext_close(
-          BrowsingContextParser.CloseCommand.parseParams(commandData.params)
+          BrowsingContext.parseCloseParameters(commandData.params)
         );
       case 'browsingContext.getTree':
         return await this.#contextProcessor.process_browsingContext_getTree(
@@ -145,8 +143,7 @@ export class CommandProcessor {
         );
       case 'script.evaluate':
         return await this.#contextProcessor.process_script_evaluate(
-          // TODO(sadym): add params parsing.
-          commandData as Script.EvaluateCommand
+          Script.parseEvaluateParameters(commandData.params)
         );
 
       case 'PROTO.browsingContext.findElement':

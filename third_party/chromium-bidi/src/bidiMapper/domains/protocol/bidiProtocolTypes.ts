@@ -1,4 +1,31 @@
 import { EventResponseClass } from './event';
+import { z as zod, ZodType } from 'zod';
+import { InvalidArgumentErrorResponse } from './error';
+import { log } from '../../../utils/log';
+
+const logParser = log('command parser');
+
+function parseObject<T extends ZodType>(obj: unknown, schema: T): zod.infer<T> {
+  const parseResult = schema.safeParse(obj);
+  if (parseResult.success) {
+    return parseResult.data;
+  }
+  logParser(
+    `Command ${JSON.stringify(obj)} parse failed: ${JSON.stringify(
+      parseResult
+    )}.`
+  );
+
+  const errorMessage = parseResult.error.errors
+    .map(
+      (e) =>
+        `${e.message} in ` +
+        `${e.path.map((p) => JSON.stringify(p)).join('/')}.`
+    )
+    .join(' ');
+
+  throw new InvalidArgumentErrorResponse(errorMessage);
+}
 
 export namespace Message {
   export type OutgoingMessage = CommandResponse | EventMessage;
@@ -250,6 +277,10 @@ export namespace CommonDataTypes {
   export type WindowProxyRemoteValue = RemoteReference & {
     type: 'window';
   };
+
+  // BrowsingContext = text;
+  export const BrowsingContextSchema = zod.string().min(1);
+  export type BrowsingContext = zod.infer<typeof BrowsingContextSchema>;
 }
 
 export namespace Script {
@@ -275,26 +306,54 @@ export namespace Script {
     text: string;
   };
 
-  export type RealmTarget = {
-    // TODO sadym: implement.
-  };
-
-  export type ContextTarget = {
-    context: BrowsingContext.BrowsingContext;
-  };
-
-  export type Target = ContextTarget | RealmTarget;
-
   export type EvaluateCommand = {
     method: 'script.evaluate';
     params: EvaluateParameters;
   };
 
-  export type EvaluateParameters = {
-    expression: string;
-    awaitPromise?: boolean;
-    target: Target;
-  };
+  // ContextTarget = {
+  //   context: BrowsingContext,
+  //   ?sandbox: text
+  // }
+  const ContextTargetSchema = zod.object({
+    context: CommonDataTypes.BrowsingContextSchema,
+    sandbox: zod.string().optional(),
+  });
+  export type ContextTarget = zod.infer<typeof ContextTargetSchema>;
+
+  // RealmTarget = {realm: Realm};
+  const RealmTargetSchema = zod.object({
+    realm: zod.string().min(1),
+  });
+  export type RealmTarget = zod.infer<typeof RealmTargetSchema>;
+
+  //
+  // Target = (
+  //   RealmTarget //
+  //   ContextTarget
+  // );
+  const TargetSchema = zod.union([ContextTargetSchema, RealmTargetSchema]);
+  export type Target = zod.infer<typeof TargetSchema>;
+
+  // ScriptEvaluateParameters = {
+  //   expression: text;
+  //   target: Target;
+  //   ?awaitPromise: bool;
+  //   ?resultOwnership: OwnershipModel;
+  // }
+  const ScriptEvaluateParametersSchema = zod.object({
+    expression: zod.string(),
+    awaitPromise: zod.boolean().optional(),
+    target: TargetSchema,
+  });
+
+  export type EvaluateParameters = zod.infer<
+    typeof ScriptEvaluateParametersSchema
+  >;
+
+  export function parseEvaluateParameters(params: unknown): EvaluateParameters {
+    return parseObject(params, ScriptEvaluateParametersSchema);
+  }
 
   export type EvaluateResult = {
     result: ScriptResult;
@@ -353,7 +412,6 @@ export namespace BrowsingContext {
     | ContextCreatedEvent
     | ContextDestroyedEvent;
 
-  export type BrowsingContext = string;
   export type Navigation = string;
 
   export type GetTreeCommand = {
@@ -363,7 +421,7 @@ export namespace BrowsingContext {
 
   export type BrowsingContextGetTreeParameters = {
     maxDepth?: number;
-    root?: BrowsingContext;
+    root?: CommonDataTypes.BrowsingContext;
   };
 
   export type GetTreeResult = {
@@ -375,8 +433,8 @@ export namespace BrowsingContext {
   export type BrowsingContextInfoList = BrowsingContextInfo[];
 
   export type BrowsingContextInfo = {
-    context: BrowsingContext;
-    parent?: BrowsingContext | null;
+    context: CommonDataTypes.BrowsingContext;
+    parent?: CommonDataTypes.BrowsingContext | null;
     url: string;
     children: BrowsingContextInfoList | null;
   };
@@ -387,7 +445,7 @@ export namespace BrowsingContext {
   };
 
   export type BrowsingContextNavigateParameters = {
-    context: BrowsingContext;
+    context: CommonDataTypes.BrowsingContext;
     url: string;
     wait?: ReadinessState;
   };
@@ -405,18 +463,23 @@ export namespace BrowsingContext {
     params: CreateParameters;
   };
 
-  export enum CreateParametersType {
-    'tab' = 'tab',
-    'window' = 'window',
-  }
+  // BrowsingContextCreateType = "tab" / "window"
+  //
+  // BrowsingContextCreateParameters = {
+  //   type: BrowsingContextCreateType
+  // }
+  const CreateParametersSchema = zod.object({
+    type: zod.enum(['tab', 'window']),
+  });
+  export type CreateParameters = zod.infer<typeof CreateParametersSchema>;
 
-  export type CreateParameters = {
-    type: CreateParametersType;
-  };
+  export function parseCreateParameters(params: unknown): CreateParameters {
+    return parseObject(params, CreateParametersSchema);
+  }
 
   export type CreateResult = {
     result: {
-      context: BrowsingContext;
+      context: CommonDataTypes.BrowsingContext;
     };
   };
 
@@ -425,9 +488,17 @@ export namespace BrowsingContext {
     params: CloseParameters;
   };
 
-  export type CloseParameters = {
-    context: BrowsingContext;
-  };
+  // BrowsingContextCloseParameters = {
+  //   context: BrowsingContext
+  // }
+  const CloseParametersSchema = zod.object({
+    context: CommonDataTypes.BrowsingContextSchema,
+  });
+  export type CloseParameters = zod.infer<typeof CloseParametersSchema>;
+
+  export function parseCloseParameters(params: unknown): CloseParameters {
+    return parseObject(params, CloseParametersSchema);
+  }
 
   export type CloseResult = { result: {} };
 
@@ -449,7 +520,7 @@ export namespace BrowsingContext {
   }
 
   export type NavigationInfo = {
-    context: BrowsingContext;
+    context: CommonDataTypes.BrowsingContext;
     navigation: Navigation | null;
     // TODO: implement or remove from specification.
     // url: string;
@@ -482,7 +553,7 @@ export namespace BrowsingContext {
 
     export type BrowsingContextFindElementParameters = {
       selector: string;
-      context: BrowsingContext;
+      context: CommonDataTypes.BrowsingContext;
     };
 
     export type FindElementResult = FindElementSuccessResult;
@@ -492,52 +563,12 @@ export namespace BrowsingContext {
     };
   }
 
-  export const EventNames = new Set([
+  export const EventNames = [
     LoadEvent.method,
     DomContentLoadedEvent.method,
     ContextCreatedEvent.method,
     ContextDestroyedEvent.method,
-  ]);
-}
-
-export namespace Session {
-  export type Command = StatusCommand | SubscribeCommand | UnsubscribeCommand;
-
-  export type CommandResult =
-    | StatusResult
-    | SubscribeResult
-    | UnsubscribeResult;
-
-  export type StatusCommand = {
-    method: 'session.status';
-    params: {};
-  };
-
-  export type StatusResult = {
-    result: {
-      ready: boolean;
-      message: string;
-    };
-  };
-
-  export type SubscribeCommand = {
-    method: 'session.subscribe';
-    params: SubscribeParameters;
-  };
-
-  export type SubscribeParameters = {
-    events: string[];
-    contexts?: BrowsingContext.BrowsingContext[];
-  };
-
-  export type SubscribeResult = { result: {} };
-
-  export type UnsubscribeCommand = {
-    method: 'session.unsubscribe';
-    params: SubscribeParameters;
-  };
-
-  export type UnsubscribeResult = { result: {} };
+  ] as const;
 }
 
 // https://w3c.github.io/webdriver-bidi/#module-log
@@ -576,7 +607,7 @@ export namespace Log {
     }
   }
 
-  export const EventNames = new Set([LogEntryAddedEvent.method]);
+  export const EventNames = [LogEntryAddedEvent.method] as const;
 }
 
 export namespace CDP {
@@ -604,7 +635,7 @@ export namespace CDP {
     };
 
     export type GetSessionParams = {
-      context: BrowsingContext.BrowsingContext;
+      context: CommonDataTypes.BrowsingContext;
     };
 
     export type GetSessionResult = { result: { session: string } };
@@ -623,11 +654,62 @@ export namespace CDP {
       session?: string;
     };
   }
-  export const EventNames = new Set([PROTO.EventReceivedEvent.method]);
+  export const EventNames = [PROTO.EventReceivedEvent.method] as const;
 }
 
-export const EventNames = new Set([
-  ...BrowsingContext.EventNames.keys(),
-  ...Log.EventNames.keys(),
-  ...CDP.EventNames.keys(),
-]);
+export namespace Session {
+  export type Command = StatusCommand | SubscribeCommand | UnsubscribeCommand;
+
+  export type CommandResult =
+    | StatusResult
+    | SubscribeResult
+    | UnsubscribeResult;
+
+  export type StatusCommand = {
+    method: 'session.status';
+    params: {};
+  };
+
+  export type StatusResult = {
+    result: {
+      ready: boolean;
+      message: string;
+    };
+  };
+
+  export type SubscribeCommand = {
+    method: 'session.subscribe';
+    params: SubscribeParameters;
+  };
+
+  const EventNameSchema = zod.enum([
+    ...BrowsingContext.EventNames,
+    ...Log.EventNames,
+    ...CDP.EventNames,
+  ]);
+
+  // SessionSubscribeParameters = {
+  //   events: [*text],
+  //   ?contexts: [*BrowsingContext],
+  // }
+  const SubscribeParametersSchema = zod.object({
+    events: zod.array(EventNameSchema),
+    contexts: zod.array(CommonDataTypes.BrowsingContextSchema).optional(),
+  });
+  export type SubscribeParameters = zod.infer<typeof SubscribeParametersSchema>;
+
+  export function parseSubscribeParameters(
+    params: unknown
+  ): SubscribeParameters {
+    return parseObject(params, SubscribeParametersSchema);
+  }
+
+  export type SubscribeResult = { result: {} };
+
+  export type UnsubscribeCommand = {
+    method: 'session.unsubscribe';
+    params: SubscribeParameters;
+  };
+
+  export type UnsubscribeResult = { result: {} };
+}

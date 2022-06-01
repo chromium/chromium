@@ -1,26 +1,26 @@
-import { BrowsingContext, Message } from '../protocol/bidiProtocolTypes';
+import { CommonDataTypes, Message } from '../protocol/bidiProtocolTypes';
 import { IBidiServer } from '../../utils/bidiServer';
 
 export interface IEventManager {
   sendEvent(
     event: Message.EventMessage,
-    contextId: BrowsingContext.BrowsingContext | null
+    contextId: CommonDataTypes.BrowsingContext | null
   ): Promise<void>;
 
   subscribe(
     events: string[],
-    contextIds: BrowsingContext.BrowsingContext[] | null
+    contextIds: CommonDataTypes.BrowsingContext[] | null
   ): Promise<void>;
 
   unsubscribe(
     event: string[],
-    contextIds: BrowsingContext.BrowsingContext[] | null
+    contextIds: CommonDataTypes.BrowsingContext[] | null
   ): Promise<void>;
 }
 
 export class EventManager implements IEventManager {
   // `null` means the event has a global subscription.
-  #subscriptions: Map<BrowsingContext.BrowsingContext | null, Set<string>> =
+  #subscriptions: Map<CommonDataTypes.BrowsingContext | null, Set<string>> =
     new Map();
 
   #bidiServer: IBidiServer;
@@ -31,7 +31,7 @@ export class EventManager implements IEventManager {
 
   async sendEvent(
     event: Message.EventMessage,
-    contextId: BrowsingContext.BrowsingContext | null
+    contextId: CommonDataTypes.BrowsingContext | null
   ): Promise<void> {
     if (
       // Check if the event is allowed globally.
@@ -45,7 +45,7 @@ export class EventManager implements IEventManager {
 
   #shouldSendEvent(
     eventMethod: string,
-    contextId: BrowsingContext.BrowsingContext | null
+    contextId: CommonDataTypes.BrowsingContext | null
   ): boolean {
     return (
       this.#subscriptions.has(contextId) &&
@@ -55,12 +55,13 @@ export class EventManager implements IEventManager {
 
   async subscribe(
     events: string[],
-    contextIds: BrowsingContext.BrowsingContext[] | null
+    contextIds: CommonDataTypes.BrowsingContext[] | null
   ): Promise<void> {
     // Global subscription
     for (let event of events) {
-      if (contextIds === null) this.#subscribe(event, null);
-      else {
+      if (contextIds === null) {
+        this.#subscribe(event, null);
+      } else {
         for (let contextId of contextIds) {
           this.#subscribe(event, contextId);
         }
@@ -70,20 +71,22 @@ export class EventManager implements IEventManager {
 
   #subscribe(
     event: string,
-    contextId: BrowsingContext.BrowsingContext | null
+    contextId: CommonDataTypes.BrowsingContext | null
   ): void {
-    if (!this.#subscriptions.has(contextId))
+    if (!this.#subscriptions.has(contextId)) {
       this.#subscriptions.set(contextId, new Set());
+    }
     this.#subscriptions.get(contextId)!.add(event);
   }
 
   async unsubscribe(
     events: string[],
-    contextIds: BrowsingContext.BrowsingContext[] | null
+    contextIds: CommonDataTypes.BrowsingContext[] | null
   ): Promise<void> {
     for (let event of events) {
-      if (contextIds === null) this.#unsubscribe(event, null);
-      else {
+      if (contextIds === null) {
+        this.#unsubscribe(event, null);
+      } else {
         for (let contextId of contextIds) {
           this.#unsubscribe(event, contextId);
         }
@@ -93,7 +96,7 @@ export class EventManager implements IEventManager {
 
   #unsubscribe(
     event: string,
-    contextId: BrowsingContext.BrowsingContext | null
+    contextId: CommonDataTypes.BrowsingContext | null
   ): void {
     const subscription = this.#subscriptions.get(contextId);
     subscription?.delete(event);

@@ -25,7 +25,6 @@ import { Context } from './context';
 import { BrowsingContext } from '../protocol/bidiProtocolTypes';
 import { BidiServer, IBidiServer } from '../../utils/bidiServer';
 import { EventManager, IEventManager } from '../events/EventManager';
-import { BrowsingContextParser } from '../protocol/parsers/browsingContextParser';
 
 describe('BrowsingContextProcessor', function () {
   let mockCdpServer: StubTransport;
@@ -91,7 +90,7 @@ describe('BrowsingContextProcessor', function () {
 
   describe('handle `process_PROTO_browsingContext_create`', async function () {
     const BROWSING_CONTEXT_CREATE_PARAMS: BrowsingContext.CreateParameters = {
-      type: BrowsingContext.CreateParametersType.tab,
+      type: 'tab',
     };
 
     const EXPECTED_TARGET_CREATE_TARGET_CALL = {
