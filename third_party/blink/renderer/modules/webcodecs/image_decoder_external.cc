@@ -176,7 +176,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     }
 
     decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
-        decode_task_runner_, mime_type_, /*data=*/nullptr,
+        decode_task_runner_, mime_type_.IsolatedCopy(), /*data=*/nullptr,
         /*data_complete=*/false, alpha_option, color_behavior, desired_size,
         animation_option_);
 
@@ -241,7 +241,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   data_complete_ = true;
   completed_property_->ResolveWithUndefined();
   decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
-      decode_task_runner_, mime_type_, std::move(segment_reader),
+      decode_task_runner_, mime_type_.IsolatedCopy(), std::move(segment_reader),
       data_complete_, alpha_option, color_behavior, desired_size,
       animation_option_);
 

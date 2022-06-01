@@ -203,14 +203,7 @@ TEST_F(ImageDecoderTest, DecodeUnsupported) {
   }
 }
 
-// TODO(1328861) - Test fails on Linux TSAN
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DecoderCreationMixedCaseMimeType \
-  DISABLED_DecoderCreationMixedCaseMimeType
-#else
-#define MAYBE_DecoderCreationMixedCaseMimeType DecoderCreationMixedCaseMimeType
-#endif
-TEST_F(ImageDecoderTest, MAYBE_DecoderCreationMixedCaseMimeType) {
+TEST_F(ImageDecoderTest, DecoderCreationMixedCaseMimeType) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/GiF";
   EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
