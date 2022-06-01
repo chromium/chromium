@@ -74,7 +74,7 @@ void StartCrashReporter(UpdaterScope updater_scope,
   const absl::optional<base::FilePath> database_path =
       GetVersionedDirectory(updater_scope);
   if (!database_path) {
-    LOG(DFATAL) << "Failed to get the database path.";
+    LOG(ERROR) << "Failed to get the database path.";
     return;
   }
 
