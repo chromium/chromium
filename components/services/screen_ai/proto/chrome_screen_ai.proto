@@ -264,6 +264,13 @@ message Rect {
   float angle = 5;
 }
 
+enum Direction {
+  LEFT_TO_RIGHT = 0;
+  RIGHT_TO_LEFT = 1;
+  UNSPECIFIED = 2;
+  TOP_TO_BOTTOM = 3;
+}
+
 // Text line with associated bounding box.
 // This proto is copied from google3/ocr/photo/proto/image.proto.
 message LineBox {
@@ -291,7 +298,7 @@ message LineBox {
   int32 order_within_block = 7;
 
   // The direction of the script contained in the word. Directed by the enum
-  // ocr.photo.Direction defined above.
+  // Direction defined above.
   int32 direction = 8;
 
   // Content type for this line.
@@ -343,7 +350,7 @@ message WordBox {
   int32 background_rgb_value = 12;
 
   // The direction of the script contained in the word. Directed by the enum
-  // ocr.photo.Direction defined above.
+  // Direction defined above.
   int32 direction = 13;
 
   // Content type for this word.
