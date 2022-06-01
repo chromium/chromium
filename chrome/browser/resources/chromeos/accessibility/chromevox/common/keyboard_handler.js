@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles user keyboard input events.
  */
+import {UserActionMonitor} from '/chromevox/background/user_action_monitor.js';
 import {KeyMap} from '/chromevox/common/key_map.js';
 import {KeyUtil} from '/chromevox/common/key_util.js';
 

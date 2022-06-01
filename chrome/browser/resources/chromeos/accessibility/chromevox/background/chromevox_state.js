@@ -7,6 +7,7 @@
  *     ChromeVox state, to avoid direct dependencies on the Background
  *     object and to facilitate mocking for tests.
  */
+import {UserActionMonitor} from '/chromevox/background/user_action_monitor.js';
 
 /**
  * An interface implemented by objects to observe ChromeVox state changes.

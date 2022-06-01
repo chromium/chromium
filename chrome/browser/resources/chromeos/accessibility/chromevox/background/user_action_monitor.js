@@ -6,15 +6,6 @@
  * @fileoverview Monitors user actions.
  */
 
-goog.provide('UserActionMonitor');
-
-goog.require('CommandHandlerInterface');
-goog.require('KeyCode');
-goog.require('KeySequence');
-goog.require('Output');
-goog.require('PanelCommand');
-goog.require('PanelCommandType');
-
 /**
  * The types of actions we want to monitor.
  * @enum {string}
@@ -33,7 +24,7 @@ const ActionType = {
  * various handlers to intercept user actions before they are processed by the
  * rest of ChromeVox.
  */
-UserActionMonitor = class {
+export class UserActionMonitor {
   /**
    * @param {!Array<UserActionMonitor.ActionInfo>} actionInfos A queue of
    *     expected actions.
@@ -185,7 +176,7 @@ UserActionMonitor = class {
   static destroy() {
     UserActionMonitor.instance = null;
   }
-};
+}
 
 /**
  * The key sequence used to close ChromeVox.

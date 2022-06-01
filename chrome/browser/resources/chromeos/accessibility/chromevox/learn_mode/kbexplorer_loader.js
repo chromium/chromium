@@ -15,4 +15,3 @@ goog.require('LibLouis');
 goog.require('Msgs');
 goog.require('NavBraille');
 goog.require('Spannable');
-goog.require('UserActionMonitor');

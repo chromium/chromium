@@ -32,6 +32,7 @@ goog.require('NavBraille');
 goog.require('Output');
 goog.require('OutputEventType');
 goog.require('PanelCommand');
+goog.require('PanelCommandType');
 goog.require('PanelNodeMenuData');
 goog.require('PanelTabMenuItemData');
 goog.require('PhoneticData');
@@ -42,7 +43,6 @@ goog.require('StringUtil');
 goog.require('TreeDumper');
 goog.require('TreePathRecoveryStrategy');
 goog.require('TtsInterface');
-goog.require('UserActionMonitor');
 goog.require('ValueSelectionSpan');
 goog.require('ValueSpan');
 

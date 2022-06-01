@@ -8,6 +8,7 @@
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {GestureInterface} from '/chromevox/background/gesture_interface.js';
 import {PointerHandler} from '/chromevox/background/pointer_handler.js';
+import {UserActionMonitor} from '/chromevox/background/user_action_monitor.js';
 import {GestureCommandData, GestureGranularity} from '/chromevox/common/gesture_command_data.js';
 import {EventGenerator} from '/common/event_generator.js';
 
