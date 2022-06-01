@@ -2,11 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 
-html_to_js("web_components") {
-  js_files = [ "attribution_internals_table.ts" ]
+html_to_wrapper("html_wrapper_files") {
+  in_files = [ "attribution_internals_table.html" ]
+  template = "native"
 }
 
 # Copy (via creating sym links) all the other files into the same folder for
@@ -15,8 +16,9 @@ copy("copy_files") {
   deps = [ "//content/browser/attribution_reporting:mojo_bindings_webui_js" ]
   sources = [
     "$root_gen_dir/mojom-webui/content/browser/attribution_reporting/attribution_internals.mojom-webui.js",
-    "./attribution_internals.ts",
-    "./table_model.ts",
+    "attribution_internals.ts",
+    "attribution_internals_table.ts",
+    "table_model.ts",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
@@ -28,6 +30,7 @@ ts_library("build_ts") {
   in_files = [
     "attribution_internals.ts",
     "attribution_internals_table.ts",
+    "attribution_internals_table.html.ts",
     "table_model.ts",
     "attribution_internals.mojom-webui.js",
   ]
@@ -38,6 +41,6 @@ ts_library("build_ts") {
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   extra_deps = [
     ":copy_files",
-    ":web_components",
+    ":html_wrapper_files",
   ]
 }
