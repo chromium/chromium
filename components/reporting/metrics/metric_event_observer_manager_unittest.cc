@@ -35,7 +35,7 @@ class MetricEventObserverManagerTest : public ::testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  const std::string kEnableSettingPath = "enable_path";
+  static constexpr char kEnableSettingPath[] = "enable_path";
 
   std::unique_ptr<test::FakeReportingSettings> settings_;
   std::unique_ptr<test::FakeMetricEventObserver> event_observer_;
@@ -58,10 +58,11 @@ TEST_F(MetricEventObserverManagerTest, InitiallyEnabled) {
   for (size_t i = 0; i < reporting_count; ++i) {
     event_observer_ptr->RunCallback(metric_data);
 
-    auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
-    ASSERT_EQ(metric_data_reported.size(), i + 1);
-    EXPECT_TRUE(metric_data_reported[i].has_timestamp_ms());
-    EXPECT_TRUE(metric_data_reported[i].has_event_data());
+    const auto& metric_data_reported =
+        metric_report_queue_->GetMetricDataReported();
+    ASSERT_THAT(metric_data_reported, ::testing::SizeIs(i + 1));
+    EXPECT_TRUE(metric_data_reported[i]->has_timestamp_ms());
+    EXPECT_TRUE(metric_data_reported[i]->has_event_data());
   }
 
   // Setting disabled, no more data should be reported even if the callback is
@@ -71,8 +72,8 @@ TEST_F(MetricEventObserverManagerTest, InitiallyEnabled) {
   event_observer_ptr->RunCallback(metric_data);
 
   ASSERT_FALSE(event_observer_ptr->GetReportingEnabled());
-  EXPECT_EQ(metric_report_queue_->GetMetricDataReported().size(),
-            reporting_count);
+  EXPECT_THAT(metric_report_queue_->GetMetricDataReported(),
+              ::testing::SizeIs(reporting_count));
 }
 
 TEST_F(MetricEventObserverManagerTest, InitiallyDisabled) {
@@ -96,9 +97,10 @@ TEST_F(MetricEventObserverManagerTest, InitiallyDisabled) {
   event_observer_ptr->RunCallback(metric_data);
 
   ASSERT_TRUE(event_observer_ptr->GetReportingEnabled());
-  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
-  ASSERT_EQ(metric_data_reported.size(), 1ul);
-  EXPECT_TRUE(metric_data_reported[0].has_event_data());
+  const auto& metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
+  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
+  EXPECT_TRUE(metric_data_reported[0]->has_event_data());
 }
 
 TEST_F(MetricEventObserverManagerTest, DefaultEnabled) {
@@ -114,10 +116,11 @@ TEST_F(MetricEventObserverManagerTest, DefaultEnabled) {
   ASSERT_TRUE(event_observer_ptr->GetReportingEnabled());
   event_observer_ptr->RunCallback(metric_data);
 
-  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
-  ASSERT_EQ(metric_data_reported.size(), 1ul);
-  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0].has_event_data());
+  const auto& metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
+  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
+  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0]->has_event_data());
 }
 
 TEST_F(MetricEventObserverManagerTest, DefaultDisabled) {
@@ -161,14 +164,15 @@ TEST_F(MetricEventObserverManagerTest, AdditionalSamplers) {
   event_observer_ptr->RunCallback(metric_data);
   task_environment_.RunUntilIdle();
 
-  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  const auto& metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
 
   ASSERT_EQ(additional_sampler.GetNumCollectCalls(), 1);
   EXPECT_EQ(empty_additional_sampler.GetNumCollectCalls(), 1);
   ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
-  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0].has_event_data());
-  EXPECT_TRUE(metric_data_reported[0].has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0]->has_event_data());
+  EXPECT_TRUE(metric_data_reported[0]->has_telemetry_data());
 }
 
 }  // namespace

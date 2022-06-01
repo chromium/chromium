@@ -18,6 +18,7 @@
 #include "components/reporting/metrics/fake_sampler.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -36,7 +37,8 @@ class FakeEventDetector : public EventDetector {
   absl::optional<MetricEventType> DetectEvent(
       const MetricData& previous_metric_data,
       const MetricData& current_metric_data) override {
-    previous_metric_list_.emplace_back(previous_metric_data);
+    previous_metric_list_.emplace_back(
+        std::make_unique<const MetricData>(previous_metric_data));
     if (!has_event_) {
       return absl::nullopt;
     }
@@ -45,14 +47,15 @@ class FakeEventDetector : public EventDetector {
 
   void SetHasEvent(bool has_event) { has_event_ = has_event; }
 
-  std::vector<MetricData> GetPreviousMetricList() {
+  const std::vector<std::unique_ptr<const MetricData>>& GetPreviousMetricList()
+      const {
     return previous_metric_list_;
   }
 
  private:
   bool has_event_ = false;
 
-  std::vector<MetricData> previous_metric_list_;
+  std::vector<std::unique_ptr<const MetricData>> previous_metric_list_;
 };
 }  // namespace test
 
@@ -110,12 +113,13 @@ TEST_F(MetricDataCollectorTest, OneShotCollector_InitiallyEnabled) {
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
 
   FlushTasks();
-  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  const auto& metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
 
-  ASSERT_EQ(metric_data_reported.size(), 1ul);
+  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
   EXPECT_TRUE(callback_called);
-  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0].has_info_data());
+  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0]->has_info_data());
 }
 
 TEST_F(MetricDataCollectorTest, OneShotCollector_NoMetricData) {
@@ -134,7 +138,8 @@ TEST_F(MetricDataCollectorTest, OneShotCollector_NoMetricData) {
   // Setting is initially enabled, data is being collected.
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
   FlushTasks();
-  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  const auto& metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
 
   ASSERT_TRUE(metric_data_reported.empty());
   EXPECT_FALSE(callback_called);
@@ -167,11 +172,12 @@ TEST_F(MetricDataCollectorTest, OneShotCollector_InitiallyDisabled) {
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
 
   FlushTasks();
-  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  const auto& metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
 
-  ASSERT_EQ(metric_data_reported.size(), 1ul);
-  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0].has_info_data());
+  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
+  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0]->has_info_data());
 }
 
 TEST_F(MetricDataCollectorTest, OneShotCollector_DefaultEnabled) {
@@ -191,12 +197,13 @@ TEST_F(MetricDataCollectorTest, OneShotCollector_DefaultEnabled) {
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
 
   FlushTasks();
-  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  const auto& metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
 
-  ASSERT_EQ(metric_data_reported.size(), 1ul);
+  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
   EXPECT_TRUE(callback_called);
-  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0].has_info_data());
+  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0]->has_info_data());
 }
 
 TEST_F(MetricDataCollectorTest, OneShotCollector_DefaultDisabled) {
@@ -275,16 +282,17 @@ TEST_F(MetricDataCollectorTest, PeriodicCollector_InitiallyEnabled) {
   EXPECT_EQ(sampler_->GetNumCollectCalls(), expected_collect_calls);
 
   FlushTasks();
-  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  const auto& metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
 
-  ASSERT_EQ(metric_data_reported.size(), 5ul);
+  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(5));
   for (int i = 0; i < 5; ++i) {
-    EXPECT_TRUE(metric_data_reported[i].has_timestamp_ms());
-    EXPECT_EQ(metric_data_reported[i].has_telemetry_data(),
+    EXPECT_TRUE(metric_data_reported[i]->has_timestamp_ms());
+    EXPECT_EQ(metric_data_reported[i]->has_telemetry_data(),
               metric_data[i].has_telemetry_data());
-    EXPECT_EQ(metric_data_reported[i].has_info_data(),
+    EXPECT_EQ(metric_data_reported[i]->has_info_data(),
               metric_data[i].has_info_data());
-    EXPECT_EQ(metric_data_reported[i].has_event_data(),
+    EXPECT_EQ(metric_data_reported[i]->has_event_data(),
               metric_data[i].has_event_data());
   }
 }
@@ -304,7 +312,8 @@ TEST_F(MetricDataCollectorTest, PeriodicCollector_NoMetricData) {
   // One initial collection at startup.
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
   FlushTasks();
-  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  const auto& metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
 
   ASSERT_TRUE(metric_data_reported.empty());
 }
@@ -338,13 +347,14 @@ TEST_F(MetricDataCollectorTest, PeriodicCollector_InitiallyDisabled) {
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 2);
 
   FlushTasks();
-  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  const auto& metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
 
-  ASSERT_EQ(metric_data_reported.size(), 2ul);
-  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0].has_telemetry_data());
-  EXPECT_TRUE(metric_data_reported[1].has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[1].has_telemetry_data());
+  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(2));
+  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0]->has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported[1]->has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[1]->has_telemetry_data());
 }
 
 TEST_F(MetricDataCollectorTest, PeriodicCollector_DefaultEnabled) {
@@ -373,14 +383,15 @@ TEST_F(MetricDataCollectorTest, PeriodicCollector_DefaultEnabled) {
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 2);
 
   FlushTasks();
-  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  const auto& metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
 
-  ASSERT_EQ(metric_data_reported.size(), 2ul);
-  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0].has_telemetry_data());
-  EXPECT_TRUE(metric_data_reported[1].has_timestamp_ms());
-  EXPECT_FALSE(metric_data_reported[1].has_telemetry_data());
-  EXPECT_TRUE(metric_data_reported[1].has_event_data());
+  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(2));
+  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0]->has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported[1]->has_timestamp_ms());
+  EXPECT_FALSE(metric_data_reported[1]->has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported[1]->has_event_data());
 }
 
 TEST_F(MetricDataCollectorTest, PeriodicCollector_DefaultDisabled) {
@@ -441,32 +452,34 @@ TEST_F(MetricDataCollectorTest, PeriodicEventCollector_NoAdditionalSamplers) {
   // Data collected but not reported.
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 3);
   FlushTasks();
-  auto previous_metric_list = event_detector_ptr->GetPreviousMetricList();
+  const auto& previous_metric_list =
+      event_detector_ptr->GetPreviousMetricList();
 
-  ASSERT_EQ(previous_metric_list.size(), 3ul);
+  ASSERT_THAT(previous_metric_list, ::testing::SizeIs(3));
 
-  EXPECT_FALSE(previous_metric_list[0].has_timestamp_ms());
-  EXPECT_FALSE(previous_metric_list[0].has_info_data());
-  EXPECT_FALSE(previous_metric_list[0].has_telemetry_data());
-  EXPECT_FALSE(previous_metric_list[0].has_event_data());
+  EXPECT_FALSE(previous_metric_list[0]->has_timestamp_ms());
+  EXPECT_FALSE(previous_metric_list[0]->has_info_data());
+  EXPECT_FALSE(previous_metric_list[0]->has_telemetry_data());
+  EXPECT_FALSE(previous_metric_list[0]->has_event_data());
 
-  EXPECT_TRUE(previous_metric_list[1].has_timestamp_ms());
-  EXPECT_TRUE(previous_metric_list[1].has_info_data());
-  EXPECT_FALSE(previous_metric_list[1].has_telemetry_data());
-  EXPECT_FALSE(previous_metric_list[1].has_event_data());
+  EXPECT_TRUE(previous_metric_list[1]->has_timestamp_ms());
+  EXPECT_TRUE(previous_metric_list[1]->has_info_data());
+  EXPECT_FALSE(previous_metric_list[1]->has_telemetry_data());
+  EXPECT_FALSE(previous_metric_list[1]->has_event_data());
 
-  EXPECT_TRUE(previous_metric_list[2].has_timestamp_ms());
-  EXPECT_FALSE(previous_metric_list[2].has_info_data());
-  EXPECT_TRUE(previous_metric_list[2].has_telemetry_data());
-  EXPECT_TRUE(previous_metric_list[2].has_event_data());
+  EXPECT_TRUE(previous_metric_list[2]->has_timestamp_ms());
+  EXPECT_FALSE(previous_metric_list[2]->has_info_data());
+  EXPECT_TRUE(previous_metric_list[2]->has_telemetry_data());
+  EXPECT_TRUE(previous_metric_list[2]->has_event_data());
 
-  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  const auto& metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
 
-  ASSERT_EQ(metric_data_reported.size(), 1ul);
-  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
-  EXPECT_FALSE(metric_data_reported[0].has_info_data());
-  EXPECT_TRUE(metric_data_reported[0].has_telemetry_data());
-  EXPECT_TRUE(metric_data_reported[0].has_event_data());
+  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
+  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
+  EXPECT_FALSE(metric_data_reported[0]->has_info_data());
+  EXPECT_TRUE(metric_data_reported[0]->has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported[0]->has_event_data());
 }
 
 TEST_F(MetricDataCollectorTest, PeriodicEventCollector_WithAdditionalSamplers) {
@@ -516,21 +529,22 @@ TEST_F(MetricDataCollectorTest, PeriodicEventCollector_WithAdditionalSamplers) {
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
 
   task_environment_.RunUntilIdle();
-  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  const auto& metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
 
-  ASSERT_EQ(metric_data_reported.size(), 1ul);
-  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0].has_event_data());
-  ASSERT_TRUE(metric_data_reported[0].has_telemetry_data());
+  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
+  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0]->has_event_data());
+  ASSERT_TRUE(metric_data_reported[0]->has_telemetry_data());
   ASSERT_TRUE(
-      metric_data_reported[0].telemetry_data().has_networks_telemetry());
+      metric_data_reported[0]->telemetry_data().has_networks_telemetry());
   ASSERT_TRUE(metric_data_reported[0]
-                  .telemetry_data()
+                  ->telemetry_data()
                   .networks_telemetry()
                   .has_https_latency_data());
 
   auto https_latency_data = metric_data_reported[0]
-                                .telemetry_data()
+                                ->telemetry_data()
                                 .networks_telemetry()
                                 .https_latency_data();
   EXPECT_EQ(https_latency_data.verdict(), additional_metric_data[0]

@@ -131,7 +131,8 @@ void ExtensionInstallEventLogUploader::EnqueueReport(
       },
       weak_factory_.GetWeakPtr(), base::ThreadTaskRunnerHandle::Get());
 
-  report_queue_->Enqueue(value_report, ::reporting::Priority::SLOW_BATCH,
+  report_queue_->Enqueue(std::move(value_report),
+                         ::reporting::Priority::SLOW_BATCH,
                          std::move(on_enqueue_done_cb));
 }
 

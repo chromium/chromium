@@ -70,7 +70,7 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
     em::PrintJobEvent event = Convert(print_job_info);
     VLOG(1) << "Enqueuing event for print job: "
             << event.job_configuration().id();
-    Enqueue(event);
+    Enqueue(std::move(event));
   }
 
  private:
@@ -84,10 +84,11 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
     cros_settings_->GetBoolean(kReportDevicePrintJobs, &should_report_);
   }
 
-  void Enqueue(const em::PrintJobEvent& event) {
+  void Enqueue(em::PrintJobEvent event) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    report_queue_->Enqueue(&event, ::reporting::Priority::SLOW_BATCH,
-                           base::DoNothing());
+    report_queue_->Enqueue(
+        std::make_unique<em::PrintJobEvent>(std::move(event)),
+        ::reporting::Priority::SLOW_BATCH, base::DoNothing());
   }
 
   static em::PrintJobEvent Convert(const print::PrintJobInfo& print_job_info) {

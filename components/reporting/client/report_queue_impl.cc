@@ -53,7 +53,7 @@ ReportQueueImpl::ReportQueueImpl(
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-void ReportQueueImpl::AddRecord(base::StringPiece record,
+void ReportQueueImpl::AddRecord(std::string record,
                                 Priority priority,
                                 EnqueueCallback callback) const {
   const Status status = config_->CheckPolicy();
@@ -70,20 +70,20 @@ void ReportQueueImpl::AddRecord(base::StringPiece record,
 
   sequenced_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ReportQueueImpl::SendRecordToStorage,
-                                base::Unretained(this), std::string(record),
+                                base::Unretained(this), std::move(record),
                                 priority, std::move(callback)));
 }
 
-void ReportQueueImpl::SendRecordToStorage(base::StringPiece record_data,
+void ReportQueueImpl::SendRecordToStorage(std::string record_data,
                                           Priority priority,
                                           EnqueueCallback callback) const {
-  storage_->AddRecord(priority, AugmentRecord(record_data),
+  storage_->AddRecord(priority, AugmentRecord(std::move(record_data)),
                       std::move(callback));
 }
 
-Record ReportQueueImpl::AugmentRecord(base::StringPiece record_data) const {
+Record ReportQueueImpl::AugmentRecord(std::string record_data) const {
   Record record;
-  record.set_data(std::string(record_data));
+  *record.mutable_data() = std::move(record_data);
   record.set_destination(config_->destination());
 
   // record with no DM token is assumed to be associated with device DM token
@@ -153,18 +153,18 @@ void SpeculativeReportQueueImpl::Flush(Priority priority,
           priority, std::move(callback), weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SpeculativeReportQueueImpl::AddRecord(base::StringPiece record,
+void SpeculativeReportQueueImpl::AddRecord(std::string record,
                                            Priority priority,
                                            EnqueueCallback callback) const {
   sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SpeculativeReportQueueImpl::MaybeEnqueueRecord,
-                     weak_ptr_factory_.GetWeakPtr(), std::string(record),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(record),
                      priority, std::move(callback)));
 }
 
 void SpeculativeReportQueueImpl::MaybeEnqueueRecord(
-    base::StringPiece record,
+    std::string record,
     Priority priority,
     EnqueueCallback callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -178,12 +178,12 @@ void SpeculativeReportQueueImpl::MaybeEnqueueRecord(
   // Queue is ready. If memory queue is empty, just forward the
   // record.
   if (pending_records_.empty()) {
-    report_queue_->Enqueue(record, priority, std::move(callback));
+    report_queue_->Enqueue(std::move(record), priority, std::move(callback));
     return;
   }
   // If memory queue is not empty, attach the new record at the
   // end and initiate enqueuing of everything from there.
-  pending_records_.emplace(record, priority);
+  pending_records_.emplace(std::move(record), priority);
   EnqueuePendingRecords(std::move(callback));
 }
 

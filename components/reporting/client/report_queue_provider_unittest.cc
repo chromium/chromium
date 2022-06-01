@@ -64,7 +64,7 @@ TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
             // Asynchronously create ReportingQueue.
             base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
                 queue_cb = base::BindOnce(
-                    [](base::StringPiece data,
+                    [](std::string data,
                        reporting::ReportQueue::EnqueueCallback done_cb,
                        reporting::StatusOr<std::unique_ptr<
                            reporting::ReportQueue>> report_queue_result) {
@@ -76,14 +76,13 @@ TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
                       // Queue created successfully, enqueue the message.
                       EXPECT_CALL(*static_cast<MockReportQueue*>(
                                       report_queue_result.ValueOrDie().get()),
-                                  AddRecord(StrEq(std::string(data)),
-                                            Eq(FAST_BATCH), _))
+                                  AddRecord(StrEq(data), Eq(FAST_BATCH), _))
                           .WillOnce(WithArg<2>(
                               Invoke([](ReportQueue::EnqueueCallback cb) {
                                 std::move(cb).Run(Status::StatusOK());
                               })));
                       report_queue_result.ValueOrDie()->Enqueue(
-                          data, FAST_BATCH, std::move(done_cb));
+                          std::move(data), FAST_BATCH, std::move(done_cb));
                     },
                     std::string(data), std::move(done_cb));
             reporting::ReportQueueProvider::CreateQueue(std::move(config),

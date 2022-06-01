@@ -53,11 +53,11 @@ class TestHelper : public UserEventReporterHelper {
   bool IsCurrentUserNew() const override { return is_user_new_; }
 
   void ReportEvent(
-      const google::protobuf::MessageLite* record,
+      std::unique_ptr<const google::protobuf::MessageLite> record,
       Priority priority,
       ReportQueue::EnqueueCallback enqueue_cb = base::DoNothing()) override {
     event_reported_ = true;
-    mock_queue_->Enqueue(record, priority, std::move(enqueue_cb));
+    mock_queue_->Enqueue(std::move(record), priority, std::move(enqueue_cb));
   }
 
   base::WeakPtr<::reporting::MockReportQueueStrict> mock_queue_;

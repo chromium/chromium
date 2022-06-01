@@ -19,6 +19,7 @@
 using ::testing::_;
 using ::testing::InSequence;
 using ::testing::Invoke;
+using ::testing::StrEq;
 using ::testing::WithArg;
 
 namespace enterprise_reporting {
@@ -159,7 +160,7 @@ TEST_F(RealTimeUploaderTest, UploadReport) {
     InSequence sequence;
 
     EXPECT_CALL(*uploader_->mock_report_queue(),
-                AddRecord(base::StringPiece(expected_report_1), kPriority, _))
+                AddRecord(StrEq(expected_report_1), kPriority, _))
         .Times(1)
         .WillOnce(WithArg<2>(
             Invoke([](reporting::ReportQueue::EnqueueCallback callback) {
@@ -169,7 +170,7 @@ TEST_F(RealTimeUploaderTest, UploadReport) {
             })));
 
     EXPECT_CALL(*uploader_->mock_report_queue(),
-                AddRecord(base::StringPiece(expected_report_2), kPriority, _))
+                AddRecord(StrEq(expected_report_2), kPriority, _))
         .Times(1)
         .WillOnce(WithArg<2>(
             Invoke([](reporting::ReportQueue::EnqueueCallback callback) {
@@ -207,7 +208,7 @@ TEST_F(RealTimeUploaderTest, UploadReportBeforeQueueIsReady) {
 
   EXPECT_CALL(*uploader_->mock_report_queue(),
 
-              AddRecord(base::StringPiece(expected_report), kPriority, _))
+              AddRecord(StrEq(expected_report), kPriority, _))
       .Times(1)
       .WillOnce(WithArg<2>(
           Invoke([](reporting::ReportQueue::EnqueueCallback callback) {

@@ -52,7 +52,7 @@ class UserEventReporterHelper {
   // Reports an event to the queue.
   // Thread safe, can be called on any thread.
   virtual void ReportEvent(
-      const google::protobuf::MessageLite* record,
+      std::unique_ptr<const google::protobuf::MessageLite> record,
       Priority priority,
       ReportQueue::EnqueueCallback enqueue_cb =
           base::BindOnce(&UserEventReporterHelper::OnEnqueueDefault));

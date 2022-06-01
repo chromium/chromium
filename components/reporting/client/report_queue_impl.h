@@ -62,16 +62,15 @@ class ReportQueueImpl : public ReportQueue {
                   scoped_refptr<StorageModuleInterface> storage);
 
  private:
-  void AddRecord(base::StringPiece record,
+  void AddRecord(std::string record,
                  Priority priority,
                  EnqueueCallback callback) const override;
 
-  void SendRecordToStorage(base::StringPiece record,
+  void SendRecordToStorage(std::string record,
                            Priority priority,
                            EnqueueCallback callback) const;
 
-  [[nodiscard]] reporting::Record AugmentRecord(
-      base::StringPiece record_data) const;
+  [[nodiscard]] reporting::Record AugmentRecord(std::string record_data) const;
 
   std::unique_ptr<ReportQueueConfiguration> config_;
   scoped_refptr<StorageModuleInterface> storage_;
@@ -104,7 +103,7 @@ class SpeculativeReportQueueImpl : public ReportQueue {
  protected:
   // Forwards |AddRecord| to |ReportQueue|, if already created.
   // Records the record internally otherwise.
-  void AddRecord(base::StringPiece record,
+  void AddRecord(std::string record,
                  Priority priority,
                  EnqueueCallback callback) const override;
 
@@ -116,9 +115,9 @@ class SpeculativeReportQueueImpl : public ReportQueue {
   // Enqueues head of the |pending_records_| and reapplies for the rest of it.
   void EnqueuePendingRecords(EnqueueCallback callback) const;
 
-  // Optionally enqueues |record| to actual queue, if ready.
+  // Optionally enqueues |record| (owned) to actual queue, if ready.
   // Otherwise adds it to the end of |pending_records_|.
-  void MaybeEnqueueRecord(base::StringPiece record,
+  void MaybeEnqueueRecord(std::string record,
                           Priority priority,
                           EnqueueCallback callback) const;
 

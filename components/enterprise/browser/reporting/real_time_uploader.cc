@@ -114,12 +114,12 @@ void RealTimeUploader::OnReportQueueCreated(
 }
 
 void RealTimeUploader::UploadClosure(
-    std::unique_ptr<google::protobuf::MessageLite> report,
+    std::unique_ptr<const google::protobuf::MessageLite> report,
     EnqueueCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(report_queue_);
   report_queue_->Enqueue(
-      report.get(), report_priority_,
+      std::move(report), report_priority_,
       base::BindPostTask(
           base::ThreadTaskRunnerHandle::Get(),
           base::BindOnce(&RealTimeUploader::OnReportEnqueued,

@@ -40,7 +40,9 @@ TEST(UserEventReporterHelperTest, TestReportEvent) {
       });
 
   UserEventReporterHelper reporter(std::move(mock_queue));
-  reporter.ReportEvent(&input_record, Priority::IMMEDIATE);
+  reporter.ReportEvent(
+      std::make_unique<UserEventReporterTestingRecord>(input_record),
+      Priority::IMMEDIATE);
 
   EXPECT_EQ(priority, Priority::IMMEDIATE);
   EXPECT_EQ(enqueued_record.field1(), input_record.field1());
@@ -73,7 +75,8 @@ TEST(UserEventReporterHelperTest, TestReportEventWithCallback) {
 
   UserEventReporterHelper reporter(std::move(mock_queue));
   reporter.ReportEvent(
-      &input_record, Priority::IMMEDIATE,
+      std::make_unique<UserEventReporterTestingRecord>(input_record),
+      Priority::IMMEDIATE,
       base::BindLambdaForTesting([&](Status) { ++callback_run_count; }));
 
   EXPECT_EQ(callback_run_count, 1);

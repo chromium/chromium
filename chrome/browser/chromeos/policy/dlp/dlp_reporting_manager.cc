@@ -261,8 +261,6 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
   }
   reporting::ReportQueue::EnqueueCallback callback = base::BindOnce(
       &DlpReportingManager::OnEventEnqueued, base::Unretained(this));
-  report_queue_->Enqueue(&event, reporting::Priority::SLOW_BATCH,
-                         std::move(callback));
 
   switch (event.mode()) {
     case DlpPolicyEvent_Mode_BLOCK:
@@ -289,6 +287,8 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
       NOTREACHED();
       break;
   }
+  report_queue_->Enqueue(std::make_unique<DlpPolicyEvent>(std::move(event)),
+                         reporting::Priority::SLOW_BATCH, std::move(callback));
 }
 
 }  // namespace policy

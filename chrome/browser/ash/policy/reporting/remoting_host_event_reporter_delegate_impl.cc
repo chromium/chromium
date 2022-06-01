@@ -65,8 +65,9 @@ class HostEventReporterDelegateImpl : public HostEventReporterImpl::Delegate {
               record.host_user().user_email())) {
         record.clear_host_user();  // anonymize host user.
       }
-      user_event_helper_.ReportEvent(&record,
-                                     ::reporting::Priority::FAST_BATCH);
+      user_event_helper_.ReportEvent(
+          std::make_unique<::ash::reporting::CRDRecord>(std::move(record)),
+          ::reporting::Priority::FAST_BATCH);
     }
 
     // Task runner for asynchronous actions (including destructor).

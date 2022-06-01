@@ -25,7 +25,7 @@ class MockReportQueueStrict : public ReportQueue {
 
   MOCK_METHOD(void,
               AddRecord,
-              (base::StringPiece, Priority, EnqueueCallback),
+              (std::string, Priority, EnqueueCallback),
               (const));
 
   MOCK_METHOD(void, Flush, (Priority, FlushCallback), (override));

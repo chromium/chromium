@@ -122,20 +122,21 @@ class ReportQueue {
   // (destination : requirement)
   // UPLOAD_EVENTS : UploadEventsRequest
   //
-  // |record| will be sent as a string with no conversion.
-  void Enqueue(base::StringPiece record,
+  // |record| string (owned) will be sent with no conversion.
+  void Enqueue(std::string record,
                Priority priority,
                EnqueueCallback callback) const;
 
-  // |record| will be converted to a JSON string with base::JsonWriter::Write.
-  void Enqueue(const base::Value::Dict& record,
+  // |record| as a dictionary (owned) will be converted to a JSON string with
+  // base::JsonWriter::Write.
+  void Enqueue(base::Value::Dict record,
                Priority priority,
                EnqueueCallback callback) const;
 
-  // |record| will be converted to a string with SerializeToString(). The
-  // handler is responsible for converting the record back to a proto with a
-  // ParseFromString() call.
-  void Enqueue(const google::protobuf::MessageLite* record,
+  // |record| as a protobuf (owned) will be converted to a string with
+  // SerializeToString(). The handler is responsible for converting the record
+  // back to a proto with a ParseFromString() call.
+  void Enqueue(std::unique_ptr<const google::protobuf::MessageLite> record,
                Priority priority,
                EnqueueCallback callback) const;
 
@@ -152,7 +153,7 @@ class ReportQueue {
   PrepareToAttachActualQueue() const = 0;
 
  protected:
-  virtual void AddRecord(base::StringPiece record,
+  virtual void AddRecord(std::string record,
                          Priority priority,
                          EnqueueCallback callback) const = 0;
 };

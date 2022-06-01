@@ -57,8 +57,9 @@ class RealTimeUploader {
       reporting::ReportQueueProvider::CreateReportQueueResponse
           create_report_queue_response);
 
-  void UploadClosure(std::unique_ptr<google::protobuf::MessageLite> report,
-                     EnqueueCallback callback);
+  void UploadClosure(
+      std::unique_ptr<const google::protobuf::MessageLite> report,
+      EnqueueCallback callback);
   void OnReportEnqueued(EnqueueCallback callback, reporting::Status status);
 
   std::unique_ptr<reporting::ReportQueue> report_queue_;
