@@ -49,9 +49,12 @@ TestShellMainDelegate::TestShellMainDelegate() {}
 TestShellMainDelegate::~TestShellMainDelegate() {}
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void TestShellMainDelegate::PostEarlyInitialization(bool is_running_tests) {
-  // Browser tests on Lacros requires a non-null LacrosService.
-  lacros_service_ = std::make_unique<chromeos::LacrosService>();
+void TestShellMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
+  if (invoked_in != InvokedIn::kChildProcess) {
+    // Browser tests on Lacros requires a non-null LacrosService.
+    lacros_service_ = std::make_unique<chromeos::LacrosService>();
+  }
+  extensions::ShellMainDelegate::PostEarlyInitialization(invoked_in);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

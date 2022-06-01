@@ -232,11 +232,16 @@ void CastMainDelegate::ZygoteForked() {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-bool CastMainDelegate::ShouldCreateFeatureList() {
-  return false;
+bool CastMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
+  return invoked_in == InvokedIn::kChildProcess;
 }
 
-void CastMainDelegate::PostEarlyInitialization(bool is_running_tests) {
+void CastMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
+  if (ShouldCreateFeatureList(invoked_in)) {
+    // content is handling the feature list.
+    return;
+  }
+
   DCHECK(cast_feature_list_creator_);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -253,7 +258,7 @@ void CastMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   //
   // The FieldTrialList is a dependency of the feature list. In tests, it is
   // constructed as part of the test suite.
-  if (is_running_tests) {
+  if (invoked_in == InvokedIn::kBrowserProcessUnderTest) {
     DCHECK(base::FieldTrialList::GetInstance());
   } else {
     // This is intentionally leaked since it needs to live for the duration of

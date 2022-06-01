@@ -468,7 +468,10 @@ HeadlessContentMainDelegate::CreateContentUtilityClient() {
 }
 
 void HeadlessContentMainDelegate::PostEarlyInitialization(
-    bool is_running_tests) {
+    InvokedIn invoked_in) {
+  if (invoked_in == InvokedIn::kChildProcess)
+    return;
+
   if (base::FeatureList::IsEnabled(features::kVirtualTime)) {
     // Only pass viz flags into the virtual time mode.
     const char* const switches[] = {

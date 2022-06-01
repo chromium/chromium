@@ -196,6 +196,8 @@ namespace content {
 
 namespace {
 
+using InvokedIn = ContentMainDelegate::InvokedIn;
+
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA) && BUILDFLAG(IS_ANDROID)
 #if defined __LP64__
 #define kV8SnapshotDataDescriptor kV8Snapshot64DataDescriptor
@@ -616,8 +618,9 @@ int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
   MainFunctionParams main_params(command_line);
   main_params.zygote_child = true;
 
-  InitializeFieldTrialAndFeatureList();
-  delegate->PostFieldTrialInitialization();
+  if (delegate->ShouldCreateFeatureList(InvokedIn::kChildProcess))
+    InitializeFieldTrialAndFeatureList();
+  delegate->PostEarlyInitialization(InvokedIn::kChildProcess);
 
   internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
       process_type);
@@ -992,8 +995,9 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
     if (process_type != switches::kZygoteProcess) {
       // Zygotes will run this at a later point in time when the command line
       // has been updated.
-      InitializeFieldTrialAndFeatureList();
-      delegate_->PostFieldTrialInitialization();
+      if (delegate_->ShouldCreateFeatureList(InvokedIn::kChildProcess))
+        InitializeFieldTrialAndFeatureList();
+      delegate_->PostEarlyInitialization(InvokedIn::kChildProcess);
 
       internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
           process_type);
@@ -1051,14 +1055,16 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 
   bool should_start_minimal_browser = start_minimal_browser;
   if (!mojo_ipc_support_) {
-    if (delegate_->ShouldCreateFeatureList()) {
+    const auto invoked_in = main_params.ui_task
+                                ? InvokedIn::kBrowserProcessUnderTest
+                                : InvokedIn::kBrowserProcess;
+    if (delegate_->ShouldCreateFeatureList(invoked_in)) {
       // This is intentionally leaked since it needs to live for the duration
       // of the process and there's no benefit in cleaning it up at exit.
       base::FieldTrialList* leaked_field_trial_list =
           SetUpFieldTrialsAndFeatureList().release();
       ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
       std::ignore = leaked_field_trial_list;
-      delegate_->PostFieldTrialInitialization();
       mojo::core::InitFeatures();
     }
 
@@ -1089,7 +1095,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
           variations::VariationsIdsProvider::Mode::kUseSignedInState);
     }
 
-    delegate_->PostEarlyInitialization(!!main_params.ui_task);
+    delegate_->PostEarlyInitialization(invoked_in);
 
     // The hang watcher needs to be started once the feature list is available
     // but before the IO thread is started.

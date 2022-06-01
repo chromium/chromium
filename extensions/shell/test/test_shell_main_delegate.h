@@ -34,7 +34,7 @@ class TestShellMainDelegate : public extensions::ShellMainDelegate {
 
   // ContentMainDelegate implementation:
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void PostEarlyInitialization(bool is_running_tests) override;
+  void PostEarlyInitialization(InvokedIn invoked_in) override;
 #endif
 
  protected:

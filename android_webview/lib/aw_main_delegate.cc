@@ -383,11 +383,10 @@ void AwMainDelegate::ProcessExiting(const std::string& process_type) {
   logging::CloseLogFile();
 }
 
-bool AwMainDelegate::ShouldCreateFeatureList() {
-  // TODO(https://crbug.com/887468): Move the creation of FeatureList from
-  // AwBrowserMainParts::PreCreateThreads() to
+bool AwMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
+  // In the browser process the FeatureList is created in
   // AwMainDelegate::PostEarlyInitialization().
-  return false;
+  return invoked_in == InvokedIn::kChildProcess;
 }
 
 variations::VariationsIdsProvider*
@@ -396,23 +395,20 @@ AwMainDelegate::CreateVariationsIdsProvider() {
       variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations);
 }
 
-// This function is called only on the browser process.
-void AwMainDelegate::PostEarlyInitialization(bool is_running_tests) {
-  InitIcuAndResourceBundleBrowserSide();
-  aw_feature_list_creator_->CreateFeatureListAndFieldTrials();
-  PostFieldTrialInitialization();
-}
+void AwMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
+  const bool is_browser_process = invoked_in != InvokedIn::kChildProcess;
+  if (is_browser_process) {
+    InitIcuAndResourceBundleBrowserSide();
+    aw_feature_list_creator_->CreateFeatureListAndFieldTrials();
+  }
 
-void AwMainDelegate::PostFieldTrialInitialization() {
   version_info::Channel channel = version_info::android::GetChannel();
-  [[maybe_unused]] bool is_canary_dev =
+  [[maybe_unused]] const bool is_canary_dev =
       (channel == version_info::Channel::CANARY ||
        channel == version_info::Channel::DEV);
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  std::string process_type =
-      command_line.GetSwitchValueASCII(switches::kProcessType);
-  [[maybe_unused]] bool is_browser_process = process_type.empty();
+  [[maybe_unused]] const std::string process_type =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kProcessType);
 
 #if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
   gwp_asan::EnableForMalloc(is_canary_dev || is_browser_process,

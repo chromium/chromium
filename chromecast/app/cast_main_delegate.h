@@ -45,8 +45,8 @@ class CastMainDelegate : public content::ContentMainDelegate {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void ZygoteForked() override;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  bool ShouldCreateFeatureList() override;
-  void PostEarlyInitialization(bool is_running_tests) override;
+  bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
+  void PostEarlyInitialization(InvokedIn invoked_in) override;
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentGpuClient* CreateContentGpuClient() override;

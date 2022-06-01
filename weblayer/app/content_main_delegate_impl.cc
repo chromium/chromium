@@ -235,10 +235,11 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
   return false;
 }
 
-bool ContentMainDelegateImpl::ShouldCreateFeatureList() {
+bool ContentMainDelegateImpl::ShouldCreateFeatureList(InvokedIn invoked_in) {
 #if BUILDFLAG(IS_ANDROID)
-  // On android WebLayer is in charge of creating its own FeatureList.
-  return false;
+  // On android WebLayer is in charge of creating its own FeatureList in the
+  // browser process.
+  return invoked_in == InvokedIn::kChildProcess;
 #else
   // TODO(weblayer-dev): Support feature lists on desktop.
   return true;
@@ -297,8 +298,9 @@ void ContentMainDelegateImpl::PreSandboxStartup() {
 #endif
 }
 
-void ContentMainDelegateImpl::PostEarlyInitialization(bool is_running_tests) {
-  browser_client_->CreateFeatureListAndFieldTrials();
+void ContentMainDelegateImpl::PostEarlyInitialization(InvokedIn invoked_in) {
+  if (invoked_in != InvokedIn::kChildProcess)
+    browser_client_->CreateFeatureListAndFieldTrials();
 }
 
 absl::variant<int, content::MainFunctionParams>

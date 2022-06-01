@@ -186,8 +186,8 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
   return false;
 }
 
-bool ShellMainDelegate::ShouldCreateFeatureList() {
-  return false;
+bool ShellMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
+  return invoked_in == InvokedIn::kChildProcess;
 }
 
 void ShellMainDelegate::PreSandboxStartup() {
@@ -335,9 +335,11 @@ void ShellMainDelegate::PreBrowserMain() {
 #endif
 }
 
-void ShellMainDelegate::PostEarlyInitialization(bool is_running_tests) {
-  // Apply field trial testing configuration.
-  browser_client_->CreateFeatureListAndFieldTrials();
+void ShellMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
+  if (!ShouldCreateFeatureList(invoked_in)) {
+    // Apply field trial testing configuration since content did not.
+    browser_client_->CreateFeatureListAndFieldTrials();
+  }
 }
 
 ContentClient* ShellMainDelegate::CreateContentClient() {

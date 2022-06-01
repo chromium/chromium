@@ -32,7 +32,7 @@ class ShellMainDelegate : public ContentMainDelegate {
 
   // ContentMainDelegate implementation:
   bool BasicStartupComplete(int* exit_code) override;
-  bool ShouldCreateFeatureList() override;
+  bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
   void PreSandboxStartup() override;
   absl::variant<int, MainFunctionParams> RunProcess(
       const std::string& process_type,
@@ -41,7 +41,7 @@ class ShellMainDelegate : public ContentMainDelegate {
   void ZygoteForked() override;
 #endif
   void PreBrowserMain() override;
-  void PostEarlyInitialization(bool is_running_tests) override;
+  void PostEarlyInitialization(InvokedIn invoked_in) override;
   ContentClient* CreateContentClient() override;
   ContentBrowserClient* CreateContentBrowserClient() override;
   ContentGpuClient* CreateContentGpuClient() override;

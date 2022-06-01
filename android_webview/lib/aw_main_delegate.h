@@ -43,10 +43,9 @@ class AwMainDelegate : public content::ContentMainDelegate {
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
   void ProcessExiting(const std::string& process_type) override;
-  bool ShouldCreateFeatureList() override;
+  bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
   variations::VariationsIdsProvider* CreateVariationsIdsProvider() override;
-  void PostEarlyInitialization(bool is_running_tests) override;
-  void PostFieldTrialInitialization() override;
+  void PostEarlyInitialization(InvokedIn invoked_in) override;
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentGpuClient* CreateContentGpuClient() override;

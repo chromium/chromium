@@ -576,7 +576,12 @@ ChromeMainDelegate::ChromeMainDelegate(base::TimeTicks exe_entry_point_ticks) {
 ChromeMainDelegate::~ChromeMainDelegate() {
 }
 
-void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
+void ChromeMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
+  if (invoked_in == InvokedIn::kChildProcess) {
+    CommonEarlyInitialization();
+    return;
+  }
+
 #if BUILDFLAG(IS_WIN)
   // Initialize the cleaner of left-behind tmp files now that the main thread
   // has its SequencedTaskRunner; see https://crbug.com/1075917.
@@ -584,7 +589,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
 
   // For now, do not enable delay load failure hooks for browser process except
   // in tests, where failures really shouldn't happen.
-  if (!is_running_tests)
+  if (invoked_in != InvokedIn::kBrowserProcessUnderTest)
     chrome::DisableDelayLoadFailureHooksForCurrentModule();
 #endif
 
@@ -647,11 +652,12 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
       chrome_content_browser_client_->startup_data()
           ->chrome_feature_list_creator();
   chrome_feature_list_creator->CreateFeatureList();
-  PostFieldTrialInitialization();
+  CommonEarlyInitialization();
 
   // Initializes the resource bundle and determines the locale.
   std::string actual_locale =
-      LoadLocalState(chrome_feature_list_creator, is_running_tests);
+      LoadLocalState(chrome_feature_list_creator,
+                     invoked_in == InvokedIn::kBrowserProcessUnderTest);
   chrome_feature_list_creator->SetApplicationLocale(actual_locale);
   chrome_feature_list_creator->OverrideCachedUIStrings();
 
@@ -692,12 +698,13 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
 #endif
 }
 
-bool ChromeMainDelegate::ShouldCreateFeatureList() {
-  // Chrome creates the FeatureList, so content should not.
-  return false;
+bool ChromeMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
+  // In the browser process Chrome creates the FeatureList, so content should
+  // not.
+  return invoked_in == InvokedIn::kChildProcess;
 }
 
-void ChromeMainDelegate::PostFieldTrialInitialization() {
+void ChromeMainDelegate::CommonEarlyInitialization() {
   std::string process_type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kProcessType);

@@ -46,7 +46,7 @@ bool ContentMainDelegate::ShouldLockSchemeRegistry() {
   return true;
 }
 
-bool ContentMainDelegate::ShouldCreateFeatureList() {
+bool ContentMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
   return true;
 }
 
