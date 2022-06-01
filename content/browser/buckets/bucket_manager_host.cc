@@ -145,8 +145,9 @@ void BucketManagerHost::DidGetBucket(
     storage::QuotaErrorOr<storage::BucketInfo> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!result.ok()) {
-    // Getting a bucket can fail if there is a database error.
+  if (!result.ok() || !receivers_.HasReceiver(receiver_id)) {
+    // Getting a bucket can fail if there is a database error, and the receiver
+    // could have been disconnected by now.
     std::move(callback).Run(mojo::NullRemote());
     return;
   }
@@ -160,6 +161,7 @@ void BucketManagerHost::DidGetBucket(
   }
 
   auto permission_it = permission_decider_map_.find(receiver_id);
+  CHECK(permission_it != permission_decider_map_.end());
   auto pending_remote =
       it->second->CreateStorageBucketBinding(permission_it->second);
   std::move(callback).Run(std::move(pending_remote));
