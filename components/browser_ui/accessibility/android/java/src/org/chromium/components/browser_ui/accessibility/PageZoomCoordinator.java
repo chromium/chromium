@@ -63,7 +63,7 @@ public class PageZoomCoordinator {
         mMediator.setWebContents(webContents);
 
         // TODO(mschillaci): Remove this when proper dismiss conditions are added.
-        mView.postDelayed(this::hide, 5000);
+        mView.postDelayed(this::hide, 50000);
     }
 
     /**

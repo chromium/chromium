@@ -4,7 +4,9 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
-import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.PAGE_ZOOM_DEFAULT_ZOOM_VALUE;
+import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.AVAILABLE_ZOOM_FACTORS;
+import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.PAGE_ZOOM_DEFAULT_SEEK_VALUE;
+import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.convertZoomFactorToSeekBarValue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -23,28 +25,6 @@ import java.util.Arrays;
  * not be accessed outside the component.
  */
 public class PageZoomMediator {
-    /**
-     * Available zoom levels as they would be presented to a user. These match the currently
-     * used levels on Chrome Desktop. See: components/zoom/page_zoom_constants.cc
-     */
-    private static final double[] AVAILABLE_ZOOM_LEVELS = new double[] {0.25, 0.33, 0.50, 0.67,
-            0.75, 0.80, 0.90, 1.00, 1.10, 1.25, 1.33, 1.50, 1.75, 2.00, 2.50, 3.00, 4.00, 5.00};
-
-    /**
-     * Available zoom factors that correspond to the zoom levels above. These numbers are used
-     * internally to give the above zoom levels and are not presented to the user. These become
-     * the exponent that |kTextSizeMultiplierRatio| = 1.2 is raised to for the above numbers,
-     * e.g. 1.2^-7.6 = 0.25, or 1.2^3.8 = 2.0. See: third_party/blink/common/page/page_zoom.cc
-     */
-    private static final double[] AVAILABLE_ZOOM_FACTORS = new double[] {-7.60, -6.08, -3.80, -2.20,
-            -1.58, -1.22, -0.58, 0.00, 0.52, 1.22, 1.56, 2.22, 3.07, 3.80, 5.03, 6.03, 7.60, 8.83};
-
-    // Default index for zoom factor, set to be 100%.
-    private static final int DEFAULT_ZOOM_FACTOR_INDEX = 7;
-
-    // Current zoom factor set by the user.
-    private int mZoomIndex = DEFAULT_ZOOM_FACTOR_INDEX;
-
     private final PropertyModel mModel;
     private WebContents mWebContents;
 
@@ -53,6 +33,7 @@ public class PageZoomMediator {
 
         mModel.set(PageZoomProperties.DECREASE_ZOOM_CALLBACK, this::handleDecreaseClicked);
         mModel.set(PageZoomProperties.INCREASE_ZOOM_CALLBACK, this::handleIncreaseClicked);
+        mModel.set(PageZoomProperties.SEEKBAR_CHANGE_CALLBACK, this::handleSeekBarValueChanged);
     }
 
     /**
@@ -72,7 +53,7 @@ public class PageZoomMediator {
         }
 
         // Always show the menu item if the user has set this in Accessibility Settings.
-        if (PageZoomUtils.getShouldAlwaysShowZoomValue()) {
+        if (PageZoomUtils.shouldAlwaysShowZoomMenuItem()) {
             return true;
         }
 
@@ -82,7 +63,7 @@ public class PageZoomMediator {
                 1f);
 
         boolean defaultDefaultPageZoom =
-                PageZoomUtils.getDefaultZoomValue() == PAGE_ZOOM_DEFAULT_ZOOM_VALUE;
+                PageZoomUtils.getDefaultZoomSeekValue() == PAGE_ZOOM_DEFAULT_SEEK_VALUE;
 
         return !defaultSystemFontSize || !defaultDefaultPageZoom;
     }
@@ -93,31 +74,96 @@ public class PageZoomMediator {
      */
     protected void setWebContents(WebContents webContents) {
         mWebContents = webContents;
-        mZoomIndex = Arrays.binarySearch(AVAILABLE_ZOOM_FACTORS, getZoomLevel(mWebContents));
-        updateState();
+        initialize();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void handleDecreaseClicked(Void unused) {
-        // Check if we are already at the minimum zoom.
-        if (mZoomIndex <= 0) return;
+        // When decreasing zoom, "snap" to the greatest preset value that is less than the current.
+        double currentZoomFactor = getZoomLevel(mWebContents);
+        if (currentZoomFactor <= AVAILABLE_ZOOM_FACTORS[0]) return;
 
-        --mZoomIndex;
-        updateState();
+        int index = getNextIndex(true, currentZoomFactor);
+
+        if (index >= 0) {
+            mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE,
+                    PageZoomUtils.convertZoomFactorToSeekBarValue(AVAILABLE_ZOOM_FACTORS[index]));
+            setZoomLevel(mWebContents, AVAILABLE_ZOOM_FACTORS[index]);
+            updateButtonStates(AVAILABLE_ZOOM_FACTORS[index]);
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void handleIncreaseClicked(Void unused) {
-        // Check if we are already at the maximum zoom.
-        if (mZoomIndex >= AVAILABLE_ZOOM_FACTORS.length - 1) return;
+        // When increasing zoom, "snap" to the smallest preset value that is more than the current.
+        double currentZoomFactor = getZoomLevel(mWebContents);
+        if (currentZoomFactor >= AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]) return;
 
-        ++mZoomIndex;
-        updateState();
+        int index = getNextIndex(false, currentZoomFactor);
+
+        if (index <= AVAILABLE_ZOOM_FACTORS.length - 1) {
+            mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE,
+                    PageZoomUtils.convertZoomFactorToSeekBarValue(AVAILABLE_ZOOM_FACTORS[index]));
+            setZoomLevel(mWebContents, AVAILABLE_ZOOM_FACTORS[index]);
+            updateButtonStates(AVAILABLE_ZOOM_FACTORS[index]);
+        }
     }
 
-    private void updateState() {
-        setZoomLevel(mWebContents, AVAILABLE_ZOOM_FACTORS[mZoomIndex]);
-        mModel.set(PageZoomProperties.CURRENT_ZOOM, mZoomIndex);
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void handleSeekBarValueChanged(int newValue) {
+        setZoomLevel(mWebContents, PageZoomUtils.convertSeekBarValueToZoomFactor(newValue));
+        mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE, newValue);
+        updateButtonStates(PageZoomUtils.convertSeekBarValueToZoomFactor(newValue));
+    }
+
+    private void initialize() {
+        // We must first fetch the current zoom factor for the given web contents.
+        double currentZoomFactor = getZoomLevel(mWebContents);
+
+        // The seekbar should start at the seek value that corresponds to this zoom factor.
+        mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE,
+                convertZoomFactorToSeekBarValue(currentZoomFactor));
+
+        updateButtonStates(currentZoomFactor);
+    }
+
+    private int getNextIndex(boolean decrease, double currentZoomFactor) {
+        // BinarySearch will return the index of the first value equal to or greater than the given.
+        // Otherwise it will return (-(index) - 1). If this is the case add one and negate.
+        int index = Arrays.binarySearch(AVAILABLE_ZOOM_FACTORS, currentZoomFactor);
+
+        // If the value is found, index will be >=0 and we will decrement/increment accordingly:
+        if (index >= 0) {
+            if (decrease) {
+                --index;
+            } else {
+                ++index;
+            }
+        }
+
+        // If the value is not found, index will be (-(index) - 1), so negate and add one:
+        if (index < 0) {
+            index = ++index * -1;
+
+            // Index will now be the first index above the current value, so in the case of
+            // decreasing zoom, we will decrement once.
+            if (decrease) --index;
+        }
+
+        return index;
+    }
+
+    private void updateButtonStates(double newZoomFactor) {
+        // Round the new zoom factor to two decimal places (since our preset values are rounded).
+        newZoomFactor = (double) Math.round(newZoomFactor * 100) / 100;
+
+        // If the new zoom factor is greater than the minimum zoom factor, enable decrease button.
+        mModel.set(PageZoomProperties.DECREASE_ZOOM_ENABLED,
+                newZoomFactor > AVAILABLE_ZOOM_FACTORS[0]);
+
+        // If the new zoom factor is less than the maximum zoom factor, enable increase button.
+        mModel.set(PageZoomProperties.INCREASE_ZOOM_ENABLED,
+                newZoomFactor < AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
     }
 
     // Pass-through methods to HostZoomMap, which has static methods to call through JNI.

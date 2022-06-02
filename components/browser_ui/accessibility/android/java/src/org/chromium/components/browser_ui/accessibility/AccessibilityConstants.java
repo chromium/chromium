@@ -14,8 +14,6 @@ public final class AccessibilityConstants {
      */
     public static final String PAGE_ZOOM_ALWAYS_SHOW_MENU_ITEM =
             "Chrome.PageZoom.AlwaysShowMenuItem";
-    public static final String PAGE_ZOOM_DEFAULT_ZOOM_SETTING =
-            "Chrome.PageZoom.DefaultZoomSetting";
 
     /**
      * The preference keys for font size preferences.
