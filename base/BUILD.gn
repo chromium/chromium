@@ -992,8 +992,6 @@ mixed_component("base") {
       "synchronization/waitable_event_posix.cc",
       "synchronization/waitable_event_watcher_posix.cc",
       "system/sys_info_posix.cc",
-      "task/thread_pool/task_tracker_posix.cc",
-      "task/thread_pool/task_tracker_posix.h",
       "threading/platform_thread_internal_posix.cc",
       "threading/platform_thread_internal_posix.h",
       "threading/platform_thread_posix.cc",
@@ -1845,8 +1843,6 @@ mixed_component("base") {
       "synchronization/waitable_event_posix.cc",
       "synchronization/waitable_event_watcher_posix.cc",
       "system/sys_info_fuchsia.cc",
-      "task/thread_pool/task_tracker_posix.cc",
-      "task/thread_pool/task_tracker_posix.h",
       "threading/platform_thread_fuchsia.cc",
       "threading/platform_thread_posix.cc",
       "threading/thread_local_storage_posix.cc",
@@ -1992,8 +1988,6 @@ mixed_component("base") {
       "system/sys_info_posix.cc",
       "task/thread_pool/initialization_util.cc",
       "task/thread_pool/initialization_util.h",
-      "task/thread_pool/task_tracker_posix.cc",
-      "task/thread_pool/task_tracker_posix.h",
     ]
   } else {
     # Remove NaCl stuff.
@@ -3512,7 +3506,6 @@ test("base_unittests") {
       "message_loop/fd_watch_controller_posix_unittest.cc",
       "posix/file_descriptor_shuffle_unittest.cc",
       "posix/unix_domain_socket_unittest.cc",
-      "task/thread_pool/task_tracker_posix_unittest.cc",
     ]
     if (!is_nacl && !is_apple) {
       sources += [
@@ -3760,7 +3753,6 @@ test("base_unittests") {
       "fuchsia/time_zone_data_unittest.cc",
       "message_loop/fd_watch_controller_posix_unittest.cc",
       "posix/file_descriptor_shuffle_unittest.cc",
-      "task/thread_pool/task_tracker_posix_unittest.cc",
     ]
 
     deps += [

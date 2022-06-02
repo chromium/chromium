@@ -20,6 +20,7 @@
 #include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
 #include "base/memory/raw_ptr.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
@@ -287,7 +288,12 @@ GetTraitsExecutionModePairsToCoverAllSchedulingOptions() {
 class ThreadPoolImplTestBase : public testing::Test {
  public:
   ThreadPoolImplTestBase()
-      : thread_pool_(std::make_unique<ThreadPoolImpl>("Test")) {}
+      : thread_pool_(std::make_unique<ThreadPoolImpl>("Test")),
+        service_thread_("ServiceThread") {
+    Thread::Options service_thread_options;
+    service_thread_options.message_pump_type = MessagePumpType::IO;
+    service_thread_.StartWithOptions(std::move(service_thread_options));
+  }
 
   ThreadPoolImplTestBase(const ThreadPoolImplTestBase&) = delete;
   ThreadPoolImplTestBase& operator=(const ThreadPoolImplTestBase&) = delete;
@@ -322,6 +328,7 @@ class ThreadPoolImplTestBase : public testing::Test {
   virtual GroupTypes GetGroupTypes() const = 0;
 
   std::unique_ptr<ThreadPoolImpl> thread_pool_;
+  Thread service_thread_;
 
  private:
   void SetupFeatures() {
@@ -958,6 +965,31 @@ TEST_P(ThreadPoolImplTest, FileDescriptorWatcherNoOpsAfterShutdown) {
   EXPECT_EQ(0, IGNORE_EINTR(close(pipes[1])));
 }
 #endif  // BUILDFLAG(IS_POSIX)
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+
+// Verify that FileDescriptorWatcher::WatchReadable() can be called from task
+// running on a task_runner with GetExecutionMode() without a crash.
+TEST_P(ThreadPoolImplTest_CoverAllSchedulingOptions, FileDescriptorWatcher) {
+  StartThreadPool();
+
+  int fds[2];
+  ASSERT_EQ(0, pipe(fds));
+
+  auto task_runner = CreateTaskRunnerAndExecutionMode(
+      thread_pool_.get(), GetTraits(), GetExecutionMode());
+
+  EXPECT_TRUE(task_runner->PostTask(
+      FROM_HERE, BindOnce(IgnoreResult(&FileDescriptorWatcher::WatchReadable),
+                          fds[0], DoNothing())));
+
+  thread_pool_->FlushForTesting();
+
+  EXPECT_EQ(0, IGNORE_EINTR(close(fds[0])));
+  EXPECT_EQ(0, IGNORE_EINTR(close(fds[1])));
+}
+
+#endif
 
 // Verify that tasks posted on the same sequence access the same values on
 // SequenceLocalStorage, and tasks on different sequences see different values.

@@ -183,7 +183,8 @@ class ThreadGroupImpl::ScopedCommandsExecutor
     // enters its main function, is descheduled because it wasn't woken up yet,
     // and is woken up immediately after.
     workers_to_start_.ForEachWorker([&](WorkerThread* worker) {
-      worker->Start(outer_->after_start().worker_thread_observer);
+      worker->Start(outer_->after_start().service_thread_task_runner,
+                    outer_->after_start().worker_thread_observer);
       if (outer_->worker_started_for_testing_)
         outer_->worker_started_for_testing_->Wait();
     });
@@ -389,7 +390,7 @@ void ThreadGroupImpl::Start(
     int max_tasks,
     int max_best_effort_tasks,
     TimeDelta suggested_reclaim_time,
-    scoped_refptr<SequencedTaskRunner> service_thread_task_runner,
+    scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
     WorkerThreadObserver* worker_thread_observer,
     WorkerEnvironment worker_environment,
     bool synchronous_thread_start_for_testing,

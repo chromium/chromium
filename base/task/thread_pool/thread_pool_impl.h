@@ -29,11 +29,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-#include "base/task/thread_pool/task_tracker_posix.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/com_init_check_hook.h"
@@ -49,12 +45,7 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
                                    public ThreadGroup::Delegate,
                                    public PooledTaskRunnerDelegate {
  public:
-  using TaskTrackerImpl =
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-      TaskTrackerPosix;
-#else
-      TaskTracker;
-#endif
+  using TaskTrackerImpl = TaskTracker;
 
   // Creates a ThreadPoolImpl with a production TaskTracker. |histogram_label|
   // is used to label histograms. No histograms are recorded if it is empty.

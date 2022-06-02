@@ -65,7 +65,7 @@ class PooledSingleThreadTaskRunnerManagerTest : public testing::Test {
   }
 
   virtual void StartSingleThreadTaskRunnerManagerFromSetUp() {
-    single_thread_task_runner_manager_->Start();
+    single_thread_task_runner_manager_->Start(service_thread_.task_runner());
   }
 
   virtual void TearDownSingleThreadTaskRunnerManager() {
@@ -688,7 +688,7 @@ TEST_F(PooledSingleThreadTaskRunnerManagerStartTest, PostTaskBeforeStart) {
   // flaky if the tested code allows that to happen.
   PlatformThread::Sleep(TestTimeouts::tiny_timeout());
   manager_started.Set();
-  single_thread_task_runner_manager_->Start();
+  single_thread_task_runner_manager_->Start(service_thread_.task_runner());
 
   // Wait for the task to complete to keep |manager_started| alive.
   task_finished.Wait();
