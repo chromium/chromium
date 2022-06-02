@@ -126,12 +126,14 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
   // TODO(kouhei): Plumb the ScriptState into this function and replace all
   // Isolate->GetCurrentContext in this function with ScriptState->GetContext.
   if (ScriptStreamer* streamer = classic_script.Streamer()) {
-    // Final compile call for a streamed compilation.
-    // Streaming compilation may involve use of code cache.
-    // TODO(leszeks): Add compile timer to streaming compilation.
-    return v8::ScriptCompiler::Compile(
-        script_state->GetContext(), streamer->Source(v8::ScriptType::kClassic),
-        code, origin);
+    if (v8::ScriptCompiler::StreamedSource* source =
+            streamer->Source(v8::ScriptType::kClassic)) {
+      // Final compile call for a streamed compilation.
+      // Streaming compilation may involve use of code cache.
+      // TODO(leszeks): Add compile timer to streaming compilation.
+      return v8::ScriptCompiler::Compile(script_state->GetContext(), source,
+                                         code, origin);
+    }
   }
 
   // Allow inspector to use its own compilation cache store.

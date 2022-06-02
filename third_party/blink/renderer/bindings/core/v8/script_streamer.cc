@@ -1112,9 +1112,13 @@ v8::ScriptCompiler::StreamedSource* BackgroundInlineScriptStreamer::Source(
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("WebCore.Scripts.InlineStreamerWaitTime");
   DCHECK(IsMainThread());
   DCHECK_EQ(expected_type, v8::ScriptType::kClassic);
+  static const base::FeatureParam<base::TimeDelta> kWaitTimeoutParam{
+      &features::kPrecompileInlineScripts, "inline-script-timeout",
+      base::Milliseconds(20)};
   // Make sure the script has finished compiling in the background. See comment
   // above in Run().
-  event_.Wait();
+  if (!event_.TimedWait(kWaitTimeoutParam.Get()))
+    return nullptr;
   return source_.get();
 }
 
