@@ -2592,10 +2592,6 @@ source_set("simple_quic_tools") {
   sources = [
     "tools/quic/quic_client_message_loop_network_helper.cc",
     "tools/quic/quic_client_message_loop_network_helper.h",
-    "tools/quic/quic_http_proxy_backend.cc",
-    "tools/quic/quic_http_proxy_backend.h",
-    "tools/quic/quic_http_proxy_backend_stream.cc",
-    "tools/quic/quic_http_proxy_backend_stream.h",
     "tools/quic/quic_simple_client.cc",
     "tools/quic/quic_simple_client.h",
     "tools/quic/quic_simple_server.cc",
@@ -4524,11 +4520,7 @@ test("net_unittests") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [
-      "tools/quic/quic_http_proxy_backend_stream_test.cc",
-      "tools/quic/quic_http_proxy_backend_test.cc",
-      "tools/quic/quic_simple_server_test.cc",
-    ]
+    sources += [ "tools/quic/quic_simple_server_test.cc" ]
   }
 
   if (is_apple) {
