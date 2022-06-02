@@ -49,7 +49,7 @@
 }
 
 - (void)dealloc {
-  // |-disconnect| must be called before deallocation.
+  // `-disconnect` must be called before deallocation.
   DCHECK(!_webStateList);
 }
 

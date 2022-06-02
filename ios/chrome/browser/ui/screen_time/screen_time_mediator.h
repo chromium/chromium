@@ -15,8 +15,8 @@ class WebStateList;
 @interface ScreenTimeMediator : NSObject
 @property(nonatomic, weak) id<ScreenTimeConsumer> consumer;
 
-// This mediator reports information from |webStateList| to the ScreenTime
-// system. Recording is disabled if |suppressUsageRecording| is YES.
+// This mediator reports information from `webStateList` to the ScreenTime
+// system. Recording is disabled if `suppressUsageRecording` is YES.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
               suppressUsageRecording:(BOOL)suppressUsageRecording
     NS_DESIGNATED_INITIALIZER;
