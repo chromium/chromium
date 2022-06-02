@@ -604,8 +604,21 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_TRUE(request->headers.find("Referer") == request->headers.end());
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
-                       AttributionSrcImg_TriggerRegistered) {
+class AttributionSrcBasicTriggerBrowserTest
+    : public AttributionSrcBrowserTest,
+      public ::testing::WithParamInterface<
+          std::pair<std::string, std::string>> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AttributionSrcBasicTriggerBrowserTest,
+    ::testing::Values(
+        std::make_pair("attributionsrcimg", "createAttributionSrcImg($1)"),
+        std::make_pair("fetch", "window.fetch($1, {mode:'no-cors'})")),
+    [](const auto& info) { return info.param.first; });  // test name generator
+
+IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
+                       TriggerRegistered) {
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
@@ -622,8 +635,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   GURL register_url =
       https_server()->GetURL("c.test", "/register_trigger_headers.html");
 
-  EXPECT_TRUE(ExecJs(web_contents(),
-                     JsReplace("createAttributionSrcImg($1);", register_url)));
+  const std::string& js_template = GetParam().second;
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(js_template, register_url)));
   if (!data_host)
     loop.Run();
   data_host->WaitForTriggerData(/*num_trigger_data=*/1);
