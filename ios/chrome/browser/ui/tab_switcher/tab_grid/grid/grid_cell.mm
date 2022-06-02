@@ -216,6 +216,7 @@ void PositionView(UIView* view, CGPoint point) {
   self.titleHidden = NO;
   self.icon = nil;
   self.snapshot = nil;
+  self.snapshotView.image = nil;
   self.selected = NO;
   self.priceCardView.hidden = YES;
   self.opacity = 1.0;
@@ -299,6 +300,14 @@ void PositionView(UIView* view, CGPoint point) {
 }
 
 - (void)fadeInSnapshot:(UIImage*)snapshot {
+  // Do not fade in the same snapshot
+  if ([_snapshot isEqual:snapshot]) {
+    return;
+  }
+  // Do not fade in if there is no previous snapshot
+  if (_snapshot == nil) {
+    return;
+  }
   [UIView transitionWithView:self.snapshotView
                     duration:0.2f
                      options:UIViewAnimationOptionTransitionCrossDissolve
