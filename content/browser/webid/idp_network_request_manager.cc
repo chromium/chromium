@@ -136,17 +136,22 @@ void AddCsrfHeader(network::ResourceRequest* request) {
 std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
     GURL target_url,
     bool send_referrer,
-    url::Origin initiator,
+    url::Origin rp_origin,
     network::mojom::ClientSecurityStatePtr client_security_state) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   auto target_origin = url::Origin::Create(target_url);
   auto site_for_cookies = net::SiteForCookies::FromOrigin(target_origin);
   AddCsrfHeader(resource_request.get());
-  resource_request->request_initiator = initiator;
+  // We set the initiator to the target origin so that this request is
+  // considered first-party. We want to send first-party cookies because
+  // this is not a real third-party request as it is mediated by the browser,
+  // and third-party cookies will be going away with 3pc deprecation, but we
+  // still need to send cookies in these requests.
+  resource_request->request_initiator = target_origin;
   resource_request->url = target_url;
   resource_request->site_for_cookies = site_for_cookies;
   if (send_referrer) {
-    resource_request->referrer = initiator.GetURL();
+    resource_request->referrer = rp_origin.GetURL();
     // Since referrer_policy only affects redirects and we disable redirects
     // below, we don't need to set referrer_policy here.
   }
