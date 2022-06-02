@@ -155,11 +155,12 @@ def deploy(args):
         # system umask while transferring new files, and since workstation
         # defaults to have file not readable by others, this makes deployed
         # file not readable by Chrome.
-        # Set --chmod=+r,D+x to rsync to fix this, and set --perms so existing
-        # files that might have the wrong permission will have their permission
-        # fixed.
+        # Set --chmod=a+rX to rsync to fix this ('a' so it won't be affected by
+        # local umask, +r for read and +X for executable bit on folder), and
+        # set --perms so existing files that might have the wrong permission
+        # will have their permission fixed.
         '--perms',
-        '--chmod=+r,D+x',
+        '--chmod=a+rX',
         f'{tsc_dir}/',
         f'{args.device}:{CCA_OVERRIDE_PATH}/js/',
     ]
@@ -173,7 +174,7 @@ def deploy(args):
             '--delete',
             '--mkpath',
             '--perms',
-            '--chmod=+r,D+x',
+            '--chmod=a+rX',
             f'{os.path.join(cca_root, dir)}/',
             f'{args.device}:{CCA_OVERRIDE_PATH}/{dir}/',
         ]
