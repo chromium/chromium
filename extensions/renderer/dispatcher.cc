@@ -235,9 +235,10 @@ scoped_refptr<extensions::Extension> ConvertToExtension(
           std::move(params->active_permissions)),
       std::make_unique<const extensions::PermissionSet>(
           std::move(params->withheld_permissions)));
+  permissions_data->SetContextId(context_id);
 
   if (params->uses_default_policy_blocked_allowed_hosts) {
-    permissions_data->SetUsesDefaultHostRestrictions(context_id);
+    permissions_data->SetUsesDefaultHostRestrictions();
   } else {
     permissions_data->SetPolicyHostRestrictions(params->policy_blocked_hosts,
                                                 params->policy_allowed_hosts);
@@ -1377,8 +1378,7 @@ void Dispatcher::UpdatePermissions(const std::string& extension_id,
     return;
 
   if (uses_default_policy_host_restrictions) {
-    extension->permissions_data()->SetUsesDefaultHostRestrictions(
-        kRendererProfileId);
+    extension->permissions_data()->SetUsesDefaultHostRestrictions();
   } else {
     extension->permissions_data()->SetPolicyHostRestrictions(
         policy_blocked_hosts, policy_allowed_hosts);

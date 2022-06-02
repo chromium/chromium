@@ -9,10 +9,12 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -44,8 +46,7 @@ struct ContextPermissions {
   URLPatternAccessSet default_policy_restrictions;
   // Restrictions set by the user dictating which sites extensions can / cannot
   // run on. The allowlist takes precedent over the blocklist.
-  // TODO(http://crbug.com/1268198): Take these into account when determining
-  // extension access.
+  // Policy-specified hosts take precedent over user-specified hosts.
   URLPatternAccessSet user_restrictions;
 };
 
@@ -172,9 +173,7 @@ bool PermissionsData::AllUrlsIncludesChromeUrls(
 
 bool PermissionsData::UsesDefaultPolicyHostRestrictions() const {
   DCHECK(!thread_checker_ || thread_checker_->CalledOnValidThread());
-  // no locking necessary here as the value is only set once initially
-  // from the main thread and then will only be read.
-  return context_id_.has_value();
+  return uses_default_policy_host_restrictions_;
 }
 
 // static
@@ -193,7 +192,7 @@ URLPatternSet PermissionsData::GetDefaultPolicyAllowedHosts(int context_id) {
 
 URLPatternSet PermissionsData::policy_blocked_hosts() const {
   base::AutoLock auto_lock(runtime_lock_);
-  if (context_id_.has_value())
+  if (uses_default_policy_host_restrictions_ && context_id_.has_value())
     return GetDefaultPolicyBlockedHosts(context_id_.value());
 
   return policy_blocked_hosts_unsafe_.Clone();
@@ -201,7 +200,7 @@ URLPatternSet PermissionsData::policy_blocked_hosts() const {
 
 URLPatternSet PermissionsData::policy_allowed_hosts() const {
   base::AutoLock auto_lock(runtime_lock_);
-  if (context_id_.has_value())
+  if (uses_default_policy_host_restrictions_ && context_id_.has_value())
     return GetDefaultPolicyAllowedHosts(context_id_.value());
 
   return policy_allowed_hosts_unsafe_.Clone();
@@ -210,6 +209,12 @@ URLPatternSet PermissionsData::policy_allowed_hosts() const {
 void PermissionsData::BindToCurrentThread() const {
   DCHECK(!thread_checker_);
   thread_checker_ = std::make_unique<base::ThreadChecker>();
+}
+
+void PermissionsData::SetContextId(int context_id) const {
+  DCHECK(!context_id_ || context_id_ == context_id);
+  AutoLockOnValidThread lock(runtime_lock_, thread_checker_.get());
+  context_id_ = context_id;
 }
 
 void PermissionsData::SetPermissions(
@@ -226,12 +231,13 @@ void PermissionsData::SetPolicyHostRestrictions(
   AutoLockOnValidThread lock(runtime_lock_, thread_checker_.get());
   policy_blocked_hosts_unsafe_ = policy_blocked_hosts.Clone();
   policy_allowed_hosts_unsafe_ = policy_allowed_hosts.Clone();
-  context_id_ = absl::nullopt;
+  uses_default_policy_host_restrictions_ = false;
 }
 
-void PermissionsData::SetUsesDefaultHostRestrictions(int context_id) const {
+void PermissionsData::SetUsesDefaultHostRestrictions() const {
   AutoLockOnValidThread lock(runtime_lock_, thread_checker_.get());
-  context_id_ = context_id;
+  DCHECK(context_id_);
+  uses_default_policy_host_restrictions_ = true;
 }
 
 // static
@@ -551,7 +557,7 @@ bool PermissionsData::IsPolicyBlockedHostUnsafe(const GURL& url) const {
   // We don't use [default_]policy_[blocked|allowed]_hosts() to avoid copying
   // URLPatternSet.
   runtime_lock_.AssertAcquired();
-  if (context_id_.has_value()) {
+  if (uses_default_policy_host_restrictions_ && context_id_.has_value()) {
     base::AutoLock lock(GetContextPermissionsLock());
     const URLPatternAccessSet& default_policy_restrictions =
         GetContextPermissions(*context_id_).default_policy_restrictions;
@@ -580,6 +586,30 @@ PermissionsData::PageAccess PermissionsData::CanRunOnPage(
 
   if (IsRestrictedUrl(document_url, error))
     return PageAccess::kDenied;
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl) &&
+      context_id_ && location_ != mojom::ManifestLocation::kComponent &&
+      !Manifest::IsPolicyLocation(location_)) {
+    base::AutoLock lock(GetContextPermissionsLock());
+    auto& context_permissions = GetContextPermissions(*context_id_);
+    // Check if the host is restricted by the user. `allowed_hosts` takes
+    // precedent over `blocked_hosts`. Note that, today, PermissionsManager
+    // ensures there's no overlap, but this will change if/when
+    // PermissionsManager uses URLPatterns instead of origins.
+    if (context_permissions.user_restrictions.blocked_hosts.MatchesURL(
+            document_url) &&
+        !context_permissions.user_restrictions.allowed_hosts.MatchesURL(
+            document_url)) {
+      if (error) {
+        // TODO(https://crbug.com/1268198): What level of information should
+        // we specify here? Policy host restrictions pass a descriptive error
+        // back to the extension; is there any harm in doing so?
+        *error = "Blocked";
+      }
+      return PageAccess::kDenied;
+    }
+  }
 
   if (tab_url_patterns && tab_url_patterns->MatchesURL(document_url))
     return PageAccess::kAllowed;

@@ -454,8 +454,7 @@ void PermissionsUpdater::SetPolicyHostRestrictions(
 
 void PermissionsUpdater::SetUsesDefaultHostRestrictions(
     const Extension* extension) {
-  extension->permissions_data()->SetUsesDefaultHostRestrictions(
-      util::GetBrowserContextId(browser_context_));
+  extension->permissions_data()->SetUsesDefaultHostRestrictions();
   NetworkPermissionsUpdateHelper::UpdatePermissions(
       browser_context_, POLICY, extension, PermissionSet(), base::DoNothing());
 }
@@ -556,6 +555,10 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
   bool update_active_permissions = false;
   if ((init_flag_ & INIT_FLAG_TRANSIENT) == 0) {
     update_active_permissions = true;
+
+    extension->permissions_data()->SetContextId(
+        util::GetBrowserContextId(browser_context_));
+
     // Apply per-extension policy if set.
     ApplyPolicyHostRestrictions(*extension);
   }

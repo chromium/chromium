@@ -110,6 +110,10 @@ class PermissionsData {
   // construction, since extensions are initialized across multiple threads.
   void BindToCurrentThread() const;
 
+  // Sets the current context ID for the extension. Must be called on the
+  // same thread this is bound to, if any.
+  void SetContextId(int context_id) const;
+
   // Sets the runtime permissions of the given |extension| to |active| and
   // |withheld|.
   void SetPermissions(std::unique_ptr<const PermissionSet> active,
@@ -127,7 +131,7 @@ class PermissionsData {
   // which URLs extensions can interact with. A default policy can be set with
   // SetDefaultPolicyHostRestrictions. A policy specific to this extension
   // can be set with SetPolicyHostRestrictions.
-  void SetUsesDefaultHostRestrictions(int context_id) const;
+  void SetUsesDefaultHostRestrictions() const;
 
   // Applies profile dependent restrictions from enterprise policy limiting
   // which URLs all extensions can interact with. This restriction can
@@ -138,8 +142,6 @@ class PermissionsData {
       const URLPatternSet& default_policy_allowed_hosts);
 
   // Sets the sites that are explicitly allowed or blocked by the user.
-  // TODO(http://crbug.com/1268198): These are not currently taken into account
-  // in permissions calculations.
   static void SetUserHostRestrictions(int context_id,
                                       URLPatternSet user_blocked_hosts,
                                       URLPatternSet user_allowed_hosts);
@@ -356,10 +358,14 @@ class PermissionsData {
   mutable URLPatternSet policy_allowed_hosts_unsafe_;
 
   // An identifier for the context associated with the PermissionsData.
-  // It required in order to properly map the context to the right default
-  // policy hosts.
-  // The context_id is empty if the default policy hosts are not used.
+  // This is required in order to properly map the context to the right default
+  // default policy-level and user-level settings.
+  // If empty, these settings are ignored. This should mostly only be the case
+  // in unittests.
   mutable absl::optional<int> context_id_;
+
+  // Whether the extension uses the default policy host restrictions.
+  mutable bool uses_default_policy_host_restrictions_ = true;
 
   mutable TabPermissionsMap tab_specific_permissions_;
 

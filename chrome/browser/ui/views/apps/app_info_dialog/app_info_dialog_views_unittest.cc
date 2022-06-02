@@ -339,8 +339,12 @@ TEST_F(AppInfoDialogViewsTest, ArcAppInfoLinks) {
   std::unique_ptr<TestingProfile> other_profile =
       std::make_unique<TestingProfile>();
   extension_environment_.CreateExtensionServiceForProfile(other_profile.get());
+  // We're adding the extension to the second profile, so don't install it
+  // automatically in the profile from `extension_environment_`.
+  const bool install = false;
   scoped_refptr<const extensions::Extension> other_app =
-      extension_environment_.MakePackagedApp(app_constants::kChromeAppId, true);
+      extension_environment_.MakePackagedApp(app_constants::kChromeAppId,
+                                             install);
   extensions::ExtensionSystem::Get(other_profile.get())
       ->extension_service()
       ->AddExtension(other_app.get());

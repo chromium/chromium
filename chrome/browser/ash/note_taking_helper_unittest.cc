@@ -1164,11 +1164,13 @@ TEST_F(NoteTakingHelperTest, NotifyObserverAboutChromeApps) {
   const std::string kSecondProfileName = "second-profile";
   TestingProfile* second_profile =
       profile_manager()->CreateTestingProfile(kSecondProfileName);
+  scoped_refptr<const extensions::Extension> second_keep_extension =
+      CreateExtension(NoteTakingHelper::kProdKeepExtensionId, "Keep");
   InitExtensionService(second_profile);
   EXPECT_EQ(0, observer.num_updates());
-  InstallExtension(keep_extension.get(), second_profile);
+  InstallExtension(second_keep_extension.get(), second_profile);
   EXPECT_EQ(1, observer.num_updates());
-  UninstallExtension(keep_extension.get(), second_profile);
+  UninstallExtension(second_keep_extension.get(), second_profile);
   EXPECT_EQ(2, observer.num_updates());
   profile_manager()->DeleteTestingProfile(kSecondProfileName);
 }
@@ -1556,52 +1558,61 @@ TEST_F(NoteTakingHelperTest, NoteTakingControllerClient) {
 
   EXPECT_FALSE(has_note_taking_apps());
 
-  SetNoteTakingClientProfile(profile());
-  EXPECT_FALSE(has_note_taking_apps());
+  {
+    SetNoteTakingClientProfile(profile());
+    EXPECT_FALSE(has_note_taking_apps());
 
-  scoped_refptr<const extensions::Extension> extension1 =
-      CreateExtension(NoteTakingHelper::kProdKeepExtensionId, kProdKeepAppName);
-  scoped_refptr<const extensions::Extension> extension2 =
-      CreateExtension(NoteTakingHelper::kDevKeepExtensionId, kDevKeepAppName);
+    scoped_refptr<const extensions::Extension> extension1 = CreateExtension(
+        NoteTakingHelper::kProdKeepExtensionId, kProdKeepAppName);
+    scoped_refptr<const extensions::Extension> extension2 =
+        CreateExtension(NoteTakingHelper::kDevKeepExtensionId, kDevKeepAppName);
 
-  InstallExtension(extension1.get(), profile());
-  EXPECT_TRUE(has_note_taking_apps());
+    InstallExtension(extension1.get(), profile());
+    EXPECT_TRUE(has_note_taking_apps());
 
-  InstallExtension(extension2.get(), profile());
-  EXPECT_TRUE(has_note_taking_apps());
+    InstallExtension(extension2.get(), profile());
+    EXPECT_TRUE(has_note_taking_apps());
 
-  UninstallExtension(extension1.get(), profile());
-  EXPECT_TRUE(has_note_taking_apps());
+    UninstallExtension(extension1.get(), profile());
+    EXPECT_TRUE(has_note_taking_apps());
 
-  UninstallExtension(extension2.get(), profile());
-  EXPECT_FALSE(has_note_taking_apps());
+    UninstallExtension(extension2.get(), profile());
+    EXPECT_FALSE(has_note_taking_apps());
 
-  InstallExtension(extension1.get(), profile());
-  EXPECT_TRUE(has_note_taking_apps());
+    InstallExtension(extension1.get(), profile());
+    EXPECT_TRUE(has_note_taking_apps());
+  }
 
-  const std::string kSecondProfileName = "second-profile";
-  TestingProfile* second_profile =
-      profile_manager()->CreateTestingProfile(kSecondProfileName);
-  InitExtensionService(second_profile);
+  {
+    const std::string kSecondProfileName = "second-profile";
+    TestingProfile* second_profile =
+        profile_manager()->CreateTestingProfile(kSecondProfileName);
+    InitExtensionService(second_profile);
 
-  SetNoteTakingClientProfile(second_profile);
-  EXPECT_FALSE(has_note_taking_apps());
+    SetNoteTakingClientProfile(second_profile);
+    EXPECT_FALSE(has_note_taking_apps());
 
-  InstallExtension(extension2.get(), second_profile);
-  EXPECT_TRUE(has_note_taking_apps());
+    scoped_refptr<const extensions::Extension> extension1 = CreateExtension(
+        NoteTakingHelper::kProdKeepExtensionId, kProdKeepAppName);
+    scoped_refptr<const extensions::Extension> extension2 =
+        CreateExtension(NoteTakingHelper::kDevKeepExtensionId, kDevKeepAppName);
 
-  SetNoteTakingClientProfile(profile());
-  EXPECT_TRUE(has_note_taking_apps());
+    InstallExtension(extension2.get(), second_profile);
+    EXPECT_TRUE(has_note_taking_apps());
 
-  NoteTakingClient::GetInstance()->CreateNote();
-  ASSERT_EQ(1u, launched_chrome_apps_.size());
-  ASSERT_EQ(NoteTakingHelper::kProdKeepExtensionId,
-            launched_chrome_apps_[0].id);
+    SetNoteTakingClientProfile(profile());
+    EXPECT_TRUE(has_note_taking_apps());
 
-  UninstallExtension(extension2.get(), second_profile);
-  EXPECT_TRUE(has_note_taking_apps());
+    NoteTakingClient::GetInstance()->CreateNote();
+    ASSERT_EQ(1u, launched_chrome_apps_.size());
+    ASSERT_EQ(NoteTakingHelper::kProdKeepExtensionId,
+              launched_chrome_apps_[0].id);
 
-  profile_manager()->DeleteTestingProfile(kSecondProfileName);
+    UninstallExtension(extension2.get(), second_profile);
+    EXPECT_TRUE(has_note_taking_apps());
+
+    profile_manager()->DeleteTestingProfile(kSecondProfileName);
+  }
 }
 
 }  // namespace ash
