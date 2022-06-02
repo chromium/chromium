@@ -13040,6 +13040,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <!-- Input overlay strings -->
     <if expr="chromeos_ash">
+      <message name="IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA" desc="Generic feature name during alpha phase, to be displayed in educational and settigns UI.">
+        Game controls
+      </message>
+      <message name="IDS_INPUT_OVERLAY_ACCESSIBILITY_ALPHA" desc="Text tied to the close button on Settings menu, readable via Chromevox.">
+        Close game controls
+      </message>
       <message name="IDS_INPUT_OVERLAY_MENU_ENTRY_BUTTON" desc="Button to access Input Overlay's settings menu.">
         Game Control
       </message>

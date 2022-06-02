@@ -166,7 +166,7 @@ void InputMenuView::Init() {
         .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
     auto* menu_title = ash::login_views_utils::CreateBubbleLabel(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_GAME_CONTROL),
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA),
         /*view_defining_max_width=*/nullptr, color,
         /*font_list=*/
         gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
@@ -179,7 +179,7 @@ void InputMenuView::Init() {
             base::BindRepeating(&InputMenuView::OnToggleGameControlPressed,
                                 base::Unretained(this))));
     game_control_toggle_->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_GAME_CONTROL));
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA));
     game_control_toggle_->SetIsOn(
         display_overlay_controller_->GetTouchInjectorEnable());
 
@@ -196,7 +196,7 @@ void InputMenuView::Init() {
     close_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     close_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     close_button->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_CLOSE_MENU));
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_ACCESSIBILITY_ALPHA));
     close_button_ = header_view->AddChildView(std::move(close_button));
     menu_title->SetBorder(views::CreateEmptyBorder(CalculateInsets(
         header_view.get(), /*left=*/20, /*right=*/8, /*other_spacing=*/16)));
@@ -299,7 +299,7 @@ void InputMenuView::OnToggleGameControlPressed() {
     return;
   const bool enabled = game_control_toggle_->GetIsOn();
   display_overlay_controller_->SetTouchInjectorEnable(enabled);
-  // Adjust |enabled_| and |visible_| properties to match |Game Control|.
+  // Adjust |enabled_| and |visible_| properties to match |Game controls|.
   show_hint_toggle_->SetIsOn(enabled);
   display_overlay_controller_->SetInputMappingVisible(enabled);
   show_hint_toggle_->SetEnabled(enabled);

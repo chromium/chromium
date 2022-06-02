@@ -170,10 +170,8 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
   // TODO(djacobo): Set proper positioning based on specs and responding to
   // resize.
   menu_entry->SetPosition(CalculateMenuEntryPosition());
-  // TODO(djacobo): come up with a new resource for this so it can be
-  // translated, or just keep reusing the one I set here.
   menu_entry->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_ENTRY_BUTTON));
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA));
 
   auto* parent_view = overlay_widget->GetContentsView();
   DCHECK(parent_view);

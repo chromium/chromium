@@ -24,7 +24,7 @@ class ToggleButton;
 //
 // The class reports back to DisplayOverlayController, who owns this.
 //   +---------------------------------+
-//   | Game Control       [ o]    [x]  |
+//   | Game controls      [ o]    [x]  |
 //   |                                 |
 //   | Key mapping        [Customize]  |
 //   |                                 |

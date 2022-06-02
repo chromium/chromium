@@ -98,13 +98,13 @@ void EducationalView::Init(views::View* parent) {
     AddChildView(std::move(banner));
   }
   {
-    // |Game Control [Alpha]| title tag.
+    // |Game controls [Alpha]| title tag.
     auto container_view = std::make_unique<views::View>();
     container_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
     auto* game_control = ash::login_views_utils::CreateBubbleLabel(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDUCATIONAL_TITLE),
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA),
         /*view_defining_max_width=*/nullptr,
         /*color=*/
         GetContentLayerColor(
