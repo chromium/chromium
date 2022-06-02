@@ -840,7 +840,7 @@
   {
     "name": "clear-cross-site-cross-browsing-context-group-window-name",
     "owners": [ "shuuran", "kaustubhag" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 110
   },
   {
     "name": "client-storage-access-context-auditing",
