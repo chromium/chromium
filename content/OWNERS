@@ -32,6 +32,9 @@ pfeldman@chromium.org
 
 # per-file rules:
 
+# For threading and startup/shutdown sequences
+# gab@chromium.org (see per-file rules in subdirectories)
+
 # This is for the common case of adding or renaming files. If you're doing
 # structural changes, please get a review from a reviewer in this file.
 per-file BUILD.gn=*
