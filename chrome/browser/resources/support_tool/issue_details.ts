@@ -6,10 +6,11 @@ import './strings.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
-import './support_tool_shared_css.js';
+import './support_tool_shared.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {BrowserProxy, BrowserProxyImpl, IssueDetails} from './browser_proxy.js';
 import {getTemplate} from './issue_details.html.js';
 

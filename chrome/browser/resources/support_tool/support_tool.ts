@@ -12,11 +12,12 @@ import './issue_details.js';
 import './spinner_page.js';
 import './pii_selection.js';
 import './data_export_done.js';
-import './support_tool_shared_css.js';
+import './support_tool_shared.css.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {BrowserProxy, BrowserProxyImpl, PIIDataItem, StartDataCollectionResult} from './browser_proxy.js';
 import {DataCollectorsElement} from './data_collectors.js';
 import {DataExportDoneElement} from './data_export_done.js';
