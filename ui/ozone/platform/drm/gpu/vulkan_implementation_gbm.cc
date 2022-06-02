@@ -89,7 +89,10 @@ VulkanImplementationGbm::GetRequiredDeviceExtensions() {
 
 std::vector<const char*>
 VulkanImplementationGbm::GetOptionalDeviceExtensions() {
-  return {};
+  return {
+      VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME,
+      VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME,
+  };
 }
 
 VkFence VulkanImplementationGbm::CreateVkFenceForGpuFence(VkDevice vk_device) {
@@ -158,7 +161,12 @@ VulkanImplementationGbm::GetExternalImageHandleType() {
 bool VulkanImplementationGbm::CanImportGpuMemoryBuffer(
     gpu::VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferType memory_buffer_type) {
-  return false;
+  const auto& enabled_extensions = device_queue->enabled_extensions();
+  return gfx::HasExtension(enabled_extensions,
+                           VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME) &&
+         gfx::HasExtension(enabled_extensions,
+                           VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME) &&
+         memory_buffer_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
 }
 
 std::unique_ptr<gpu::VulkanImage>
@@ -167,8 +175,16 @@ VulkanImplementationGbm::CreateImageFromGpuMemoryHandle(
     gfx::GpuMemoryBufferHandle gmb_handle,
     gfx::Size size,
     VkFormat vk_format) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  constexpr auto kUsage =
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
+      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+  auto tiling = gmb_handle.native_pixmap_handle.modifier ==
+                        gfx::NativePixmapHandle::kNoModifier
+                    ? VK_IMAGE_TILING_OPTIMAL
+                    : VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT;
+  return gpu::VulkanImage::CreateFromGpuMemoryBufferHandle(
+      device_queue, std::move(gmb_handle), size, vk_format, kUsage, /*flags=*/0,
+      tiling, VK_QUEUE_FAMILY_FOREIGN_EXT);
 }
 
 }  // namespace ui
