@@ -18,7 +18,7 @@ class WebState;
 // feature.
 @interface FullscreenWebViewResizer : NSObject
 
-// Initializes the object with the fullscreen |model|, used to get the
+// Initializes the object with the fullscreen `model`, used to get the
 // information about the state of fullscreen.
 - (instancetype)initWithModel:(FullscreenModel*)model NS_DESIGNATED_INITIALIZER;
 
@@ -35,7 +35,7 @@ class WebState;
 // model.
 - (void)updateForCurrentState;
 
-// Force the updates of the WebView to |progress|. |progress| should be between
+// Force the updates of the WebView to `progress`. `progress` should be between
 // 0 and 1, 0 meaning that the application is in fullscreen, 1 that it is out of
 // fullscreen.
 - (void)forceToUpdateToProgress:(CGFloat)progress;

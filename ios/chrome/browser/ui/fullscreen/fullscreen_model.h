@@ -79,7 +79,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
     return GetToolbarInsetsAtProgress(progress_);
   }
 
-  // Returns the toolbar insets at |progress|.
+  // Returns the toolbar insets at `progress`.
   UIEdgeInsets GetToolbarInsetsAtProgress(CGFloat progress) const {
     return UIEdgeInsetsMake(
         GetCollapsedToolbarHeight() + progress * (GetExpandedToolbarHeight() -
@@ -87,7 +87,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
         0, progress * bottom_toolbar_height_, 0);
   }
 
-  // Increments and decrements |disabled_counter_| for features that require the
+  // Increments and decrements `disabled_counter_` for features that require the
   // toolbar be completely visible.
   void IncrementDisabledCounter();
   void DecrementDisabledCounter();
@@ -98,10 +98,10 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   // Instructs the model to ignore broadcasted scroll updates for the remainder
   // of the current scroll.  Has no effect if not called while a scroll is
   // occurring.  The model will resume listening for scroll events when
-  // |scrolling_| is reset to false.
+  // `scrolling_` is reset to false.
   void IgnoreRemainderOfCurrentScroll();
 
-  // Called when a scroll end animation finishes.  |progress| is the fullscreen
+  // Called when a scroll end animation finishes.  `progress` is the fullscreen
   // progress corresponding to the final state of the aniamtion.
   void AnimationEndedWithProgress(CGFloat progress);
 
@@ -164,13 +164,13 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   bool GetFreezeToolbarHeight() const;
 
  private:
-  // Returns how a scroll to the current |y_content_offset_| from |from_offset|
+  // Returns how a scroll to the current `y_content_offset_` from `from_offset`
   // should be handled.
   enum class ScrollAction : short {
     kIgnore,                       // Ignore the scroll.
-    kUpdateBaseOffset,             // Update |base_offset_| only.
-    kUpdateProgress,               // Update |progress_| only.
-    kUpdateBaseOffsetAndProgress,  // Update |bse_offset_| and |progress_|.
+    kUpdateBaseOffset,             // Update `base_offset_` only.
+    kUpdateProgress,               // Update `progress_` only.
+    kUpdateBaseOffsetAndProgress,  // Update `bse_offset_` and `progress_`.
   };
   ScrollAction ActionForScrollFromOffset(CGFloat from_offset) const;
 
@@ -183,11 +183,11 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   void UpdateProgress();
 
   // Updates the disabled counter depending on the current values of
-  // |scroll_view_height_| and |content_height_|.
+  // `scroll_view_height_` and `content_height_`.
   void UpdateDisabledCounterForContentHeight();
 
-  // Setter for |progress_|.  Notifies observers of the new value if
-  // |notify_observers| is true.
+  // Setter for `progress_`.  Notifies observers of the new value if
+  // `notify_observers` is true.
   void SetProgress(CGFloat progress);
 
   // ChromeBroadcastObserverInterface:
@@ -207,7 +207,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   // The percentage of the toolbar that should be visible, where 1.0 denotes a
   // fully visible toolbar and 0.0 denotes a completely hidden one.
   CGFloat progress_ = 0.0;
-  // The base offset from which to calculate fullscreen state.  When |locked_|
+  // The base offset from which to calculate fullscreen state.  When `locked_`
   // is false, it is reset to the current offset after each scroll event.
   CGFloat base_offset_ = NAN;
   // The height of the toolbars being shown or hidden by this model.

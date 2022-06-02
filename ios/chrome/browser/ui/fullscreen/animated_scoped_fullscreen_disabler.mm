@@ -26,7 +26,7 @@
 // The disabler passed on initialization.
 @property(nonatomic, readonly) AnimatedScopedFullscreenDisabler* disabler;
 
-// Designated initializer for a container containing |disabler|'s observer list.
+// Designated initializer for a container containing `disabler`'s observer list.
 - (instancetype)initWithDisabler:(AnimatedScopedFullscreenDisabler*)disabler
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
@@ -149,7 +149,7 @@ void AnimatedScopedFullscreenDisabler::StartAnimation() {
             animation_completed.Run();
         }];
   } else {
-    // If |controller_| is already disabled, no animation is necessary.
+    // If `controller_` is already disabled, no animation is necessary.
     controller_->IncrementDisabledCounter();
   }
 }

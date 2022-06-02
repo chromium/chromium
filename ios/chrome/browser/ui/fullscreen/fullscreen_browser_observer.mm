@@ -15,7 +15,7 @@ FullscreenBrowserObserver::FullscreenBrowserObserver(
     Browser* browser)
     : web_state_list_observer_(web_state_list_observer) {
   DCHECK(web_state_list_observer_);
-  // TODO(crbug.com/790886): DCHECK |browser| once FullscreenController is fully
+  // TODO(crbug.com/790886): DCHECK `browser` once FullscreenController is fully
   // scoped to a Browser.
   if (browser) {
     web_state_list_observer_->SetWebStateList(browser->GetWebStateList());

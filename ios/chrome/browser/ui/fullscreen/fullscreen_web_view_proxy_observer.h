@@ -17,7 +17,7 @@ class FullscreenModel;
 // The proxy being observed.
 @property(nonatomic, weak, nullable) id<CRWWebViewProxy> proxy;
 
-// Designated initializer for an observer that uses |model| to update its proxy.
+// Designated initializer for an observer that uses `model` to update its proxy.
 - (nullable instancetype)initWithModel:(nonnull FullscreenModel*)model
                               mediator:(nonnull FullscreenMediator*)mediator
     NS_DESIGNATED_INITIALIZER;

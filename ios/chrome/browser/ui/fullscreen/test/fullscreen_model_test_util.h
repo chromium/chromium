@@ -14,22 +14,22 @@ class FullscreenModel;
 void SetUpFullscreenModelForTesting(FullscreenModel* model,
                                     CGFloat toolbar_height);
 
-// Simulates a user scroll event in |model| for a scroll of |offset_delta|
+// Simulates a user scroll event in `model` for a scroll of `offset_delta`
 // points.
 void SimulateFullscreenUserScrollWithDelta(FullscreenModel* model,
                                            CGFloat offset_delta);
 
-// Simulates a user scroll event in |model| that will result in a progress value
-// of |progress|.
+// Simulates a user scroll event in `model` that will result in a progress value
+// of `progress`.
 void SimulateFullscreenUserScrollForProgress(FullscreenModel* model,
                                              CGFloat progress);
 
-// Returns the delta from |model|'s current Y offset that would result in
-// |progress|.
+// Returns the delta from `model`'s current Y offset that would result in
+// `progress`.
 CGFloat GetFullscreenOffsetDeltaForProgress(FullscreenModel* model,
                                             CGFloat progress);
 
-// Returns the base offset against which |model| would calculate |progress|,
+// Returns the base offset against which `model` would calculate `progress`,
 // given its toolbar height and content offset.
 CGFloat GetFullscreenBaseOffsetForProgress(FullscreenModel* model,
                                            CGFloat progress);

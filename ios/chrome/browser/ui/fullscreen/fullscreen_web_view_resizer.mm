@@ -82,7 +82,7 @@
 #pragma mark - Private
 
 // Updates the WebView of the current webState to adjust it to the current
-// fullscreen |progress|. |progress| should be between 0 and 1, 0 meaning that
+// fullscreen `progress`. `progress` should be between 0 and 1, 0 meaning that
 // the application is in fullscreen, 1 that it is out of fullscreen.
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   if (!self.webState || !self.webState->GetView().superview)
@@ -92,7 +92,7 @@
   self.model->SetWebViewSafeAreaInsets(self.webState->GetView().safeAreaInsets);
 }
 
-// Updates the WebState view, resizing it such as |insets| is the insets between
+// Updates the WebState view, resizing it such as `insets` is the insets between
 // the WebState view and its superview.
 - (void)updateForInsets:(UIEdgeInsets)insets {
   UIView* webView = self.webState->GetView();
@@ -139,7 +139,7 @@
   }
 }
 
-// Observes the frame property of the view of the |webState| using KVO.
+// Observes the frame property of the view of the `webState` using KVO.
 - (void)observeWebStateViewFrame:(web::WebState*)webState {
   if (!webState->GetView())
     return;

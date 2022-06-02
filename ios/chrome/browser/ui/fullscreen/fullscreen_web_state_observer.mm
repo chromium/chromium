@@ -74,9 +74,9 @@ void FullscreenWebStateObserver::DidFinishNavigation(
 
   // Due to limitations in WKWebView's rendering, different MIME types must be
   // inset using different techniques:
-  // - PDFs need to be inset using the scroll view's |contentInset| property or
+  // - PDFs need to be inset using the scroll view's `contentInset` property or
   //   the floating page indicator is laid out incorrectly.
-  // - For normal pages, using |contentInset| breaks the layout of fixed-
+  // - For normal pages, using `contentInset` breaks the layout of fixed-
   //   position DOM elements, so top padding must be accomplished by updating
   //   the WKWebView's frame.
   bool is_pdf = web_state->GetContentsMimeType() == "application/pdf";

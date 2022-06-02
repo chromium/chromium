@@ -16,13 +16,13 @@ class FullscreenModel;
 // A WebStateObserver that updates a FullscreenModel for navigation events.
 class FullscreenWebStateObserver : public web::WebStateObserver {
  public:
-  // Constructor for an observer that updates |controller| and |model|.
+  // Constructor for an observer that updates `controller` and `model`.
   FullscreenWebStateObserver(FullscreenController* controller,
                              FullscreenModel* model,
                              FullscreenMediator* mediator);
   ~FullscreenWebStateObserver() override;
 
-  // Tells the observer to start observing |web_state|.
+  // Tells the observer to start observing `web_state`.
   void SetWebState(web::WebState* web_state);
 
  private:
@@ -41,7 +41,7 @@ class FullscreenWebStateObserver : public web::WebStateObserver {
   FullscreenModel* model_;
   // The mediator passed on construction.
   FullscreenMediator* mediator_ = nullptr;
-  // Observer for |web_state_|'s scroll view proxy.
+  // Observer for `web_state_`'s scroll view proxy.
   __strong FullscreenWebViewProxyObserver* web_view_proxy_observer_;
   // The URL received in the NavigationContext of the last finished navigation.
   GURL last_navigation_url_;

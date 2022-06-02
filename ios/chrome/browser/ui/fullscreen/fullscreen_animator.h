@@ -13,7 +13,7 @@ enum class FullscreenAnimatorStyle : short {
   EXIT_FULLSCREEN
 };
 
-// Returns the final fullscreen progress for an animation with |style|.
+// Returns the final fullscreen progress for an animation with `style`.
 CGFloat GetFinalFullscreenProgressForAnimation(FullscreenAnimatorStyle style);
 
 // Helper object for animating changes to fullscreen progress.  Subclasses of
@@ -28,7 +28,7 @@ CGFloat GetFinalFullscreenProgressForAnimation(FullscreenAnimatorStyle style);
 // The final calculated fullscreen value.
 @property(nonatomic, readonly) CGFloat finalProgress;
 // The current progress value.  This is the fullscreen progress value
-// interpolated between |startProgress| and |finalProgress| using the timing
+// interpolated between `startProgress` and `finalProgress` using the timing
 // curve and the fraction complete of the animation.
 @property(nonatomic, readonly) CGFloat currentProgress;
 
@@ -41,7 +41,7 @@ CGFloat GetFinalFullscreenProgressForAnimation(FullscreenAnimatorStyle style);
     NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Returns the progress value corresponding with |position|.
+// Returns the progress value corresponding with `position`.
 - (CGFloat)progressForAnimatingPosition:(UIViewAnimatingPosition)position;
 
 @end

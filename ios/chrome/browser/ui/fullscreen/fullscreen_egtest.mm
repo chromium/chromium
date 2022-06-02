@@ -44,7 +44,7 @@ void HideToolbarUsingUI() {
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 }
 
-// Asserts that the current URL is the |expectedURL| one.
+// Asserts that the current URL is the `expectedURL` one.
 void AssertURLIs(const GURL& expectedURL) {
   NSString* description = [NSString
       stringWithFormat:@"Timeout waiting for the url to be %@",
@@ -120,7 +120,7 @@ void WaitforPDFExtensionView() {
   // Test that the toolbar is still visible after a user swipes down.
   // Use a slow swipe here because in this combination of conditions (one
   // page PDF, overscroll actions enabled, fast swipe), the
-  // |UIScrollViewDelegate scrollViewDidEndDecelerating:| is not called leading
+  // `UIScrollViewDelegate scrollViewDidEndDecelerating:` is not called leading
   // to an EarlGrey infinite wait.
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
       performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
