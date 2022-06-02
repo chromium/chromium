@@ -258,6 +258,9 @@
         "motionmark_ramp_canvas_lines": {
             "DEFAULT": "rendering_common_c95200764f.wprgo"
         },
+        "motionmark_ramp_composite": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
         "motionmark_ramp_design": {
             "DEFAULT": "rendering_common_c95200764f.wprgo"
         },

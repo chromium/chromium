@@ -16,7 +16,8 @@ from py_utils import discover
 
 class RenderingStorySet(story.StorySet):
   """Stories related to rendering."""
-  def __init__(self, platform, scroll_forever=False):
+
+  def __init__(self, platform, scroll_forever=False, disable_tracing=False):
     super(RenderingStorySet, self).__init__(
         archive_data_file=('../data/rendering_%s.json' % platform),
         cloud_storage_bucket=story.PARTNER_BUCKET)
@@ -37,8 +38,9 @@ class RenderingStorySet(story.StorySet):
     self.target_scale_factor = 4.0
 
     for story_class in _IterAllRenderingStoryClasses():
-      if (story_class.ABSTRACT_STORY or
-          platform not in story_class.SUPPORTED_PLATFORMS):
+      if (story_class.ABSTRACT_STORY
+          or platform not in story_class.SUPPORTED_PLATFORMS
+          or story_class.DISABLE_TRACING != disable_tracing):
         continue
 
       required_args = []

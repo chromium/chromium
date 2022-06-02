@@ -10,11 +10,11 @@
         }
     },
     "extra_infos": {
-        "num_stories": 40,
-        "predicted_min_shard_time": 2061.0,
+        "num_stories": 41,
+        "predicted_min_shard_time": 2394.0,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 2061.0,
+        "predicted_max_shard_time": 2394.0,
         "predicted_max_shard_index": 0,
-        "shard #0": 2061.0
+        "shard #0": 2394.0
     }
 }

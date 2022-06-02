@@ -283,3 +283,48 @@ class MotionMarkRampDesign(MotionMarkRampPage):
 class MotionMarkRampSuits(MotionMarkRampPage):
   BASE_NAME = 'motionmark_ramp_suits'
   URL = MotionMarkRampPage.GetRampUrl('MotionMark', 'Suits')
+
+
+class MotionMarkRampComposite(MotionMarkPage):
+  DISABLE_TRACING = True
+  TAGS = [story_tags.MOTIONMARK, story_tags.MOTIONMARK_RAMP]
+  SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
+  BASE_NAME = 'motionmark_ramp_composite'
+  URL = 'https://browserbench.org/MotionMark1.2/developer.html'
+
+  def RunNavigateSteps(self, action_runner):
+    action_runner.Navigate(self.url)
+    action_runner.Wait(3)
+    action_runner.ExecuteJavaScript('''
+    const list = document.querySelectorAll('.tree > li');
+    const row = list[0];
+    const labels = row.querySelectorAll('input[type=checkbox]');
+    for (const label of labels) {
+          label.checked = true;
+        }
+    ''')
+    action_runner.ExecuteJavaScript(
+        'window.benchmarkController.startBenchmark()')
+    action_runner.WaitForJavaScriptCondition(
+        'document.readyState == "complete"')
+
+  def RunPageInteractions(self, action_runner):
+    action_runner.Wait(3)
+    with action_runner.CreateInteraction('Filter'):
+      action_runner.Wait(300)  # Determined experimentally
+      action_runner.WaitForJavaScriptCondition(
+          'window.benchmarkRunnerClient.results._results')
+      [score, lower, upper] = action_runner.EvaluateJavaScript(
+          '''[window.benchmarkRunnerClient.results.score,
+             window.benchmarkRunnerClient.results.scoreLowerBound,
+             window.benchmarkRunnerClient.results.scoreUpperBound]''')
+      self._score = score
+      self._scoreLowerBound = lower
+      self._scoreUpperBound = upper
+
+    # Navigate to about:blank to stop rendering frames and let the device
+    # cool down while the trace data for the story is processed.
+    action_runner.Navigate('about:blank')
+
+  def WillStartTracing(self, chrome_trace_config):
+    chrome_trace_config.record_mode = 'record-until-full'
