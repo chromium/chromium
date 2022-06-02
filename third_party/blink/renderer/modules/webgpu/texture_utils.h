@@ -9,13 +9,10 @@
 
 namespace blink {
 
-bool ComputeAndValidateRequiredBytesInCopy(size_t data_size,
-                                           WGPUTextureDataLayout layout,
+size_t EstimateWriteTextureBytesUpperBound(WGPUTextureDataLayout layout,
                                            WGPUExtent3D extent,
                                            WGPUTextureFormat format,
-                                           WGPUTextureAspect aspect,
-                                           size_t* required_copy_size,
-                                           GPUDevice* device);
+                                           WGPUTextureAspect aspect);
 
 }  // namespace blink
 

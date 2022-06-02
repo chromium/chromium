@@ -398,18 +398,24 @@ void GPUQueue::WriteTextureImpl(GPUImageCopyTexture* destination,
     return;
   }
 
-  WGPUTextureFormat format = destination->texture()->Format();
-  size_t required_copy_size = 0;
-  if (!ComputeAndValidateRequiredBytesInCopy(
-          data_size, dawn_data_layout, dawn_write_size, format,
-          dawn_destination.aspect, &required_copy_size, device_)) {
-    return;
-  }
-
-  // Only send the data which is really required.
+  // Handle the data layout offset by offsetting the data pointer instead. This
+  // helps move less data between then renderer and GPU process (otherwise all
+  // the data from 0 to offset would be copied over as well).
   const void* data_ptr =
       static_cast<const uint8_t*>(data) + dawn_data_layout.offset;
   dawn_data_layout.offset = 0;
+  data_size -= dawn_data_layout.offset;
+
+  // Compute a tight upper bound of the number of bytes to send for this
+  // WriteTexture. This can be 0 for some cases that produce validation errors,
+  // but we don't create an error in Blink since Dawn can produce better error
+  // messages (and this is more up-to-spec because the errors must be created on
+  // the device timeline).
+  size_t data_size_upper_bound = EstimateWriteTextureBytesUpperBound(
+      dawn_data_layout, dawn_write_size, destination->texture()->Format(),
+      dawn_destination.aspect);
+  size_t required_copy_size = std::min(data_size, data_size_upper_bound);
+
   GetProcs().queueWriteTexture(GetHandle(), &dawn_destination, data_ptr,
                                required_copy_size, &dawn_data_layout,
                                &dawn_write_size);
