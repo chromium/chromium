@@ -172,6 +172,11 @@ WebAppIconManager& FakeWebAppProvider::GetIconManager() const {
   return *icon_manager_;
 }
 
+WebAppCommandManager& FakeWebAppProvider::GetCommandManager() const {
+  DCHECK(command_manager_);
+  return *command_manager_;
+}
+
 AbstractWebAppDatabaseFactory& FakeWebAppProvider::GetDatabaseFactory() const {
   DCHECK(database_factory_);
   return *database_factory_;

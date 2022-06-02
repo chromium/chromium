@@ -96,6 +96,7 @@ class FakeWebAppProvider : public WebAppProvider {
   // A mutable view must be accessible only in tests.
   WebAppRegistrarMutable& GetRegistrarMutable() const;
   WebAppIconManager& GetIconManager() const;
+  WebAppCommandManager& GetCommandManager() const;
   AbstractWebAppDatabaseFactory& GetDatabaseFactory() const;
 
   // Starts this WebAppProvider and its subsystems. It does not wait for systems

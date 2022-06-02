@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
+#include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -55,7 +56,7 @@ WebAppCommandManager::CommandState::CommandState(
 WebAppCommandManager::CommandState::~CommandState() = default;
 
 WebAppCommandManager::WebAppCommandManager(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile), url_loader_(std::make_unique<WebAppUrlLoader>()) {}
 WebAppCommandManager::~WebAppCommandManager() {
   // Make sure that unittests & browsertests correctly shut down the manager.
   // This ensures that all tests also cover shutdown.
@@ -91,12 +92,14 @@ void WebAppCommandManager::OnLockAcquired(WebAppCommand::Id command_id) {
   // this task is being run in response to a call to
   // NotifySyncSourceRemoved.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&WebAppCommandManager::StartCommand,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                command_it->second.command.get()));
+      FROM_HERE,
+      base::BindOnce(&WebAppCommandManager::StartCommandOrPrepareForLoad,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     command_it->second.command.get()));
 }
 
-void WebAppCommandManager::StartCommand(WebAppCommand* command) {
+void WebAppCommandManager::StartCommandOrPrepareForLoad(
+    WebAppCommand* command) {
   if (is_in_shutdown_)
     return;
 #if DCHECK_IS_ON()
@@ -105,8 +108,40 @@ void WebAppCommandManager::StartCommand(WebAppCommand* command) {
   DCHECK(command_state_it != commands_.end());
   DCHECK(!command->IsStarted());
 #endif
-  if (command->lock().IncludesSharedWebContents())
+  if (command->lock().IncludesSharedWebContents()) {
     command->shared_web_contents_ = EnsureWebContentsCreated();
+    url_loader_->PrepareForLoad(
+        command->shared_web_contents(),
+        base::BindOnce(&WebAppCommandManager::OnAboutBlankLoadedForCommandStart,
+                       weak_ptr_factory_.GetWeakPtr(), command));
+    return;
+  }
+  command->Start(this);
+}
+
+void WebAppCommandManager::OnAboutBlankLoadedForCommandStart(
+    WebAppCommand* command,
+    WebAppUrlLoader::Result result) {
+  if (!shared_web_contents_) {
+    DCHECK(is_in_shutdown_);
+    return;
+  }
+
+  // about:blank must always be loaded.
+  DCHECK_EQ(WebAppUrlLoader::Result::kUrlLoaded, result);
+  if (result != WebAppUrlLoader::Result::kUrlLoaded) {
+    base::Value url_loader_error(base::Value::Type::DICTIONARY);
+    url_loader_error.SetStringKey("WebAppUrlLoader::Result",
+                                  ConvertUrlLoaderResultToString(result));
+    if (command->lock().app_ids().size() == 1) {
+      url_loader_error.SetStringKey("task.app_id_to_expect",
+                                    *command->lock().app_ids().begin());
+    }
+    url_loader_error.SetStringKey("!stage", "OnWebContentsReady");
+    install_manager_->TakeCommandErrorLog(PassKey(),
+                                          std::move(url_loader_error));
+  }
+
   command->Start(this);
 }
 
@@ -208,6 +243,11 @@ void WebAppCommandManager::AwaitAllCommandsCompleteForTesting() {
     return;
 
   run_loop_for_testing_.Run();
+}
+
+void WebAppCommandManager::SetUrlLoaderForTesting(
+    std::unique_ptr<WebAppUrlLoader> url_loader) {
+  url_loader_ = std::move(url_loader);
 }
 
 void WebAppCommandManager::OnCommandComplete(

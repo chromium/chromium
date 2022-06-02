@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
 #include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -79,6 +80,9 @@ class WebAppCommandManager {
 
   void AwaitAllCommandsCompleteForTesting();
 
+  // TODO(https://crbug.com/1329934): Figure out better ownership of this.
+  void SetUrlLoaderForTesting(std::unique_ptr<WebAppUrlLoader> url_loader);
+
  protected:
   friend class WebAppCommand;
 
@@ -90,7 +94,11 @@ class WebAppCommandManager {
   void AddValueToLog(base::Value value);
 
   void OnLockAcquired(WebAppCommand::Id command_id);
-  void StartCommand(WebAppCommand* command);
+
+  void StartCommandOrPrepareForLoad(WebAppCommand* command);
+
+  void OnAboutBlankLoadedForCommandStart(WebAppCommand* command,
+                                         WebAppUrlLoader::Result result);
 
   content::WebContents* EnsureWebContentsCreated();
 
@@ -107,6 +115,9 @@ class WebAppCommandManager {
   std::map<WebAppCommand::Id, CommandState> commands_{};
 
   Profile* profile_;
+  // TODO(https://crbug.com/1329934): Figure out better ownership of this.
+  // Perhaps set as subsystem?
+  std::unique_ptr<WebAppUrlLoader> url_loader_;
   std::unique_ptr<content::WebContents> shared_web_contents_;
 
   bool is_in_shutdown_ = false;

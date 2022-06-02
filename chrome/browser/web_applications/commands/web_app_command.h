@@ -65,6 +65,8 @@ class WebAppCommandLock {
 
   bool IncludesSharedWebContents() const;
 
+  const base::flat_set<AppId>& app_ids() const { return app_ids_; }
+
   friend class WebAppCommandManager;
 
  private:
