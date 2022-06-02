@@ -310,6 +310,9 @@ class ProfileAttributesEntry {
 
   // Internal setters that accept basic data types. Return if the original data
   // is different from the new data, i.e. whether actual update is done.
+  // If the data was missing or was from a different type and `value` is the
+  // default value (e.g. false, 0, empty string...), the value is explicitly
+  // written but these return false.
   bool SetString(const char* key, const std::string& value);
   bool SetString16(const char* key, const std::u16string& value);
   bool SetDouble(const char* key, double value);

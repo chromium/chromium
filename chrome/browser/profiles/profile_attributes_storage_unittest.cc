@@ -831,19 +831,19 @@ TEST_F(ProfileAttributesStorageTest, EntryInternalAccessors) {
 
   EXPECT_TRUE(entry->SetString16(key, u"efgh"));
 
-  // If previous data is not there, setters should returns true even if the
+  // If previous data is not there, setters should returns false even if the
   // defaults (empty string, 0.0, or false) are written.
-  EXPECT_TRUE(entry->SetString("test1", std::string()));
-  EXPECT_TRUE(entry->SetString16("test2", std::u16string()));
-  EXPECT_TRUE(entry->SetDouble("test3", 0.0));
-  EXPECT_TRUE(entry->SetBool("test4", false));
+  EXPECT_FALSE(entry->SetString("test1", std::string()));
+  EXPECT_FALSE(entry->SetString16("test2", std::u16string()));
+  EXPECT_FALSE(entry->SetDouble("test3", 0.0));
+  EXPECT_FALSE(entry->SetBool("test4", false));
 
-  // If previous data is in a wrong type, setters should returns true even if
+  // If previous data is in a wrong type, setters should returns false even if
   // the defaults (empty string, 0.0, or false) are written.
-  EXPECT_TRUE(entry->SetString("test3", std::string()));
-  EXPECT_TRUE(entry->SetString16("test4", std::u16string()));
-  EXPECT_TRUE(entry->SetDouble("test1", 0.0));
-  EXPECT_TRUE(entry->SetBool("test2", false));
+  EXPECT_FALSE(entry->SetString("test3", std::string()));
+  EXPECT_FALSE(entry->SetString16("test4", std::u16string()));
+  EXPECT_FALSE(entry->SetDouble("test1", 0.0));
+  EXPECT_FALSE(entry->SetBool("test2", false));
 }
 
 TEST_F(ProfileAttributesStorageTest, ProfileActiveTime) {
