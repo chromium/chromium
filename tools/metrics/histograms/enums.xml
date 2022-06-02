@@ -47131,6 +47131,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="HistoryClustersFinalState">
+  <obsolete>
+    Removed as of 05/2022.
+  </obsolete>
   <summary>
     The final state, or outcome, of an interaction on the HistoryClusters, or
     Journeys, UI.

@@ -500,7 +500,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.FinalState"
-    enum="HistoryClustersFinalState" expires_after="2022-11-20">
+    enum="HistoryClustersFinalState" expires_after="2022-05-27">
+  <obsolete>
+    Removed as of 05/2022 in favor of
+    History.Clusters.Actions.FinalState.Outcome
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -516,6 +520,40 @@ chromium-metrics-reviews@google.com.
 
     Before m100, tab refresh and same doc navigations were also not
     distinguished and would record tab close.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Actions.FinalState.Number{Event}"
+    units="count" expires_after="2022-09-18">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    Logged when the user closes the chrome://history/journeys page (e.g. closed
+    tab, navigated in the same tab, or closed browser). Logs the number of
+    {Event} over the period of a single visit to the Journeys UI.
+  </summary>
+  <token key="Event">
+    <variant name="ClustersDeleted" summary="cluster deletions"/>
+    <variant name="IndividualVisitsDeleted"
+        summary="single/individual visits deleted"/>
+    <variant name="LinksOpened" summary="links opened"/>
+    <variant name="RelatedSearchesClicked"
+        summary="related search links opened"/>
+    <variant name="VisibilityToggles" summary="Journeys UI toggles on/off"/>
+  </token>
+</histogram>
+
+<histogram name="History.Clusters.Actions.FinalState.WasSuccessful"
+    enum="BooleanSuccess" expires_after="2022-09-18">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    Logged when the user closes the chrome://history/journeys page (e.g., closed
+    tab, navigated in the same tab, or closed browser). Logs whether the users
+    interaction with the UI was deemed successful or not. Success is defined as
+    a link was clicked, a cluster was opened, or a deletion event occurred.
   </summary>
 </histogram>
 

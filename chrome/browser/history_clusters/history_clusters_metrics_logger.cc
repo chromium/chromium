@@ -30,16 +30,8 @@ HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
       ukm::ConvertToSourceId(*navigation_id_, ukm::SourceIdType::NAVIGATION_ID);
   ukm::builders::HistoryClusters builder(ukm_source_id);
 
-  if (!final_state_) {
-    // If `final_state_` is not set and `this` is being destructed,
-    // we assume the UI is being closed either via tab or
-    // window closing.
-    final_state_ = HistoryClustersFinalState::kCloseTab;
-  }
-  // TODO(crbug.com/1326954): Add UI-driven counts to UKM during final state
-  // clean up.
+  // TODO(crbug.com/1326954): Add UI-driven counts to UKM.
   builder.SetInitialState(static_cast<int>(*initial_state_));
-  builder.SetFinalState(static_cast<int>(*final_state_));
   builder.SetNumQueries(num_queries_);
   builder.SetNumTogglesToBasicHistory(num_toggles_to_basic_history_);
   builder.Record(ukm::UkmRecorder::Get());
@@ -47,11 +39,25 @@ HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
   base::UmaHistogramEnumeration("History.Clusters.Actions.InitialState",
                                 *initial_state_);
 
-  // TODO(crbug.com/1326954): Clean up once the metrics are refactored
-  // to be driven by UI events rather than navigation state. Also
-  // add collected counts to both UMA and UKM.
-  base::UmaHistogramEnumeration("History.Clusters.Actions.FinalState",
-                                *final_state_);
+  // These metrics capture the total interactions on the page
+  base::UmaHistogramCounts100(
+      "History.Clusters.Actions.FinalState.NumberLinksOpened",
+      links_opened_count_);
+  base::UmaHistogramCounts100(
+      "History.Clusters.Actions.FinalState.NumberRelatedSearchesClicked",
+      related_searches_click_count_);
+  base::UmaHistogramCounts100(
+      "History.Clusters.Actions.FinalState.NumberVisibilityToggles",
+      toggled_visiblity_count_);
+
+  base::UmaHistogramCounts100(
+      "History.Clusters.Actions.FinalState.NumberClustersDeleted",
+      clusters_deleted_count_);
+  base::UmaHistogramCounts100(
+      "History.Clusters.Actions.FinalState.NumberIndividualVisitsDeleted",
+      visits_deleted_count_);
+  base::UmaHistogramBoolean("History.Clusters.Actions.FinalState.WasSuccessful",
+                            IsCurrentlySuccessfulHistoryClustersOutcome());
 
   base::UmaHistogramBoolean("History.Clusters.Actions.DidMakeQuery",
                             num_queries_ > 0);
@@ -74,8 +80,14 @@ void HistoryClustersMetricsLogger::RecordVisitAction(VisitAction visit_action,
                                   VisitTypeToString(visit_type) + "Visit." +
                                   VisitActionToString(visit_action),
                               visit_index);
-  // TODO(crbug.com/1326954): Add final state of total counts for each visit
-  // action.
+  if (visit_action == VisitAction::kClicked) {
+    links_opened_count_++;
+    return;
+  }
+  if (visit_action == VisitAction::kDeleted) {
+    visits_deleted_count_++;
+    return;
+  }
 }
 
 void HistoryClustersMetricsLogger::RecordClusterAction(
@@ -84,8 +96,15 @@ void HistoryClustersMetricsLogger::RecordClusterAction(
   base::UmaHistogramCounts100("History.Clusters.UIActions.Cluster." +
                                   ClusterActionToString(cluster_action),
                               cluster_index);
-  // TODO(crbug.com/1326954): Add final state of total counts for each cluster
-  // action.
+  if (cluster_action == ClusterAction::kOpenedInTabGroup) {
+    // ClusterAction::VisitClicked will have click counted in VisitAction.
+    links_opened_count_++;
+    return;
+  }
+  if (cluster_action == ClusterAction::kDeleted) {
+    clusters_deleted_count_++;
+    return;
+  }
 }
 
 void HistoryClustersMetricsLogger::RecordRelatedSearchAction(
@@ -94,15 +113,28 @@ void HistoryClustersMetricsLogger::RecordRelatedSearchAction(
   base::UmaHistogramCounts100("History.Clusters.UIActions.RelatedSearch." +
                                   RelatedSearchActionToString(action),
                               related_search_index);
-  // TODO(crbug.com/1326954): Add final state of total counts for each related
-  // search action.
+  if (action == RelatedSearchAction::kClicked)
+    related_searches_click_count_++;
 }
 
 void HistoryClustersMetricsLogger::RecordToggledVisibility(bool visible) {
   base::UmaHistogramBoolean("History.Clusters.UIActions.ToggledVisiblity",
                             visible);
-  // TODO(crbug.com/1326954): Add final state of total counts for each
-  // visibility toggle.
+  toggled_visiblity_count_++;
+}
+
+bool HistoryClustersMetricsLogger::
+    IsCurrentlySuccessfulHistoryClustersOutcome() {
+  if (related_searches_click_count_ > 0)
+    return true;
+  if (links_opened_count_ > 0)
+    return true;
+  if (visits_deleted_count_ > 0)
+    return true;
+  if (clusters_deleted_count_ > 0)
+    return true;
+
+  return false;
 }
 
 PAGE_USER_DATA_KEY_IMPL(HistoryClustersMetricsLogger);

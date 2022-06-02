@@ -32,32 +32,6 @@ enum class HistoryClustersInitialState {
   kMaxValue = kSameDocument,
 };
 
-// The final state, or outcome, of an interaction on the HistoryClusters UI.
-// TODO(crbug.com/1326954): Clean up once the metrics are refactored
-// to be driven by UI events rather than navigation state.
-//
-// Keep in sync with HistoryClustersFinalState in
-// tools/metrics/histograms/enums.xml.
-enum class HistoryClustersFinalState {
-  kUnknown = 0,
-  // The interaction with the HistoryClusters UI ended with a click on a link.
-  kLinkClick = 1,
-  // The UI interaction ended without opening anything on the page.
-  kCloseTab = 2,
-  // The interaction ended with a same doc navigation; i.e., the
-  // 'Chrome history' & 'Tabs from other devices' links. Because a user may
-  // toggle between the history UIs, `kSameDocNavigation` is only used if the
-  // user was not on the HistoryClusters UI last. E.g., 1) navigating to the
-  // HistoryClustersUi, 2) toggling to the history UI, 3) returning to the
-  // HistoryClustersUI, and 4) closing the tab will record `kCloseTab`, not
-  // `kSameDocNavigation`.
-  kSameDocNavigation = 3,
-  // The interaction ended with a page refresh.
-  kRefreshTab = 4,
-  // Add new values above this line.
-  kMaxValue = kRefreshTab,
-};
-
 // HistoryClustersMetricsLogger contains all the metrics/events associated with
 // interactions and internals of HistoryClusters in Chrome. It has the same
 // lifetime as the page's main document and metrics are flushed when `this` is
@@ -76,16 +50,6 @@ class HistoryClustersMetricsLogger
   void set_initial_state(HistoryClustersInitialState initial_state) {
     initial_state_ = initial_state;
   }
-
-  absl::optional<HistoryClustersFinalState> final_state() {
-    return final_state_;
-  }
-
-  void set_final_state(HistoryClustersFinalState final_state) {
-    final_state_ = final_state;
-  }
-
-  void clear_final_state() { final_state_.reset(); }
 
   void increment_query_count() { num_queries_++; }
 
@@ -114,6 +78,10 @@ class HistoryClustersMetricsLogger
                            uint32_t cluster_index);
 
  private:
+  // Whether the journeys interaction captured by |this| is considered a
+  // successful outcome.
+  bool IsCurrentlySuccessfulHistoryClustersOutcome();
+
   // The navigation ID of the navigation handle that this data is associated
   // with, used for recording the metrics to UKM.
   absl::optional<int64_t> navigation_id_;
@@ -122,16 +90,32 @@ class HistoryClustersMetricsLogger
   // started.
   absl::optional<HistoryClustersInitialState> initial_state_;
 
-  // The final state of how this interaction with the HistoryClusters UI ended.
-  absl::optional<HistoryClustersFinalState> final_state_;
-
   // The number of queries made on the tracker history clusters event. Only
   // queries containing a string should be counted.
   int num_queries_ = 0;
 
+  // The number of times in this interaction the user open a cluster or visit
+  // link.
+  int links_opened_count_ = 0;
+
+  // The number of visits deleted from the HistoryClusters UI during |this|
+  // interaction.
+  int visits_deleted_count_ = 0;
+
+  // The number of related search links clicked on a page tied associated with
+  // |navigation_id|.
+  int related_searches_click_count_ = 0;
+
+  // The number of times a cluster of deleted on the journeys UI surface during
+  // |this| interaction.
+  int clusters_deleted_count_ = 0;
+
   // The number of times in this interaction with HistoryClusters included the
   // user toggled to the basic History UI from the HistoryClusters UI.
   int num_toggles_to_basic_history_ = 0;
+
+  // The number of times the user toggled journeys off UI surface.
+  int toggled_visiblity_count_ = 0;
 };
 
 }  // namespace history_clusters
