@@ -1366,7 +1366,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       enterprise::content::kCopyPreventionSettings);
   registry->RegisterIntegerPref(
       prefs::kUserAgentReduction,
-      UserAgentReductionEnterprisePolicyState::kDefault);
+      static_cast<int>(
+          embedder_support::UserAgentReductionEnterprisePolicyState::kDefault));
   registry->RegisterBooleanPref(prefs::kOriginAgentClusterDefaultEnabled, true);
   registry->RegisterIntegerPref(
       prefs::kForceMajorVersionToMinorPositionInUserAgent,
@@ -5897,18 +5898,26 @@ std::string ChromeContentBrowserClient::GetUserAgent() {
 
 std::string ChromeContentBrowserClient::GetUserAgentBasedOnPolicy(
     content::BrowserContext* context) {
+  const PrefService* prefs = Profile::FromBrowserContext(context)->GetPrefs();
   embedder_support::ForceMajorVersionToMinorPosition
-      force_major_version_to_minor = embedder_support::GetMajorToMinorFromPrefs(
-          Profile::FromBrowserContext(context)->GetPrefs());
-  switch (GetUserAgentReductionEnterprisePolicyState(context)) {
-    case UserAgentReductionEnterprisePolicyState::kForceDisabled:
-      return embedder_support::GetFullUserAgent(force_major_version_to_minor);
-    case UserAgentReductionEnterprisePolicyState::kForceEnabled:
+      force_major_version_to_minor =
+          embedder_support::GetMajorToMinorFromPrefs(prefs);
+  embedder_support::UserAgentReductionEnterprisePolicyState
+      user_agent_reduction =
+          embedder_support::GetUserAgentReductionFromPrefs(prefs);
+  switch (user_agent_reduction) {
+    case embedder_support::UserAgentReductionEnterprisePolicyState::
+        kForceDisabled:
+      return embedder_support::GetFullUserAgent(force_major_version_to_minor,
+                                                user_agent_reduction);
+    case embedder_support::UserAgentReductionEnterprisePolicyState::
+        kForceEnabled:
       return embedder_support::GetReducedUserAgent(
           force_major_version_to_minor);
-    case UserAgentReductionEnterprisePolicyState::kDefault:
+    case embedder_support::UserAgentReductionEnterprisePolicyState::kDefault:
     default:
-      return embedder_support::GetUserAgent(force_major_version_to_minor);
+      return embedder_support::GetUserAgent(force_major_version_to_minor,
+                                            user_agent_reduction);
   }
 }
 
@@ -6474,23 +6483,6 @@ bool ChromeContentBrowserClient::ShouldPreconnectNavigation(
   // the Finch setting here.
   return prefetch::IsSomePreloadingEnabledIgnoringFinch(
       *Profile::FromBrowserContext(browser_context)->GetPrefs());
-}
-
-ChromeContentBrowserClient::UserAgentReductionEnterprisePolicyState
-ChromeContentBrowserClient::GetUserAgentReductionEnterprisePolicyState(
-    content::BrowserContext* context) {
-  int policy = Profile::FromBrowserContext(context)->GetPrefs()->GetInteger(
-      prefs::kUserAgentReduction);
-  switch (policy) {
-    case 0:
-      return UserAgentReductionEnterprisePolicyState::kDefault;
-    case 1:
-      return UserAgentReductionEnterprisePolicyState::kForceDisabled;
-    case 2:
-      return UserAgentReductionEnterprisePolicyState::kForceEnabled;
-  }
-
-  return UserAgentReductionEnterprisePolicyState::kDefault;
 }
 
 bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(

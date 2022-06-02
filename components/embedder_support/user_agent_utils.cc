@@ -173,6 +173,18 @@ bool ShouldForceMajorVersionToMinorPosition(
       force_major_to_minor == ForceMajorVersionToMinorPosition::kForceEnabled);
 }
 
+// Returns true if the user agent reduction should be forced (or prevented).
+// TODO(crbug.com/1330890): Remove this method along with policy.
+bool ShouldReduceUserAgentMinorVersion(
+    UserAgentReductionEnterprisePolicyState user_agent_reduction) {
+  return ((user_agent_reduction !=
+               UserAgentReductionEnterprisePolicyState::kForceDisabled &&
+           base::FeatureList::IsEnabled(
+               blink::features::kReduceUserAgentMinorVersion)) ||
+          user_agent_reduction ==
+              UserAgentReductionEnterprisePolicyState::kForceEnabled);
+}
+
 const std::string& GetMajorInMinorVersionNumber() {
   static const base::NoDestructor<std::string> version_number([] {
     base::Version version(version_info::GetVersionNumber());
@@ -330,18 +342,17 @@ std::string GetMajorVersionForUserAgentString(
 }  // namespace
 
 std::string GetProductAndVersion(
-    ForceMajorVersionToMinorPosition force_major_to_minor) {
+    ForceMajorVersionToMinorPosition force_major_to_minor,
+    UserAgentReductionEnterprisePolicyState user_agent_reduction) {
   if (ShouldForceMajorVersionToMinorPosition(force_major_to_minor)) {
     // Force major version to 99 and major version to minor version position.
-    if (base::FeatureList::IsEnabled(
-            blink::features::kReduceUserAgentMinorVersion)) {
+    if (ShouldReduceUserAgentMinorVersion(user_agent_reduction)) {
       return "Chrome/" + GetReducedMajorInMinorVersionNumber();
     } else {
       return "Chrome/" + GetMajorInMinorVersionNumber();
     }
   } else {
-    if (base::FeatureList::IsEnabled(
-            blink::features::kReduceUserAgentMinorVersion)) {
+    if (ShouldReduceUserAgentMinorVersion(user_agent_reduction)) {
       return version_info::GetProductNameAndVersionForReducedUserAgent(
           blink::features::kUserAgentFrozenBuildVersion.Get().data());
     } else {
@@ -351,7 +362,8 @@ std::string GetProductAndVersion(
 }
 
 std::string GetUserAgent(
-    ForceMajorVersionToMinorPosition force_major_to_minor) {
+    ForceMajorVersionToMinorPosition force_major_to_minor,
+    UserAgentReductionEnterprisePolicyState user_agent_reduction) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kUserAgent)) {
     std::string ua = command_line->GetSwitchValueASCII(kUserAgent);
@@ -366,7 +378,7 @@ std::string GetUserAgent(
   if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent))
     return GetReducedUserAgent(force_major_to_minor);
 
-  return GetFullUserAgent(force_major_to_minor);
+  return GetFullUserAgent(force_major_to_minor, user_agent_reduction);
 }
 
 std::string GetReducedUserAgent(
@@ -378,8 +390,10 @@ std::string GetReducedUserAgent(
 }
 
 std::string GetFullUserAgent(
-    ForceMajorVersionToMinorPosition force_major_to_minor) {
-  std::string product = GetProductAndVersion(force_major_to_minor);
+    ForceMajorVersionToMinorPosition force_major_to_minor,
+    UserAgentReductionEnterprisePolicyState user_agent_reduction) {
+  std::string product =
+      GetProductAndVersion(force_major_to_minor, user_agent_reduction);
 #if BUILDFLAG(IS_ANDROID)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseMobileUserAgent))
@@ -612,6 +626,21 @@ embedder_support::ForceMajorVersionToMinorPosition GetMajorToMinorFromPrefs(
     case 0:
     default:
       return ForceMajorVersionToMinorPosition::kDefault;
+  }
+}
+
+embedder_support::UserAgentReductionEnterprisePolicyState
+GetUserAgentReductionFromPrefs(const PrefService* pref_service) {
+  if (!pref_service->HasPrefPath(kReduceUserAgentMinorVersion))
+    return UserAgentReductionEnterprisePolicyState::kDefault;
+  switch (pref_service->GetInteger(kReduceUserAgentMinorVersion)) {
+    case 1:
+      return UserAgentReductionEnterprisePolicyState::kForceDisabled;
+    case 2:
+      return UserAgentReductionEnterprisePolicyState::kForceEnabled;
+    case 0:
+    default:
+      return UserAgentReductionEnterprisePolicyState::kDefault;
   }
 }
 

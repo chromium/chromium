@@ -29,6 +29,13 @@ enum class ForceMajorVersionToMinorPosition {
   kForceEnabled = 2,
 };
 
+// TODO(crbug.com/1330890): Remove this enum along with policy.
+enum class UserAgentReductionEnterprisePolicyState {
+  kDefault = 0,
+  kForceDisabled = 1,
+  kForceEnabled = 2,
+};
+
 struct UserAgentOptions {
   bool force_major_version_100 = false;
   ForceMajorVersionToMinorPosition force_major_to_minor =
@@ -43,13 +50,17 @@ struct UserAgentOptions {
 // TODO(crbug.com/1291612): modify to accept an optional PrefService*.
 std::string GetProductAndVersion(
     ForceMajorVersionToMinorPosition force_major_to_minor =
-        ForceMajorVersionToMinorPosition::kDefault);
+        ForceMajorVersionToMinorPosition::kDefault,
+    UserAgentReductionEnterprisePolicyState user_agent_reduction =
+        UserAgentReductionEnterprisePolicyState::kDefault);
 
 // Returns the user agent string for Chrome.
 // TODO(crbug.com/1291612): modify to accept an optional PrefService*.
 std::string GetFullUserAgent(
     ForceMajorVersionToMinorPosition force_major_to_minor =
-        ForceMajorVersionToMinorPosition::kDefault);
+        ForceMajorVersionToMinorPosition::kDefault,
+    UserAgentReductionEnterprisePolicyState user_agent_reduction =
+        UserAgentReductionEnterprisePolicyState::kDefault);
 
 // Returns the reduced user agent string for Chrome.
 // TODO(crbug.com/1291612): modify to accept an optional PrefService*.
@@ -60,8 +71,11 @@ std::string GetReducedUserAgent(
 // Returns the full or "reduced" user agent string, depending on the
 // UserAgentReduction enterprise policy and blink::features::kReduceUserAgent
 // TODO(crbug.com/1291612): modify to accept an optional PrefService*.
-std::string GetUserAgent(ForceMajorVersionToMinorPosition force_major_to_minor =
-                             ForceMajorVersionToMinorPosition::kDefault);
+std::string GetUserAgent(
+    ForceMajorVersionToMinorPosition force_major_to_minor =
+        ForceMajorVersionToMinorPosition::kDefault,
+    UserAgentReductionEnterprisePolicyState user_agent_reduction =
+        UserAgentReductionEnterprisePolicyState::kDefault);
 
 // Returns UserAgentMetadata per the default policy.
 // This override is currently used in fuchsia, where the enterprise policy
@@ -113,6 +127,12 @@ int GetHighestKnownUniversalApiContractVersionForTesting();
 // TODO(crbug.com/1290820): Remove this function with policy.
 embedder_support::ForceMajorVersionToMinorPosition GetMajorToMinorFromPrefs(
     const PrefService* pref_service);
+
+// Returns the UserAgentReductionEnterprisePolicyState enum value corresponding
+// to the provided integer policy value for UserAgentReduction.
+// TODO(crbug.com/1330890): Remove this function with policy.
+embedder_support::UserAgentReductionEnterprisePolicyState
+GetUserAgentReductionFromPrefs(const PrefService* pref_service);
 
 }  // namespace embedder_support
 

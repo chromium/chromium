@@ -997,38 +997,68 @@ TEST_F(UserAgentUtilsTest, GetGreasedUserAgentBrandVersionNoLeadingWhitespace) {
 }
 
 TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
+  std::string product;
+  std::string major_version;
+  std::string minor_version;
+  std::string build_version;
+  std::string patch_version;
+
+  // (1) Features: UserAgentReduction and MajorVersionInMinor disabled.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
           blink::features::kForceMajorVersionInMinorPositionInUserAgent,
           blink::features::kReduceUserAgentMinorVersion});
 
-  std::string product = GetProductAndVersion();
-  std::string major_version;
-  std::string minor_version;
+  // (1a) Policies: UserAgentReduction and MajorVersionInMinor default.
+  product =
+      GetProductAndVersion(ForceMajorVersionToMinorPosition::kDefault,
+                           UserAgentReductionEnterprisePolicyState::kDefault);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
-                                  &major_version, &minor_version));
+                                  &major_version, &minor_version,
+                                  &build_version, &patch_version));
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
   EXPECT_EQ(minor_version, "0");
+  EXPECT_NE(build_version, "0");
+  EXPECT_EQ(patch_version, "0");
 
-  // Ensure policy is respected if ForceMajorToMinor is force enabled
-  product =
-      GetProductAndVersion(ForceMajorVersionToMinorPosition::kForceEnabled);
+  // (1b) Policies: UserAgentReduction and MajorVersionInMinor force enabled.
+  product = GetProductAndVersion(
+      ForceMajorVersionToMinorPosition::kForceEnabled,
+      UserAgentReductionEnterprisePolicyState::kForceEnabled);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
-                                  &major_version, &minor_version));
+                                  &major_version, &minor_version,
+                                  &build_version, &patch_version));
   EXPECT_EQ(major_version, "99");
   EXPECT_EQ(minor_version, version_info::GetMajorVersionNumber());
+  EXPECT_EQ(build_version, "0");
+  EXPECT_EQ(patch_version, "0");
 
-  // Ensure the build version FeatureParam is used when set.
+  // (1c) Policies:: UserAgentReduction and MajorVersionInMinor force disabled.
+  product = GetProductAndVersion(
+      ForceMajorVersionToMinorPosition::kForceDisabled,
+      UserAgentReductionEnterprisePolicyState::kForceDisabled);
+  EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
+                                  &major_version, &minor_version,
+                                  &build_version, &patch_version));
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+  EXPECT_EQ(minor_version, "0");
+  EXPECT_NE(build_version, "0");
+  EXPECT_EQ(patch_version, "0");
+
+  // (2) Features: UserAgentReduction enabled with version and
+  // MajorVersionInMinor disabled.
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{blink::features::kReduceUserAgentMinorVersion,
                              {{{"build_version", "5555"}}}}},
       /*disabled_features=*/{
           blink::features::kForceMajorVersionInMinorPositionInUserAgent});
-  product = GetProductAndVersion();
-  std::string build_version;
-  std::string patch_version;
+
+  // (2a) Policies: UserAgentReduction and MajorVersionInMinor default.
+  product =
+      GetProductAndVersion(ForceMajorVersionToMinorPosition::kDefault,
+                           UserAgentReductionEnterprisePolicyState::kDefault);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
                                   &build_version, &patch_version));
@@ -1037,36 +1067,84 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
   EXPECT_EQ(build_version, "5555");
   EXPECT_EQ(patch_version, "0");
 
-  // Ensure policy is respected if ForcemajorToMinor is force disabled, even if
-  // the respective Blink feature is enabled.
+  // (2b) Policies: UserAgentReduction and MajorVersionInMinor force enabled.
+  product = GetProductAndVersion(
+      ForceMajorVersionToMinorPosition::kForceEnabled,
+      UserAgentReductionEnterprisePolicyState::kForceEnabled);
+  EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
+                                  &major_version, &minor_version,
+                                  &build_version, &patch_version));
+  EXPECT_EQ(major_version, "99");
+  EXPECT_EQ(minor_version, version_info::GetMajorVersionNumber());
+  EXPECT_EQ(build_version, "0");
+  EXPECT_EQ(patch_version, "0");
+
+  // (2c) Policies:: UserAgentReduction and MajorVersionInMinor force disabled.
+  product = GetProductAndVersion(
+      ForceMajorVersionToMinorPosition::kForceDisabled,
+      UserAgentReductionEnterprisePolicyState::kForceDisabled);
+  EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
+                                  &major_version, &minor_version,
+                                  &build_version, &patch_version));
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+  EXPECT_EQ(minor_version, "0");
+  EXPECT_NE(build_version, "5555");
+  EXPECT_EQ(patch_version, "0");
+
+  // (3) Features: UserAgentReduction disabled and MajorVersionInMinor enabled.
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{blink::features::
                                 kForceMajorVersionInMinorPositionInUserAgent},
       /*disabled_features=*/{blink::features::kReduceUserAgentMinorVersion});
-  product =
-      GetProductAndVersion(ForceMajorVersionToMinorPosition::kForceDisabled);
-  EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
-                                  &major_version, &minor_version,
-                                  &build_version));
-  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
-  EXPECT_EQ(minor_version, "0");
-  EXPECT_NE(build_version, "9999");
 
-  product = GetProductAndVersion();
+  // (3a) Policies: UserAgentReduction and MajorVersionInMinor default.
+  product =
+      GetProductAndVersion(ForceMajorVersionToMinorPosition::kDefault,
+                           UserAgentReductionEnterprisePolicyState::kDefault);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
-                                  &build_version));
+                                  &build_version, &patch_version));
   EXPECT_EQ(major_version, "99");
   EXPECT_EQ(minor_version, version_info::GetMajorVersionNumber());
   EXPECT_NE(build_version, "0");
+  EXPECT_EQ(patch_version, "0");
 
+  // (3b) Policies: UserAgentReduction and MajorVersionInMinor force enabled.
+  product = GetProductAndVersion(
+      ForceMajorVersionToMinorPosition::kForceEnabled,
+      UserAgentReductionEnterprisePolicyState::kForceEnabled);
+  EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
+                                  &major_version, &minor_version,
+                                  &build_version, &patch_version));
+  EXPECT_EQ(major_version, "99");
+  EXPECT_EQ(minor_version, version_info::GetMajorVersionNumber());
+  EXPECT_EQ(build_version, "0");
+  EXPECT_EQ(patch_version, "0");
+
+  // (3c) Policies:: UserAgentReduction and MajorVersionInMinor force disabled.
+  product = GetProductAndVersion(
+      ForceMajorVersionToMinorPosition::kForceDisabled,
+      UserAgentReductionEnterprisePolicyState::kForceDisabled);
+  EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
+                                  &major_version, &minor_version,
+                                  &build_version, &patch_version));
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+  EXPECT_EQ(minor_version, "0");
+  EXPECT_NE(build_version, "0");
+  EXPECT_EQ(patch_version, "0");
+
+  // (4) Features: UserAgentReduction enabled and MajorVersionInMinor disabled.
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{blink::features::kReduceUserAgentMinorVersion},
       /*disabled_features=*/{
           blink::features::kForceMajorVersionInMinorPositionInUserAgent});
-  product = GetProductAndVersion();
+
+  // (4a) Policies: UserAgentReduction and MajorVersionInMinor default.
+  product =
+      GetProductAndVersion(ForceMajorVersionToMinorPosition::kDefault,
+                           UserAgentReductionEnterprisePolicyState::kDefault);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
                                   &build_version, &patch_version));
@@ -1075,19 +1153,72 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
   EXPECT_EQ(build_version, "0");
   EXPECT_EQ(patch_version, "0");
 
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::kReduceUserAgentMinorVersion,
-                            blink::features::
-                                kForceMajorVersionInMinorPositionInUserAgent},
-      /*disabled_features=*/{});
-  product = GetProductAndVersion();
+  // (4b) Policies: UserAgentReduction and MajorVersionInMinor force enabled.
+  product = GetProductAndVersion(
+      ForceMajorVersionToMinorPosition::kForceEnabled,
+      UserAgentReductionEnterprisePolicyState::kForceEnabled);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
                                   &build_version, &patch_version));
   EXPECT_EQ(major_version, "99");
   EXPECT_EQ(minor_version, version_info::GetMajorVersionNumber());
   EXPECT_EQ(build_version, "0");
+  EXPECT_EQ(patch_version, "0");
+
+  // (4c) Policies:: UserAgentReduction and MajorVersionInMinor force disabled.
+  product = GetProductAndVersion(
+      ForceMajorVersionToMinorPosition::kForceDisabled,
+      UserAgentReductionEnterprisePolicyState::kForceDisabled);
+  EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
+                                  &major_version, &minor_version,
+                                  &build_version, &patch_version));
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+  EXPECT_EQ(minor_version, "0");
+  EXPECT_NE(build_version, "0");
+  EXPECT_EQ(patch_version, "0");
+
+  // (5) Features: UserAgentReduction and MajorVersionInMinor enabled.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{blink::features::kReduceUserAgentMinorVersion,
+                            blink::features::
+                                kForceMajorVersionInMinorPositionInUserAgent},
+      /*disabled_features=*/{});
+
+  // (5a) Policies: UserAgentReduction and MajorVersionInMinor default.
+  product =
+      GetProductAndVersion(ForceMajorVersionToMinorPosition::kDefault,
+                           UserAgentReductionEnterprisePolicyState::kDefault);
+  EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
+                                  &major_version, &minor_version,
+                                  &build_version, &patch_version));
+  EXPECT_EQ(major_version, "99");
+  EXPECT_EQ(minor_version, version_info::GetMajorVersionNumber());
+  EXPECT_EQ(build_version, "0");
+  EXPECT_EQ(patch_version, "0");
+
+  // (5b) Policies: UserAgentReduction and MajorVersionInMinor force enabled.
+  product = GetProductAndVersion(
+      ForceMajorVersionToMinorPosition::kForceEnabled,
+      UserAgentReductionEnterprisePolicyState::kForceEnabled);
+  EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
+                                  &major_version, &minor_version,
+                                  &build_version, &patch_version));
+  EXPECT_EQ(major_version, "99");
+  EXPECT_EQ(minor_version, version_info::GetMajorVersionNumber());
+  EXPECT_EQ(build_version, "0");
+  EXPECT_EQ(patch_version, "0");
+
+  // (5c) Policies:: UserAgentReduction and MajorVersionInMinor force disabled.
+  product = GetProductAndVersion(
+      ForceMajorVersionToMinorPosition::kForceDisabled,
+      UserAgentReductionEnterprisePolicyState::kForceDisabled);
+  EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
+                                  &major_version, &minor_version,
+                                  &build_version, &patch_version));
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+  EXPECT_EQ(minor_version, "0");
+  EXPECT_NE(build_version, "0");
   EXPECT_EQ(patch_version, "0");
 }
 
