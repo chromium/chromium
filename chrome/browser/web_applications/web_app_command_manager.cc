@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 
+#include <memory>
 #include <tuple>
 #include <utility>
 
@@ -18,6 +19,8 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -242,7 +245,10 @@ void WebAppCommandManager::AwaitAllCommandsCompleteForTesting() {
   if (commands_.empty())
     return;
 
-  run_loop_for_testing_.Run();
+  if (!run_loop_for_testing_)
+    run_loop_for_testing_ = std::make_unique<base::RunLoop>();
+  run_loop_for_testing_->Run();
+  run_loop_for_testing_.reset();
 }
 
 void WebAppCommandManager::SetUrlLoaderForTesting(
@@ -261,10 +267,19 @@ void WebAppCommandManager::OnCommandComplete(
   DCHECK(command_it != commands_.end());
   commands_.erase(command_it);
 
+  auto lock_free =
+      lock_manager_.TestLock(WebAppCommandLock::GetSharedWebContentsLock());
+  DCHECK_NE(lock_free,
+            content::DisjointRangeLockManager::TestLockResult::kInvalid);
+  if (lock_free == content::DisjointRangeLockManager::TestLockResult::kFree) {
+    AddValueToLog(base::Value("Destroying the shared web contents."));
+    shared_web_contents_.reset();
+  }
+
   std::move(completion_callback).Run();
 
-  if (commands_.empty() && run_loop_for_testing_.running())
-    run_loop_for_testing_.Quit();
+  if (commands_.empty() && run_loop_for_testing_)
+    run_loop_for_testing_->Quit();
 }
 
 void WebAppCommandManager::AddValueToLog(base::Value value) {

@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -38,6 +39,7 @@ constexpr char kPreinstalledWebAppConfigs[] = "PreinstalledWebAppConfigs";
 constexpr char kPreinstalledAppsUninstalledByUserConfigs[] =
     "PreinstalledAppsUninstalledByUserConfigs";
 constexpr char kExternallyManagedWebAppPrefs[] = "ExternallyManagedWebAppPrefs";
+constexpr char kCommandManager[] = "CommandManager";
 constexpr char kIconErrorLog[] = "IconErrorLog";
 constexpr char kInstallationProcessErrorLog[] = "InstallationProcessErrorLog";
 #if BUILDFLAG(IS_MAC)
@@ -65,6 +67,7 @@ base::Value BuildIndexJson() {
   index.Append(kPreinstalledWebAppConfigs);
   index.Append(kPreinstalledAppsUninstalledByUserConfigs);
   index.Append(kExternallyManagedWebAppPrefs);
+  index.Append(kCommandManager);
   index.Append(kIconErrorLog);
   index.Append(kInstallationProcessErrorLog);
 #if BUILDFLAG(IS_MAC)
@@ -199,6 +202,12 @@ base::Value BuildPreinstalledAppsUninstalledByUserJson(Profile* profile) {
   return base::Value(std::move(root));
 }
 
+base::Value BuildCommandManagerJson(web_app::WebAppProvider& provider) {
+  base::Value root(base::Value::Type::DICTIONARY);
+  root.SetKey(kCommandManager, provider.command_manager().ToDebugValue());
+  return root;
+}
+
 base::Value BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
   base::Value root(base::Value::Type::DICTIONARY);
 
@@ -296,11 +305,13 @@ void BuildWebAppInternalsJson(
   root.Append(BuildPreinstalledWebAppConfigsJson(*provider));
   root.Append(BuildExternallyManagedWebAppPrefsJson(profile));
   root.Append(BuildPreinstalledAppsUninstalledByUserJson(profile));
+  root.Append(BuildCommandManagerJson(*provider));
   root.Append(BuildIconErrorLogJson(*provider));
   root.Append(BuildInstallProcessErrorLogJson(*provider));
 #if BUILDFLAG(IS_MAC)
   root.Append(BuildAppShimRegistryLocalStorageJson());
 #endif
+  root.Append(BuildInstallProcessErrorLogJson(*provider));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&BuildWebAppDiskStateJson,

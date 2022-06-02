@@ -57,6 +57,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
 
   void SetSubsystems(WebAppRegistrar* registrar,
                      OsIntegrationManager* os_integration_manager,
+                     WebAppCommandManager* command_manager,
                      WebAppInstallFinalizer* finalizer);
 
   // Loads |web_app_url| in a new WebContents and determines whether it has a
@@ -77,7 +78,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   // Returns the number of running web app installations.
   std::size_t GetInstallTaskCountForTesting() const;
 
-  // For the new USS-based system only. SyncInstallDelegate:
+  // SyncInstallDelegate:
   void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,
                                RepeatingInstallCallback callback) override;
   void UninstallFromSync(const std::vector<AppId>& web_apps,
@@ -126,14 +127,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
       std::unique_ptr<WebAppInstallInfo> install_info,
       OnceInstallCallback callback);
   bool IsAppIdAlreadyEnqueued(const AppId& app_id) const;
-
-  // On failure will attempt a fallback install only loading icon URLs.
-  void LoadAndInstallWebAppFromManifestWithFallbackCompleted_ForAppSync(
-      const AppId& sync_app_id,
-      std::unique_ptr<WebAppInstallInfo> install_info,
-      OnceInstallCallback callback,
-      const AppId& web_app_id,
-      webapps::InstallResultCode code);
 
   void EnqueueTask(std::unique_ptr<WebAppInstallTask> task,
                    base::OnceClosure start_task);
@@ -191,8 +184,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;
   raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
   raw_ptr<WebAppInstallFinalizer> finalizer_ = nullptr;
-
-  bool disable_web_app_sync_install_for_testing_ = false;
+  raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
 
   // All owned tasks.
   using Tasks = base::flat_set<std::unique_ptr<WebAppInstallTask>,

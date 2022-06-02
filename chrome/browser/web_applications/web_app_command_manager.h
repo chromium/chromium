@@ -83,6 +83,10 @@ class WebAppCommandManager {
   // TODO(https://crbug.com/1329934): Figure out better ownership of this.
   void SetUrlLoaderForTesting(std::unique_ptr<WebAppUrlLoader> url_loader);
 
+  bool has_web_contents_for_testing() const {
+    return shared_web_contents_.get();
+  }
+
  protected:
   friend class WebAppCommand;
 
@@ -128,7 +132,7 @@ class WebAppCommandManager {
 
   raw_ptr<WebAppInstallManager> install_manager_;
 
-  base::RunLoop run_loop_for_testing_;
+  std::unique_ptr<base::RunLoop> run_loop_for_testing_;
 
   base::WeakPtrFactory<WebAppCommandManager> weak_ptr_factory_{this};
 };
