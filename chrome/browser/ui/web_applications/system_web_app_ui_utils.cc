@@ -75,13 +75,6 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
   return profile;
 }
 
-WebAppProvider* GetWebAppProviderForSystemWebApps(Profile* profile) {
-  if (!AreSystemWebAppsSupported())
-    return nullptr;
-
-  return WebAppProvider::GetForLocalAppsUnchecked(profile);
-}
-
 }  // namespace
 
 absl::optional<ash::SystemWebAppType> GetSystemWebAppTypeForAppId(
@@ -108,7 +101,7 @@ absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
   if (!app_id)
     return absl::nullopt;
 
-  auto* provider = GetWebAppProviderForSystemWebApps(profile);
+  auto* provider = ash::SystemWebAppManager::GetWebAppProvider(profile);
   DCHECK(provider);
 
   DisplayMode display_mode =
@@ -267,7 +260,7 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
   if (!app_id)
     return nullptr;
 
-  auto* provider = GetWebAppProviderForSystemWebApps(profile);
+  auto* provider = ash::SystemWebAppManager::GetWebAppProvider(profile);
   DCHECK(provider);
 
   if (!provider->registrar().IsInstalled(app_id.value()))

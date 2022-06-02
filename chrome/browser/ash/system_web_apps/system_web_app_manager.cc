@@ -258,6 +258,15 @@ SystemWebAppManager* SystemWebAppManager::Get(Profile* profile) {
 }
 
 // static
+web_app::WebAppProvider* SystemWebAppManager::GetWebAppProvider(
+    Profile* profile) {
+  if (!web_app::AreSystemWebAppsSupported())
+    return nullptr;
+
+  return web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
+}
+
+// static
 SystemWebAppManager* SystemWebAppManager::GetForLocalAppsUnchecked(
     Profile* profile) {
   web_app::WebAppProvider* provider =

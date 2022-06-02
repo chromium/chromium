@@ -48,6 +48,7 @@ namespace web_app {
 class WebAppUiManager;
 class WebAppSyncBridge;
 class WebAppPolicyManager;
+class WebAppProvider;
 }  // namespace web_app
 
 class PrefService;
@@ -86,6 +87,9 @@ class SystemWebAppManager : private web_app::WebAppUiManagerObserver {
   // EnableSystemWebAppInLacrosForTesting). On other platforms, always returns a
   // SystemWebAppManager.
   static SystemWebAppManager* Get(Profile* profile);
+  // Gets the associated WebAppProvider for system web apps. `WebAppProvider` is
+  // always presented in the `profile` if the `Get` above returns non-nullptr.
+  static web_app::WebAppProvider* GetWebAppProvider(Profile* profile);
 
   // Returns the SystemWebAppManager object for the current process.
   // Avoid using this function where possible and prefer `Get` which guarantees
