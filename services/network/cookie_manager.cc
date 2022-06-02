@@ -284,15 +284,17 @@ void CookieManager::AddCookieChangeListener(
       base::Unretained(listener_registration.get()));
 
   if (name) {
+    // TODO(https://crbug.com/1225444): Include the correct cookie partition
+    // key when attaching cookie change listeners to service workers.
     listener_registration->subscription =
         cookie_store_->GetChangeDispatcher().AddCallbackForCookie(
-            url, *name, net::CookiePartitionKey::Todo(),
-            std::move(cookie_change_callback));
+            url, *name, absl::nullopt, std::move(cookie_change_callback));
   } else {
+    // TODO(https://crbug.com/1225444): Include the correct cookie partition
+    // key when attaching cookie change listeners to service workers.
     listener_registration->subscription =
         cookie_store_->GetChangeDispatcher().AddCallbackForUrl(
-            url, net::CookiePartitionKey::Todo(),
-            std::move(cookie_change_callback));
+            url, absl::nullopt, std::move(cookie_change_callback));
   }
 
   listener_registration->listener.set_disconnect_handler(
