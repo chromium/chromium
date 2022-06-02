@@ -28,8 +28,6 @@ import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.metrics.VariationsSession;
 import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
 import org.chromium.chrome.browser.omaha.RequestGenerator;
-import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmark;
-import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksDelegateImpl;
 import org.chromium.chrome.browser.password_manager.GooglePasswordManagerUIProvider;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.rlz.RevenueStats;
@@ -237,14 +235,6 @@ public abstract class AppHooks {
      */
     public List<String> getOfflinePagesSuppressNotificationPackages() {
         return Collections.emptyList();
-    }
-
-    /**
-     * @return An iterator of partner bookmarks.
-     */
-    @Nullable
-    public PartnerBookmark.BookmarkIterator getPartnerBookmarkIterator() {
-        return new PartnerBookmarksDelegateImpl().createIterator();
     }
 
     /**
