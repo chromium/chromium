@@ -1710,7 +1710,10 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetDisplayNearestWindow(window).id(),
             data->display_id.value());
-  EXPECT_EQ(window->GetProperty(aura::client::kShowStateKey),
+  auto normalize_state = [](ui::WindowShowState state) {
+    return state == ui::SHOW_STATE_DEFAULT ? ui::SHOW_STATE_NORMAL : state;
+  };
+  EXPECT_EQ(normalize_state(window->GetProperty(aura::client::kShowStateKey)),
             chromeos::ToWindowShowState(data->window_state_type.value()));
   // We don't capture the window's desk_id as a template will always
   // create in a new desk.
@@ -1732,9 +1735,9 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   EXPECT_FALSE(data2->desk_id.has_value());
   EXPECT_EQ(screen->GetDisplayNearestWindow(window).id(),
             data->display_id.value());
-  EXPECT_EQ(window->GetProperty(aura::client::kShowStateKey),
+  EXPECT_EQ(normalize_state(window->GetProperty(aura::client::kShowStateKey)),
             chromeos::ToWindowShowState(data->window_state_type.value()));
-  EXPECT_EQ(window->GetProperty(aura::client::kShowStateKey),
+  EXPECT_EQ(normalize_state(window->GetProperty(aura::client::kShowStateKey)),
             chromeos::ToWindowShowState(data->window_state_type.value()));
   EXPECT_FALSE(data2->desk_id.has_value());
 }

@@ -163,6 +163,13 @@ const char kDiagnosticsFormat[]             = "diagnostics-format";
 // Tells the diagnostics mode to do the requested recovery step(s).
 const char kDiagnosticsRecovery[]           = "diagnostics-recovery";
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Disables the auto maximize feature on ChromeOS so that a browser window
+// always starts in normal state. This is used by tests that do not want this
+// auto maximizing behavior.
+const char kDisableAutoMaximizeForTests[] = "disable-auto-maximize-for-tests";
+#endif
+
 // Disable several subsystems which run network requests in the background.
 // This is for use when doing network performance testing to avoid noise in the
 // measurements.
