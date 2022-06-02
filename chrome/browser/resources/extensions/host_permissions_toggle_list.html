@@ -19,12 +19,26 @@
     min-height: var(--cr-section-min-height);
   }
 
+  .new-all-hosts-toggle-label {
+    color: var(--cr-primary-text-color);
+    margin-inline-start: var(--cr-section-indent-width);
+  }
+
+  .site-row {
+    display: flex;
+  }
+
+  .site-favicon {
+    margin-inline-end: calc(
+        var(--cr-section-padding) + var(--cr-icon-ripple-margin));
+  }
+
   .site-toggle {
     border-top: var(--cr-separator-line);
     margin-inline-start: var(--cr-section-indent-width);
   }
 </style>
-<div id="section-heading">
+<div id="section-heading" hidden$="[[enableEnhancedSiteControls]]">
   <span>$i18n{hostPermissionsDescription}</span>
   <a id="linkIconButton" aria-label="$i18n{learnMore}"
       href="$i18n{hostPermissionsLearnMoreLink}" target="_blank"
@@ -36,17 +50,39 @@
   <extensions-toggle-row checked="[[allowedOnAllHosts_(permissions.*)]]"
       id="allHostsToggle"
       on-change="onAllHostsToggleChanged_">
-    <span>$i18n{itemAllowOnFollowingSites}</span>
+    <span class="[[getAllHostsToggleLabelClass_(enableEnhancedSiteControls)]]">
+      $i18n{itemAllowOnFollowingSites}
+    </span>
+    <a id="linkIconButton" aria-label="$i18n{learnMore}"
+        href="$i18n{hostPermissionsLearnMoreLink}" target="_blank"
+        on-click="onLearnMoreClick_"
+        hidden$="[[!enableEnhancedSiteControls]]">
+      <iron-icon icon="cr:help-outline"></iron-icon>
+    </a>
   </extensions-toggle-row>
 </div>
+
 <template is="dom-repeat" items="[[getSortedHosts_(permissions.*)]]">
   <div class="toggle-section site-toggle">
-    <extensions-toggle-row checked="[[item.granted]]"
+    <extensions-toggle-row
+        checked="[[isItemChecked_(item, selectedHost_)]]"
         class="host-toggle no-end-padding"
         disabled="[[allowedOnAllHosts_(permissions.*)]]"
         host="[[item.host]]"
         on-change="onHostAccessChanged_">
-      <span>[[item.host]]</span>
+      <div class="site-row">
+        <div class="site-favicon"
+            style$="background-image:[[getFaviconUrl_(item.host)]]"
+            hidden$="[[!enableEnhancedSiteControls]]"></div>
+        <span>[[item.host]]</span>
+      </div>
     </extensions-toggle-row>
   </div>
+</template>
+
+<template is="dom-if" if="[[showMatchingRestrictedSitesDialog_]]" restamp>
+  <extensions-restricted-sites-dialog
+      first-restricted-site="[[matchingRestrictedSites_.0]]"
+      on-close="onMatchingRestrictedSitesDialogClose_">
+  </extensions-restricted-sites-dialog>
 </template>

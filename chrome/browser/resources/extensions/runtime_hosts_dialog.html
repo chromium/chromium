@@ -1,17 +1,4 @@
-<style include="cr-shared-style cr-icons shared-vars">
-  iron-icon {
-    fill: var(--warning-color);
-    margin-inline-end: 8px;
-    min-height: var(--cr-icon-size);
-    min-width: var(--cr-icon-size);
-  }
-
-  #matching-restricted-sites-warning {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: row;
-  }
-</style>
+<style include="cr-shared-style cr-icons shared-style"></style>
 <cr-dialog id="dialog" close-text="$i18n{close}">
   <div slot="title">[[computeDialogTitle_(currentSite)]]</div>
   <div slot="body">
@@ -23,7 +10,7 @@
         spellcheck="false"
         autofocus>
     </cr-input>
-    <div id="matching-restricted-sites-warning"
+    <div class="matching-restricted-sites-warning"
         hidden="[[!matchingRestrictedSites_.length]]">
       <iron-icon icon="cr:info-outline"></iron-icon>
       <span>[[computeMatchingRestrictedSitesWarning_(site_)]]</span>

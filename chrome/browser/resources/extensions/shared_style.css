@@ -45,6 +45,19 @@ a[href] {
   margin: 0 8px;
 }
 
+.matching-restricted-sites-warning {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: row;
+}
+
+.matching-restricted-sites-warning iron-icon {
+  fill: var(--warning-color);
+  margin-inline-end: 8px;
+  min-height: var(--cr-icon-size);
+  min-width: var(--cr-icon-size);
+}
+
 .page-container {
   height: 100%;
   overflow: overlay;

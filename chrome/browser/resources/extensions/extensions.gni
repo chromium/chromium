@@ -42,6 +42,7 @@ web_component_files = [
   "options_dialog.ts",
   "pack_dialog.ts",
   "pack_dialog_alert.ts",
+  "restricted_sites_dialog.ts",
   "runtime_host_permissions.ts",
   "runtime_hosts_dialog.ts",
   "shortcut_input.ts",

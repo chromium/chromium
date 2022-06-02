@@ -226,13 +226,13 @@ suite('RuntimeHostsDialog', function() {
     input.fire('input');
     assertFalse(input.invalid);
     assertFalse(isVisible(dialog.shadowRoot!.querySelector(
-        '#matching-restricted-sites-warning')));
+        '.matching-restricted-sites-warning')));
 
     input.value = 'http://*.restricted.com';
     input.fire('input');
     assertFalse(input.invalid);
     assertTrue(isVisible(dialog.shadowRoot!.querySelector(
-        '#matching-restricted-sites-warning')));
+        '.matching-restricted-sites-warning')));
 
     const submit = dialog.$.submit;
     assertFalse(submit.disabled);

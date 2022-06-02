@@ -70,6 +70,12 @@
   <message name="IDS_EXTENSIONS_DISABLED_UPDATE_REQUIRED_BY_POLICY" desc="Text shown in the extensions settings for extensions disabled due to minimum version requirement from enterprise policy">
     This extension is outdated and disabled by enterprise policy. It might become enabled automatically when a newer version is available.
   </message>
+  <message name="IDS_EXTENSIONS_MATCHING_RESTRICTED_SITES_ALLOW" desc="The label for the dialog option to allow the extension to always run on a site that matches one or more user restricted sites.">
+    Allow
+  </message>
+  <message name="IDS_EXTENSIONS_MATCHING_RESTRICTED_SITES_TITLE" desc="The title for the dialog to allow the extension to always run on a site that matches one or more user restricted sites.">
+    Allow this extension on <ph name="SITE">$1<ex>https://www.example.com</ex></ph>?
+  </message>
   <message name="IDS_EXTENSIONS_MATCHING_RESTRICTED_SITES_WARNING" desc="The warning shown on the runtime host permissions dialog if the site to be added/edited matches one or more user restricted sites.">
     You previously chose not to allow any extensions on <ph name="SITE">$1<ex>https://www.example.com</ex></ph>. If you add this site here, other extensions can also request to read and change your site data on <ph name="SITE">$1<ex>https://www.example.com</ex></ph>.
   </message>
