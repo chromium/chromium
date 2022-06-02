@@ -256,11 +256,7 @@ WebAXObjectProxy::WebAXObjectProxy(const blink::WebAXObject& object,
                                    WebAXObjectProxy::Factory* factory)
     : accessibility_object_(object), factory_(factory) {}
 
-WebAXObjectProxy::~WebAXObjectProxy() {
-  // v8::Persistent will leak on destroy, due to the default
-  // NonCopyablePersistentTraits (it claims this may change in the future).
-  notification_callback_.Reset();
-}
+WebAXObjectProxy::~WebAXObjectProxy() = default;
 
 void WebAXObjectProxy::UpdateLayout() {
   blink::WebAXObject::UpdateLayout(accessibility_object_.GetDocument());
