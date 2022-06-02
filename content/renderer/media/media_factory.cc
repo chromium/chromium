@@ -342,11 +342,7 @@ MediaFactory::MediaFactory(
     RenderFrameImpl* render_frame,
     media::RequestRoutingTokenCallback request_routing_token_cb)
     : render_frame_(render_frame),
-      request_routing_token_cb_(std::move(request_routing_token_cb)) {
-  // Requesting a support check will ensure that the supplemental profiles
-  // cache is populated prior to anything that needs it on the media thread.
-  media::IsSupportedVideoType({});
-}
+      request_routing_token_cb_(std::move(request_routing_token_cb)) {}
 
 MediaFactory::~MediaFactory() {
   // Release the DecoderFactory to the media thread since it may still be in use
