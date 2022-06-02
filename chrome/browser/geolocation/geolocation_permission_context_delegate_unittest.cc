@@ -122,8 +122,9 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/1318240): Flaky.
 TEST_F(GeolocationPermissionContextDelegateTests,
-       SearchGeolocationInIncognito) {
+       DISABLED_SearchGeolocationInIncognito) {
   GURL requesting_frame_url(kDSETestUrl);
 
   SearchPermissionsService* service =
