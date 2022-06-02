@@ -997,7 +997,7 @@
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_CONTAINER" /> контейнер архитектурасы түрін бұл құрылғымен (<ph name="ARCHITECTURE_DEVICE" />) импорттау мүмкін емес. Бұл контейнерді басқа құрылғыда қалпына келтіріп көруіңізге болады немесе файлдарға контейнер кескінін Files қолданбасынан ашу арқылы кіре аласыз.</translation>
 <translation id="1938320257168860255">Бірдеңе дұрыс болмады. Телефоныңыз жақын тұрғанын, оның құлпы ашық және Bluetooth, Wi-Fi функциясы қосулы екеніне көз жеткізіңіз.</translation>
 <translation id="1938351510777341717">Сыртқы пәрмен</translation>
-<translation id="1940546824932169984">Қосылған құрылғылар</translation>
+<translation id="1940546824932169984">Жалғанған құрылғылар</translation>
 <translation id="1941410638996203291">Басталу уақыты: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Нұсқасы: <ph name="APP_VERSION" /></translation>
 <translation id="1942128823046546853">Барлық веб-сайттағы деректі оқу және өзгерту</translation>
@@ -2492,7 +2492,7 @@
 <translation id="3387829698079331264">Құрылғыңызды белсенді пайдаланатын уақытыңыз туралы білуге рұқсат берілмейтін сайттар</translation>
 <translation id="3388094447051599208">Шығыс науасы толуға жақын.</translation>
 <translation id="3388788256054548012">Бұл файл шифрланған. Иесінен шифрдан шығаруын сұраңыз.</translation>
-<translation id="3390013585654699824">Қолданба мәліметтері</translation>
+<translation id="3390013585654699824">Қолданба туралы мәлімет</translation>
 <translation id="3391512812407811893">Privacy Sandbox сынақ мерзімдері</translation>
 <translation id="3393554941209044235">Chrome құжат талдау процесі</translation>
 <translation id="3393582007140394275">Экранды трансляциялау мүмкін емес.</translation>

@@ -1520,7 +1520,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2392369802118427583">Ativar</translation>
 <translation id="2393136602862631930">Configure o <ph name="APP_NAME" /> no seu Chromebook</translation>
 <translation id="2393313392064891208">Conteúdo dos Termos do Google ChromeOS Flex</translation>
-<translation id="2395616325548404795">Seu <ph name="DEVICE_TYPE" /> foi registrado para o gerenciamento empresarial, mas as informações de localização e recurso não foram enviadas. Forneça essas informações manualmente no Admin Console do dispositivo.</translation>
+<translation id="2395616325548404795">Seu <ph name="DEVICE_TYPE" /> foi registrado para o gerenciamento corporativo, mas as informações de localização e recurso não foram enviadas. Forneça essas informações manualmente no Admin Console do dispositivo.</translation>
 <translation id="2396783860772170191">Insira o PIN de quatro dígitos (0000-9999)</translation>
 <translation id="2398546389094871088">O Powerwash do dispositivo não removerá seus perfis de eSIM. Para remover esses perfis manualmente, acesse <ph name="LINK_BEGIN" />Configurações do celular<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Notificações ativadas</translation>
@@ -6637,7 +6637,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7506093026325926984">Essa senha será salva neste dispositivo</translation>
 <translation id="7506130076368211615">Configurar nova rede</translation>
 <translation id="7506242536428928412">Defina um novo PIN para usar sua nova chave de segurança</translation>
-<translation id="7506541170099744506">Seu <ph name="DEVICE_TYPE" /> foi inscrito para o gerenciamento empresarial.</translation>
+<translation id="7506541170099744506">O registro do dispositivo <ph name="DEVICE_TYPE" /> no gerenciamento corporativo foi concluído.</translation>
 <translation id="7507207699631365376">Consulte a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> deste provedor</translation>
 <translation id="7509097596023256288">Configurando o gerenciamento</translation>
 <translation id="7509246181739783082">Verificar sua identidade</translation>
