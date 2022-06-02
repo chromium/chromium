@@ -3300,6 +3300,8 @@ static_library("ui") {
       "views/frame/immersive_mode_controller_chromeos.h",
       "views/profiles/lacros_first_run_signed_in_flow_controller.cc",
       "views/profiles/lacros_first_run_signed_in_flow_controller.h",
+      "webui/policy/status_provider/device_policy_status_provider_lacros.cc",
+      "webui/policy/status_provider/device_policy_status_provider_lacros.h",
       "webui/signin/profile_picker_lacros_sign_in_provider.cc",
       "webui/signin/profile_picker_lacros_sign_in_provider.h",
       "window_sizer/window_sizer_chromeos.cc",

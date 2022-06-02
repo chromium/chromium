@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/policy/status_provider/device_cloud_policy_status_provider_chromeos.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace crosapi {
@@ -44,9 +45,9 @@ void DeviceSettingsAsh::AddDeviceSettingsObserver(
 }
 
 void DeviceSettingsAsh::GetDevicePolicy(GetDevicePolicyCallback callback) {
-  if (!g_browser_process->platform_part()
-           ->browser_policy_connector_ash()
-           ->IsDeviceEnterpriseManaged()) {
+  const policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  if (!connector->IsDeviceEnterpriseManaged()) {
     std::move(callback).Run(base::Value(), base::Value());
     return;
   }
@@ -54,11 +55,11 @@ void DeviceSettingsAsh::GetDevicePolicy(GetDevicePolicyCallback callback) {
   auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
       ProfileManager::GetActiveUserProfile());
   client->EnableUserPolicies(false);
-
-  // TODO(crbug.com/1243869): Get device_status from |client| and pass as the
-  // second parameter.
+  DeviceCloudPolicyStatusProviderChromeOS provider(connector);
+  base::DictionaryValue status;
+  provider.GetStatus(&status);
   std::move(callback).Run(base::Value(client->GetChromePolicies()),
-                          base::Value());
+                          std::move(status));
 }
 
 }  // namespace crosapi

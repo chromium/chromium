@@ -101,6 +101,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/webui/policy/status_provider/device_policy_status_provider_lacros.h"
 #include "chromeos/crosapi/mojom/policy_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
@@ -531,9 +532,11 @@ PolicyUIHandler::~PolicyUIHandler() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void PolicyUIHandler::OnGotDevicePolicy(base::Value device_policy,
                                         base::Value legend_data) {
-  // TODO(crbug.com/1243869): Parse also legend_data and use it.
   if (device_policy != device_policy_) {
     device_policy_ = std::move(device_policy);
+    static_cast<DevicePolicyStatusProviderLacros*>(
+        device_status_provider_.get())
+        ->SetDevicePolicyStatus(std::move(legend_data));
     SendPolicies();
   }
 }
@@ -662,6 +665,11 @@ void PolicyUIHandler::RegisterMessages() {
                  dmTokenStorage->RetrieveClientId(), lastCloudReportSent}));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  device_status_provider_ =
+      std::make_unique<DevicePolicyStatusProviderLacros>();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   ReloadUpdaterPoliciesAndState();

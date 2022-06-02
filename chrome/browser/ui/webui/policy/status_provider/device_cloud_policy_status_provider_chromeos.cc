@@ -12,7 +12,7 @@
 
 DeviceCloudPolicyStatusProviderChromeOS::
     DeviceCloudPolicyStatusProviderChromeOS(
-        policy::BrowserPolicyConnectorAsh* connector)
+        const policy::BrowserPolicyConnectorAsh* connector)
     : CloudPolicyCoreStatusProvider(
           connector->GetDeviceCloudPolicyManager()->core()) {
   enterprise_domain_manager_ = connector->GetEnterpriseDomainManager();

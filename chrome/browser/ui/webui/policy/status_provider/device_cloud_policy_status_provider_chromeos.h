@@ -20,7 +20,7 @@ class DeviceCloudPolicyStatusProviderChromeOS
     : public CloudPolicyCoreStatusProvider {
  public:
   explicit DeviceCloudPolicyStatusProviderChromeOS(
-      policy::BrowserPolicyConnectorAsh* connector);
+      const policy::BrowserPolicyConnectorAsh* connector);
 
   DeviceCloudPolicyStatusProviderChromeOS(
       const DeviceCloudPolicyStatusProviderChromeOS&) = delete;
