@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_PROXY_UI_PROXY_CONFIG_SERVICE_H_
-#define CHROMEOS_NETWORK_PROXY_UI_PROXY_CONFIG_SERVICE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_PROXY_UI_PROXY_CONFIG_SERVICE_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_PROXY_UI_PROXY_CONFIG_SERVICE_H_
 
 #include <string>
 
@@ -97,4 +97,4 @@ namespace ash {
 using ::chromeos::UIProxyConfigService;
 }  // namespace ash
 
-#endif  // CHROMEOS_NETWORK_PROXY_UI_PROXY_CONFIG_SERVICE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_PROXY_UI_PROXY_CONFIG_SERVICE_H_

@@ -15,14 +15,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
+#include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/proxy/proxy_config_handler.h"
-#include "chromeos/network/proxy/proxy_config_service_impl.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
@@ -36,9 +36,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-// TODO(stevenjb): Refactor and move this to src/chromeos/network/proxy or
-// rename. This is really more of an integration test than a unit test at this
-// point and currently relies on some chrome specific components.
+// TODO(stevenjb): Refactor and move this to
+// src/chromeos/ash/components/network/proxy or rename. This is really more of
+// an integration test than a unit test at this point and currently relies on
+// some chrome specific components.
 
 namespace ash {
 

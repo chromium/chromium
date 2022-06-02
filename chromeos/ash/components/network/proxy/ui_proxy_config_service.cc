@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/proxy/ui_proxy_config_service.h"
+#include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 
 #include <memory>
 #include <utility>
@@ -11,11 +11,11 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
+#include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/proxy/proxy_config_handler.h"
-#include "chromeos/network/proxy/proxy_config_service_impl.h"
 #include "chromeos/network/tether_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"

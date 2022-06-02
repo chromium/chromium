@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_PROXY_PROXY_CONFIG_HANDLER_H_
-#define CHROMEOS_NETWORK_PROXY_PROXY_CONFIG_HANDLER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_PROXY_PROXY_CONFIG_HANDLER_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_PROXY_PROXY_CONFIG_HANDLER_H_
 
 #include <memory>
 
@@ -47,4 +47,4 @@ using ::chromeos::proxy_config::SetProxyConfigForNetwork;
 }
 }  // namespace ash
 
-#endif  // CHROMEOS_NETWORK_PROXY_PROXY_CONFIG_HANDLER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_PROXY_PROXY_CONFIG_HANDLER_H_

@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
 #include "chromeos/ash/components/network/metrics/esim_policy_login_metrics_logger.h"
 #include "chromeos/ash/components/network/metrics/vpn_network_metrics_helper.h"
+#include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/auto_connect_handler.h"
 #include "chromeos/network/cellular_connection_handler.h"
 #include "chromeos/network/cellular_esim_installer.h"
@@ -35,7 +36,6 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/network/prohibited_technologies_handler.h"
-#include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/stub_cellular_networks_provider.h"
 
 namespace chromeos {

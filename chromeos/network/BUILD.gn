@@ -16,6 +16,7 @@ component("network") {
   public_deps = [
     "//chromeos/ash/components/network/metrics",
     "//chromeos/ash/components/network/onc",
+    "//chromeos/ash/components/network/proxy",
   ]
   deps = [
     "//ash/constants",
@@ -35,7 +36,6 @@ component("network") {
     "//components/onc",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/proxy_config",
     "//components/url_formatter",
     "//components/user_manager",
     "//crypto",
@@ -51,6 +51,7 @@ component("network") {
   allow_circular_includes_from = [
     "//chromeos/ash/components/network/metrics",
     "//chromeos/ash/components/network/onc",
+    "//chromeos/ash/components/network/proxy",
   ]
   sources = [
     "auto_connect_handler.cc",
@@ -166,12 +167,6 @@ component("network") {
     "profile_policies.h",
     "prohibited_technologies_handler.cc",
     "prohibited_technologies_handler.h",
-    "proxy/proxy_config_handler.cc",
-    "proxy/proxy_config_handler.h",
-    "proxy/proxy_config_service_impl.cc",
-    "proxy/proxy_config_service_impl.h",
-    "proxy/ui_proxy_config_service.cc",
-    "proxy/ui_proxy_config_service.h",
     "shill_property_handler.cc",
     "shill_property_handler.h",
     "shill_property_util.cc",
@@ -248,6 +243,7 @@ source_set("unit_tests") {
     "//chromeos:test_utils",
     "//chromeos/ash/components/network/metrics:unit_tests",
     "//chromeos/ash/components/network/onc:unit_tests",
+    "//chromeos/ash/components/network/proxy:unit_tests",
     "//chromeos/components/feature_usage",
     "//chromeos/components/onc",
     "//chromeos/components/onc:test_support",
@@ -308,8 +304,6 @@ source_set("unit_tests") {
     "network_util_unittest.cc",
     "profile_policies_unittest.cc",
     "prohibited_technologies_handler_unittest.cc",
-    "proxy/proxy_config_service_impl_unittest.cc",
-    "proxy/ui_proxy_config_service_unittest.cc",
     "shill_property_handler_unittest.cc",
     "shill_property_util_unittest.cc",
     "stub_cellular_networks_provider_unittest.cc",

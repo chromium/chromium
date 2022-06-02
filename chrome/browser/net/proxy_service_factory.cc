@@ -16,7 +16,7 @@
 #include "net/proxy_resolution/proxy_config_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/network/proxy/proxy_config_service_impl.h"
+#include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
