@@ -12,13 +12,13 @@
 // Shows password issues page.
 - (void)showPasswordIssuesPage;
 
-// Opens update page at |location|.
+// Opens update page at `location`.
 - (void)showUpdateAtLocation:(NSString*)location;
 
 // Shows page with Safe Browsing preference toggle.
 - (void)showSafeBrowsingPreferencePage;
 
-// Shows the error popover with the corresponding |text|.
+// Shows the error popover with the corresponding `text`.
 - (void)showErrorInfoFrom:(UIButton*)buttonView
                  withText:(NSAttributedString*)text;
 

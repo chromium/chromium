@@ -501,7 +501,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   // If not managed compute error info to show in popover, if available.
   NSAttributedString* info = [self popoverInfoForType:itemType];
 
-  // If |info| is empty there is no popover to display.
+  // If `info` is empty there is no popover to display.
   if (!info)
     return;
 
@@ -517,7 +517,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 
 #pragma mark - Private methods
 
-// Computes the text needed for a popover on |itemType| if available.
+// Computes the text needed for a popover on `itemType` if available.
 - (NSAttributedString*)popoverInfoForType:(NSInteger)itemType {
   SafteyCheckItemType type = static_cast<SafteyCheckItemType>(itemType);
   switch (type) {
@@ -541,7 +541,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 }
 
 // Computes the appropriate display state of the password check row based on
-// |currentPasswordCheckState|.
+// `currentPasswordCheckState`.
 - (PasswordCheckRowStates)computePasswordCheckRowState:
     (PasswordCheckState)newState {
   BOOL wasRunning =
@@ -781,7 +781,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     __weak __typeof__(self) weakSelf = self;
     // This handles a discrepancy between password check and safety check.  In
     // password check a user cannot start a check if they have no passwords, but
-    // in safety check they can, but the |passwordCheckManager| won't even start
+    // in safety check they can, but the `passwordCheckManager` won't even start
     // a check. This if block below allows safety check to push the disabled
     // state after check now is pressed.
     if (self.currentPasswordCheckState == PasswordCheckState::kNoPasswords) {
@@ -817,7 +817,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   }
 }
 
-// Checks if any of the safety checks are still running, resets |checkStartItem|
+// Checks if any of the safety checks are still running, resets `checkStartItem`
 // if all checks have finished.
 - (void)resetsCheckStartItemIfNeeded {
   if (self.checksRemaining) {
@@ -838,7 +838,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
            forKey:kTimestampOfLastIssueFoundKey];
     self.checkDidRun = NO;
   }
-  // If no checks are still running, reset |checkStartItem|.
+  // If no checks are still running, reset `checkStartItem`.
   self.checkStartState = CheckStartStateDefault;
   [self reconfigureCheckStartSection];
 
@@ -857,7 +857,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   return updateCheckRunning || passwordCheckRunning || safeBrowsingCheckRunning;
 }
 
-// Updates |updateCheckItem| to reflect the device being offline if the check
+// Updates `updateCheckItem` to reflect the device being offline if the check
 // was running.
 - (void)handleUpdateCheckOffline {
   if (self.updateCheckRowState == UpdateCheckRowStateRunning) {
@@ -870,7 +870,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 }
 
 // Verifies if the Omaha service returned an answer, if not sets
-// |updateCheckItem| to an Omaha error state.
+// `updateCheckItem` to an Omaha error state.
 - (void)verifyUpdateCheckComplete {
   // If still in running state assume Omaha error.
   if (self.updateCheckRowState == UpdateCheckRowStateRunning) {
@@ -883,7 +883,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 }
 
 // If the update check would have completed too quickly, making the UI appear
-// jittery, delay the reconfigure call, using |newRowState|.
+// jittery, delay the reconfigure call, using `newRowState`.
 - (void)possiblyDelayReconfigureUpdateCheckItemWithState:
     (UpdateCheckRowStates)newRowState {
   double secondsSinceStart =
@@ -965,7 +965,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 }
 
 // Performs the update check and triggers the display update to
-// |updateCheckItem|.
+// `updateCheckItem`.
 - (void)performUpdateCheck {
   __weak __typeof__(self) weakSelf = self;
 
@@ -1005,8 +1005,8 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   [self reconfigureSafeBrowsingCheckItem];
 }
 
-// Reconfigures the display of the |updateCheckItem| based on current state of
-// |updateCheckRowState|.
+// Reconfigures the display of the `updateCheckItem` based on current state of
+// `updateCheckRowState`.
 - (void)reconfigureUpdateCheckItem {
   // Reset state to prevent conflicts.
   self.updateCheckItem.enabled = YES;
@@ -1016,7 +1016,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   self.updateCheckItem.trailingImageTintColor = nil;
   self.updateCheckItem.accessoryType = UITableViewCellAccessoryNone;
 
-  // On any item update, see if |checkStartItem| should be updated.
+  // On any item update, see if `checkStartItem` should be updated.
   [self resetsCheckStartItemIfNeeded];
 
   switch (self.updateCheckRowState) {
@@ -1100,8 +1100,8 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   [self.consumer reconfigureCellsForItems:@[ self.updateCheckItem ]];
 }
 
-// Reconfigures the display of the |passwordCheckItem| based on current state of
-// |passwordCheckRowState|.
+// Reconfigures the display of the `passwordCheckItem` based on current state of
+// `passwordCheckRowState`.
 - (void)reconfigurePasswordCheckItem {
   // Reset state to prevent conflicts.
   self.passwordCheckItem.enabled = YES;
@@ -1111,7 +1111,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   self.passwordCheckItem.trailingImageTintColor = nil;
   self.passwordCheckItem.accessoryType = UITableViewCellAccessoryNone;
 
-  // On any item update, see if |checkStartItem| should be updated.
+  // On any item update, see if `checkStartItem` should be updated.
   [self resetsCheckStartItemIfNeeded];
 
   switch (self.passwordCheckRowState) {
@@ -1172,8 +1172,8 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   [self.consumer reconfigureCellsForItems:@[ self.passwordCheckItem ]];
 }
 
-// Reconfigures the display of the |safeBrowsingCheckItem| based on current
-// state of |safeBrowsingCheckRowState|.
+// Reconfigures the display of the `safeBrowsingCheckItem` based on current
+// state of `safeBrowsingCheckRowState`.
 - (void)reconfigureSafeBrowsingCheckItem {
   // Reset state to prevent conflicts.
   self.safeBrowsingCheckItem.enabled = YES;
@@ -1183,7 +1183,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   self.safeBrowsingCheckItem.trailingImageTintColor = nil;
   self.safeBrowsingCheckItem.accessoryType = UITableViewCellAccessoryNone;
 
-  // On any item update, see if |checkStartItem| should be updated.
+  // On any item update, see if `checkStartItem` should be updated.
   [self resetsCheckStartItemIfNeeded];
 
   switch (self.safeBrowsingCheckRowState) {

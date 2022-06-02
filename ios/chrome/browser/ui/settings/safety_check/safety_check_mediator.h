@@ -27,11 +27,11 @@ class SyncSetupService;
 @interface SafetyCheckMediator : NSObject <SafetyCheckServiceDelegate>
 
 // Designated initializer. All the parameters should not be null.
-// |userPrefService|: Preference service to access safe browsing state.
-// |passwordCheckManager|: Password check manager to enable use of the password
+// `userPrefService`: Preference service to access safe browsing state.
+// `passwordCheckManager`: Password check manager to enable use of the password
 // check service.
-// |authService|: Authentication service to check users authentication status.
-// |syncService|: Sync service to check sync and sync encryption status.
+// `authService`: Authentication service to check users authentication status.
+// `syncService`: Sync service to check sync and sync encryption status.
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
                    passwordCheckManager:
                        (scoped_refptr<IOSChromePasswordCheckManager>)
