@@ -68,7 +68,7 @@ bool IsLast(bool is_loaded) {
 
 bool IsFiltered(const GURL& url) {
   for (auto* filter : kFilterlist) {
-    if (base::LowerCaseEqualsASCII(url.host(), filter)) {
+    if (base::EqualsCaseInsensitiveASCII(url.host(), filter)) {
       return true;
     }
   }
