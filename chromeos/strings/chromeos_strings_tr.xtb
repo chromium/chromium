@@ -492,6 +492,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} deneme hakkınız kaldı}other{{0} deneme hakkınız kaldı}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Tarama işlemi tamamlanamadı</translation>
+<translation id="5499762266711462226">Klavye rengi, duvar kağıdına göre belirlenir</translation>
 <translation id="5502931783115429516">Android çalışmıyor</translation>
 <translation id="5507300744274596613">Chrome OS'in güncel olduğundan emin olun</translation>
 <translation id="5519195206574732858">LTE</translation>

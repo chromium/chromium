@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Abiarazlea</translation>
 <translation id="1512982610995527443">Gailua bost segundo barru itzaliko da</translation>
 <translation id="1522984060396982789">Konpondu dira arazoak. Gailua itzali egin dezakezu, edo beste ekintza batzuk egin.</translation>
+<translation id="1526389707933164996">Pantaila-babeslearen animazioa</translation>
 <translation id="152892567002884378">Igo bolumena</translation>
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="155865706765934889">Ukipen-teklatua</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Izena</translation>
 <translation id="3865414814144988605">Bereizmena</translation>
 <translation id="387301095347517405">Bateriak kargatze-ziklo osoa zenbat aldiz egin duen</translation>
+<translation id="3885327323343477505">Aldatu pantaila-babeslea</translation>
 <translation id="3923184630988645767">Datu-erabilera</translation>
 <translation id="3924044641767672375">Konponketa-prozesua errazteko, wifira konektatzea gomendatzen da. Sarea gorde egingo da.</translation>
 <translation id="3932043219784172185">Ez dago gailurik konektatuta</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Aukeratu beste bat berehala</translation>
 <translation id="4891842000192098784">Estresa</translation>
 <translation id="4897058166682006107">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren ezkerreko aurikularrari.</translation>
+<translation id="4905998861748258752">Aktibatu eginbidea pantaila-babeslearen aukerak hautatzeko</translation>
 <translation id="4908030561598728899">Firmwarea instalatzen…</translation>
 <translation id="4915052247106771211">Powerwash bidez gailuaren jatorrizko ezarpenak berrezarriko dira.</translation>
 <translation id="4917385247580444890">Sendoa</translation>
@@ -862,6 +865,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8997710128084572139">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuari.</translation>
 <translation id="9003704114456258138">Maiztasuna</translation>
 <translation id="9025198690966128418">Erabili gailu pertsonal gisa</translation>
+<translation id="9028832514430399253">Aktibatu etengailua pantaila-babeslearen aukerak hautatzeko</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS bidezko ebazpenak latentzia handia dauka</translation>
 <translation id="9063121522582193837">Ezin izan dira osagai batzuk kalibratu</translation>

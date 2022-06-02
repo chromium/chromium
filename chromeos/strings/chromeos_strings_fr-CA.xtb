@@ -492,6 +492,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Il vous reste {0} tentative}one{Il vous reste {0} tentative}other{Il vous reste {0} tentatives}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" /> : <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Impossible de terminer la numérisation</translation>
+<translation id="5499762266711462226">La couleur du clavier est basée sur le fond d'écran</translation>
 <translation id="5502931783115429516">Android n'est pas en cours d'exécution</translation>
 <translation id="5507300744274596613">S'assurer que Chrome OS est à jour</translation>
 <translation id="5519195206574732858">LTE</translation>

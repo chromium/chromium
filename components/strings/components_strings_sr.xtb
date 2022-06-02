@@ -119,6 +119,7 @@
 <translation id="1270502636509132238">Начин преузимања</translation>
 <translation id="1281476433249504884">1. преграда за слагање</translation>
 <translation id="1285320974508926690">Никад не преводи овај сајт</translation>
+<translation id="1288548991597756084">Безбедно сачувајте картицу</translation>
 <translation id="1292571435393770077">16. фиока</translation>
 <translation id="1292701964462482250">„Софтвер на вашем рачунару онемогућава Chrome-у да се безбедно повеже на веб“ (само на Windows рачунарима)</translation>
 <translation id="1294154142200295408">Варијације командне линије</translation>
@@ -223,6 +224,7 @@
     &lt;p&gt;Да бисте отклонили ту грешку, кликните на &lt;strong&gt;Повежи се&lt;/strong&gt; на страници коју покушавате да отворите.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Пејзажна архитектура</translation>
 <translation id="1513706915089223971">Листа уноса у историји</translation>
+<translation id="1516097932025103760">Биће шифрована, безбедно сачувана, а CVC се никад не чува.</translation>
 <translation id="1517433312004943670">Број телефона је обавезан</translation>
 <translation id="1519264250979466059">Датум верзије</translation>
 <translation id="1521159554480556801">Текстилна уметност</translation>
@@ -1420,6 +1422,7 @@
 <translation id="483241715238664915">Укључи упозорења</translation>
 <translation id="4834250788637067901">Начини плаћања, понуде и адресе који користе Google Pay</translation>
 <translation id="4838327282952368871">Чаробно</translation>
+<translation id="4839087176073128681">Следећег пута платите брже и заштитите картицу помоћу врхунске Google безбедности.</translation>
 <translation id="4840250757394056958">Прегледајте историју Chrome-а</translation>
 <translation id="484462545196658690">Аутоматски</translation>
 <translation id="484671803914931257">Остварите попуст код продавца <ph name="MERCHANT_NAME" /> и других продаваца</translation>

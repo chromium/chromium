@@ -4210,6 +4210,13 @@
 
           此政策的值仅在 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策设为启用时才适用，在其他情况下一概不适用。</translation>
 <translation id="5697306356229823047">报告设备用户</translation>
+<translation id="5698923148503075597">如果此政策已启用，当云政策与平台政策发生冲突时，系统会优先应用云政策。
+
+      如果此政策已停用或未设置，当平台政策与云政策发生冲突时，系统会优先应用平台政策。
+
+      这项强制性政策仅会影响机器范围云政策。
+
+      此政策仅适用于 <ph name="PRODUCT_NAME" />，不会对 <ph name="GOOGLE_UPDATE_NAME" />产生任何影响。</translation>
 <translation id="5699770471852263667">如果此政策已启用，系统会在 <ph name="PRODUCT_NAME" /> 中停用内部 PDF 查看器，将 PDF 文件视为下载项，并允许用户使用默认应用打开 PDF 文件。
 
       如果此政策已停用，则意味着系统会使用 PDF 插件打开 PDF 文件，除非用户已关闭该插件。

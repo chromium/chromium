@@ -492,6 +492,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativo rimanente}other{{0} tentativi rimanenti}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Impossibile completare la scansione</translation>
+<translation id="5499762266711462226">Il colore della tastiera si basa sullo sfondo</translation>
 <translation id="5502931783115429516">Android non funziona</translation>
 <translation id="5507300744274596613">Assicurati che Chrome OS sia aggiornato</translation>
 <translation id="5519195206574732858">LTE</translation>

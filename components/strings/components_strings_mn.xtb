@@ -119,6 +119,7 @@
 <translation id="1270502636509132238">Авах төрөл</translation>
 <translation id="1281476433249504884">Гарах цаасыг зэрэгцүүлэх тавцан 1</translation>
 <translation id="1285320974508926690">Энэ сайтыг хэзээ ч бүү хөрвүүл</translation>
+<translation id="1288548991597756084">Картыг аюулгүй хадгалах</translation>
 <translation id="1292571435393770077">Тавиур 16</translation>
 <translation id="1292701964462482250">"Таны компьютер дээрх программ хангамж Chrome-г вебэд аюулгүй холбогдохыг зогсоож байна" (зөвхөн Windows компьютерт боломжтой)</translation>
 <translation id="1294154142200295408">Тушаалын мөрийн хувилбар</translation>
@@ -223,6 +224,7 @@
     &lt;p&gt;Алдааг засахын тулд нээхийг оролдож буй нүүр хуудасны &lt;strong&gt;Холбогдох&lt;/strong&gt; гэснийг товшино уу.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Цэцэрлэгжүүлэлтийн дизайн</translation>
 <translation id="1513706915089223971">Түүхийн жагсаалт</translation>
+<translation id="1516097932025103760">Энэ нь шифрлэгдсэн, найдвартай хадгалагдсан ба Карт баталгаажуулалтын код хэзээ ч хадгалагдаггүй.</translation>
 <translation id="1517433312004943670">Утасны дугаар шаардлагатай</translation>
 <translation id="1519264250979466059">Огноо суулгах</translation>
 <translation id="1521159554480556801">Мяндас, сүлжмэл урлаг</translation>
@@ -1421,6 +1423,7 @@
 <translation id="483241715238664915">Сануулгыг асаах</translation>
 <translation id="4834250788637067901">Google Pay-г ашиглаж буй төлбөрийн хэрэгсэл, санал болон хаяг</translation>
 <translation id="4838327282952368871">Зүүд шиг</translation>
+<translation id="4839087176073128681">Дараагийн удаа илүү хурдан төлж, Google-н салбартаа тэргүүлэгч хамгаалалтаар картаа хамгаалаарай.</translation>
 <translation id="4840250757394056958">Chrome-н түүхээ үзэх</translation>
 <translation id="484462545196658690">Автомат</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> болон бусад худалдаачны хөнгөлөлт аваарай</translation>

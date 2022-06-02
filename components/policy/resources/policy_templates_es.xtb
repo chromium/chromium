@@ -4286,6 +4286,13 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
           El valor de la política solo se aplica cuando la política <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está habilitada y no es aplicable en caso contrario.</translation>
 <translation id="5697306356229823047">Permite informar sobre usuarios de dispositivos</translation>
+<translation id="5698923148503075597">Si se habilita esta política, la política de nube prevalecerá si entra en conflicto con la política de plataforma.
+
+      Si se inhabilita esta política o no se define, la política de plataforma prevalecerá si entra en conflicto con la política de nube.
+
+      Esta política obligatoria afecta a las políticas de permisos de nube.
+
+      Esta política solo está disponible en <ph name="PRODUCT_NAME" />. No afecta a <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5699770471852263667">Si se habilita esta política, se desactivará el visor interno de PDF en <ph name="PRODUCT_NAME" />, los archivos PDF se tratarán como descargas y los usuarios podrán abrir PDFs con la aplicación predeterminada.
 
       Si se inhabilita, se abrirán los archivos PDF, a menos que los usuarios desactiven el complemento de PDF.

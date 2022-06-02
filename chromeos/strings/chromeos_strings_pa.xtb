@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">ਲੌਂਚਰ</translation>
 <translation id="1512982610995527443">ਡੀਵਾਈਸ 5 ਸਕਿੰਟਾਂ ਵਿੱਚ ਬੰਦ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="1522984060396982789">ਤੁਹਾਡੀ ਮੁਰੰਮਤ ਸਫਲ ਰਹੀ। ਤੁਸੀਂ ਡੀਵਾਈਸ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਕੁਝ ਵਧੀਕ ਕਾਰਵਾਈਆਂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="1526389707933164996">ਸਕ੍ਰੀਨ ਸੇਵਰ ਐਨੀਮੇਸ਼ਨ</translation>
 <translation id="152892567002884378">ਅਵਾਜ਼ ਵਧਾਓ</translation>
 <translation id="1555130319947370107">ਨੀਲਾ</translation>
 <translation id="155865706765934889">ਟਚਪੈਡ</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">ਨਾਮ</translation>
 <translation id="3865414814144988605">ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="387301095347517405">ਤੁਹਾਡੀ ਬੈਟਰੀ ਵੱਲੋਂ ਚਾਰਜ ਹੋਣ ਦੇ ਚੱਕਰ ਨੂੰ ਪੂਰਾ ਕੀਤੇ ਜਾਣ ਦੀ ਗਿਣਤੀ</translation>
+<translation id="3885327323343477505">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬਦਲੋ</translation>
 <translation id="3923184630988645767">ਡਾਟਾ ਵਰਤੋਂ</translation>
 <translation id="3924044641767672375">ਮੁਰੰਮਤ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਜ਼ਿਆਦਾ ਆਸਾਨ ਬਣਾਉਣ ਲਈ ਵਾਈ-ਫਾਈ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="3932043219784172185">ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">ਛੇਤੀ ਇੱਕ ਨਵਾਂ ਪਾਸਵਰਡ ਚੁਣੋ</translation>
 <translation id="4891842000192098784">ਤਣਾਅ</translation>
 <translation id="4897058166682006107">ਡੀਵਾਈਸ ਦੇ ਖੱਬੇ ਪਾਸੇ ਵਾਲੇ ਬੱਡ ਦਾ ਬੈਟਰੀ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
+<translation id="4905998861748258752">ਸਕ੍ਰੀਨ ਸੇਵਰ ਵਿਕਲਪਾਂ ਨੂੰ ਚੁਣਨ ਲਈ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4908030561598728899">ਫ਼ਰਮਵੇਅਰ ਨੂੰ ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4915052247106771211">ਇਸ ਨਾਲ ਡੀਵਾਈਸ ਫੈਕਟਰੀ ਸੈਟਿੰਗਾਂ (ਪਾਵਰਵਾਸ਼) 'ਤੇ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="4917385247580444890">ਮਜ਼ਬੂਤ</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">ਡੀਵਾਈਸ ਦੀ ਬੈਟਰੀ ਦਾ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
 <translation id="9003704114456258138">ਬਾਰੰਬਾਰਤਾ</translation>
 <translation id="9025198690966128418">ਨਿੱਜੀ ਡੀਵਾਈਸ ਵਜੋਂ ਵਰਤੋ</translation>
+<translation id="9028832514430399253">ਸਕ੍ਰੀਨ ਸੇਵਰ ਵਿਕਲਪਾਂ ਨੂੰ ਚੁਣਨ ਲਈ ਟੌਗਲ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਵਿੱਚ ਉੱਚ ਵਿਲੰਬਤਾ ਹੈ</translation>
 <translation id="9063121522582193837">ਕੁਝ ਕੰਪੋਨੈਂਟਾਂ ਨੂੰ ਕੈਲੀਬਰੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>

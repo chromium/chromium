@@ -645,6 +645,7 @@
 <translation id="6423031066725912715">vietnami, klaviatuuriga TCVN</translation>
 <translation id="6485131920355264772">Talletusruumi teabe toomine ebaõnnestus</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, võrku haldab teie administraator, üksikasjad</translation>
+<translation id="649877868557234318">Faili <ph name="FILE_NAME" /> ekstraktimine kausta <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Puhverserverite keelamine jagatud võrkudes</translation>
 <translation id="6509122719576673235">norra keel</translation>
 <translation id="6528513914570774834">Luba teistel selle seadme kasutajatel seda võrku kasutada</translation>

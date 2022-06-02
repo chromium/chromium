@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">লঞ্চার</translation>
 <translation id="1512982610995527443">ডিভাইসটি ৫ সেকেন্ডের মধ্যে বন্ধ হয়ে যাবে</translation>
 <translation id="1522984060396982789">রিপেয়ার করা হয়ে গেছে। আপনি ডিভাইসটি বন্ধ করতে পারেন বা কিছু অতিরিক্ত পদক্ষেপ নিতে পারেন।</translation>
+<translation id="1526389707933164996">স্ক্রিন সেভার অ্যানিমেশন</translation>
 <translation id="152892567002884378">ভলিউম বাড়ান</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="155865706765934889">টাচপ্যাড</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3865414814144988605">রেজোলিউশন</translation>
 <translation id="387301095347517405">আপনার ব্যাটারি যতবার পুরো চার্জ দেওয়া হয়েছে</translation>
+<translation id="3885327323343477505">স্ক্রিন সেভার পরিবর্তন করুন</translation>
 <translation id="3923184630988645767">ডেটা ব্যবহার</translation>
 <translation id="3924044641767672375">মেরামতের পদ্ধতি সহজ করার জন্য ওয়াই-ফাইয়ে কানেক্ট করার সাজেশন দেওয়া হয়। আপনার নেটওয়ার্ক সেভ করে রাখা হবে।</translation>
 <translation id="3932043219784172185">কোনও ডিভাইস কানেক্ট করা নেই</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">অবিলম্বে একটি নতুন পাসওয়ার্ড বেছে নিন</translation>
 <translation id="4891842000192098784">স্ট্রেস</translation>
 <translation id="4897058166682006107">ডিভাইসের বাঁদিকের বাডে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
+<translation id="4905998861748258752">স্ক্রিন সেভার বিকল্প বেছে নেওয়ার জন্য ফিচার চালু করুন</translation>
 <translation id="4908030561598728899">ফার্মওয়্যার ইনস্টল করা হচ্ছে...</translation>
 <translation id="4915052247106771211">এটি ডিভাইসটিকে ফ্যাক্টরি সেটিংসে (পাওয়ারওয়াশ) রিসেট করবে।</translation>
 <translation id="4917385247580444890">জোরালো</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">ডিভাইসে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
 <translation id="9003704114456258138">ফ্রিকোয়েন্সি</translation>
 <translation id="9025198690966128418">ব্যক্তিগত ডিভাইস হিসেবে ব্যবহার করুন</translation>
+<translation id="9028832514430399253">স্ক্রিনসেভার বিকল্পগুলি বেছে নিতে টগলটি চালু করুন</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">ডিএনএস রেজোলিউশনে খুব বেশি ল্যাটেন্সি আছে</translation>
 <translation id="9063121522582193837">কিছু কম্পোনেন্ট ক্যালিব্রেট করা যাচ্ছে না</translation>

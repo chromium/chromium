@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1512982610995527443">၅ စက္ကန့်အကြာတွင် စက်အပြီးပိတ်ပါမည်</translation>
 <translation id="1522984060396982789">သင်၏ပြုပြင်မှု ပြီးပါပြီ။ စက်ကို အပြီးပိတ်နိုင်သည် (သို့) ထပ်ဆောင်းလုပ်ဆောင်ချက်အချို့ ပြုလုပ်နိုင်သည်။</translation>
+<translation id="1526389707933164996">ဖန်သားပြင်နားချိန် လှုပ်ရှားသက်ဝင်ပုံ</translation>
 <translation id="152892567002884378">အသံချဲ့ရန်</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="155865706765934889">တို့ထိရန် အပြား</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">အမည်</translation>
 <translation id="3865414814144988605">ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="387301095347517405">သင့်ဘက်ထရီကို အားအပြည့်သွင်းထားသည့် အကြိမ်အရေအတွက်</translation>
+<translation id="3885327323343477505">ဖန်သားပြင်နားချိန် ပြောင်းရန်</translation>
 <translation id="3923184630988645767">ဒေတာသုံးစွဲမှု</translation>
 <translation id="3924044641767672375">ပြင်ဆင်မှု ပိုမိုလွယ်ကူစေရန်အတွက် Wi-Fi ချိတ်ဆက်ရန် အကြံပြုပါသည်။ သင်၏ကွန်ရက်ကို သိမ်းပါမည်။</translation>
 <translation id="3932043219784172185">ချိတ်ဆက်ထားသော စက်မရှိပါ</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">ချက်ချင်း အသစ်တစ်ခု ‌ရွေးပါ</translation>
 <translation id="4891842000192098784">ဖိအား</translation>
 <translation id="4897058166682006107">ဘယ်နားကြပ်တွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
+<translation id="4905998861748258752">ဖန်သားပြင်နားချိန်ရွေးချယ်ရန် ဝန်ဆောင်မှု ဖွင့်ပါ</translation>
 <translation id="4908030561598728899">ဖာမ်းဝဲထည့်သွင်းနေသည်...</translation>
 <translation id="4915052247106771211">၎င်းက စက်ကို စက်ရုံထုတ် ဆက်တင်များ သို့ ပြင်ဆင်သတ်မှတ်ပါမည် (Powerwash)။</translation>
 <translation id="4917385247580444890">အားကောင်းသည်</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">ကိရိယာတွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
 <translation id="9003704114456258138">ကြိမ်နှုန်း</translation>
 <translation id="9025198690966128418">ပုဂ္ဂိုလ်ရေးသီးသန့်စက်အဖြစ် သုံးစွဲရန်</translation>
+<translation id="9028832514430399253">ဖန်သားပြင်နားချိန် တစ်ခုရွေးရန် ခလုတ်ဖွင့်ပါ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ဖြေရှင်းမှုသည် တုံ့ပြန်ချိန်မြင့်သည်</translation>
 <translation id="9063121522582193837">အစိတ်အပိုင်းအချို့ကို ချိန်ညှိ၍ မရပါ</translation>

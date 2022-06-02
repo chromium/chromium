@@ -4216,6 +4216,13 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
 
           De beleidswaarde wordt alleen toegepast als het beleid <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is toegepast en is anders niet van toepassing.</translation>
 <translation id="5697306356229823047">Apparaatgebruikers melden</translation>
+<translation id="5698923148503075597">Als je het beleid toepast, krijgt het cloudbeleid voorrang bij een conflict met het platformbeleid.
+
+      Als je het beleid niet toepast of niet instelt, krijgt het platformbeleid voorrang bij een conflict met het cloudbeleid.
+
+      Dit verplichte beleid heeft gevolgen voor cloudbeleid op machineniveau.
+
+      Dit beleid is alleen beschikbaar in <ph name="PRODUCT_NAME" /> en heeft geen effect op <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5699770471852263667">Als je het beleid toepast, wordt de interne pdf-viewer in <ph name="PRODUCT_NAME" /> uitgezet, worden pdf-bestanden als downloads behandeld en kunnen gebruikers pdf's openen met de standaard-app.
 
       Als je het beleid niet toepast, worden pdf-bestanden geopend, tenzij gebruikers de pdf-plug-in uitzetten.

@@ -492,6 +492,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Осталась {0} попытка.}one{Осталась {0} попытка.}few{Осталось {0} попытки.}many{Осталось {0} попыток.}other{Осталось {0} попытки.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Не удалось завершить сканирование</translation>
+<translation id="5499762266711462226">Цвет подсветки клавиатуры зависит от обоев</translation>
 <translation id="5502931783115429516">ОС Android не запущена</translation>
 <translation id="5507300744274596613">Обновление Chrome OS</translation>
 <translation id="5519195206574732858">LTE</translation>

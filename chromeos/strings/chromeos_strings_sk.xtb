@@ -492,6 +492,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Zostáva {0} pokus}few{Zostávajú {0} pokusy}many{{0} attempts left}other{Zostáva {0} pokusov}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skenovanie sa nepodarilo dokončiť</translation>
+<translation id="5499762266711462226">Farba klávesnice vychádza z tapety</translation>
 <translation id="5502931783115429516">Android nefunguje</translation>
 <translation id="5507300744274596613">Skontrolujte, či je systém Chrome OS aktuálny</translation>
 <translation id="5519195206574732858">LTE</translation>

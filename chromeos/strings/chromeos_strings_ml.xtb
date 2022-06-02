@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
 <translation id="1512982610995527443">5 സെക്കൻഡിനുള്ളിൽ ഉപകരണം ഷട്ട് ഡൗൺ ആകും</translation>
 <translation id="1522984060396982789">നിങ്ങളുടെ റിപ്പയർ പൂർത്തിയായി. നിങ്ങൾക്ക് ഉപകരണം ഷട്ട് ഡൗൺ ചെയ്യാനോ ചില അധിക പ്രവർത്തനങ്ങൾ നടത്താനോ കഴിയും.</translation>
+<translation id="1526389707933164996">സ്ക്രീൻ സേവർ ആനിമേഷൻ</translation>
 <translation id="152892567002884378">ശബ്ദം കൂട്ടുക</translation>
 <translation id="1555130319947370107">നീല</translation>
 <translation id="155865706765934889">ടച്ച്‌പാഡ്</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">പേര്</translation>
 <translation id="3865414814144988605">റെസല്യൂഷൻ</translation>
 <translation id="387301095347517405">നിങ്ങളുടെ ബാറ്ററി പൂർണ്ണമായി ചാർജ് ചെയ്തതിന്റെ എണ്ണം</translation>
+<translation id="3885327323343477505">സ്ക്രീൻ സേവർ മാറ്റുക</translation>
 <translation id="3923184630988645767">ഡാറ്റ ഉപയോഗം</translation>
 <translation id="3924044641767672375">റിപ്പയർ പ്രക്രിയ കൂടുതൽ എളുപ്പമാക്കാൻ വൈഫൈലേക്ക് കണക്റ്റ് ചെയ്യാൻ നിർദ്ദേശിക്കുന്നു. നിങ്ങളുടെ നെറ്റ്‌വർക്ക് സംരക്ഷിക്കും.</translation>
 <translation id="3932043219784172185">ഉപകരണമൊന്നും കണക്റ്റ് ചെയ്‌തിട്ടില്ല</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">പുതിയ പാസ്‌വേഡ് പെട്ടെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4891842000192098784">സമ്മർദ്ദം</translation>
 <translation id="4897058166682006107">ഉപകരണത്തിന്റെ ഇടത് ബഡിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
+<translation id="4905998861748258752">സ്ക്രീൻ സേവർ ഓപ്ഷനുകൾ തിരഞ്ഞെടുക്കാൻ ഫീച്ചർ ഓണാക്കുക</translation>
 <translation id="4908030561598728899">ഫേംവെയർ ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു...</translation>
 <translation id="4915052247106771211">ഇത് ഉപകരണത്തെ ഫാക്‌ടറി ക്രമീകരണത്തിലേക്ക് റീസെറ്റ് ചെയ്യും (Powerwash).</translation>
 <translation id="4917385247580444890">ശക്തം</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">ഉപകരണത്തിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
 <translation id="9003704114456258138">ആവൃത്തി</translation>
 <translation id="9025198690966128418">വ്യക്തിപര ഉപകരണമായി ഉപയോഗിക്കുക</translation>
+<translation id="9028832514430399253">സ്ക്രീൻ സേവർ ഓപ്ഷനുകൾ തിരഞ്ഞെടുക്കാൻ ടോഗിൾ ഓണാക്കുക</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS റെസല്യൂഷൻ പ്രതികരിക്കാൻ കൂടുതൽ സമയമെടുക്കുന്നു</translation>
 <translation id="9063121522582193837">ചില ഘടകങ്ങൾ കാലിബ്രേറ്റ് ചെയ്യാനാകുന്നില്ല</translation>

@@ -492,6 +492,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{נותר ניסיון אחד ({0})}two{נותרו {0} ניסיונות}many{נותרו {0} ניסיונות}other{נותרו {0} ניסיונות}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">לא ניתן היה להשלים את הסריקה</translation>
+<translation id="5499762266711462226">צבע המקלדת מבוסס על הטפט</translation>
 <translation id="5502931783115429516">‏מערכת Android לא פועלת</translation>
 <translation id="5507300744274596613">‏צריך לוודא שמותקנת הגרסה העדכנית של Chrome OS</translation>
 <translation id="5519195206574732858">LTE</translation>

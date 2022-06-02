@@ -119,6 +119,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1270502636509132238">Jasotzeko modua</translation>
 <translation id="1281476433249504884">1. pilatzailea</translation>
 <translation id="1285320974508926690">Ez itzuli inoiz webgune hau</translation>
+<translation id="1288548991597756084">Gorde txartela modu seguruan</translation>
 <translation id="1292571435393770077">16. erretilua</translation>
 <translation id="1292701964462482250">"Ordenagailuan dagoen software batek ez dio uzten Chrome-ri sarera segurtasunez konektatzen" (Windows ordenagailuak soilik)</translation>
 <translation id="1294154142200295408">Agindu-lerroaren aldaerak</translation>
@@ -223,6 +224,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
     &lt;p&gt;Errorea konpontzeko, sakatu ireki nahi duzun orriko &lt;strong&gt;Konektatu&lt;/strong&gt; aukera.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Paisaien diseinua</translation>
 <translation id="1513706915089223971">Historiako sarreren zerrenda</translation>
+<translation id="1516097932025103760">Enkriptatu eta segurtasunez gordeko da. CVCa ez da inoiz gordetzen.</translation>
 <translation id="1517433312004943670">Telefono-zenbakia behar da</translation>
 <translation id="1519264250979466059">Konpilazioaren data</translation>
 <translation id="1521159554480556801">Zuntz- eta ehun-arteak</translation>
@@ -1407,6 +1409,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="483241715238664915">Aktibatu abisuak</translation>
 <translation id="4834250788637067901">Google Pay-rekin erabiltzen dituzun ordainketa-metodoak, eskaintzak eta helbideak</translation>
 <translation id="4838327282952368871">Ametsezkoa</translation>
+<translation id="4839087176073128681">Ordaindu bizkorrago hurrengoan eta babestu txartela Google-ren puntako segurtasun-neurriekin.</translation>
 <translation id="4840250757394056958">Ikusi Chrome-ko historia</translation>
 <translation id="484462545196658690">Automatikoa</translation>
 <translation id="484671803914931257">Eskuratu deskontuak <ph name="MERCHANT_NAME" /> eta beste saltzaile batzuen produktuetan</translation>

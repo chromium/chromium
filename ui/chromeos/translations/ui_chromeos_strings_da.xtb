@@ -645,6 +645,7 @@
 <translation id="6423031066725912715">Vietnamesisk med TCVN-tastatur</translation>
 <translation id="6485131920355264772">Pladsoplysningerne kunne ikke hentes</translation>
 <translation id="6495925982925244349">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, info</translation>
+<translation id="649877868557234318">Pakker <ph name="FILE_NAME" /> ud i <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Tillad ikke proxyer på delte netværk</translation>
 <translation id="6509122719576673235">Norsk</translation>
 <translation id="6528513914570774834">Giv andre brugere af denne enhed tilladelse til at bruge dette netværk</translation>

@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">ឡាន់ឆ័រ</translation>
 <translation id="1512982610995527443">ឧបករណ៍នឹងបិទក្នុងរយៈពេល 5 វីនាទីទៀត</translation>
 <translation id="1522984060396982789">ការជួសជុលរបស់អ្នកទទួលបានជោគជ័យ។ អ្នកអាចបិទឧបករណ៍ ឬធ្វើសកម្មភាពបន្ថែមមួយចំនួនទៀត។</translation>
+<translation id="1526389707933164996">រូបមានចលនានៃធាតុរក្សាអេក្រង់</translation>
 <translation id="152892567002884378">បង្កើន​សំឡេង</translation>
 <translation id="1555130319947370107">ខៀវ</translation>
 <translation id="155865706765934889">ផ្ទាំងប៉ះ</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">ឈ្មោះ</translation>
 <translation id="3865414814144988605">គុណភាពបង្ហាញ</translation>
 <translation id="387301095347517405">ចំនួនដង​ដែលថ្មរបស់អ្នក​បានសាកពេញ</translation>
+<translation id="3885327323343477505">ប្ដូរធាតុរក្សាអេក្រង់</translation>
 <translation id="3923184630988645767">ការប្រើទិន្នន័យ</translation>
 <translation id="3924044641767672375">ការតភ្ជាប់ Wi-Fi​ ត្រូវបានណែនាំ ដើម្បីជួយឱ្យដំណើរការជួសជុលកាន់តែងាយស្រួល។ បណ្ដាញរបស់អ្នកនឹងត្រូវបានរក្សាទុក។</translation>
 <translation id="3932043219784172185">មិនបាន​ភ្ជាប់​ឧបករណ៍​ណាមួយទេ</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">សូមជ្រើសរើស​ពាក្យសម្ងាត់​ថ្មីភ្លាមៗ</translation>
 <translation id="4891842000192098784">ស្ត្រេស</translation>
 <translation id="4897058166682006107">ឧបករណ៍មានថ្មកាសខាងឆ្វេង <ph name="BATTERY_PERCENTAGE" />%។</translation>
+<translation id="4905998861748258752">បើកមុខងារនេះ ដើម្បីជ្រើសរើសជម្រើសធាតុរក្សាអេក្រង់</translation>
 <translation id="4908030561598728899">កំពុងដំឡើងកម្មវិធី​បង្កប់...</translation>
 <translation id="4915052247106771211">វា​នឹង​កំណត់​ឧបករណ៍​ឡើងវិញ​ទៅ​ការកំណត់​ដូចចេញពី​រោងចក្រ (Powerwash)។</translation>
 <translation id="4917385247580444890">ខ្លាំង</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">ឧបករណ៍មានថ្ម <ph name="BATTERY_PERCENTAGE" />%។</translation>
 <translation id="9003704114456258138">ហ្វ្រេកង់</translation>
 <translation id="9025198690966128418">ប្រើប្រាស់ជាឧបករណ៍ផ្ទាល់ខ្លួន</translation>
+<translation id="9028832514430399253">បើកប៊ូតុងបិទ/បើក ដើម្បីជ្រើសរើសជម្រើសធាតុរក្សាអេក្រង់</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">ដំណោះស្រាយ DNS មានការ​ពន្យារខ្ពស់</translation>
 <translation id="9063121522582193837">មិនអាចកែតម្រូវសមាសធាតុខ្លះបានទេ</translation>

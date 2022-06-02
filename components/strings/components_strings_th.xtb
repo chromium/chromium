@@ -119,6 +119,7 @@
 <translation id="1270502636509132238">วิธีการรับสินค้า</translation>
 <translation id="1281476433249504884">สแต็กเกอร์ 1</translation>
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
+<translation id="1288548991597756084">บันทึกบัตรไว้อย่างปลอดภัย</translation>
 <translation id="1292571435393770077">ถาด 16</translation>
 <translation id="1292701964462482250">"ซอฟต์แวร์ในคอมพิวเตอร์ของคุณทำให้ Chrome เชื่อมต่อกับเว็บอย่างปลอดภัยไม่ได้" (คอมพิวเตอร์ที่ใช้ระบบปฏิบัติการ Windows เท่านั้น)</translation>
 <translation id="1294154142200295408">บรรทัดคำสั่งรูปแบบต่างๆ</translation>
@@ -223,6 +224,7 @@
     &lt;p&gt;ในการแก้ไขข้อผิดพลาด ให้คลิก&lt;strong&gt;เชื่อมต่อ&lt;/strong&gt;บนหน้าเว็บที่คุณพยายามจะเปิด&lt;/p&gt;</translation>
 <translation id="1507780850870535225">การออกแบบภูมิทัศน์</translation>
 <translation id="1513706915089223971">ลิสต์ประวัติรายการ</translation>
+<translation id="1516097932025103760">ระบบจะเข้ารหัส บันทึกไว้อย่างปลอดภัย และจะไม่จัดเก็บ CVC</translation>
 <translation id="1517433312004943670">ต้องระบุหมายเลขโทรศัพท์</translation>
 <translation id="1519264250979466059">วันที่สร้าง</translation>
 <translation id="1521159554480556801">ศิลปะเส้นใยและสิ่งทอ</translation>
@@ -1410,6 +1412,7 @@
 <translation id="483241715238664915">เปิดคำเตือน</translation>
 <translation id="4834250788637067901">วิธีการชำระเงิน ข้อเสนอ และที่อยู่จาก Google Pay</translation>
 <translation id="4838327282952368871">ชวนฝัน</translation>
+<translation id="4839087176073128681">ชำระเงินได้เร็วขึ้นในครั้งถัดไปและปกป้องบัตรของคุณด้วยการรักษาความปลอดภัยระดับแนวหน้าของอุตสาหกรรมจาก Google</translation>
 <translation id="4840250757394056958">ดูประวัติการเข้าชมใน Chrome</translation>
 <translation id="484462545196658690">อัตโนมัติ</translation>
 <translation id="484671803914931257">รับส่วนลดสำหรับ <ph name="MERCHANT_NAME" /> และอื่นๆ</translation>

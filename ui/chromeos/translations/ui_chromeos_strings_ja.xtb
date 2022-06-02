@@ -645,6 +645,7 @@
 <translation id="6423031066725912715">ベトナム語（TCVN）キーボード</translation>
 <translation id="6485131920355264772">空き容量情報を取得できませんでした</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、詳細</translation>
+<translation id="649877868557234318"><ph name="FILE_NAME" /> を <ph name="FOLDER_NAME" /> に展開しています</translation>
 <translation id="6499681088828539489">共有ネットワークのプロキシを許可しない</translation>
 <translation id="6509122719576673235">ノルウェー語</translation>
 <translation id="6528513914570774834">このデバイスの他のユーザーにこのネットワークの使用を許可する</translation>

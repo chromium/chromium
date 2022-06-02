@@ -645,6 +645,7 @@
 <translation id="6423031066725912715">ቪዬትናምኛ በTCVN ቁልፍ ሰሌዳ</translation>
 <translation id="6485131920355264772">የቦታ መረጃን ማምጣት አልተቻለም</translation>
 <translation id="6495925982925244349">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በእርስዎ አስተዳዳሪ የሚተዳደር፣ ዝርዝሮች</translation>
+<translation id="649877868557234318"><ph name="FILE_NAME" />ን ወደ <ph name="FOLDER_NAME" /> በማውጣት ላይ</translation>
 <translation id="6499681088828539489">ለተጋሩ አውታረ መረቦች ተኪዎችን አትፍቀድ</translation>
 <translation id="6509122719576673235">ኖርዌጂያን</translation>
 <translation id="6528513914570774834">ሌሎች የዚህ መሣሪያ ተጠቃሚዎች ይህን አውታረ መረብ እንዲጠቀሙ ይፍቀዱላቸው</translation>

@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Pokretač</translation>
 <translation id="1512982610995527443">Uređaj će se isključiti za 5 s</translation>
 <translation id="1522984060396982789">Popravak je bio uspješan. Možete isključiti uređaj ili izvršiti dodatne radnje.</translation>
+<translation id="1526389707933164996">Animacija čuvara ekrana</translation>
 <translation id="152892567002884378">Pojačavanje zvuka</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="155865706765934889">Dodirna podloga</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3865414814144988605">Rezolucija</translation>
 <translation id="387301095347517405">Broj koji označava koliko je puta baterija prošla kompletan ciklus punjenja</translation>
+<translation id="3885327323343477505">Promjena čuvara ekrana</translation>
 <translation id="3923184630988645767">Prijenos podataka</translation>
 <translation id="3924044641767672375">Povezivanje s WiFi mrežom se preporučuje radi lakšeg procesa popravke. Mreža će se sačuvati.</translation>
 <translation id="3932043219784172185">Nije povezan nijedan uređaj</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Odmah odaberite novu lozinku</translation>
 <translation id="4891842000192098784">Opterećenje</translation>
 <translation id="4897058166682006107">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije lijeve slušalice.</translation>
+<translation id="4905998861748258752">Uključite funkciju da odaberete opcije čuvara ekrana</translation>
 <translation id="4908030561598728899">Instaliranje firmvera...</translation>
 <translation id="4915052247106771211">Ovim će se uređaj vratiti na fabričke postavke (Powerwash).</translation>
 <translation id="4917385247580444890">Jako</translation>
@@ -862,6 +865,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8997710128084572139">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije.</translation>
 <translation id="9003704114456258138">Frekvencija</translation>
 <translation id="9025198690966128418">Koristi kao lični uređaj</translation>
+<translation id="9028832514430399253">Uključite prebacivač da odaberete opcije čuvara ekrana</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS rezolucija ima visoku latentnost</translation>
 <translation id="9063121522582193837">Kalibriranje određenih komponenti nije uspjelo</translation>

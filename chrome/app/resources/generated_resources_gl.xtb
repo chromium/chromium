@@ -2464,6 +2464,7 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3348038390189153836">Dispositivo extraíble detectado</translation>
 <translation id="3348131053948466246">Emojis suxeridos. Preme arriba e abaixo para desprazarte, e Intro para inserilo.</translation>
 <translation id="3349933790966648062">Uso de memoria</translation>
+<translation id="3353786022389205125">Activa Mostrar pantalla de bloqueo ao activarse despois da suspensión e, logo, volve tentalo</translation>
 <translation id="3354972872297836698">Non se puido levar a cabo a vinculación ao dispositivo <ph name="DEVICE_NAME" />; selecciónao para tentalo de novo</translation>
 <translation id="3355936511340229503">Erro de conexión</translation>
 <translation id="3356469410714175391">(tarxeta virtual activada)</translation>
@@ -4941,6 +4942,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5827733057563115968">Predición da seguinte palabra</translation>
 <translation id="5828545842856466741">Engadir perfil…</translation>
 <translation id="5828633471261496623">Imprimindo...</translation>
+<translation id="5830205393314753525">Non se puido abrir a aplicación <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Gardar páxina &amp;como...</translation>
 <translation id="5832813618714645810">Perfís</translation>
 <translation id="583281660410589416">Descoñecido</translation>

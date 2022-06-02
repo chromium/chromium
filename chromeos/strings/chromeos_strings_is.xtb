@@ -492,6 +492,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tilraun eftir}one{{0} tilraun eftir}other{{0} tilraunir eftir}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Gat ekki lokið við skönnun</translation>
+<translation id="5499762266711462226">Litur lyklaborðs er valinn út frá veggfóðri</translation>
 <translation id="5502931783115429516">Android er ekki í gangi</translation>
 <translation id="5507300744274596613">Gættu þess að Chrome OS sé uppfært</translation>
 <translation id="5519195206574732858">LTE</translation>

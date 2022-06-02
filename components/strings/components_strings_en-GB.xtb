@@ -119,6 +119,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1270502636509132238">Pickup Method</translation>
 <translation id="1281476433249504884">Stacker 1</translation>
 <translation id="1285320974508926690">Never translate this site</translation>
+<translation id="1288548991597756084">Save card securely</translation>
 <translation id="1292571435393770077">Tray 16</translation>
 <translation id="1292701964462482250">'Software on your computer is stopping Chrome from safely connecting to the web' (Windows computers only)</translation>
 <translation id="1294154142200295408">Command-line variations</translation>
@@ -223,6 +224,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     &lt;p&gt;To fix the error, click &lt;strong&gt;Connect&lt;/strong&gt; on the page that you're trying to open.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Landscape design</translation>
 <translation id="1513706915089223971">List of history entries</translation>
+<translation id="1516097932025103760">It’ll be encrypted, saved securely and the CVC is never stored.</translation>
 <translation id="1517433312004943670">Phone number required</translation>
 <translation id="1519264250979466059">Build Date</translation>
 <translation id="1521159554480556801">Fibre and textile arts</translation>
@@ -1419,6 +1421,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="483241715238664915">Turn on warnings</translation>
 <translation id="4834250788637067901">Payment methods, offers and addresses using Google Pay</translation>
 <translation id="4838327282952368871">Dreamy</translation>
+<translation id="4839087176073128681">Pay faster next time and protect your card with Google’s industry-leading security.</translation>
 <translation id="4840250757394056958">View your Chrome history</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="484671803914931257">Get discount on <ph name="MERCHANT_NAME" /> and more</translation>

@@ -491,6 +491,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} përpjekje e mbetur}other{{0} përpjekje të mbetura}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skanimi nuk mund të përfundohej</translation>
+<translation id="5499762266711462226">Ngjyra e tastierës bazohet tek imazhi i sfondit</translation>
 <translation id="5502931783115429516">Android nuk po punon</translation>
 <translation id="5507300744274596613">Sigurohu që Chrome OS është i përditësuar</translation>
 <translation id="5519195206574732858">LTE</translation>

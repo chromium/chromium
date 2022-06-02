@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1512982610995527443">Төхөөрөмж 5 секундийн дараа унтарна</translation>
 <translation id="1522984060396982789">Та амжилттай заслаа. Та төхөөрөмжийг унтраах эсвэл өөр нэмэлт үйлдэл хийх боломжтой.</translation>
+<translation id="1526389707933164996">Дэлгэц амраагчийн анимаци</translation>
 <translation id="152892567002884378">Дууны түвшинг нэмэх</translation>
 <translation id="1555130319947370107">Цэнхэр</translation>
 <translation id="155865706765934889">Мэдрэгч самбар</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Нэр</translation>
 <translation id="3865414814144988605">Нягтрал</translation>
 <translation id="387301095347517405">Таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо</translation>
+<translation id="3885327323343477505">Дэлгэц амраагчийг өөрчлөх</translation>
 <translation id="3923184630988645767">Дата ашиглалт</translation>
 <translation id="3924044641767672375">Засварын явцыг илүү хялбар болгохын тулд Wi-Fi-д холбогдохыг зөвлөж байна. Таны сүлжээг хадгална.</translation>
 <translation id="3932043219784172185">Холбогдсон төхөөрөмж алга</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Нэн даруй шинийг сонгоно уу</translation>
 <translation id="4891842000192098784">Стресс</translation>
 <translation id="4897058166682006107">Төхөөрөмжийн зүүн талын чихэвчийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
+<translation id="4905998861748258752">Дэлгэц амраагчийн сонголтыг сонгохын тулд онцлогийг асаана уу</translation>
 <translation id="4908030561598728899">Жижиг программыг суулгаж байна...</translation>
 <translation id="4915052247106771211">Энэ нь төхөөрөмжийг үйлдвэрийн тохиргоонд шинэчлэх болно (Powerwash).</translation>
 <translation id="4917385247580444890">Хүчтэй</translation>
@@ -862,6 +865,7 @@
 <translation id="8997710128084572139">Төхөөрөмжийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="9003704114456258138">Давтамж</translation>
 <translation id="9025198690966128418">Хувийн төхөөрөмжөөр ашиглах</translation>
+<translation id="9028832514430399253">Дэлгэц амраагчийн сонголтыг сонгохын тулд асаах/унтраахыг асаана уу</translation>
 <translation id="9039663905644212491">PEAP /Хамгаалагдсан өргөжих боломжтой таниулах протокол/</translation>
 <translation id="9062831201344759865">DNS-н нягтрал өндөр хоцролттой байна</translation>
 <translation id="9063121522582193837">Зарим бүрэлдэхүүн хэсгийг тохируулж чадсангүй</translation>

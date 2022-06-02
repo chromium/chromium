@@ -4212,6 +4212,13 @@
 
           這項政策的值只有在 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策啟用時才適用，在其他情況下一概不適用。</translation>
 <translation id="5697306356229823047">回報裝置使用者</translation>
+<translation id="5698923148503075597">如果將這項政策設為啟用，當雲端政策與平台政策發生衝突時，系統會優先採用雲端政策。
+
+      如果將這項政策設為停用或不設定，當平台政策與雲端政策發生衝突時，系統會優先採用平台政策。
+
+      這項強制政策會影響裝置範圍內的雲端政策。
+
+      這項政策僅適用於 <ph name="PRODUCT_NAME" />，對 <ph name="GOOGLE_UPDATE_NAME" /> 沒有任何影響。</translation>
 <translation id="5699770471852263667">如果將這項政策設為 Enabled，系統會停用 <ph name="PRODUCT_NAME" /> 中的內部 PDF 檢視器、將 PDF 檔案視為下載內容，並且讓使用者以預設的應用程式開啟 PDF。
 
       如果將這項政策設為 Disabled，則表示除非使用者停用 PDF 外掛程式，否則系統一律會使用 PDF 外掛程式開啟 PDF 檔案。

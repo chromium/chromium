@@ -748,6 +748,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%(오른쪽)</translation>
 <translation id="5352250171825660495">어두운 테마가 켜져 있습니다.</translation>
 <translation id="5356963482258194581">밝은 테마와 어두운 테마 간에 전환합니다. 바탕화면을 마우스 오른쪽 버튼으로 클릭하고 배경화면/스타일을 선택하세요.</translation>
+<translation id="5363163447017455357"><ph name="DELIMITER" /> 이 탭으로 이동</translation>
 <translation id="5379115545237091094">시도 횟수가 너무 많음</translation>
 <translation id="5391307769715781764">저장된 데스크를 대체하시겠습니까?</translation>
 <translation id="5393156353051693207">앱을 재정렬하려면 아무 곳이나 길게 터치합니다</translation>

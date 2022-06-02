@@ -491,6 +491,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Umebakisha mara {0} ya kujaribu}other{Umebakisha mara {0} za kujaribu}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Imeshindwa kukamilisha uchanganuzi</translation>
+<translation id="5499762266711462226">Rangi ya kibodi inatokana na mandhari</translation>
 <translation id="5502931783115429516">Android haifanyi kazi</translation>
 <translation id="5507300744274596613">Hakikisha mfumo wa uendeshaji wa Chrome umesasishwa</translation>
 <translation id="5519195206574732858">LTE</translation>

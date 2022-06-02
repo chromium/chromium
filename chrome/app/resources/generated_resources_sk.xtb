@@ -2468,6 +2468,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3348038390189153836">Bolo zistené odnímateľné zariadenie</translation>
 <translation id="3348131053948466246">Navrhované emodži. Pohybujte sa klávesami so šípkou nahor alebo nadol a stlačením klávesa Enter emodži vložte.</translation>
 <translation id="3349933790966648062">Množstvo využívanej pamäte</translation>
+<translation id="3353786022389205125">Zapnite možnosť „Pri prebúdzaní z režimu spánku spúšťať uzamknutú obrazovku“ a skúste to znova</translation>
 <translation id="3354972872297836698">Zariadenie <ph name="DEVICE_NAME" /> sa nepodarilo spárovať. Ak to chcete skúsiť znova, vyberte zariadenie.</translation>
 <translation id="3355936511340229503">Chyba pripojenia</translation>
 <translation id="3356469410714175391">(Virtuálna karta je povolená)</translation>
@@ -4947,6 +4948,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5827733057563115968">Predvídanie ďalšieho slova</translation>
 <translation id="5828545842856466741">Pridať profil…</translation>
 <translation id="5828633471261496623">Prebieha tlač...</translation>
+<translation id="5830205393314753525">Aplikáciu <ph name="APP_NAME" /> nie je možné otvoriť</translation>
 <translation id="5830720307094128296">Uložiť stránku &amp;ako...</translation>
 <translation id="5832813618714645810">Profily</translation>
 <translation id="583281660410589416">Neznáme</translation>
