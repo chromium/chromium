@@ -6,8 +6,10 @@
 
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "ios/chrome/browser/https_upgrades/https_only_mode_upgrade_tab_helper.h"
+#include "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/web_state.h"
@@ -18,22 +20,14 @@
 
 @implementation HttpsOnlyModeAppInterface
 
-+ (void)setHTTPSPortForTesting:(int)HTTPSPortForTesting {
-  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  HttpsOnlyModeUpgradeTabHelper::FromWebState(web_state)
-      ->SetHttpsPortForTesting(HTTPSPortForTesting);
-}
++ (void)setHTTPSPortForTesting:(int)HTTPSPort useFakeHTTPS:(bool)useFakeHTTPS {
+  HttpsUpgradeServiceFactory::GetForBrowserState(
+      chrome_test_util::GetOriginalBrowserState())
+      ->SetHttpsPortForTesting(HTTPSPort, useFakeHTTPS);
 
-+ (void)setHTTPPortForTesting:(int)HTTPPortForTesting {
-  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  HttpsOnlyModeUpgradeTabHelper::FromWebState(web_state)->SetHttpPortForTesting(
-      HTTPPortForTesting);
-}
-
-+ (void)useFakeHTTPSForTesting:(bool)useFakeHTTPS {
-  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  HttpsOnlyModeUpgradeTabHelper::FromWebState(web_state)
-      ->UseFakeHTTPSForTesting(useFakeHTTPS);
+  HttpsUpgradeServiceFactory::GetForBrowserState(
+      chrome_test_util::GetCurrentIncognitoBrowserState())
+      ->SetHttpsPortForTesting(HTTPSPort, useFakeHTTPS);
 }
 
 + (void)setFallbackDelayForTesting:(int)fallbackDelayInMilliseconds {

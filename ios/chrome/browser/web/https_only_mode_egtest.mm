@@ -196,10 +196,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Cannot setup histogram tester.");
 
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.goodHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
+                                       useFakeHTTPS:false];
   [HttpsOnlyModeAppInterface setFallbackDelayForTesting:kVeryLongTimeout];
 
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kHttpsOnlyModeEnabled];
@@ -321,10 +319,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 - (void)testUpgrade_FeatureDisabled_NoUpgrade {
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
 
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.goodHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
+                                       useFakeHTTPS:true];
 
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
@@ -334,10 +330,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 
 // Tests that navigations to localhost URLs aren't upgraded.
 - (void)testUpgrade_Localhost_NoUpgrade {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.goodHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
+                                       useFakeHTTPS:true];
 
   GURL testURL = self.testServer->GetURL("/");
   GURL::Replacements replacements;
@@ -352,10 +346,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves good SSL.
 // This should end up loading the HTTPS version of the URL.
 - (void)testUpgrade_GoodHTTPS {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.goodHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
+                                       useFakeHTTPS:true];
 
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
@@ -366,10 +358,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // Navigate to an HTTP URL by clicking a link. This should end up loading the
 // HTTPS version of the URL.
 - (void)testUpgrade_GoodHTTPS_LinkClick {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.goodHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
+                                       useFakeHTTPS:true];
   int HTTPPort = self.testServer->port();
 
   GURL testURL(base::StringPrintf(
@@ -388,10 +378,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves good SSL
 // which redirects to the original HTTP URL. This should show the interstitial.
 - (void)testUpgrade_HTTPSRedirectsToHTTP {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.goodHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
+                                       useFakeHTTPS:true];
 
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
   [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
@@ -436,10 +424,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
     EARL_GREY_TEST_DISABLED(@"Disabled for new popup");
   }
 
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.badHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
+                                       useFakeHTTPS:false];
 
   [ChromeEarlGrey clearBrowsingHistory];
 
@@ -501,10 +487,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // Navigate to an HTTP URL and allowlist the URL. Then clear browsing data.
 // This should clear the HTTP allowlist.
 - (void)testUpgrade_RemoveBrowsingData_ShouldClearAllowlist {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.badHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
+                                       useFakeHTTPS:false];
 
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
@@ -541,10 +525,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // Click on the "Learn more" link in the interstitial. This should open a
 // new tab.
 - (void)testUpgrade_LearnMore_ShouldOpenNewTab {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.badHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
+                                       useFakeHTTPS:false];
 
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
@@ -567,10 +549,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // The upgrade will fail and the HTTPS-Only mode interstitial will be shown.
 // Reloading the page should show the interstitial again.
 - (void)testUpgrade_BadHTTPS_ReloadInterstitial {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.badHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
+                                       useFakeHTTPS:false];
 
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
@@ -586,10 +566,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // The upgrade will fail and the HTTPS-Only mode interstitial will be shown.
 // Reloading the page should show the interstitial again.
 - (void)testUpgrade_SlowHTTPS_ReloadInterstitial {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.slowHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
+                                       useFakeHTTPS:true];
   // Set the fallback delay to zero. This will immediately stop the HTTPS
   // upgrade attempt.
   [HttpsOnlyModeAppInterface setFallbackDelayForTesting:0];
@@ -609,10 +587,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // Click through the interstitial, then reload the page. The HTTP page should
 // be shown.
 - (void)testUpgrade_BadHTTPS_ProceedInterstitial_Allowlisted {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.badHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
+                                       useFakeHTTPS:false];
 
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
@@ -650,12 +626,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // allowlist decisions don't carry over to incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   // Set the testing information for the incognito tab.
-  // TODO(crbug.com/1302509): Move these methods to HttpsUpgradeService so
-  // that all tabs can use this information without explicitly setting them.
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.badHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
+                                       useFakeHTTPS:false];
 
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
@@ -678,10 +650,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // interstitial will be shown. Click through the interstitial, then reload the
 // page. The HTTP page should be shown.
 - (void)testUpgrade_SlowHTTPS_ProceedInterstitial_Allowlisted {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.slowHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
+                                       useFakeHTTPS:true];
   // Set the fallback delay to zero. This will immediately stop the HTTPS
   // upgrade attempt.
   [HttpsOnlyModeAppInterface setFallbackDelayForTesting:0];
@@ -714,10 +684,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // The upgrade will fail and the HTTPS-Only mode interstitial will be shown.
 // Tap Go back on the interstitial.
 - (void)testUpgrade_BadHTTPS_GoBack {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.badHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
+                                       useFakeHTTPS:false];
 
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
   [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
@@ -743,10 +711,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // loading HTTPS page. The upgrade will be cancelled and the HTTPS-Only mode
 // interstitial will be shown. Tap Go back on the interstitial.
 - (void)testUpgrade_SlowHTTPS_GoBack {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.slowHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
+                                       useFakeHTTPS:true];
   // Set the fallback delay to zero. This will immediately stop the HTTPS
   // upgrade attempt.
   [HttpsOnlyModeAppInterface setFallbackDelayForTesting:0];
@@ -775,10 +741,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // navigate to a new page and go back. This should load the HTTP URL
 // without showing the interstitial again.
 - (void)testUpgrade_BadHTTPS_GoBackToAllowlistedSite {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.badHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
+                                       useFakeHTTPS:false];
 
   [ChromeEarlGrey loadURL:GURL("about:blank")];
 
@@ -810,10 +774,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 // interstitial. Then, navigate to a new page and go back. This should load the
 // HTTP URL without showing the interstitial again.
 - (void)testUpgrade_SlowHTTPS_GoBackToAllowlistedSite {
-  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
-  [HttpsOnlyModeAppInterface
-      setHTTPSPortForTesting:self.slowHTTPSServer->port()];
-  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+  [HttpsOnlyModeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
+                                       useFakeHTTPS:true];
   // Set the fallback delay to zero. This will immediately stop the HTTPS
   // upgrade attempt.
   [HttpsOnlyModeAppInterface setFallbackDelayForTesting:0];

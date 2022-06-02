@@ -10,9 +10,7 @@
 // The app interface for HTTPS-Only mode tests.
 @interface HttpsOnlyModeAppInterface : NSObject
 
-+ (void)setHTTPSPortForTesting:(int)HTTPSPortForTesting;
-+ (void)setHTTPPortForTesting:(int)HTTPPortForTesting;
-+ (void)useFakeHTTPSForTesting:(bool)useFakeHTTPSForTesting;
++ (void)setHTTPSPortForTesting:(int)HTTPSPort useFakeHTTPS:(bool)useFakeHTTPS;
 + (void)setFallbackDelayForTesting:(int)fallbackDelayInMilliseconds;
 + (BOOL)isTimerRunning;
 + (void)clearAllowlist;

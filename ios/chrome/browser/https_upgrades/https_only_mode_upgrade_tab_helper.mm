@@ -53,48 +53,6 @@ void HttpsOnlyModeUpgradeTabHelper::WebStateDestroyed(
 
 void HttpsOnlyModeUpgradeTabHelper::WebStateDestroyed() {}
 
-// static
-GURL HttpsOnlyModeUpgradeTabHelper::GetUpgradedHttpsUrl(
-    const GURL& http_url,
-    int https_port_for_testing,
-    bool use_fake_https_for_testing) {
-  DCHECK_EQ(url::kHttpScheme, http_url.scheme());
-  GURL::Replacements replacements;
-
-  // This needs to be in scope when ReplaceComponents() is called:
-  const std::string port_str = base::NumberToString(https_port_for_testing);
-  DCHECK(https_port_for_testing || !use_fake_https_for_testing);
-  if (https_port_for_testing) {
-    // We'll only get here in tests. Tests should always have a non-default
-    // port on the input text.
-    DCHECK(!http_url.port().empty());
-    replacements.SetPortStr(port_str);
-
-    // Change the URL to help with debugging.
-    if (use_fake_https_for_testing)
-      replacements.SetRefStr("fake-https");
-  }
-  if (!use_fake_https_for_testing) {
-    replacements.SetSchemeStr(url::kHttpsScheme);
-  }
-  return http_url.ReplaceComponents(replacements);
-}
-
-void HttpsOnlyModeUpgradeTabHelper::SetHttpsPortForTesting(
-    int https_port_for_testing) {
-  https_port_for_testing_ = https_port_for_testing;
-}
-
-void HttpsOnlyModeUpgradeTabHelper::SetHttpPortForTesting(
-    int http_port_for_testing) {
-  http_port_for_testing_ = http_port_for_testing;
-}
-
-void HttpsOnlyModeUpgradeTabHelper::UseFakeHTTPSForTesting(
-    bool use_fake_https_for_testing) {
-  use_fake_https_for_testing_ = use_fake_https_for_testing;
-}
-
 void HttpsOnlyModeUpgradeTabHelper::SetFallbackDelayForTesting(
     base::TimeDelta delay) {
   fallback_delay_ = delay;
@@ -108,20 +66,6 @@ void HttpsOnlyModeUpgradeTabHelper::ClearAllowlistForTesting() {
   HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
       web_state()->GetBrowserState());
   service->ClearAllowlist(base::Time(), base::Time::Max());
-}
-
-bool HttpsOnlyModeUpgradeTabHelper::IsFakeHTTPSForTesting(
-    const GURL& url) const {
-  return url.IntPort() == https_port_for_testing_;
-}
-
-bool HttpsOnlyModeUpgradeTabHelper::IsLocalhost(const GURL& url) const {
-  // Tests use 127.0.0.1 for embedded servers, which is a localhost URL.
-  // Only check for "localhost" in tests.
-  if (http_port_for_testing_) {
-    return url.host() == "localhost";
-  }
-  return net::IsLocalhost(url);
 }
 
 bool HttpsOnlyModeUpgradeTabHelper::IsHttpAllowedForUrl(const GURL& url) const {
@@ -139,19 +83,24 @@ void HttpsOnlyModeUpgradeTabHelper::CreateForWebState(web::WebState* web_state,
     PrerenderService* prerender_service =
         PrerenderServiceFactory::GetForBrowserState(
             ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+    HttpsUpgradeService* service =
+        HttpsUpgradeServiceFactory::GetForBrowserState(
+            web_state->GetBrowserState());
     web_state->SetUserData(UserDataKey(),
                            base::WrapUnique(new HttpsOnlyModeUpgradeTabHelper(
-                               web_state, prefs, prerender_service)));
+                               web_state, prefs, prerender_service, service)));
   }
 }
 
 HttpsOnlyModeUpgradeTabHelper::HttpsOnlyModeUpgradeTabHelper(
     web::WebState* web_state,
     PrefService* prefs,
-    PrerenderService* prerender_service)
+    PrerenderService* prerender_service,
+    HttpsUpgradeService* service)
     : web::WebStatePolicyDecider(web_state),
       prefs_(prefs),
-      prerender_service_(prerender_service) {
+      prerender_service_(prerender_service),
+      service_(service) {
   web_state->AddObserver(this);
 }
 
@@ -224,7 +173,7 @@ void HttpsOnlyModeUpgradeTabHelper::DidFinishNavigation(
 
   state_ = State::kNone;
   if (navigation_context->GetUrl().SchemeIs(url::kHttpsScheme) ||
-      IsFakeHTTPSForTesting(navigation_context->GetUrl())) {
+      service_->IsFakeHTTPSForTesting(navigation_context->GetUrl())) {
     RecordUMA(Event::kUpgradeSucceeded);
     return;
   }
@@ -239,8 +188,7 @@ void HttpsOnlyModeUpgradeTabHelper::StopToUpgrade(
   // Copy navigation parameters, then cancel the current navigation.
   http_url_ = url;
   referrer_ = referrer;
-  upgraded_https_url_ = GetUpgradedHttpsUrl(url, https_port_for_testing_,
-                                            use_fake_https_for_testing_);
+  upgraded_https_url_ = service_->GetUpgradedHttpsUrl(url);
   DCHECK(upgraded_https_url_.is_valid());
   std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
 }
@@ -308,7 +256,7 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
   }
 
   // If already HTTPS (real or faux), simply allow the response.
-  if (url.SchemeIs(url::kHttpsScheme) || IsFakeHTTPSForTesting(url)) {
+  if (url.SchemeIs(url::kHttpsScheme) || service_->IsFakeHTTPSForTesting(url)) {
     timer_.Stop();
     state_ = State::kDone;
     std::move(callback).Run(
@@ -338,7 +286,7 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
   // Upgrade to HTTPS if the navigation wasn't upgraded before.
   if (!item_pending->IsUpgradedToHttps()) {
     if (!prefs_ || !prefs_->GetBoolean(prefs::kHttpsOnlyModeEnabled) ||
-        IsLocalhost(url)) {
+        service_->IsLocalhost(url)) {
       // Don't upgrade if the feature is disabled or the URL is localhost.
       // See ShouldCreateLoader() function in
       // https_only_mode_upgrade_interceptor.cc for the desktop/Android

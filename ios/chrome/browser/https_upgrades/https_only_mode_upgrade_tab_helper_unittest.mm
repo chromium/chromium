@@ -136,29 +136,30 @@ TEST_F(HttpsOnlyModeUpgradeTabHelperTest, ShouldAllowResponse) {
 }
 
 TEST_F(HttpsOnlyModeUpgradeTabHelperTest, GetUpgradedHttpsUrl) {
+  HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
+      web_state_.GetBrowserState());
+
+  service->SetHttpsPortForTesting(/*https_port_for_testing=*/0,
+                                  /*use_fake_https_for_testing=*/false);
   EXPECT_EQ(GURL("https://example.com/test"),
-            HttpsOnlyModeUpgradeTabHelper::GetUpgradedHttpsUrl(
-                GURL("http://example.com/test"), /*https_port_for_testing=*/0,
-                /*use_fake_https_for_testing=*/false));
+            service->GetUpgradedHttpsUrl(GURL("http://example.com/test")));
   // use_fake_https_for_testing=true with https_port_for_testing=0 is not
   // supported.
 
-  EXPECT_EQ(
-      GURL("https://example.com:8000/test"),
-      HttpsOnlyModeUpgradeTabHelper::GetUpgradedHttpsUrl(
-          GURL("http://example.com:8000/test"), /*https_port_for_testing=*/0,
-          /*use_fake_https_for_testing=*/false));
+  service->SetHttpsPortForTesting(/*https_port_for_testing=*/0,
+                                  /*use_fake_https_for_testing=*/false);
+  EXPECT_EQ(GURL("https://example.com:8000/test"),
+            service->GetUpgradedHttpsUrl(GURL("http://example.com:8000/test")));
   // use_fake_https_for_testing=true with https_port_for_testing=0 is not
   // supported.
 
-  EXPECT_EQ(
-      GURL("https://example.com:8001/test"),
-      HttpsOnlyModeUpgradeTabHelper::GetUpgradedHttpsUrl(
-          GURL("http://example.com:8000/test"), /*https_port_for_testing=*/8001,
-          /*use_fake_https_for_testing=*/false));
-  EXPECT_EQ(
-      GURL("http://example.com:8001/test#fake-https"),
-      HttpsOnlyModeUpgradeTabHelper::GetUpgradedHttpsUrl(
-          GURL("http://example.com:8000/test"), /*https_port_for_testing=*/8001,
-          /*use_fake_https_for_testing=*/true));
+  service->SetHttpsPortForTesting(/*https_port_for_testing=*/8001,
+                                  /*use_fake_https_for_testing=*/false);
+  EXPECT_EQ(GURL("https://example.com:8001/test"),
+            service->GetUpgradedHttpsUrl(GURL("http://example.com:8000/test")));
+
+  service->SetHttpsPortForTesting(/*https_port_for_testing=*/8001,
+                                  /*use_fake_https_for_testing=*/true);
+  EXPECT_EQ(GURL("http://example.com:8001/test#fake-https"),
+            service->GetUpgradedHttpsUrl(GURL("http://example.com:8000/test")));
 }

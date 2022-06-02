@@ -13,6 +13,7 @@
 #import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
 
+class HttpsUpgradeService;
 class PrefService;
 class PrerenderService;
 
@@ -31,29 +32,11 @@ class HttpsOnlyModeUpgradeTabHelper
   // Creates TabHelper. |web_state| and |model| must not be null.
   static void CreateForWebState(web::WebState* web_state, PrefService* prefs);
 
-  // Returns the upgraded HTTPS URL for the give HTTP URL.
-  // In tests, we can't use a real HTTPS server to serve good HTTPS, so this
-  // returns an HTTP URL that uses the port of the fake HTTPS server.
-  // In production, it replaces the scheme with HTTPS.
-  static GURL GetUpgradedHttpsUrl(const GURL& http_url,
-                                  int https_port_for_testing,
-                                  bool use_fake_https_for_testing);
-
   ~HttpsOnlyModeUpgradeTabHelper() override;
   HttpsOnlyModeUpgradeTabHelper(const HttpsOnlyModeUpgradeTabHelper&) = delete;
   HttpsOnlyModeUpgradeTabHelper& operator=(
       const HttpsOnlyModeUpgradeTabHelper&) = delete;
 
-  // Sets the port used by the embedded https server. This is used to determine
-  // the correct port while upgrading URLs to https if the original URL has a
-  // non-default port.
-  void SetHttpsPortForTesting(int https_port_for_testing);
-  // Sets the port used by the embedded http server. This is used to determine
-  // the correct port while falling back to http if the upgraded https URL has a
-  // non-default port.
-  void SetHttpPortForTesting(int http_port_for_testing);
-  // Configures tests to use an HTTP server to simulate a good HTTPS response.
-  void UseFakeHTTPSForTesting(bool use_fake_https_for_testing);
   // Sets the fallback delay for tests.
   void SetFallbackDelayForTesting(base::TimeDelta delay);
   // Returns true if the upgrade timer is running.
@@ -83,17 +66,13 @@ class HttpsOnlyModeUpgradeTabHelper
 
   HttpsOnlyModeUpgradeTabHelper(web::WebState* web_state,
                                 PrefService* prefs,
-                                PrerenderService* prerender_service);
+                                PrerenderService* prerender_service,
+                                HttpsUpgradeService* service);
   friend class web::WebStateUserData<HttpsOnlyModeUpgradeTabHelper>;
 
-  // Returns true if url is a fake HTTPS URL used in tests. Tests use a fake
-  // HTTPS server that actually serves HTTP but on a different port from the
-  // test HTTP server. We shouldn't upgrade HTTP URLs from from the fake HTTPS
-  // server.
-  bool IsFakeHTTPSForTesting(const GURL& url) const;
-  bool IsLocalhost(const GURL& url) const;
+  // Returns true if url can be loaded over HTTP (e.g. it was previously
+  // allowlisted).
   bool IsHttpAllowedForUrl(const GURL& url) const;
-
   // Called when the upgrade timer times out.
   void OnHttpsLoadTimeout();
   // Stops the current navigation and sets the state so that an upgrade will be
@@ -136,15 +115,12 @@ class HttpsOnlyModeUpgradeTabHelper
   bool navigation_is_renderer_initiated_ = false;
   web::Referrer referrer_;
 
-  int https_port_for_testing_ = 0;
-  int http_port_for_testing_ = 0;
-  bool use_fake_https_for_testing_ = false;
-
   base::TimeDelta fallback_delay_ = base::Seconds(3);
   base::OneShotTimer timer_;
 
   PrefService* prefs_;
   PrerenderService* prerender_service_;
+  HttpsUpgradeService* service_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
