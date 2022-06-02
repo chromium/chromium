@@ -189,6 +189,7 @@ struct HasInvalidationFlags {
   unsigned ancestors_or_siblings_affected_by_active_in_has : 1;
   unsigned ancestors_or_siblings_affected_by_focus_in_has : 1;
   unsigned ancestors_or_siblings_affected_by_focus_visible_in_has : 1;
+  unsigned affected_by_logical_combinations_in_has : 1;
 
   HasInvalidationFlags()
       : affected_by_non_subject_has(false),

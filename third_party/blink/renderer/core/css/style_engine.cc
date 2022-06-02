@@ -984,7 +984,8 @@ namespace {
 
 bool PossiblyAffectingHasState(Element& element) {
   return element.AncestorsOrAncestorSiblingsAffectedByHas() ||
-         element.GetSiblingsAffectedByHasFlags();
+         element.GetSiblingsAffectedByHasFlags() ||
+         element.AffectedByLogicalCombinationsInHas();
 }
 
 bool InsertionOrRemovalPossiblyAffectHasStateOfAncestorsOrAncestorSiblings(
@@ -1018,12 +1019,37 @@ inline Element* SelfOrPreviousSibling(Node* node) {
 
 }  // namespace
 
-void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHasInternal(
+void StyleEngine::InvalidateElementAffectedByHas(Element& element,
+                                                 bool for_pseudo_change) {
+  if (for_pseudo_change && !element.AffectedByPseudoInHas())
+    return;
+
+  const ComputedStyle* style = element.GetComputedStyle();
+
+  if (style && style->AffectedBySubjectHas()) {
+    // TODO(blee@igalia.com) Need filtering for irrelevant elements.
+    // e.g. When we have '.a:has(.b) {}', '.c:has(.d) {}', mutation of class
+    // value 'd' can invalidate ancestor with class value 'a' because we
+    // don't have any filtering for this case.
+    element.SetNeedsStyleRecalc(
+        StyleChangeType::kLocalStyleChange,
+        StyleChangeReasonForTracing::Create(
+            blink::style_change_reason::kStyleInvalidator));
+  }
+
+  if (element.AffectedByNonSubjectHas()) {
+    InvalidationLists invalidation_lists;
+    GetRuleFeatureSet().CollectInvalidationSetsForPseudoClass(
+        invalidation_lists, element, CSSSelector::kPseudoHas);
+    pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
+                                                           element);
+  }
+}
+
+void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHas(
     Element* parent,
     Element* previous_sibling,
     bool for_pseudo_change) {
-  const RuleFeatureSet& features = GetRuleFeatureSet();
-
   bool traverse_ancestors = false;
   bool traverse_siblings = false;
   Element* element = previous_sibling ? previous_sibling : parent;
@@ -1034,28 +1060,7 @@ void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHasInternal(
     traverse_ancestors |= element->AncestorsOrAncestorSiblingsAffectedByHas();
     traverse_siblings = element->GetSiblingsAffectedByHasFlags();
 
-    const ComputedStyle* style = element->GetComputedStyle();
-
-    if (!for_pseudo_change || element->AffectedByPseudoInHas()) {
-      if (style && style->AffectedBySubjectHas()) {
-        // TODO(blee@igalia.com) Need filtering for irrelevant elements.
-        // e.g. When we have '.a:has(.b) {}', '.c:has(.d) {}', mutation of class
-        // value 'd' can invalidate ancestor with class value 'a' because we
-        // don't have any filtering for this case.
-        element->SetNeedsStyleRecalc(
-            StyleChangeType::kLocalStyleChange,
-            StyleChangeReasonForTracing::Create(
-                blink::style_change_reason::kStyleInvalidator));
-      }
-
-      if (element->AffectedByNonSubjectHas()) {
-        InvalidationLists invalidation_lists;
-        features.CollectInvalidationSetsForPseudoClass(
-            invalidation_lists, *element, CSSSelector::kPseudoHas);
-        pending_invalidations_.ScheduleInvalidationSetsForNode(
-            invalidation_lists, *element);
-      }
-    }
+    InvalidateElementAffectedByHas(*element, for_pseudo_change);
 
     if (traverse_siblings) {
       previous_sibling = ElementTraversal::PreviousSibling(*element);
@@ -1087,8 +1092,8 @@ void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
 void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
     Element* parent,
     Element* previous_sibling) {
-  InvalidateAncestorsOrSiblingsAffectedByHasInternal(
-      parent, previous_sibling, true /* for_pseudo_change */);
+  InvalidateAncestorsOrSiblingsAffectedByHas(parent, previous_sibling,
+                                             true /* for_pseudo_change */);
 }
 
 void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHas(
@@ -1105,8 +1110,16 @@ void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHas(
 void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHas(
     Element* parent,
     Element* previous_sibling) {
-  InvalidateAncestorsOrSiblingsAffectedByHasInternal(
-      parent, previous_sibling, false /* for_pseudo_change */);
+  InvalidateAncestorsOrSiblingsAffectedByHas(parent, previous_sibling,
+                                             false /* for_pseudo_change */);
+}
+
+void StyleEngine::InvalidateChangedElementAffectedByLogicalCombinationsInHas(
+    Element& changed_element,
+    bool for_pseudo_change) {
+  if (!changed_element.AffectedByLogicalCombinationsInHas())
+    return;
+  InvalidateElementAffectedByHas(changed_element, for_pseudo_change);
 }
 
 void StyleEngine::ClassChangedForElement(
@@ -1123,6 +1136,8 @@ void StyleEngine::ClassChangedForElement(
     unsigned changed_size = changed_classes.size();
     for (unsigned i = 0; i < changed_size; ++i) {
       if (features.NeedsHasInvalidationForClass(changed_classes[i])) {
+        InvalidateChangedElementAffectedByLogicalCombinationsInHas(
+            element, /* for_pseudo_change */ false);
         InvalidateAncestorsOrSiblingsAffectedByHas(element);
         break;
       }
@@ -1216,8 +1231,11 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
                                                            element);
   }
 
-  if (affecting_has_state)
+  if (affecting_has_state) {
+    InvalidateChangedElementAffectedByLogicalCombinationsInHas(
+        element, /* for_pseudo_change */ false);
     InvalidateAncestorsOrSiblingsAffectedByHas(element);
+  }
 }
 
 namespace {
@@ -1249,8 +1267,11 @@ void StyleEngine::AttributeChangedForElement(
   if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
       features.NeedsHasInvalidationForAttributeChange() &&
       PossiblyAffectingHasState(element)) {
-    if (features.NeedsHasInvalidationForAttribute(attribute_name))
+    if (features.NeedsHasInvalidationForAttribute(attribute_name)) {
+      InvalidateChangedElementAffectedByLogicalCombinationsInHas(
+          element, /* for_pseudo_change */ false);
       InvalidateAncestorsOrSiblingsAffectedByHas(element);
+    }
   }
 
   if (IsSubtreeAndSiblingsStyleDirty(element))
@@ -1283,6 +1304,8 @@ void StyleEngine::IdChangedForElement(const AtomicString& old_id,
       PossiblyAffectingHasState(element)) {
     if ((!old_id.IsEmpty() && features.NeedsHasInvalidationForId(old_id)) ||
         (!new_id.IsEmpty() && features.NeedsHasInvalidationForId(new_id))) {
+      InvalidateChangedElementAffectedByLogicalCombinationsInHas(
+          element, /* for_pseudo_change */ false);
       InvalidateAncestorsOrSiblingsAffectedByHas(element);
     }
   }
@@ -1316,8 +1339,11 @@ void StyleEngine::PseudoStateChangedForElement(
       RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
       features.NeedsHasInvalidationForPseudoStateChange() &&
       PossiblyAffectingHasState(element)) {
-    if (features.NeedsHasInvalidationForPseudoClass(pseudo_type))
+    if (features.NeedsHasInvalidationForPseudoClass(pseudo_type)) {
+      InvalidateChangedElementAffectedByLogicalCombinationsInHas(
+          element, /* for_pseudo_change */ true);
       InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(element);
+    }
   }
 
   if (!invalidate_descendants_or_siblings ||

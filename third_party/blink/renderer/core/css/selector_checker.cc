@@ -1521,6 +1521,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
 
         if (selector.ContainsPseudoInsideHasPseudoClass())
           element.SetAffectedByPseudoInHas();
+
+        if (selector.ContainsComplexLogicalCombinationsInsideHasPseudoClass())
+          element.SetAffectedByLogicalCombinationsInHas();
       }
       return CheckPseudoHas(context, result);
     case CSSSelector::kPseudoRelativeLeftmost:

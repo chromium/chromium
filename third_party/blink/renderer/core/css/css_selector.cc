@@ -1063,7 +1063,12 @@ void CSSSelector::SetSelectorList(
 
 void CSSSelector::SetContainsPseudoInsideHasPseudoClass() {
   CreateRareData();
-  data_.rare_data_->bits_.contains_pseudo_inside_has_pseudo_class_ = true;
+  data_.rare_data_->bits_.has_.contains_pseudo_ = true;
+}
+
+void CSSSelector::SetContainsComplexLogicalCombinationsInsideHasPseudoClass() {
+  CreateRareData();
+  data_.rare_data_->bits_.has_.contains_complex_logical_combinations_ = true;
 }
 
 static bool ValidateSubSelector(const CSSSelector* selector) {

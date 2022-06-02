@@ -36,7 +36,8 @@ class AffectedByPseudoTest : public PageTestBase {
     kSiblingsAffectedByHasForSiblingRelationship,
     kSiblingsAffectedByHasForSiblingDescendantRelationship,
     kAffectedByPseudoInHas,
-    kAncestorsOrSiblingsAffectedByHoverInHas
+    kAncestorsOrSiblingsAffectedByHoverInHas,
+    kAffectedByLogicalCombinationsInHas
   };
   void CheckAffectedByFlagsForHas(
       const char* element_id,
@@ -114,6 +115,11 @@ void AffectedByPseudoTest::CheckAffectedByFlagsForHas(
         actual = GetElementById(element_id)
                      ->AncestorsOrSiblingsAffectedByHoverInHas();
         flag_name = "AncestorsOrSiblingsAffectedByHoverInHas";
+        break;
+      case kAffectedByLogicalCombinationsInHas:
+        actual =
+            GetElementById(element_id)->AffectedByLogicalCombinationsInHas();
+        flag_name = "AffectedByLogicalCombinationsInHas";
         break;
     }
     DCHECK(flag_name);
@@ -4231,6 +4237,84 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion6) {
   EXPECT_EQ(MakeRGB(0, 128, 0),
             GetElementById("div22")->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
+}
+
+TEST_F(AffectedByPseudoTest, AffectedByLogicalCombinationsInHas) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .a:has(:is(.b .c)) { color: green; }
+      .d:has(:is(.e)) { color: green; }
+    </style>
+    <div id=div1>
+      <div id=div11 class='a'>
+        <div id=div111>
+          <div id=div1111 class='c'></div>
+        </div>
+      </div>
+      <div id=div12 class='d'>
+        <div id=div121>
+          <div id=div1211></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  CheckAffectedByFlagsForHas(
+      "div1", {{kAffectedBySubjectHas, false},
+               {kAffectedByLogicalCombinationsInHas, false},
+               {kAncestorsOrAncestorSiblingsAffectedByHas, false},
+               {kSiblingsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div11",
+                             {{kAffectedBySubjectHas, true},
+                              {kAffectedByLogicalCombinationsInHas, true},
+                              {kAncestorsOrAncestorSiblingsAffectedByHas, true},
+                              {kSiblingsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div111",
+                             {{kAffectedBySubjectHas, false},
+                              {kAffectedByNonSubjectHas, false},
+                              {kAncestorsOrAncestorSiblingsAffectedByHas, true},
+                              {kSiblingsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div1111",
+                             {{kAffectedBySubjectHas, false},
+                              {kAffectedByNonSubjectHas, false},
+                              {kAncestorsOrAncestorSiblingsAffectedByHas, true},
+                              {kSiblingsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div12",
+                             {{kAffectedBySubjectHas, true},
+                              {kAffectedByLogicalCombinationsInHas, false},
+                              {kAncestorsOrAncestorSiblingsAffectedByHas, true},
+                              {kSiblingsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div121",
+                             {{kAffectedBySubjectHas, false},
+                              {kAffectedByNonSubjectHas, false},
+                              {kAncestorsOrAncestorSiblingsAffectedByHas, true},
+                              {kSiblingsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div1211",
+                             {{kAffectedBySubjectHas, false},
+                              {kAffectedByNonSubjectHas, false},
+                              {kAncestorsOrAncestorSiblingsAffectedByHas, true},
+                              {kSiblingsAffectedByHas, false}});
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div11")->setAttribute(html_names::kClassAttr, "a b");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1U, GetStyleEngine().StyleForElementCount() - start_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div11")->setAttribute(html_names::kClassAttr, "a");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1U, GetStyleEngine().StyleForElementCount() - start_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div11")->setAttribute(html_names::kClassAttr, "a invalid");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(0U, GetStyleEngine().StyleForElementCount() - start_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div12")->setAttribute(html_names::kClassAttr, "d e");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(0U, GetStyleEngine().StyleForElementCount() - start_count);
 }
 
 }  // namespace blink

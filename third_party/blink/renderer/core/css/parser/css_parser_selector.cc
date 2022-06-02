@@ -62,6 +62,11 @@ void CSSParserSelector::SetContainsPseudoInsideHasPseudoClass() {
   selector_->SetContainsPseudoInsideHasPseudoClass();
 }
 
+void CSSParserSelector::
+    SetContainsComplexLogicalCombinationsInsideHasPseudoClass() {
+  selector_->SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
+}
+
 void CSSParserSelector::AppendTagHistory(
     CSSSelector::RelationType relation,
     std::unique_ptr<CSSParserSelector> selector) {

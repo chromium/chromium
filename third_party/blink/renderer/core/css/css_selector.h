@@ -359,8 +359,12 @@ class CORE_EXPORT CSSSelector {
     return has_rare_data_ ? data_.rare_data_->part_names_.get() : nullptr;
   }
   bool ContainsPseudoInsideHasPseudoClass() const {
-    return has_rare_data_ ? data_.rare_data_->bits_
-                                .contains_pseudo_inside_has_pseudo_class_
+    return has_rare_data_ ? data_.rare_data_->bits_.has_.contains_pseudo_
+                          : false;
+  }
+  bool ContainsComplexLogicalCombinationsInsideHasPseudoClass() const {
+    return has_rare_data_ ? data_.rare_data_->bits_.has_
+                                .contains_complex_logical_combinations_
                           : false;
   }
 
@@ -376,6 +380,7 @@ class CORE_EXPORT CSSSelector {
   void SetSelectorList(std::unique_ptr<CSSSelectorList>);
   void SetPartNames(std::unique_ptr<Vector<AtomicString>>);
   void SetContainsPseudoInsideHasPseudoClass();
+  void SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
 
   void SetNth(int a, int b);
   bool MatchNth(unsigned count) const;
@@ -490,8 +495,14 @@ class CORE_EXPORT CSSSelector {
       AttributeMatchType
           attribute_match_;  // used for attribute selector (with value)
 
-      // Used for :has() with pseudos in its argument. e.g. :has(:hover)
-      bool contains_pseudo_inside_has_pseudo_class_;
+      struct {
+        // Used for :has() with pseudos in its argument. e.g. :has(:hover)
+        bool contains_pseudo_;
+
+        // Used for :has() with logical combinations (:is(), :where(), :not())
+        // containing complex selector in its argument. e.g. :has(:is(.a .b))
+        bool contains_complex_logical_combinations_;
+      } has_;
     } bits_;
     QualifiedName attribute_;  // used for attribute selector
     AtomicString argument_;    // Used for :contains, :lang, :nth-*

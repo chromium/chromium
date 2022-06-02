@@ -164,10 +164,16 @@ class CORE_EXPORT CSSSelectorParser {
   // the default namespace is '*' while this flag is true.
   bool ignore_default_namespace_ = false;
 
-  // The 'found_pseudo_in_has_argument flag is true when we found any pseudo in
-  // ':has()' argument while parsing.
+  // The 'found_pseudo_in_has_argument_' flag is true when we found any pseudo
+  // in ':has()' argument while parsing.
   bool found_pseudo_in_has_argument_ = false;
   bool is_inside_has_argument_ = false;
+
+  // The 'found_complex_logical_combinations_in_has_argument_' flag is true when
+  // we found any logical combinations (:is(), :where(), :not()) containing
+  // complex selector in ':has()' argument while parsing.
+  bool found_complex_logical_combinations_in_has_argument_ = false;
+  bool is_inside_logical_combination_in_has_argument_ = false;
 
   class DisallowPseudoElementsScope {
     STACK_ALLOCATED();

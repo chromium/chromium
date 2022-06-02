@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 476 tests; 408 PASS, 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 476 tests; 418 PASS, 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [ .red:has(#descendant:is(.a_has_scope .b)) ] #has_scope.classList.add('red') : check matches (false)
 PASS [ .red:has(#descendant:is(.a_has_scope .b)) ] #has_scope.classList.add('red') : check #has_scope color
 PASS [ .red:has(#descendant:is(.a_has_scope .b)) ] #parent.classList.add('a_has_scope') : check matches (true)
@@ -7,7 +7,7 @@ FAIL [ .red:has(#descendant:is(.a_has_scope .b)) ] #parent.classList.add('a_has_
 PASS [ .red:has(#descendant:is(.a_has_scope .b)) ] #parent.classList.remove('a_has_scope') : check matches (false)
 PASS [ .red:has(#descendant:is(.a_has_scope .b)) ] #parent.classList.remove('a_has_scope') : check #has_scope color
 PASS [ .red:has(#descendant:is(.a_has_scope .b)) ] #has_scope.classList.add('a_has_scope') : check matches (true)
-FAIL [ .red:has(#descendant:is(.a_has_scope .b)) ] #has_scope.classList.add('a_has_scope') : check #has_scope color assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS [ .red:has(#descendant:is(.a_has_scope .b)) ] #has_scope.classList.add('a_has_scope') : check #has_scope color
 PASS [ .red:has(#descendant:is(.a_has_scope .b)) ] #has_scope.classList.remove('a_has_scope') : check matches (false)
 PASS [ .red:has(#descendant:is(.a_has_scope .b)) ] #has_scope.classList.remove('a_has_scope') : check #has_scope color
 PASS [ .red:has(#descendant:is(.a_has_scope .b)) ] #child.classList.add('a_has_scope') : check matches (true)
@@ -23,7 +23,7 @@ FAIL [ .orangered:has(#descendant:is(.a_descendant .b)) #descendant ] #parent.cl
 PASS [ .orangered:has(#descendant:is(.a_descendant .b)) #descendant ] #parent.classList.remove('a_descendant') : check matches (false)
 PASS [ .orangered:has(#descendant:is(.a_descendant .b)) #descendant ] #parent.classList.remove('a_descendant') : check #descendant color
 PASS [ .orangered:has(#descendant:is(.a_descendant .b)) #descendant ] #has_scope.classList.add('a_descendant') : check matches (true)
-FAIL [ .orangered:has(#descendant:is(.a_descendant .b)) #descendant ] #has_scope.classList.add('a_descendant') : check #descendant color assert_equals: expected "rgb(255, 69, 0)" but got "rgb(128, 128, 128)"
+PASS [ .orangered:has(#descendant:is(.a_descendant .b)) #descendant ] #has_scope.classList.add('a_descendant') : check #descendant color
 PASS [ .orangered:has(#descendant:is(.a_descendant .b)) #descendant ] #has_scope.classList.remove('a_descendant') : check matches (false)
 PASS [ .orangered:has(#descendant:is(.a_descendant .b)) #descendant ] #has_scope.classList.remove('a_descendant') : check #descendant color
 PASS [ .orangered:has(#descendant:is(.a_descendant .b)) #descendant ] #child.classList.add('a_descendant') : check matches (true)
@@ -39,7 +39,7 @@ FAIL [ .darkred:has(#descendant:is(.a_indirect_next .b)) ~ #indirect_next ] #par
 PASS [ .darkred:has(#descendant:is(.a_indirect_next .b)) ~ #indirect_next ] #parent.classList.remove('a_indirect_next') : check matches (false)
 PASS [ .darkred:has(#descendant:is(.a_indirect_next .b)) ~ #indirect_next ] #parent.classList.remove('a_indirect_next') : check #indirect_next color
 PASS [ .darkred:has(#descendant:is(.a_indirect_next .b)) ~ #indirect_next ] #has_scope.classList.add('a_indirect_next') : check matches (true)
-FAIL [ .darkred:has(#descendant:is(.a_indirect_next .b)) ~ #indirect_next ] #has_scope.classList.add('a_indirect_next') : check #indirect_next color assert_equals: expected "rgb(139, 0, 0)" but got "rgb(128, 128, 128)"
+PASS [ .darkred:has(#descendant:is(.a_indirect_next .b)) ~ #indirect_next ] #has_scope.classList.add('a_indirect_next') : check #indirect_next color
 PASS [ .darkred:has(#descendant:is(.a_indirect_next .b)) ~ #indirect_next ] #has_scope.classList.remove('a_indirect_next') : check matches (false)
 PASS [ .darkred:has(#descendant:is(.a_indirect_next .b)) ~ #indirect_next ] #has_scope.classList.remove('a_indirect_next') : check #indirect_next color
 PASS [ .darkred:has(#descendant:is(.a_indirect_next .b)) ~ #indirect_next ] #child.classList.add('a_indirect_next') : check matches (true)
@@ -55,7 +55,7 @@ FAIL [ .pink:has(#descendant:is(.a_indirect_next_child .b)) ~ #indirect_next #in
 PASS [ .pink:has(#descendant:is(.a_indirect_next_child .b)) ~ #indirect_next #indirect_next_child ] #parent.classList.remove('a_indirect_next_child') : check matches (false)
 PASS [ .pink:has(#descendant:is(.a_indirect_next_child .b)) ~ #indirect_next #indirect_next_child ] #parent.classList.remove('a_indirect_next_child') : check #indirect_next_child color
 PASS [ .pink:has(#descendant:is(.a_indirect_next_child .b)) ~ #indirect_next #indirect_next_child ] #has_scope.classList.add('a_indirect_next_child') : check matches (true)
-FAIL [ .pink:has(#descendant:is(.a_indirect_next_child .b)) ~ #indirect_next #indirect_next_child ] #has_scope.classList.add('a_indirect_next_child') : check #indirect_next_child color assert_equals: expected "rgb(255, 192, 203)" but got "rgb(128, 128, 128)"
+PASS [ .pink:has(#descendant:is(.a_indirect_next_child .b)) ~ #indirect_next #indirect_next_child ] #has_scope.classList.add('a_indirect_next_child') : check #indirect_next_child color
 PASS [ .pink:has(#descendant:is(.a_indirect_next_child .b)) ~ #indirect_next #indirect_next_child ] #has_scope.classList.remove('a_indirect_next_child') : check matches (false)
 PASS [ .pink:has(#descendant:is(.a_indirect_next_child .b)) ~ #indirect_next #indirect_next_child ] #has_scope.classList.remove('a_indirect_next_child') : check #indirect_next_child color
 PASS [ .pink:has(#descendant:is(.a_indirect_next_child .b)) ~ #indirect_next #indirect_next_child ] #child.classList.add('a_indirect_next_child') : check matches (true)
@@ -239,7 +239,7 @@ FAIL [ .blue:has(~ #indirect_next:is(.p + .f_has_scope ~ .g)) ] insert/remove .f
 PASS [ .blue:has(~ #indirect_next:is(.p + .f_has_scope ~ .g)) ] insert/remove .f_has_scope before #previous) : (removal) check matches (false)
 PASS [ .blue:has(~ #indirect_next:is(.p + .f_has_scope ~ .g)) ] insert/remove .f_has_scope before #previous) : (removal) check #has_scope color
 PASS [ .blue:has(~ #indirect_next:is(.p + .f_has_scope ~ .g)) ] #has_scope.classList.add('f_has_scope') : check matches (true)
-FAIL [ .blue:has(~ #indirect_next:is(.p + .f_has_scope ~ .g)) ] #has_scope.classList.add('f_has_scope') : check #has_scope color assert_equals: expected "rgb(0, 0, 255)" but got "rgb(128, 128, 128)"
+PASS [ .blue:has(~ #indirect_next:is(.p + .f_has_scope ~ .g)) ] #has_scope.classList.add('f_has_scope') : check #has_scope color
 PASS [ .blue:has(~ #indirect_next:is(.p + .f_has_scope ~ .g)) ] #has_scope.classList.remove('f_has_scope') : check matches (false)
 PASS [ .blue:has(~ #indirect_next:is(.p + .f_has_scope ~ .g)) ] #has_scope.classList.remove('f_has_scope') : check #has_scope color
 PASS [ .blue:has(~ #indirect_next:is(.p + .f_has_scope ~ .g)) ] #direct_next.classList.add('f_has_scope') : check matches (true)
@@ -271,7 +271,7 @@ FAIL [ .skyblue:has(~ #indirect_next:is(.p + .f_descendant ~ .g)) #descendant ] 
 PASS [ .skyblue:has(~ #indirect_next:is(.p + .f_descendant ~ .g)) #descendant ] insert/remove .f_descendant before #previous) : (removal) check matches (false)
 PASS [ .skyblue:has(~ #indirect_next:is(.p + .f_descendant ~ .g)) #descendant ] insert/remove .f_descendant before #previous) : (removal) check #descendant color
 PASS [ .skyblue:has(~ #indirect_next:is(.p + .f_descendant ~ .g)) #descendant ] #has_scope.classList.add('f_descendant') : check matches (true)
-FAIL [ .skyblue:has(~ #indirect_next:is(.p + .f_descendant ~ .g)) #descendant ] #has_scope.classList.add('f_descendant') : check #descendant color assert_equals: expected "rgb(135, 206, 235)" but got "rgb(128, 128, 128)"
+PASS [ .skyblue:has(~ #indirect_next:is(.p + .f_descendant ~ .g)) #descendant ] #has_scope.classList.add('f_descendant') : check #descendant color
 PASS [ .skyblue:has(~ #indirect_next:is(.p + .f_descendant ~ .g)) #descendant ] #has_scope.classList.remove('f_descendant') : check matches (false)
 PASS [ .skyblue:has(~ #indirect_next:is(.p + .f_descendant ~ .g)) #descendant ] #has_scope.classList.remove('f_descendant') : check #descendant color
 PASS [ .skyblue:has(~ #indirect_next:is(.p + .f_descendant ~ .g)) #descendant ] #direct_next.classList.add('f_descendant') : check matches (true)
@@ -303,7 +303,7 @@ FAIL [ .lightblue:has(~ #indirect_next:is(.p + .f_indirect_next ~ .g)) ~ #indire
 PASS [ .lightblue:has(~ #indirect_next:is(.p + .f_indirect_next ~ .g)) ~ #indirect_next ] insert/remove .f_indirect_next before #previous) : (removal) check matches (false)
 PASS [ .lightblue:has(~ #indirect_next:is(.p + .f_indirect_next ~ .g)) ~ #indirect_next ] insert/remove .f_indirect_next before #previous) : (removal) check #indirect_next color
 PASS [ .lightblue:has(~ #indirect_next:is(.p + .f_indirect_next ~ .g)) ~ #indirect_next ] #has_scope.classList.add('f_indirect_next') : check matches (true)
-FAIL [ .lightblue:has(~ #indirect_next:is(.p + .f_indirect_next ~ .g)) ~ #indirect_next ] #has_scope.classList.add('f_indirect_next') : check #indirect_next color assert_equals: expected "rgb(173, 216, 230)" but got "rgb(128, 128, 128)"
+PASS [ .lightblue:has(~ #indirect_next:is(.p + .f_indirect_next ~ .g)) ~ #indirect_next ] #has_scope.classList.add('f_indirect_next') : check #indirect_next color
 PASS [ .lightblue:has(~ #indirect_next:is(.p + .f_indirect_next ~ .g)) ~ #indirect_next ] #has_scope.classList.remove('f_indirect_next') : check matches (false)
 PASS [ .lightblue:has(~ #indirect_next:is(.p + .f_indirect_next ~ .g)) ~ #indirect_next ] #has_scope.classList.remove('f_indirect_next') : check #indirect_next color
 PASS [ .lightblue:has(~ #indirect_next:is(.p + .f_indirect_next ~ .g)) ~ #indirect_next ] #direct_next.classList.add('f_indirect_next') : check matches (true)
@@ -335,7 +335,7 @@ FAIL [ .darkblue:has(~ #indirect_next:is(.p + .f_indirect_next_child ~ .g)) ~ #i
 PASS [ .darkblue:has(~ #indirect_next:is(.p + .f_indirect_next_child ~ .g)) ~ #indirect_next #indirect_next_child ] insert/remove .f_indirect_next_child before #previous) : (removal) check matches (false)
 PASS [ .darkblue:has(~ #indirect_next:is(.p + .f_indirect_next_child ~ .g)) ~ #indirect_next #indirect_next_child ] insert/remove .f_indirect_next_child before #previous) : (removal) check #indirect_next_child color
 PASS [ .darkblue:has(~ #indirect_next:is(.p + .f_indirect_next_child ~ .g)) ~ #indirect_next #indirect_next_child ] #has_scope.classList.add('f_indirect_next_child') : check matches (true)
-FAIL [ .darkblue:has(~ #indirect_next:is(.p + .f_indirect_next_child ~ .g)) ~ #indirect_next #indirect_next_child ] #has_scope.classList.add('f_indirect_next_child') : check #indirect_next_child color assert_equals: expected "rgb(0, 0, 139)" but got "rgb(128, 128, 128)"
+PASS [ .darkblue:has(~ #indirect_next:is(.p + .f_indirect_next_child ~ .g)) ~ #indirect_next #indirect_next_child ] #has_scope.classList.add('f_indirect_next_child') : check #indirect_next_child color
 PASS [ .darkblue:has(~ #indirect_next:is(.p + .f_indirect_next_child ~ .g)) ~ #indirect_next #indirect_next_child ] #has_scope.classList.remove('f_indirect_next_child') : check matches (false)
 PASS [ .darkblue:has(~ #indirect_next:is(.p + .f_indirect_next_child ~ .g)) ~ #indirect_next #indirect_next_child ] #has_scope.classList.remove('f_indirect_next_child') : check #indirect_next_child color
 PASS [ .darkblue:has(~ #indirect_next:is(.p + .f_indirect_next_child ~ .g)) ~ #indirect_next #indirect_next_child ] #direct_next.classList.add('f_indirect_next_child') : check matches (true)
@@ -459,11 +459,11 @@ FAIL [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #parent.classList.add('n') 
 PASS [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #parent.classList.remove('n') : check matches (false)
 PASS [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #parent.classList.remove('n') : check #has_scope color
 PASS [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #has_scope.classList.add('m') : check matches (true)
-FAIL [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #has_scope.classList.add('m') : check #has_scope color assert_equals: expected "rgb(255, 165, 0)" but got "rgb(128, 128, 128)"
+PASS [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #has_scope.classList.add('m') : check #has_scope color
 PASS [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #has_scope.classList.remove('m') : check matches (false)
 PASS [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #has_scope.classList.remove('m') : check #has_scope color
 PASS [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #has_scope.classList.add('n') : check matches (true)
-FAIL [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #has_scope.classList.add('n') : check #has_scope color assert_equals: expected "rgb(255, 165, 0)" but got "rgb(128, 128, 128)"
+PASS [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #has_scope.classList.add('n') : check #has_scope color
 PASS [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #has_scope.classList.remove('n') : check matches (false)
 PASS [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #has_scope.classList.remove('n') : check #has_scope color
 PASS [ .orange:has(#descendant:is(:is(.m, .n) .o)) ] #child.classList.add('m') : check matches (true)

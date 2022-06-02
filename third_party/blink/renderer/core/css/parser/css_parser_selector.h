@@ -80,6 +80,7 @@ class CORE_EXPORT CSSParserSelector {
   void SetSelectorList(std::unique_ptr<CSSSelectorList>);
   void SetAtomics(std::unique_ptr<CSSSelectorList>);
   void SetContainsPseudoInsideHasPseudoClass();
+  void SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
 
   bool IsHostPseudoSelector() const;
 
