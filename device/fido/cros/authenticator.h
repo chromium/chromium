@@ -91,16 +91,20 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   bool IsInPairingMode() const override;
   bool IsPaired() const override;
   bool RequiresBlePairingPin() const override;
+  bool SupportsEnterpriseAttestation() const override;
 
   void GetTouch(base::OnceClosure callback) override {}
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
 
  private:
-  // Cache the supported algorithms in response, and run the completion callback
+  // Cache the supported algorithms in response, and run the barrier callback
   // of `InitializeAuthenticator`.
   void OnGetAlgorithmsResponse(
       base::OnceClosure callback,
       absl::optional<u2f::GetAlgorithmsResponse> response);
+  // Cache whether power button is enabled, and run the barrier callback
+  // of `InitializeAuthenticator`.
+  void OnIsPowerButtonModeEnabled(base::OnceClosure callback, bool enabled);
   void OnMakeCredentialResponse(
       CtapMakeCredentialRequest request,
       MakeCredentialCallback callback,
@@ -122,6 +126,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   base::RepeatingCallback<std::string()> generate_request_id_callback_;
   const Config config_;
   absl::optional<std::vector<int32_t>> supported_algorithms_;
+  bool u2f_enabled_ = false;
   base::WeakPtrFactory<ChromeOSAuthenticator> weak_factory_;
 };
 

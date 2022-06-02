@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
@@ -74,10 +75,16 @@ ChromeOSAuthenticator::AuthenticatorTransport() const {
 
 void ChromeOSAuthenticator::InitializeAuthenticator(
     base::OnceClosure callback) {
+  auto barrier = base::BarrierClosure(2, std::move(callback));
+
   u2f::GetAlgorithmsRequest request;
   chromeos::U2FClient::Get()->GetAlgorithms(
       request, base::BindOnce(&ChromeOSAuthenticator::OnGetAlgorithmsResponse,
-                              weak_factory_.GetWeakPtr(), std::move(callback)));
+                              weak_factory_.GetWeakPtr(), barrier));
+
+  IsPowerButtonModeEnabled(
+      base::BindOnce(&ChromeOSAuthenticator::OnIsPowerButtonModeEnabled,
+                     weak_factory_.GetWeakPtr(), barrier));
 }
 
 void ChromeOSAuthenticator::OnGetAlgorithmsResponse(
@@ -96,6 +103,13 @@ void ChromeOSAuthenticator::OnGetAlgorithmsResponse(
     supported_algorithms_ = absl::nullopt;
   }
 
+  std::move(callback).Run();
+}
+
+void ChromeOSAuthenticator::OnIsPowerButtonModeEnabled(
+    base::OnceClosure callback,
+    bool enabled) {
+  u2f_enabled_ = enabled;
   std::move(callback).Run();
 }
 
@@ -436,6 +450,12 @@ bool ChromeOSAuthenticator::IsPaired() const {
 
 bool ChromeOSAuthenticator::RequiresBlePairingPin() const {
   return false;
+}
+
+bool ChromeOSAuthenticator::SupportsEnterpriseAttestation() const {
+  // Enterprise attestation is enabled in the authenticator if its U2F/G2F mode
+  // is enabled.
+  return u2f_enabled_;
 }
 
 base::WeakPtr<FidoAuthenticator> ChromeOSAuthenticator::GetWeakPtr() {
