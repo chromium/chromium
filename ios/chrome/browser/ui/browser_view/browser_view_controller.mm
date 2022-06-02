@@ -97,7 +97,6 @@
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
-#import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
@@ -348,9 +347,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // The updater that adjusts the toolbar's layout for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
 
-  // Coordinator for the Download Manager UI.
-  // TODO(crbug.com/1272495): Move DownloadManagerCoordinator to
-  // BrowserCoordinator.
+  // TODO(crbug.com/1331229): Remove all use of the download manager coordinator
+  // from BVC Coordinator for the Download Manager UI.
   DownloadManagerCoordinator* _downloadManagerCoordinator;
 
   // A map associating webStates with their NTP coordinators.
@@ -539,7 +537,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         (BrowserContainerViewController*)browserContainerViewController
                         dispatcher:(CommandDispatcher*)dispatcher
                   prerenderService:(PrerenderService*)prerenderService
-                   bubblePresenter:(BubblePresenter*)bubblePresenter {
+                   bubblePresenter:(BubblePresenter*)bubblePresenter
+        downloadManagerCoordinator:
+            (DownloadManagerCoordinator*)downloadManagerCoordinator {
   self = [super initWithNibName:nil bundle:base::mac::FrameworkBundle()];
   if (self) {
     DCHECK(factory);
@@ -551,6 +551,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
     _prerenderService = prerenderService;
     _bubblePresenter = bubblePresenter;
+    // TODO(crbug.com/1331229): Remove all use of the download manager
+    // coordinator from BVC
+    _downloadManagerCoordinator = downloadManagerCoordinator;
     // TODO(crbug.com/1329089): Inject this handler.
     self.textZoomHandler =
         HandlerForProtocol(self.commandDispatcher, TextZoomCommands);
@@ -566,14 +569,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _toolbarCoordinatorAdaptor =
         [[ToolbarCoordinatorAdaptor alloc] initWithDispatcher:self.dispatcher];
     self.toolbarInterface = _toolbarCoordinatorAdaptor;
-
-    // TODO(crbug.com/1272495): Move DownloadManagerCoordinator to
-    // BrowserCoordinator.
-    _downloadManagerCoordinator = [[DownloadManagerCoordinator alloc]
-        initWithBaseViewController:_browserContainerViewController
-                           browser:browser];
-    _downloadManagerCoordinator.presenter =
-        [[VerticalAnimationContainer alloc] init];
 
     _inNewTabAnimation = NO;
 
@@ -683,12 +678,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     }
   }
   return _sideSwipeController;
-}
-
-// TODO(crbug.com/1272495): Move DownloadManagerCoordinator to
-// BrowserCoordinator.
-- (DownloadManagerCoordinator*)downloadManagerCoordinator {
-  return _downloadManagerCoordinator;
 }
 
 #pragma mark - Private Properties
@@ -1207,8 +1196,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.secondaryToolbarContainerCoordinator = nil;
   [self.secondaryToolbarCoordinator stop];
   self.secondaryToolbarCoordinator = nil;
-  [_downloadManagerCoordinator stop];
-  _downloadManagerCoordinator = nil;
   self.toolbarInterface = nil;
   _sideSwipeController = nil;
   _webStateListObserver.reset();
@@ -2085,6 +2072,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   [self.sideSwipeController addHorizontalGesturesToView:self.view];
 
+  // TODO(crbug.com/1331229): Remove all use of the download manager coordinator
+  // from BVC
   // DownloadManagerCoordinator is already created.
   DCHECK(_downloadManagerCoordinator);
   _downloadManagerCoordinator.bottomMarginHeightAnchor =
@@ -3133,6 +3122,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   NSMutableArray<UIView*>* overlays = [NSMutableArray array];
 
+  // TODO(crbug.com/1331229): Remove all use of the download manager coordinator
+  // from BVC
   UIView* downloadManagerView = _downloadManagerCoordinator.viewController.view;
   if (downloadManagerView) {
     [overlays addObject:downloadManagerView];

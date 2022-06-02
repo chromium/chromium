@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
@@ -187,6 +188,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     bubble_presenter_ = [[BubblePresenter alloc]
         initWithBrowserState:chrome_browser_state_.get()];
 
+    download_manager_coordinator_ = [[DownloadManagerCoordinator alloc]
+        initWithBaseViewController:[[UIViewController alloc] init]
+                           browser:browser_.get()];
+
     container_ = [[BrowserContainerViewController alloc] init];
     bvc_ = [[BrowserViewController alloc]
                        initWithBrowser:browser_.get()
@@ -194,7 +199,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         browserContainerViewController:container_
                             dispatcher:browser_->GetCommandDispatcher()
                       prerenderService:fake_prerender_service_.get()
-                       bubblePresenter:bubble_presenter_];
+                       bubblePresenter:bubble_presenter_
+            downloadManagerCoordinator:download_manager_coordinator_];
 
     // Force the view to load.
     UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectZero];
@@ -203,6 +209,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   }
 
   void TearDown() override {
+    [download_manager_coordinator_ stop];
+
     [[bvc_ view] removeFromSuperview];
     [bvc_ shutdown];
 
@@ -229,6 +237,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   BrowserViewController* bvc_;
   UIWindow* window_;
   SceneState* scene_state_;
+  DownloadManagerCoordinator* download_manager_coordinator_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {

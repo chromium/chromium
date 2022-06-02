@@ -29,6 +29,9 @@ class Browser;
 @protocol CRWResponderInputView;
 @class DefaultBrowserPromoNonModalScheduler;
 @protocol DefaultPromoNonModalPresentationDelegate;
+// TODO(crbug.com/1331229): Remove all use of the download manager coordinator
+// from BVC
+@class DownloadManagerCoordinator;
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
 class PrerenderService;
 @class ToolbarAccessoryPresenter;
@@ -58,6 +61,8 @@ class PrerenderService;
 // TODO(crbug.com/992582): Remove references to model objects -- including
 //   |browser| and |dispatcher| -- from this class.
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
+// TODO(crbug.com/1331229): Remove all use of the download manager coordinator
+// from BVC
 - (instancetype)initWithBrowser:(Browser*)browser
                  dependencyFactory:
                      (BrowserViewControllerDependencyFactory*)factory
@@ -66,6 +71,8 @@ class PrerenderService;
                         dispatcher:(CommandDispatcher*)dispatcher
                   prerenderService:(PrerenderService*)prerenderService
                    bubblePresenter:(BubblePresenter*)bubblePresenter
+        downloadManagerCoordinator:
+            (DownloadManagerCoordinator*)downloadManagerCoordinator
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

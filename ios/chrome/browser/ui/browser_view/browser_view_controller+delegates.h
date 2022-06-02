@@ -22,10 +22,6 @@
 
 @property(nonatomic, strong, readonly) SideSwipeController* sideSwipeController;
 
-// TODO(crbug.com/1272495): Move this to BrowserCoordinator.
-@property(nonatomic, strong, readonly)
-    DownloadManagerCoordinator* downloadManagerCoordinator;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BROWSER_VIEW_BROWSER_VIEW_CONTROLLER_DELEGATES_H_

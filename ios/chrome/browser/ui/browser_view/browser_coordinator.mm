@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_coordinator.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
+#import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/download/pass_kit_coordinator.h"
 #import "ios/chrome/browser/ui/download/safari_download_coordinator.h"
@@ -90,6 +91,7 @@
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_suggestion_coordinator.h"
+#import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
 #import "ios/chrome/browser/ui/print/print_controller.h"
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_coordinator.h"
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_legacy_coordinator.h"
@@ -272,6 +274,10 @@
 @property(nonatomic, strong)
     DefaultBrowserPromoCoordinator* defaultBrowserPromoCoordinator;
 
+// Coordinator that manages the presentation of Download Manager UI.
+@property(nonatomic, strong)
+    DownloadManagerCoordinator* downloadManagerCoordinator;
+
 // Coordinator that manages the tailored promo modals.
 @property(nonatomic, strong) TailoredPromoCoordinator* tailoredPromoCoordinator;
 
@@ -342,6 +348,7 @@
   }
 
   [self startBrowserContainer];
+  [self startDownloadManagerCoordinator];
   [self createViewController];
   // Mediators should start before coordinators so model state is accurate for
   // any UI that starts up.
@@ -367,6 +374,7 @@
   [self.dispatcher stopDispatchingToTarget:self];
   [self stopChildCoordinators];
   [self destroyViewController];
+  [self stopDownloadManagerCoordinator];
   [self stopBrowserContainer];
   self.dispatcher = nil;
   self.started = NO;
@@ -487,7 +495,8 @@
                                          .viewController
                           dispatcher:self.dispatcher
                     prerenderService:_prerenderService
-                     bubblePresenter:_bubblePresenter];
+                     bubblePresenter:_bubblePresenter
+          downloadManagerCoordinator:self.downloadManagerCoordinator];
   WebNavigationBrowserAgent::FromBrowser(self.browser)
       ->SetDelegate(_viewController);
 
@@ -511,10 +520,25 @@
   [self.browserContainerCoordinator start];
 }
 
+// Starts the download manager coordinator.
+- (void)startDownloadManagerCoordinator {
+  self.downloadManagerCoordinator = [[DownloadManagerCoordinator alloc]
+      initWithBaseViewController:self.browserContainerCoordinator.viewController
+                         browser:self.browser];
+  self.downloadManagerCoordinator.presenter =
+      [[VerticalAnimationContainer alloc] init];
+}
+
 // Stops the browser container.
 - (void)stopBrowserContainer {
   [self.browserContainerCoordinator stop];
   self.browserContainerCoordinator = nil;
+}
+
+// Stops the download manager coordinator.
+- (void)stopDownloadManagerCoordinator {
+  [self.downloadManagerCoordinator stop];
+  self.downloadManagerCoordinator = nil;
 }
 
 // Starts child coordinators.
@@ -742,8 +766,7 @@
   dependencies.prerenderService =
       PrerenderServiceFactory::GetForBrowserState(browserState);
   dependencies.sideSwipeController = browserViewController.sideSwipeController;
-  dependencies.downloadManagerCoordinator =
-      browserViewController.downloadManagerCoordinator;
+  dependencies.downloadManagerCoordinator = self.downloadManagerCoordinator;
   dependencies.baseViewController = browserViewController;
   dependencies.commandDispatcher = self.browser->GetCommandDispatcher();
   dependencies.tabHelperDelegate = self;
