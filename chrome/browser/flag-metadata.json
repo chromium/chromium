@@ -1275,11 +1275,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "disable-keepalive-fetch",
-    "owners": [ "yhirano" ],
-    "expiry_milestone": 83
-  },
-  {
     "name": "disable-office-editing-component-app",
     "owners": [
       "quickoffice-chrome-eng@google.com"
