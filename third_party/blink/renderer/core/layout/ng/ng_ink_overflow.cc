@@ -508,9 +508,6 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
     const Font& scaled_font,
     const LayoutRect& ink_overflow) {
   DCHECK(!style.AppliedTextDecorations().IsEmpty());
-  // TODO(https://crbug.com/1145160): Reduce code duplication between here and
-  // TextPainterBase::PaintDecorations*.
-
   // Use a zero offset because all offsets
   // are applied to the ink overflow after it has been computed.
   PhysicalOffset offset;

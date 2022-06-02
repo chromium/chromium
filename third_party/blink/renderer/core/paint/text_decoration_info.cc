@@ -299,6 +299,21 @@ void TextDecorationInfo::SetLineThroughLineData() {
   SetLineData(TextDecorationLine::kLineThrough, line_through_offset);
 }
 
+void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
+    const TextDecorationOffsetBase& decoration_offset) {
+  DCHECK(HasSpellingOrGrammerError());
+  DCHECK(!HasUnderline());
+  DCHECK(!HasOverline());
+  DCHECK(!HasLineThrough());
+  DCHECK(applied_text_decoration_);
+  const int paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
+      FlippedUnderlinePosition(), Style().ComputedFontSize(), FontData(),
+      applied_text_decoration_->UnderlineOffset(), ResolvedThickness());
+  SetLineData(HasSpellingError() ? TextDecorationLine::kSpellingError
+                                 : TextDecorationLine::kGrammarError,
+              paint_underline_offset);
+}
+
 ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
   if (IsSpellingOrGrammarError()) {
 #if BUILDFLAG(IS_MAC)
@@ -348,8 +363,7 @@ enum StrokeStyle TextDecorationInfo::StrokeStyle() const {
 float TextDecorationInfo::ComputeThickness() const {
   DCHECK(applied_text_decoration_);
   const AppliedTextDecoration& decoration = *applied_text_decoration_;
-  if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kSpellingError) ||
-      EnumHasFlags(decoration.Lines(), TextDecorationLine::kGrammarError)) {
+  if (HasSpellingOrGrammerError()) {
     // Spelling and grammar error thickness doesn't depend on the font size.
 #if BUILDFLAG(IS_MAC)
     return 2.f;

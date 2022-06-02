@@ -63,6 +63,15 @@ class CORE_EXPORT TextDecorationInfo {
   bool HasUnderline() const { return has_underline_; }
   bool HasOverline() const { return has_overline_; }
   bool HasLineThrough() const { return Has(TextDecorationLine::kLineThrough); }
+  bool HasSpellingError() const {
+    return Has(TextDecorationLine::kSpellingError);
+  }
+  bool HasGrammarError() const {
+    return Has(TextDecorationLine::kGrammarError);
+  }
+  bool HasSpellingOrGrammerError() const {
+    return HasSpellingError() || HasGrammarError();
+  }
 
   // Set the decoration to use when painting and returning values.
   // Must be set before calling any other method, and can be called
@@ -80,6 +89,7 @@ class CORE_EXPORT TextDecorationInfo {
   void SetUnderlineLineData(const TextDecorationOffsetBase& decoration_offset);
   void SetOverlineLineData(const TextDecorationOffsetBase& decoration_offset);
   void SetLineThroughLineData();
+  void SetSpellingOrGrammarErrorLineData(const TextDecorationOffsetBase&);
 
   // These methods do not depend on SetDecorationIndex
   LayoutUnit Width() const { return width_; }

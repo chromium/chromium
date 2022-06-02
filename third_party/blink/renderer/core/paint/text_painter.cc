@@ -80,31 +80,10 @@ void TextPainter::PaintDecorationsExceptLineThrough(
        applied_decoration_index < decorations.size();
        ++applied_decoration_index) {
     decoration_info.SetDecorationIndex(applied_decoration_index);
-    const AppliedTextDecoration& decoration =
-        decoration_info.GetAppliedTextDecoration();
-    const TextDecorationLine lines = decoration.Lines();
-    bool is_spelling_error =
-        EnumHasFlags(lines, TextDecorationLine::kSpellingError);
-    bool is_grammar_error =
-        EnumHasFlags(lines, TextDecorationLine::kGrammarError);
+    context.SetStrokeThickness(decoration_info.ResolvedThickness());
 
-    float resolved_thickness = decoration_info.ResolvedThickness();
-    context.SetStrokeThickness(resolved_thickness);
-
-    if (is_spelling_error || is_grammar_error) {
-      DCHECK(!decoration_info.HasUnderline() &&
-             !decoration_info.HasOverline() &&
-             !decoration_info.HasLineThrough());
-      const int paint_underline_offset =
-          decoration_offset.ComputeUnderlineOffset(
-              decoration_info.FlippedUnderlinePosition(),
-              decoration_info.Style().ComputedFontSize(),
-              decoration_info.FontData(), decoration.UnderlineOffset(),
-              resolved_thickness);
-      decoration_info.SetLineData(is_spelling_error
-                                      ? TextDecorationLine::kSpellingError
-                                      : TextDecorationLine::kGrammarError,
-                                  paint_underline_offset);
+    if (decoration_info.HasSpellingOrGrammerError()) {
+      decoration_info.SetSpellingOrGrammarErrorLineData(decoration_offset);
       // We ignore "text-decoration-skip-ink: auto" for spelling and grammar
       // error markers.
       AppliedDecorationPainter decoration_painter(context, decoration_info);
