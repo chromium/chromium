@@ -264,7 +264,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   virtual void DoDrawQuad(const DrawQuad* quad,
                           const gfx::QuadF* clip_region) = 0;
   virtual void BeginDrawingFrame() = 0;
-  virtual void FlushOverdrawFeedback(const gfx::Rect& output_rect) {}
   virtual void FinishDrawingFrame() = 0;
   // If a pass contains a single tile draw quad and can be drawn without
   // a render pass (e.g. applying a filter directly to the tile quad)
@@ -316,8 +315,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   bool allow_empty_swap_ = false;
   // Whether partial swap can be used.
   bool use_partial_swap_ = false;
-  // Whether overdraw feedback is enabled and can be used.
-  bool overdraw_feedback_ = false;
 
   // A map from RenderPass id to the single quad present in and replacing the
   // RenderPass. The DrawQuads are owned by their RenderPasses, which outlive
@@ -375,9 +372,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   virtual void DrawDelegatedInkTrail();
 
   bool initialized_ = false;
-#if DCHECK_IS_ON()
-  bool overdraw_feedback_support_missing_logged_once_ = false;
-#endif
+
   gfx::Rect last_root_render_pass_scissor_rect_;
   gfx::Size enlarge_pass_texture_amount_;
 

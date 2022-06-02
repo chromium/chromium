@@ -929,8 +929,6 @@ void SkiaRenderer::EnsureScissorTestDisabled() {
 }
 
 void SkiaRenderer::BindFramebufferToOutputSurface() {
-  DCHECK(!output_surface_->HasExternalStencilTest());
-
   root_canvas_ = skia_output_surface_->BeginPaintCurrentFrame();
   current_canvas_ = root_canvas_;
   current_surface_ = root_surface_.get();

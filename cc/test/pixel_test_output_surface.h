@@ -24,15 +24,9 @@ class PixelTestOutputSurface : public viz::OutputSurface {
   void BindToClient(viz::OutputSurfaceClient* client) override;
   void EnsureBackbuffer() override;
   void DiscardBackbuffer() override;
-  void BindFramebuffer() override;
   void Reshape(const ReshapeParams& params) override;
-  bool HasExternalStencilTest() const override;
-  void ApplyExternalStencil() override;
   void SwapBuffers(viz::OutputSurfaceFrame frame) override;
   bool IsDisplayedAsOverlayPlane() const override;
-  unsigned GetOverlayTextureId() const override;
-  uint32_t GetFramebufferCopyTextureFormat() override;
-  unsigned UpdateGpuFence() override;
   void SetUpdateVSyncParametersCallback(
       viz::UpdateVSyncParametersCallback callback) override;
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}

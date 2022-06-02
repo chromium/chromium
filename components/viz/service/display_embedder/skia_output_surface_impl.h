@@ -76,7 +76,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // OutputSurface implementation:
   gpu::SurfaceHandle GetSurfaceHandle() const override;
   void BindToClient(OutputSurfaceClient* client) override;
-  void BindFramebuffer() override;
   void SetDrawRectangle(const gfx::Rect& draw_rectangle) override;
   void SetEnableDCLayers(bool enable) override;
   void EnsureBackbuffer() override;
@@ -89,13 +88,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;
   gfx::OverlayTransform GetDisplayTransform() override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
-  uint32_t GetFramebufferCopyTextureFormat() override;
   bool IsDisplayedAsOverlayPlane() const override;
-  unsigned GetOverlayTextureId() const override;
   gpu::Mailbox GetOverlayMailbox() const override;
-  bool HasExternalStencilTest() const override;
-  void ApplyExternalStencil() override;
-  unsigned UpdateGpuFence() override;
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
   base::ScopedClosureRunner GetCacheBackBufferCb() override;

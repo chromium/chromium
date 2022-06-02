@@ -108,15 +108,9 @@ class SynchronousLayerTreeFrameSink::SoftwareOutputSurface
   void BindToClient(viz::OutputSurfaceClient* client) override {}
   void EnsureBackbuffer() override {}
   void DiscardBackbuffer() override {}
-  void BindFramebuffer() override {}
   void SwapBuffers(viz::OutputSurfaceFrame frame) override {}
   void Reshape(const ReshapeParams& params) override {}
-  uint32_t GetFramebufferCopyTextureFormat() override { return 0; }
   bool IsDisplayedAsOverlayPlane() const override { return false; }
-  unsigned GetOverlayTextureId() const override { return 0; }
-  bool HasExternalStencilTest() const override { return false; }
-  void ApplyExternalStencil() override {}
-  unsigned UpdateGpuFence() override { return 0; }
   void SetUpdateVSyncParametersCallback(
       viz::UpdateVSyncParametersCallback callback) override {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}

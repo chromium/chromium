@@ -56,10 +56,6 @@ void FakeSkiaOutputSurface::DiscardBackbuffer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void FakeSkiaOutputSurface::BindFramebuffer() {
-  // TODO(penghuang): remove this method when GLRenderer is removed.
-}
-
 void FakeSkiaOutputSurface::Reshape(const ReshapeParams& params) {
   auto& sk_surface = sk_surfaces_[AggregatedRenderPassId{0}];
   SkColorType color_type = kRGBA_8888_SkColorType;
@@ -87,32 +83,8 @@ void FakeSkiaOutputSurface::ScheduleOutputSurfaceAsOverlay(
   NOTIMPLEMENTED();
 }
 
-uint32_t FakeSkiaOutputSurface::GetFramebufferCopyTextureFormat() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return GL_RGB;
-}
-
 bool FakeSkiaOutputSurface::IsDisplayedAsOverlayPlane() const {
   return false;
-}
-
-unsigned FakeSkiaOutputSurface::GetOverlayTextureId() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return 0;
-}
-
-bool FakeSkiaOutputSurface::HasExternalStencilTest() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return false;
-}
-
-void FakeSkiaOutputSurface::ApplyExternalStencil() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-}
-
-unsigned FakeSkiaOutputSurface::UpdateGpuFence() {
-  NOTIMPLEMENTED();
-  return 0;
 }
 
 void FakeSkiaOutputSurface::SetNeedsSwapSizeNotifications(

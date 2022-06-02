@@ -33,6 +33,10 @@ namespace gfx {
 class ColorSpace;
 }  // namespace gfx
 
+namespace gpu {
+class SharedImageInterface;
+}
+
 namespace viz {
 
 class OverlayCandidate;

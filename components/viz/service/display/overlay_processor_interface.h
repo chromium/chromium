@@ -33,6 +33,10 @@ namespace cc {
 class DisplayResourceProvider;
 }
 
+namespace gpu {
+class SharedImageInterface;
+}
+
 namespace viz {
 struct DebugRendererSettings;
 class OutputSurface;
@@ -95,9 +99,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
     // Opacity of the overlay independent of buffer alpha. When rendered:
     // src-alpha = |opacity| * buffer-component-alpha.
     float opacity;
-    // TODO(weiliangc): Should be replaced by SharedImage mailbox.
-    // Gpu fence to wait for before overlay is ready for display.
-    unsigned gpu_fence_id;
     // Mailbox corresponding to the buffer backing the primary plane.
     gpu::Mailbox mailbox;
     // Hints for overlay prioritization.

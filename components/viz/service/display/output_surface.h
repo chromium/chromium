@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
-#include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/gpu_vsync_callback.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/returned_resource.h"
@@ -26,6 +25,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkM44.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/surface_origin.h"
@@ -77,10 +77,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     bool uses_default_gl_framebuffer = true;
     // Where (0,0) is on this OutputSurface.
     gfx::SurfaceOrigin output_surface_origin = gfx::SurfaceOrigin::kBottomLeft;
-    // Whether this OutputSurface supports stencil operations or not.
-    // Note: HasExternalStencilTest() must return false when an output surface
-    // has been configured for stencil usage.
-    bool supports_stencil = false;
     // Whether this OutputSurface supports post sub buffer or not.
     bool supports_post_sub_buffer = false;
     // Whether this OutputSurface supports commit overlay planes.
@@ -145,8 +141,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
 
   // Constructor for skia-based compositing.
   explicit OutputSurface(Type type);
-  // Constructor for GL-based compositing.
-  explicit OutputSurface(scoped_refptr<ContextProvider> context_provider);
   // Constructor for software compositing.
   explicit OutputSurface(std::unique_ptr<SoftwareOutputDevice> software_device);
 
@@ -158,11 +152,9 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   const Capabilities& capabilities() const { return capabilities_; }
   Type type() const { return type_; }
 
-  // Obtain the 3d context or the software device associated with this output
-  // surface. Either of these may return a null pointer, but not both.
-  // In the event of a lost context, the entire output surface should be
-  // recreated.
-  ContextProvider* context_provider() const { return context_provider_.get(); }
+  // Obtain the software device associated with this output surface. This will
+  // return non-null for a software output surface and null for skia output
+  // surface.
   SoftwareOutputDevice* software_device() const {
     return software_device_.get();
   }
@@ -183,10 +175,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   virtual void EnsureBackbuffer() = 0;
   virtual void DiscardBackbuffer() = 0;
 
-  // Bind the default framebuffer for drawing to, only valid for GL backed
-  // OutputSurfaces.
-  virtual void BindFramebuffer() = 0;
-
   // Marks that the given rectangle will be drawn to on the default, bound
   // framebuffer. The contents of the framebuffer are undefined after this
   // command and must be filled in completely before a swap happens. Drawing
@@ -204,9 +192,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // Returns true if a main image overlay plane should be scheduled.
   virtual bool IsDisplayedAsOverlayPlane() const = 0;
 
-  // Get the texture for the main image's overlay.
-  virtual unsigned GetOverlayTextureId() const = 0;
-
   // Returns the |mailbox| corresponding to the main image's overlay.
   virtual gpu::Mailbox GetOverlayMailbox() const;
 
@@ -217,27 +202,18 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     gfx::ColorSpace color_space;
     float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel;
     gfx::BufferFormat format = gfx::BufferFormat::RGBX_8888;
-    bool use_stencil = false;
 
     bool operator==(const ReshapeParams& other) const {
       return size == other.size &&
              device_scale_factor == other.device_scale_factor &&
              color_space == other.color_space &&
-             sdr_white_level == other.sdr_white_level &&
-             format == other.format && use_stencil == other.use_stencil;
+             sdr_white_level == other.sdr_white_level;
     }
     bool operator!=(const ReshapeParams& other) const {
       return !(*this == other);
     }
   };
   virtual void Reshape(const ReshapeParams& params) = 0;
-
-  virtual bool HasExternalStencilTest() const = 0;
-  virtual void ApplyExternalStencil() = 0;
-
-  // Gives the GL internal format that should be used for calling CopyTexImage2D
-  // when the framebuffer is bound via BindFramebuffer().
-  virtual uint32_t GetFramebufferCopyTextureFormat() = 0;
 
   // Swaps the current backbuffer to the screen. For successful swaps, the
   // implementation must call OutputSurfaceClient::DidReceiveSwapBuffersAck()
@@ -253,14 +229,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // surface itself.
   // TODO(dcastagna): Consider making the following pure virtual.
   virtual gfx::Rect GetCurrentFramebufferDamage() const;
-
-  // Updates the GpuFence associated with this surface. The id of a newly
-  // created GpuFence is returned, or if an error occurs, or fences are not
-  // supported, the special id of 0 (meaning "no fence") is returned.  In all
-  // cases, any previously associated fence is destroyed. The returned fence id
-  // corresponds to the GL id used by the CHROMIUM_gpu_fence GL extension and
-  // can be passed directly to any related extension functions.
-  virtual unsigned UpdateGpuFence() = 0;
 
   // Sets callback to receive updated vsync parameters after SwapBuffers() if
   // supported.
@@ -320,11 +288,10 @@ class VIZ_SERVICE_EXPORT OutputSurface {
 
  protected:
   struct OutputSurface::Capabilities capabilities_;
-  scoped_refptr<ContextProvider> context_provider_;
-  std::unique_ptr<SoftwareOutputDevice> software_device_;
 
  private:
   const Type type_;
+  std::unique_ptr<SoftwareOutputDevice> software_device_;
   SkM44 color_matrix_;
 };
 
