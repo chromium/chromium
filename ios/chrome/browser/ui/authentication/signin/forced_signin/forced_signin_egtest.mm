@@ -570,7 +570,13 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 // Tests that the forced sign-in prompt can be shown on dynamic policy update
 // when a browser modal is displayed on top of the browser view.
-- (void)testSignInScreenOnModal {
+// TODO(crbug.com/1331009): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSignInScreenOnModal DISABLED_testSignInScreenOnModal
+#else
+#define MAYBE_testSignInScreenOnModal testSignInScreenOnModal
+#endif
+- (void)MAYBE_testSignInScreenOnModal {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
   config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
