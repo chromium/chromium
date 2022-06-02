@@ -4901,6 +4901,31 @@
             ]
         }
     ],
+    "JourneysKeywordFiltering": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220502",
+                    "params": {
+                        "keyword_filter_on_categories": "false",
+                        "keyword_filter_on_entity_aliases": "true",
+                        "keyword_filter_on_noisy_visits": "false",
+                        "max_entity_aliases_in_keywords": "5"
+                    },
+                    "enable_features": [
+                        "JourneysKeywordFiltering"
+                    ]
+                }
+            ]
+        }
+    ],
     "KeyPinningComponentUpdater": [
         {
             "platforms": [
