@@ -177,8 +177,8 @@ void OverviewTestBase::SetUp() {
   cache_ = std::make_unique<apps::AppRegistryCache>();
   desk_model_ = std::make_unique<desks_storage::LocalDeskDataManager>(
       user_data_temp_dir_.GetPath(), account_id_);
+  base::RunLoop().RunUntilIdle();
   desk_model_->SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(false);
-  desk_model_->EnsureCacheIsLoaded();
   desks_storage::desk_template_util::PopulateAppRegistryCache(account_id_,
                                                               cache_.get());
   static_cast<TestDesksTemplatesDelegate*>(

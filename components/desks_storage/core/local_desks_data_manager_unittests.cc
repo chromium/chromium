@@ -112,6 +112,11 @@ void VerifyEntryAddedCorrectly(DeskModel::AddOrUpdateEntryStatus status) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
 }
 
+// Verifies that the status passed into it is kFailure
+void VerifyEntryAddedFailure(DeskModel::AddOrUpdateEntryStatus status) {
+  EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kFailure);
+}
+
 void VerifyEntryAddedErrorHitMaximumLimit(
     DeskModel::AddOrUpdateEntryStatus status) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kHitMaximumLimit);
@@ -585,6 +590,7 @@ TEST_F(LocalDeskDataManagerTest,
        GetEntryByUuidReturnsFailureIfDeskManagerHasInvalidPath) {
   data_manager_ =
       std::make_unique<LocalDeskDataManager>(kInvalidFilePath, account_id_);
+  task_environment_.RunUntilIdle();
 
   base::RunLoop loop;
   data_manager_->GetEntryByUUID(
@@ -624,14 +630,12 @@ TEST_F(LocalDeskDataManagerTest, CanDeleteEntry) {
   data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
                                   base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  base::RunLoop loop;
-
   data_manager_->DeleteEntry(
       kTestUuid1,
       base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
-
+  base::RunLoop loop;
   data_manager_->GetAllEntries(base::BindLambdaForTesting(
       [&](DeskModel::GetAllEntriesStatus status,
           const std::vector<const ash::DeskTemplate*>& entries) {
@@ -639,7 +643,6 @@ TEST_F(LocalDeskDataManagerTest, CanDeleteEntry) {
         EXPECT_EQ(entries.size(), 0ul);
         loop.Quit();
       }));
-
   loop.Run();
 }
 
@@ -659,6 +662,7 @@ TEST_F(LocalDeskDataManagerTest, CanDeleteAllEntries) {
       base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
+  task_environment_.RunUntilIdle();
 
   data_manager_->GetAllEntries(base::BindLambdaForTesting(
       [&](DeskModel::GetAllEntriesStatus status,
@@ -861,6 +865,111 @@ TEST_F(LocalDeskDataManagerTest,
 
   EXPECT_EQ(data_manager_->GetDeskTemplateEntryCount(), 1ul);
   EXPECT_EQ(data_manager_->GetSaveAndRecallDeskEntryCount(), 6ul);
+}
+
+TEST_F(LocalDeskDataManagerTest, RollbackUpdateTemplatesOnFileWriteFailure) {
+  // Add two user templates.
+  for (std::size_t index = 0u; index < 2u; ++index) {
+    data_manager_->AddOrUpdateEntry(
+        MakeTestDeskTemplate(index, ash::DeskTemplateType::kTemplate),
+        base::BindOnce(&VerifyEntryAddedCorrectly));
+  }
+
+  EXPECT_EQ(data_manager_->GetEntryCount(), 2ul);
+  EXPECT_EQ(data_manager_->GetDeskTemplateEntryCount(), 2ul);
+  task_environment_.RunUntilIdle();
+
+  base::SetPosixFilePermissions(temp_dir_.GetPath(),
+                                base::FILE_PERMISSION_READ_BY_USER);
+  data_manager_->AddOrUpdateEntry(
+      MakeTestDeskTemplate(1ul, ash::DeskTemplateType::kTemplate),
+      base::BindOnce(&VerifyEntryAddedFailure));
+
+  VerifyAllEntries(2ul,
+                   "Updated one desk template failed to write to file system");
+
+  base::SetPosixFilePermissions(temp_dir_.GetPath(),
+                                base::FILE_PERMISSION_READ_BY_USER |
+                                    base::FILE_PERMISSION_WRITE_BY_USER |
+                                    base::FILE_PERMISSION_EXECUTE_BY_USER);
+}
+
+TEST_F(LocalDeskDataManagerTest, RollbackAddTemplatesOnFileWriteFailure) {
+  // Add two user templates.
+  for (std::size_t index = 0u; index < 2u; ++index) {
+    data_manager_->AddOrUpdateEntry(
+        MakeTestDeskTemplate(index, ash::DeskTemplateType::kTemplate),
+        base::BindOnce(&VerifyEntryAddedCorrectly));
+  }
+
+  EXPECT_EQ(data_manager_->GetEntryCount(), 2ul);
+  EXPECT_EQ(data_manager_->GetDeskTemplateEntryCount(), 2ul);
+  task_environment_.RunUntilIdle();
+
+  base::SetPosixFilePermissions(temp_dir_.GetPath(),
+                                base::FILE_PERMISSION_READ_BY_USER);
+  data_manager_->AddOrUpdateEntry(
+      MakeTestDeskTemplate(3ul, ash::DeskTemplateType::kTemplate),
+      base::BindOnce(&VerifyEntryAddedFailure));
+  task_environment_.RunUntilIdle();
+
+  VerifyAllEntries(2ul, "Add one desk template failed to write to file system");
+
+  base::SetPosixFilePermissions(temp_dir_.GetPath(),
+                                base::FILE_PERMISSION_READ_BY_USER |
+                                    base::FILE_PERMISSION_WRITE_BY_USER |
+                                    base::FILE_PERMISSION_EXECUTE_BY_USER);
+}
+
+TEST_F(LocalDeskDataManagerTest, RollbackDeleteTemplatesOnFileDeleteFailure) {
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
+  EXPECT_EQ(data_manager_->GetEntryCount(), 1ul);
+  EXPECT_EQ(data_manager_->GetDeskTemplateEntryCount(), 1ul);
+  task_environment_.RunUntilIdle();
+  base::SetPosixFilePermissions(temp_dir_.GetPath(),
+                                base::FILE_PERMISSION_READ_BY_USER);
+  data_manager_->DeleteEntry(
+      kTestUuid1,
+      base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
+        EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kFailure);
+      }));
+  task_environment_.RunUntilIdle();
+
+  VerifyAllEntries(1ul, "Delete desk template failed to delete on file system");
+
+  base::SetPosixFilePermissions(temp_dir_.GetPath(),
+                                base::FILE_PERMISSION_READ_BY_USER |
+                                    base::FILE_PERMISSION_WRITE_BY_USER |
+                                    base::FILE_PERMISSION_EXECUTE_BY_USER);
+}
+
+TEST_F(LocalDeskDataManagerTest,
+       RollbackDeleteAllTemplatesOnFileDeleteFailure) {
+  // Add four user templates.
+  for (std::size_t index = 0u; index < 4u; ++index) {
+    data_manager_->AddOrUpdateEntry(
+        MakeTestDeskTemplate(index, ash::DeskTemplateType::kTemplate),
+        base::BindOnce(&VerifyEntryAddedCorrectly));
+  }
+  EXPECT_EQ(data_manager_->GetEntryCount(), 4ul);
+  EXPECT_EQ(data_manager_->GetDeskTemplateEntryCount(), 4ul);
+  task_environment_.RunUntilIdle();
+  base::SetPosixFilePermissions(temp_dir_.GetPath(),
+                                base::FILE_PERMISSION_READ_BY_USER);
+  data_manager_->DeleteAllEntries(
+      base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
+        EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kFailure);
+      }));
+  task_environment_.RunUntilIdle();
+
+  VerifyAllEntries(4ul,
+                   "Delete all desk template failed to delete on file system");
+
+  base::SetPosixFilePermissions(temp_dir_.GetPath(),
+                                base::FILE_PERMISSION_READ_BY_USER |
+                                    base::FILE_PERMISSION_WRITE_BY_USER |
+                                    base::FILE_PERMISSION_EXECUTE_BY_USER);
 }
 
 }  // namespace desks_storage
