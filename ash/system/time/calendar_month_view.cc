@@ -158,18 +158,11 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
 }
 
 void CalendarDateCellView::OnSelectedDateUpdated() {
-  if (grayed_out_)
-    return;
   bool is_selected = calendar_utils::IsTheSameDay(
       date_, calendar_view_controller_->selected_date());
   // If the selected day changes, repaint the background.
   if (is_selected_ != is_selected) {
     is_selected_ = is_selected;
-
-    is_selected_
-        ? label()->SetTextStyle(ash::AshTextStyle::STYLE_EMPHASIZED)
-        : label()->SetTextStyle(views::style::TextStyle::STYLE_PRIMARY);
-
     SchedulePaint();
     if (!is_selected_) {
       SetAccessibleName(tool_tip_);
@@ -191,12 +184,11 @@ void CalendarDateCellView::OnSelectedDateUpdated() {
 }
 
 void CalendarDateCellView::CloseEventList() {
-  if (grayed_out_ || !is_selected_)
+  if (!is_selected_)
     return;
 
   // If this date is selected, repaint the background.
   is_selected_ = false;
-  label()->SetTextStyle(views::style::TextStyle::STYLE_PRIMARY);
   SchedulePaint();
 }
 

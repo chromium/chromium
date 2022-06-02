@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/components/settings/timezone_settings.h"
-#include "ash/public/cpp/ash_typography.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_unittest_utils.h"
@@ -58,19 +57,13 @@ class CalendarMonthViewTest : public AshTestBase {
   CalendarMonthViewTest& operator=(const CalendarMonthViewTest&) = delete;
   ~CalendarMonthViewTest() override = default;
 
-  static int GetTextStyle(const CalendarDateCellView* date_cell) {
-    return date_cell->label()->GetTextStyle();
-  }
-
   void SetUp() override {
     AshTestBase::SetUp();
     controller_ = std::make_unique<CalendarViewController>();
-    widget_ = CreateFramelessTestWidget();
-    widget_->SetFullscreen(true);
   }
 
   void TearDown() override {
-    widget_.reset();
+    calendar_month_view_.reset();
     controller_.reset();
 
     AshTestBase::TearDown();
@@ -79,14 +72,14 @@ class CalendarMonthViewTest : public AshTestBase {
   void CreateMonthView(base::Time date, const std::u16string& timezone) {
     AccountId user_account = AccountId::FromUserEmail("user@test");
     GetSessionControllerClient()->SwitchActiveUser(user_account);
+    calendar_month_view_.reset();
     controller_.reset();
     ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(timezone);
     controller_ = std::make_unique<CalendarViewController>();
     controller_->UpdateMonth(date);
-    auto calendar_month_view =
-        std::make_unique<CalendarMonthView>(date, controller_.get());
     calendar_month_view_ =
-        widget_->SetContentsView(std::move(calendar_month_view));
+        std::make_unique<CalendarMonthView>(date, controller_.get());
+    calendar_month_view_->Layout();
   }
 
   void UploadEvents() {
@@ -94,40 +87,20 @@ class CalendarMonthViewTest : public AshTestBase {
         CreateMockEventList().get());
   }
 
-  // Gets date cell of a given numerical `day`.
-  const ash::CalendarDateCellView* GetDateCell(std::u16string day) {
-    const ash::CalendarDateCellView* date_cell = nullptr;
-    for (const auto* child_view : month_view()->children()) {
-      auto* current_date_cell =
-          static_cast<const ash::CalendarDateCellView*>(child_view);
-      if (day != current_date_cell->GetText())
-        continue;
-
-      date_cell = current_date_cell;
-      break;
-    }
-    return date_cell;
+  void TriggerPaint() {
+    gfx::Canvas canvas;
+    for (auto* cell : calendar_month_view_->children())
+      static_cast<CalendarDateCellView*>(cell)->PaintButtonContents(&canvas);
   }
 
-  // Clicks on a given `date_cell`.
-  void ClickDateCell(const views::LabelButton* date_cell) {
-    auto* event_generator = GetEventGenerator();
-    event_generator->MoveMouseTo(date_cell->GetBoundsInScreen().CenterPoint());
-    event_generator->ClickLeftButton();
-  }
-
-  void CloseEventList() { controller()->CloseEventListView(); }
-
-  CalendarMonthView* month_view() { return calendar_month_view_; }
+  CalendarMonthView* month_view() { return calendar_month_view_.get(); }
   CalendarViewController* controller() { return controller_.get(); }
 
   static base::Time FakeTimeNow() { return fake_time_; }
   static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
 
  private:
-  std::unique_ptr<views::Widget> widget_;
-  // Owned by `widget_`.
-  CalendarMonthView* calendar_month_view_ = nullptr;
+  std::unique_ptr<CalendarMonthView> calendar_month_view_;
   std::unique_ptr<CalendarViewController> controller_;
   static base::Time fake_time_;
 };
@@ -288,6 +261,7 @@ TEST_F(CalendarMonthViewTest, UpdateEvents) {
 
   CreateMonthView(date, u"America/Los_Angeles");
 
+  TriggerPaint();
   // Grayed out cell. Sep 2nd is the 33 one in this calendar, which is with
   // index 32.
   EXPECT_EQ(u"2",
@@ -323,6 +297,7 @@ TEST_F(CalendarMonthViewTest, UpdateEvents) {
   // After re-painting, the event numbers are updated for regular cells, not for
   // grayed out cells.
   month_view()->SchedulePaintChildren();
+  TriggerPaint();
   EXPECT_EQ(u"2",
             static_cast<CalendarDateCellView*>(month_view()->children()[32])
                 ->GetText());
@@ -353,8 +328,10 @@ TEST_F(CalendarMonthViewTest, TimeZone) {
 
   // Sets the timezone to "America/Los_Angeles";
   CreateMonthView(date, u"America/Los_Angeles");
+  TriggerPaint();
   UploadEvents();
   month_view()->SchedulePaintChildren();
+  TriggerPaint();
 
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
@@ -397,8 +374,10 @@ TEST_F(CalendarMonthViewTest, InactiveUserSession) {
       /*thread_ticks_override=*/nullptr);
 
   CreateMonthView(date, u"America/Los_Angeles");
+  TriggerPaint();
   UploadEvents();
   month_view()->SchedulePaintChildren();
+  TriggerPaint();
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
@@ -410,6 +389,7 @@ TEST_F(CalendarMonthViewTest, InactiveUserSession) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::OOBE);
   month_view()->SchedulePaintChildren();
+  TriggerPaint();
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
@@ -420,66 +400,13 @@ TEST_F(CalendarMonthViewTest, InactiveUserSession) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
   month_view()->SchedulePaintChildren();
+  TriggerPaint();
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
   EXPECT_EQ(u"Wednesday, August 18, 2021",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
-}
-
-// Tests that the appropriate date cell is emphasized when a date cell is
-// selected.
-TEST_F(CalendarMonthViewTest, SelectedDateCellEmphasized) {
-  // Create a month view based on June 1, 2021, with today's date being June 29,
-  // 2021.
-  base::Time date;
-  ASSERT_TRUE(base::Time::FromString("1 Jun 2021 10:00 GMT", &date));
-  base::Time today;
-  ASSERT_TRUE(base::Time::FromString("29 Jun 2021 10:00 GMT", &today));
-  SetFakeNow(today);
-  base::subtle::ScopedTimeClockOverrides time_override(
-      &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
-      /*thread_ticks_override=*/nullptr);
-  CreateMonthView(date, u"America/Los_Angeles");
-
-  // Expect today's date cell text to not be emphasized before being selected.
-  const auto* today_date_cell = GetDateCell(/*day=*/u"29");
-  EXPECT_EQ(views::style::TextStyle::STYLE_PRIMARY,
-            GetTextStyle(today_date_cell));
-
-  // Select today's date.
-  ClickDateCell(today_date_cell);
-
-  // Expect selected date cell text to be emphasized.
-  EXPECT_EQ(ash::AshTextStyle::STYLE_EMPHASIZED, GetTextStyle(today_date_cell));
-
-  // Close event list.
-  CloseEventList();
-
-  // Expect today's date cell text to not be emphasized again.
-  EXPECT_EQ(views::style::TextStyle::STYLE_PRIMARY,
-            GetTextStyle(today_date_cell));
-
-  // Expect non-today's date cell text to not be emphasized before being
-  // selected.
-  const auto* yesterday_date_cell = GetDateCell(/*day=*/u"28");
-  EXPECT_EQ(views::style::TextStyle::STYLE_PRIMARY,
-            GetTextStyle(yesterday_date_cell));
-
-  // Select non-today's date.
-  ClickDateCell(yesterday_date_cell);
-
-  // Expect selected date cell text to be emphasized.
-  EXPECT_EQ(ash::AshTextStyle::STYLE_EMPHASIZED,
-            GetTextStyle(yesterday_date_cell));
-
-  // Close event list.
-  CloseEventList();
-
-  // Expect non-today's date cell text to not be emphasized again.
-  EXPECT_EQ(views::style::TextStyle::STYLE_PRIMARY,
-            GetTextStyle(yesterday_date_cell));
 }
 
 }  // namespace ash

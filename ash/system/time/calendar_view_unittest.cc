@@ -5,7 +5,6 @@
 #include "ash/system/time/calendar_view.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_typography.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
@@ -54,10 +53,6 @@ class CalendarViewTest : public AshTestBase {
   CalendarViewTest& operator=(const CalendarViewTest&) = delete;
   ~CalendarViewTest() override = default;
 
-  static int GetTextStyle(const CalendarDateCellView* date_cell) {
-    return date_cell->label()->GetTextStyle();
-  }
-
   void SetUp() override {
     AshTestBase::SetUp();
 
@@ -81,12 +76,12 @@ class CalendarViewTest : public AshTestBase {
   }
 
   // Gets date cell of a given CalendarMonthView and numerical `day`.
-  const ash::CalendarDateCellView* GetDateCell(CalendarMonthView* month,
-                                               std::u16string day) {
-    const ash::CalendarDateCellView* date_cell = nullptr;
+  const views::LabelButton* GetDateCell(CalendarMonthView* month,
+                                        std::u16string day) {
+    const views::LabelButton* date_cell = nullptr;
     for (const auto* child_view : month->children()) {
       auto* current_date_cell =
-          static_cast<const ash::CalendarDateCellView*>(child_view);
+          static_cast<const views::LabelButton*>(child_view);
       if (day != current_date_cell->GetText())
         continue;
 
@@ -990,42 +985,6 @@ TEST_F(CalendarViewTest, EventListBoundsTest) {
   EXPECT_EQ(bottom_of_scroll_view_visible_area, top_of_event_list_view);
 }
 
-// Tests that grayed-out dates are not emphasized when corresponding
-// non-grayed-out dates are selected.
-TEST_F(CalendarViewTest, GrayedOutDatesNotEmphasized) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-  // Create a month view based on June 29, 2021.
-  base::Time date;
-  ASSERT_TRUE(base::Time::FromString("29 Jun 2021 10:00 GMT", &date));
-  SetFakeNow(date);
-  base::subtle::ScopedTimeClockOverrides time_override(
-      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
-      /*thread_ticks_override=*/nullptr);
-  CreateCalendarView();
-
-  // Select today's date.
-  ClickDateCell(GetDateCell(/*month=*/current_month(), /*day=*/u"29"));
-
-  // Expect grayed-out version of today's date cell to not be emphasized.
-  const auto* today_date_cell_grayed_out =
-      GetDateCell(/*month=*/next_month(), /*day=*/u"29");
-  EXPECT_EQ(views::style::TextStyle::STYLE_PRIMARY,
-            GetTextStyle(today_date_cell_grayed_out));
-
-  // Close event list.
-  CloseEventList();
-
-  // Select non-today's date cell.
-  ClickDateCell(GetDateCell(/*month=*/current_month(), /*day=*/u"30"));
-
-  // Expect grayed-out version of non-today's date cell to not be emphasized.
-  const auto* tomorrow_date_cell_grayed_out =
-      GetDateCell(/*month=*/next_month(), /*day=*/u"30");
-  EXPECT_EQ(views::style::TextStyle::STYLE_PRIMARY,
-            GetTextStyle(tomorrow_date_cell_grayed_out));
-}
-
 // A test class for testing animation. This class cannot set fake now since it's
 // using `MOCK_TIME` to test the animations, and it can't inherit from
 // CalendarAnimationTest due to the same reason.
@@ -1066,12 +1025,12 @@ class CalendarViewAnimationTest : public AshTestBase {
   }
 
   // Gets date cell of a given CalendarMonthView and numerical `day`.
-  const ash::CalendarDateCellView* GetDateCell(CalendarMonthView* month,
-                                               std::u16string day) {
-    const ash::CalendarDateCellView* date_cell = nullptr;
+  const views::LabelButton* GetDateCell(CalendarMonthView* month,
+                                        std::u16string day) {
+    const views::LabelButton* date_cell = nullptr;
     for (const auto* child_view : month->children()) {
       auto* current_date_cell =
-          static_cast<const ash::CalendarDateCellView*>(child_view);
+          static_cast<const views::LabelButton*>(child_view);
       if (day != current_date_cell->GetText())
         continue;
 
