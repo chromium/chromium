@@ -4249,6 +4249,7 @@ crbug.com/930297 external/wpt/html/infrastructure/urls/resolving-urls/query-enco
 crbug.com/676229 plugins/mouse-click-plugin-clears-selection.html [ Failure Pass ]
 crbug.com/742670 plugins/iframe-plugin-bgcolor.html [ Failure Pass ]
 crbug.com/780398 [ Mac ] plugins/mouse-capture-inside-shadow.html [ Failure Pass ]
+crbug.com/1331239 [ Mac ] plugins/plugin-remove-subframe.html [ Crash Pass ]
 
 crbug.com/678493 http/tests/permissions/chromium/test-request-window.html [ Pass Timeout ]
 
@@ -6300,7 +6301,6 @@ crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/yuv-decode-e
 # Flakes that surfaced on the mac12 and mac12-arm64 waterfall
 crbug.com/1249176 [ Mac12 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/service-worker-controlled-after-restore.https.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/html/rendering/replaced-elements/embedded-content/cross-domain-iframe-in-multicol.sub.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12 ] virtual/scroll-unification/plugins/plugin-remove-subframe.html [ Crash Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] media/controls/overflow-menu-focus.html [ Failure Pass ]
 
 # Following tests timeout on mac11-arm64
@@ -6377,8 +6377,6 @@ crbug.com/1249176 [ Mac11-arm64 ] http/tests/security/opened-document-security-o
 crbug.com/1249176 [ Mac11-arm64 ] virtual/no-alloc-direct-call/fast/canvas/canvas-lost-gpu-context.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] plugins/plugin-remove-subframe.html [ Crash Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] plugins/plugin-remove-subframe.html [ Crash Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/replaced/no-focus-ring-object.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] fast/replaced/no-focus-ring-object.html [ Failure Pass ]
 
