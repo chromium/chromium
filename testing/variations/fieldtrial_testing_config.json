@@ -543,6 +543,21 @@
             ]
         }
     ],
+    "ArcVmBroadcastPreAnrHandling": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcVmBroadcastPreAnrHandling"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcVmDalvikMemoryProfile": [
         {
             "platforms": [
