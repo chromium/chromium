@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,6 +74,7 @@ PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
   form.username_element = std::u16string(username_element);
+  form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
 
@@ -1290,7 +1292,65 @@ TEST_F(InsecureCredentialsManagerTest, GetWeakCredentialsReturnsSortedData) {
                           MakeWeakCredential(password_forms[2]),
                           MakeWeakCredential(password_forms[3])));
 }
+
+// Verifues that GetWeakCredentials() returns sorted weak credentials by using
+// CreateSortKey.
+TEST_F(InsecureCredentialsManagerTest, GetWeakCredentialEntries) {
+  const std::vector<PasswordForm> password_forms = {
+      MakeSavedPassword("http://example-a.com", u"user_a1", u"pwd"),
+      MakeSavedPassword("http://example-a.com", u"user_a2", u"pwd")};
+  store().AddLogin(password_forms[0]);
+  store().AddLogin(password_forms[1]);
+  RunUntilIdle();
+
+  provider().StartWeakCheck();
+  RunUntilIdle();
+
+  EXPECT_THAT(provider().GetWeakCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password_forms[0]),
+                          CredentialUIEntry(password_forms[1])));
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+TEST_F(InsecureCredentialsManagerTest, GetInsecureCredentialsFiltersWeak) {
+  PasswordForm password1 =
+      MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  PasswordForm password2 =
+      MakeSavedPassword(kExampleCom, kUsername2, kPassword216);
+
+  password1.password_issues.insert(
+      {InsecureType::kLeaked, InsecurityMetadata()});
+  password2.password_issues.insert({InsecureType::kWeak, InsecurityMetadata()});
+
+  store().AddLogin(password1);
+  store().AddLogin(password2);
+
+  RunUntilIdle();
+
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password1)));
+}
+
+TEST_F(InsecureCredentialsManagerTest,
+       GetInsecureCredentialsFiltersDuplicates) {
+  PasswordForm password1 =
+      MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  PasswordForm password2 = MakeSavedPassword(kExampleCom, kUsername1,
+                                             kPassword1, u"username_element");
+
+  password1.password_issues.insert(
+      {InsecureType::kLeaked, InsecurityMetadata()});
+  password2.password_issues.insert(
+      {InsecureType::kLeaked, InsecurityMetadata()});
+
+  store().AddLogin(password1);
+  store().AddLogin(password2);
+
+  RunUntilIdle();
+
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password1)));
+}
 
 namespace {
 class InsecureCredentialsManagerWithTwoStoresTest : public ::testing::Test {
@@ -1486,6 +1546,26 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, RemoveWeakCredential) {
   EXPECT_THAT(profile_store().stored_passwords().at(kExampleCom), IsEmpty());
   EXPECT_THAT(account_store().stored_passwords().at(kExampleCom), IsEmpty());
 }
+
+TEST_F(InsecureCredentialsManagerWithTwoStoresTest,
+       GetInsecureCredentialsWeak) {
+  profile_store().AddLogin(
+      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
+  account_store().AddLogin(
+      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
+  RunUntilIdle();
+  provider().StartWeakCheck();
+  RunUntilIdle();
+
+  PasswordForm expected_form =
+      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
+  expected_form.in_store =
+      PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore;
+
+  EXPECT_THAT(provider().GetWeakCredentialEntries(),
+              ElementsAre(CredentialUIEntry(expected_form)));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace password_manager

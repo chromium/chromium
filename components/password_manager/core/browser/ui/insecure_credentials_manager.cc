@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -384,6 +385,20 @@ InsecureCredentialsManager::GetInsecureCredentials() const {
   return ExtractInsecureCredentials(credentials_to_forms_, &IsInsecure);
 }
 
+std::vector<CredentialUIEntry>
+InsecureCredentialsManager::GetInsecureCredentialEntries() const {
+  DCHECK(presenter_);
+  std::vector<CredentialUIEntry> credentials =
+      presenter_->GetSavedCredentials();
+  // Erase entries which aren't leaked and finished.
+  base::EraseIf(credentials, [](const auto& credential) {
+    return !credential.password_issues.contains(InsecureType::kLeaked) &&
+           !credential.password_issues.contains(InsecureType::kPhished);
+  });
+
+  return credentials;
+}
+
 std::vector<CredentialWithPassword>
 InsecureCredentialsManager::GetWeakCredentials() const {
   std::vector<CredentialWithPassword> weak_credentials =
@@ -395,6 +410,17 @@ InsecureCredentialsManager::GetWeakCredentials() const {
   };
   base::ranges::sort(weak_credentials, {}, get_sort_key);
   return weak_credentials;
+}
+
+std::vector<CredentialUIEntry>
+InsecureCredentialsManager::GetWeakCredentialEntries() const {
+  DCHECK(presenter_);
+  std::vector<CredentialUIEntry> credentials =
+      presenter_->GetSavedCredentials();
+  base::EraseIf(credentials, [this](const auto& credential) {
+    return !weak_passwords_.contains(credential.password);
+  });
+  return credentials;
 }
 
 SavedPasswordsPresenter::SavedPasswordsView

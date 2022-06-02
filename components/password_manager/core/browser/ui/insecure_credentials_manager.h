@@ -30,6 +30,7 @@
 
 namespace password_manager {
 
+struct CredentialUIEntry;
 class LeakCheckCredential;
 
 enum class InsecureCredentialTypeFlags {
@@ -195,10 +196,14 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
   bool UnmuteCredential(const CredentialView& credential);
 
   // Returns a vector of currently insecure credentials.
+  // TODO(crbug.com/1330549): Use CredentialUIEntry only.
   std::vector<CredentialWithPassword> GetInsecureCredentials() const;
+  std::vector<CredentialUIEntry> GetInsecureCredentialEntries() const;
 
   // Returns a vector of currently weak credentials.
+  // TODO(crbug.com/1330549): Use CredentialUIEntry only.
   std::vector<CredentialWithPassword> GetWeakCredentials() const;
+  std::vector<CredentialUIEntry> GetWeakCredentialEntries() const;
 
   // Returns password forms which map to provided insecure credential.
   // In most of the cases vector will have 1 element only.
