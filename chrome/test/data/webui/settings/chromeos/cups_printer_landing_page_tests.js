@@ -5,6 +5,7 @@
 import {CupsPrintersBrowserProxyImpl, PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://test/test_util.js';
@@ -177,7 +178,7 @@ function removePrinter(cupsPrintersBrowserProxy, savedPrintersElement, index) {
         printerList.splice(index, 1);
 
         // Simuluate saved printer changes.
-        cr.webUIListenerCallback(
+        webUIListenerCallback(
             'on-saved-printers-changed', cupsPrintersBrowserProxy.printerList);
         flush();
       });
@@ -259,7 +260,7 @@ suite('CupsSavedPrintersTests', function() {
 
   function updateSavedPrinters() {
     cupsPrintersBrowserProxy.printerList = {printerList: printerList};
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'on-saved-printers-changed', cupsPrintersBrowserProxy.printerList);
     flush();
   }
@@ -1022,7 +1023,7 @@ suite('CupsNearbyPrintersTests', function() {
       assertEquals(0, nearbyPrinterEntries.length);
 
       // Simuluate finding nearby printers.
-      cr.webUIListenerCallback(
+      webUIListenerCallback(
           'on-nearby-printers-changed', automaticPrinterList,
           discoveredPrinterList);
 
@@ -1067,7 +1068,7 @@ suite('CupsNearbyPrintersTests', function() {
       assertTrue(!!nearbyPrintersElement);
 
       // Simuluate finding nearby printers.
-      cr.webUIListenerCallback(
+      webUIListenerCallback(
           'on-nearby-printers-changed', automaticPrinterList,
           discoveredPrinterList);
 
@@ -1091,7 +1092,7 @@ suite('CupsNearbyPrintersTests', function() {
           assertTrue(!!nearbyPrintersElement);
 
           // Simuluate finding nearby printers.
-          cr.webUIListenerCallback(
+          webUIListenerCallback(
               'on-nearby-printers-changed', automaticPrinterList,
               discoveredPrinterList);
 
@@ -1134,7 +1135,7 @@ suite('CupsNearbyPrintersTests', function() {
 
       assertTrue(!!nearbyPrintersElement);
       // Simuluate finding nearby printers.
-      cr.webUIListenerCallback(
+      webUIListenerCallback(
           'on-nearby-printers-changed', [], discoveredPrinterList);
       flush();
 
@@ -1185,7 +1186,7 @@ suite('CupsNearbyPrintersTests', function() {
           assertTrue(!!nearbyPrintersElement);
 
           // Simuluate finding nearby printers.
-          cr.webUIListenerCallback(
+          webUIListenerCallback(
               'on-nearby-printers-changed', automaticPrinterList,
               discoveredPrinterList);
 
@@ -1295,7 +1296,7 @@ suite('CupsNearbyPrintersTests', function() {
           ];
 
           // Simuluate finding nearby printers.
-          cr.webUIListenerCallback(
+          webUIListenerCallback(
               'on-nearby-printers-changed', automaticPrinterList,
               discoveredPrinterList);
 
@@ -1332,7 +1333,7 @@ suite('CupsNearbyPrintersTests', function() {
       assertTrue(!!printerEntryListTestElement);
 
       // Simuluate finding nearby printers.
-      cr.webUIListenerCallback(
+      webUIListenerCallback(
           'on-nearby-printers-changed', [], discoveredPrinterList);
 
       flush();
@@ -1382,7 +1383,7 @@ suite('CupsNearbyPrintersTests', function() {
           createCupsPrinterInfo('google2', 'printerAddress5', 'printerId5'));
 
       // Simuluate finding nearby printers.
-      cr.webUIListenerCallback(
+      webUIListenerCallback(
           'on-nearby-printers-changed', [], discoveredPrinterList);
 
       flush();
@@ -1418,7 +1419,7 @@ suite('CupsNearbyPrintersTests', function() {
       assertTrue(!!printerEntryListTestElement);
 
       // Simuluate finding nearby printers.
-      cr.webUIListenerCallback(
+      webUIListenerCallback(
           'on-nearby-printers-changed', [], discoveredPrinterList);
 
       flush();

@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserChannel, UpdateStatus} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
-import {BrowserChannel,UpdateStatus} from 'chrome://os-settings/chromeos/os_settings.js';
 
 /** @implements {AboutPageBrowserProxy} */
 export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
@@ -83,7 +85,7 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
   }
 
   sendStatusNoInternet() {
-    cr.webUIListenerCallback('update-status-changed', {
+    webUIListenerCallback('update-status-changed', {
       progress: 0,
       status: UpdateStatus.FAILED,
       message: 'offline',
@@ -109,7 +111,7 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
   /** @override */
   refreshUpdateStatus() {
     if (this.sendUpdateStatus_) {
-      cr.webUIListenerCallback('update-status-changed', {
+      webUIListenerCallback('update-status-changed', {
         progress: 1,
         status: this.updateStatus_,
       });
@@ -210,7 +212,7 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
   /** @override */
   refreshTPMFirmwareUpdateStatus() {
     this.methodCalled('refreshTPMFirmwareUpdateStatus');
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'tpm-firmware-update-status-changed', this.tpmFirmwareUpdateStatus_);
   }
 

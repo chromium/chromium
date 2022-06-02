@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {Router, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -194,7 +195,7 @@ suite('SearchEngine', function() {
     searchEngineInfo.defaults[1].default = true;
     searchEngineInfo.defaults[2].default = false;
     await browserProxy.whenCalled('setDefaultSearchEngine');
-    cr.webUIListenerCallback('search-engines-changed', searchEngineInfo);
+    webUIListenerCallback('search-engines-changed', searchEngineInfo);
     flush();
 
     // The sublabel should now be updated to the new search engine.
@@ -208,7 +209,7 @@ suite('SearchEngine', function() {
     searchEngineInfo.defaults[2].default = true;
 
     browserProxy.resetResolver('setDefaultSearchEngine');
-    cr.webUIListenerCallback('search-engines-changed', searchEngineInfo);
+    webUIListenerCallback('search-engines-changed', searchEngineInfo);
     flush();
     assertEquals(
         searchEngineInfo.defaults[2].name,

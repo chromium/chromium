@@ -4,6 +4,7 @@
 
 import {MultiDeviceBrowserProxyImpl, NotificationAccessSetupOperationStatus} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -28,8 +29,8 @@ suite('Multidevice', () => {
    * @param {NotificationAccessSetupOperationStatus} status
    */
   function simulateStatusChanged(status) {
-    cr.webUIListenerCallback('settings.onNotificationAccessSetupStatusChanged',
-        status);
+    webUIListenerCallback(
+        'settings.onNotificationAccessSetupStatusChanged', status);
     flush();
   }
 

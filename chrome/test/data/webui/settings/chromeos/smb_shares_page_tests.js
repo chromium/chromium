@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {SmbBrowserProxyImpl, SmbMountResult} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
@@ -275,10 +276,10 @@ suite('AddSmbShareDialogTests', function() {
 
     await smbBrowserProxy.whenCalled('startDiscovery');
 
-    cr.webUIListenerCallback('on-shares-found', ['smb://foo/bar'], false);
+    webUIListenerCallback('on-shares-found', ['smb://foo/bar'], false);
     assertTrue(url.showLoading);
 
-    cr.webUIListenerCallback('on-shares-found', ['smb://foo/bar2'], true);
+    webUIListenerCallback('on-shares-found', ['smb://foo/bar2'], true);
     assertFalse(url.showLoading);
 
     assertEquals(2, url.items.length);

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
@@ -40,7 +41,7 @@ suite('Multidevice', function() {
     prefs.tabsSynced = false;
     flush();
 
-    cr.webUIListenerCallback('sync-prefs-changed', prefs);
+    webUIListenerCallback('sync-prefs-changed', prefs);
     flush();
 
     assertTrue(!!taskContinuationItem.$$(
@@ -54,7 +55,7 @@ suite('Multidevice', function() {
   test('Chrome Sync on', async () => {
     const prefs = getPrefs();
     prefs.tabsSynced = true;
-    cr.webUIListenerCallback('sync-prefs-changed', prefs);
+    webUIListenerCallback('sync-prefs-changed', prefs);
     flush();
 
     assertFalse(!!taskContinuationItem.$$(

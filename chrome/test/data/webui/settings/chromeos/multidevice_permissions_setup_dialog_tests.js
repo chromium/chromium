@@ -4,6 +4,7 @@
 
 import {MultiDeviceBrowserProxyImpl, PermissionsSetupStatus, SetupFlowStatus} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -31,7 +32,7 @@ suite('Multidevice', () => {
    * @param {PermissionsSetupStatus} status
    */
   function simulateNotificationStatusChanged(status) {
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'settings.onNotificationAccessSetupStatusChanged', status);
     flush();
   }
@@ -40,12 +41,12 @@ suite('Multidevice', () => {
    * @param {PermissionsSetupStatus} status
    */
   function simulateAppsStatusChanged(status) {
-    cr.webUIListenerCallback('settings.onAppsAccessSetupStatusChanged', status);
+    webUIListenerCallback('settings.onAppsAccessSetupStatusChanged', status);
     flush();
   }
 
   function simulateCombinedStatusChanged(status) {
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'settings.onCombinedAccessSetupStatusChanged', status);
     flush();
   }

@@ -5,6 +5,7 @@
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise, isVisible, waitAfterNextRender, waitBeforeNextRender} from 'chrome://test/test_util.js';
@@ -27,24 +28,24 @@ suite('ManageAccessibilityPageTests', function() {
     /** @param {boolean} hasMouse */
     set hasMouse(hasMouse) {
       this.hasMouse_ = hasMouse;
-      cr.webUIListenerCallback('has-mouse-changed', this.hasMouse_);
+      webUIListenerCallback('has-mouse-changed', this.hasMouse_);
     }
 
     /** @param {boolean} hasTouchpad */
     set hasTouchpad(hasTouchpad) {
       this.hasTouchpad_ = hasTouchpad;
-      cr.webUIListenerCallback('has-touchpad-changed', this.hasTouchpad_);
+      webUIListenerCallback('has-touchpad-changed', this.hasTouchpad_);
     }
 
     /** @override */
     initializePointers() {
-      cr.webUIListenerCallback('has-mouse-changed', this.hasMouse_);
-      cr.webUIListenerCallback('has-touchpad-changed', this.hasTouchpad_);
+      webUIListenerCallback('has-mouse-changed', this.hasMouse_);
+      webUIListenerCallback('has-touchpad-changed', this.hasTouchpad_);
     }
 
     /** @override */
     initializeKeyboardWatcher() {
-      cr.webUIListenerCallback('has-hardware-keyboard', this.hasKeyboard_);
+      webUIListenerCallback('has-hardware-keyboard', this.hasKeyboard_);
     }
   }
 
@@ -282,7 +283,7 @@ suite('ManageAccessibilityPageTests', function() {
       recommended: true,
       value: 'en-US',
     }];
-    cr.webUIListenerCallback('dictation-locales-set', locales);
+    webUIListenerCallback('dictation-locales-set', locales);
     flush();
 
     // Dictation toggle.
@@ -307,8 +308,7 @@ suite('ManageAccessibilityPageTests', function() {
         dictationLocaleMenuSubtitle.innerText);
 
     // Fake a request to change the dictation locale menu subtitle.
-    cr.webUIListenerCallback(
-        'dictation-locale-menu-subtitle-changed', 'Testing');
+    webUIListenerCallback('dictation-locale-menu-subtitle-changed', 'Testing');
     flush();
 
     // Only the dictation locale subtitle should have changed.
@@ -355,7 +355,7 @@ suite('ManageAccessibilityPageTests', function() {
         value: 'fr-FR'
       }
     ];
-    cr.webUIListenerCallback('dictation-locales-set', locales);
+    webUIListenerCallback('dictation-locales-set', locales);
     page.dictationLocaleSubtitleOverride_ = 'Testing';
     flush();
     assertEquals(

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {MultiDeviceBrowserProxyImpl, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -28,7 +29,7 @@ suite('Multidevice', function() {
    * @param {!MultiDevicePageContentData}
    */
   function setPageContentData(newPageContentData) {
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'settings.updateMultidevicePageContentData', newPageContentData);
     flush();
   }
@@ -37,9 +38,8 @@ suite('Multidevice', function() {
    * Sets screen lock status via WebUI Listener and flushes.
    */
   function setScreenLockStatus(chromeStatus, phoneStatus) {
-    cr.webUIListenerCallback(
-        'settings.OnEnableScreenLockChanged', chromeStatus);
-    cr.webUIListenerCallback('settings.OnScreenLockStatusChanged', phoneStatus);
+    webUIListenerCallback('settings.OnEnableScreenLockChanged', chromeStatus);
+    webUIListenerCallback('settings.OnScreenLockStatusChanged', phoneStatus);
     flush();
   }
 

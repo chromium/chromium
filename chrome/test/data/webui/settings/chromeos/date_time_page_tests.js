@@ -5,6 +5,7 @@
 import {TimeZoneAutoDetectMethod, TimeZoneBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
@@ -438,7 +439,7 @@ suite('settings-date-time-page', function() {
     assertTrue(timeZoneAutoDetectOff.disabled);
 
     await testBrowserProxy.whenCalled('showParentAccessForTimeZone');
-    cr.webUIListenerCallback('access-code-validation-complete');
+    webUIListenerCallback('access-code-validation-complete');
 
     // Verify elements are enabled.
     assertFalse(resolveMethodDropdown.disabled);
@@ -478,7 +479,7 @@ suite('settings-date-time-page', function() {
     assertTrue(timeZoneAutoDetectOff.disabled);
 
     await testBrowserProxy.whenCalled('showParentAccessForTimeZone');
-    cr.webUIListenerCallback('access-code-validation-complete');
+    webUIListenerCallback('access-code-validation-complete');
 
     // |resolveMethodDropdown| is disabled when auto detect off.
     assertTrue(resolveMethodDropdown.disabled);
@@ -499,7 +500,7 @@ suite('settings-date-time-page', function() {
     assertEquals(0, setDateTimeButton.offsetHeight);
 
     // Make the date and time editable.
-    cr.webUIListenerCallback('can-set-date-time-changed', true);
+    webUIListenerCallback('can-set-date-time-changed', true);
     await flushTasks();
     assertGT(setDateTimeButton.offsetHeight, 0);
 
@@ -509,7 +510,7 @@ suite('settings-date-time-page', function() {
     assertEquals(1, testBrowserProxy.getCallCount('showSetDateTimeUI'));
 
     // Make the date and time not editable.
-    cr.webUIListenerCallback('can-set-date-time-changed', false);
+    webUIListenerCallback('can-set-date-time-changed', false);
     assertEquals(setDateTimeButton.offsetHeight, 0);
   });
 });

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {OsSyncBrowserProxyImpl, SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
@@ -53,7 +54,7 @@ suite('Multidevice_WifiSyncItem_CategorizationDisabled', function() {
   test('Chrome Sync off', async () => {
     const prefs = getPrefs();
     prefs.wifiConfigurationsSynced = false;
-    cr.webUIListenerCallback('sync-prefs-changed', prefs);
+    webUIListenerCallback('sync-prefs-changed', prefs);
     flush();
 
     assertTrue(
@@ -68,7 +69,7 @@ suite('Multidevice_WifiSyncItem_CategorizationDisabled', function() {
   test('Chrome Sync on', async () => {
     const prefs = getPrefs();
     prefs.wifiConfigurationsSynced = true;
-    cr.webUIListenerCallback('sync-prefs-changed', prefs);
+    webUIListenerCallback('sync-prefs-changed', prefs);
     flush();
 
     assertFalse(
@@ -114,7 +115,7 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
   test('Wifi Sync off', async () => {
     const prefs = getOsPrefs();
     prefs.osWifiConfigurationsSynced = false;
-    cr.webUIListenerCallback('os-sync-prefs-changed', prefs);
+    webUIListenerCallback('os-sync-prefs-changed', prefs);
     flush();
 
     assertTrue(
@@ -129,7 +130,7 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
   test('Wifi Sync on', async () => {
     const prefs = getOsPrefs();
     prefs.osWifiConfigurationsSynced = true;
-    cr.webUIListenerCallback('os-sync-prefs-changed', prefs);
+    webUIListenerCallback('os-sync-prefs-changed', prefs);
     flush();
 
     assertFalse(

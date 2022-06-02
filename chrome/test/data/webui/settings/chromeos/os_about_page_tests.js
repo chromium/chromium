@@ -4,6 +4,7 @@
 
 import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
 import {AboutPageBrowserProxyImpl, BrowserChannel, DeviceNameBrowserProxyImpl, DeviceNameState, LifetimeBrowserProxyImpl, Router, routes, SetDeviceNameResult, UpdateStatus} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -53,7 +54,7 @@ suite('AboutPageTest', function() {
    */
   function fireStatusChanged(status, opt_options) {
     const options = opt_options || {};
-    cr.webUIListenerCallback('update-status-changed', {
+    webUIListenerCallback('update-status-changed', {
       progress: options.progress === undefined ? 1 : options.progress,
       message: options.message,
       status: status,
@@ -1054,7 +1055,7 @@ suite('DetailedBuildInfoTest', function() {
    * @return {!Promise}
    */
   function checkDeviceNameMetadata(testDeviceName, deviceNameState) {
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'settings.updateDeviceNameMetadata',
         {deviceName: testDeviceName, deviceNameState: deviceNameState});
 

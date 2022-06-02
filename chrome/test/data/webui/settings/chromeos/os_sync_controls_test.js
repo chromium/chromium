@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OsSyncBrowserProxyImpl, Router, StatusAction, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {OsSyncBrowserProxyImpl, Router, routes, StatusAction} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
@@ -71,7 +73,7 @@ function getDefaultSyncStatus() {
 }
 
 function setupSync() {
-  cr.webUIListenerCallback('os-sync-prefs-changed', getSyncAllPrefs());
+  webUIListenerCallback('os-sync-prefs-changed', getSyncAllPrefs());
   flush();
 }
 
@@ -141,7 +143,7 @@ suite('OsSyncControlsTest', function() {
   test('PrefChangeUpdatesControls', function() {
     const prefs = getSyncAllPrefs();
     prefs.syncAllOsTypes = false;
-    cr.webUIListenerCallback('os-sync-prefs-changed', prefs);
+    webUIListenerCallback('os-sync-prefs-changed', prefs);
 
     const datatypeControls = syncControls.shadowRoot.querySelectorAll(
         '.list-item:not([hidden]) > cr-toggle');

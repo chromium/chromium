@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {FingerprintBrowserProxyImpl, FingerprintResultType, FingerprintSetupStep, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks, isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
@@ -41,7 +42,7 @@ class TestFingerprintBrowserProxy extends TestBrowserProxy {
       this.fingerprintsList_.push('New Label');
     }
 
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'on-fingerprint-scan-received',
         {result: result, isComplete: complete, percentComplete: percent});
   }

@@ -4,13 +4,15 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {SwitchAccessSubpageBrowserProxyImpl, SwitchAccessSubpageBrowserProxy, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, routes, SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
-import {assertEquals, assertDeepEquals} from '../../chai_assert.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://test/test_util.js';
+
+import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /**
  * @implements {SwitchAccessSubpageBrowserProxy}
@@ -116,7 +118,7 @@ suite('ManageAccessibilityPageTests', function() {
    * @return {string} Sub-label text from the select link row.
    */
   function getSublabelForSelectUpdates(keys) {
-    cr.webUIListenerCallback('switch-access-assignments-changed', {
+    webUIListenerCallback('switch-access-assignments-changed', {
       select: keys.map(key => ({key, device: 'usb'})),
       next: [],
       previous: []
@@ -136,7 +138,7 @@ suite('ManageAccessibilityPageTests', function() {
     assertEquals(0, page.previousAssignments_.length);
 
     // Simulate a pref change for the select action.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'switch-access-assignments-changed',
         {select: [{key: 'a', device: 'usb'}], next: [], previous: []});
 
@@ -188,15 +190,15 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Make sure we populate the initial |keyCodes_| state on the
     // SwitchAccessActionAssignmentDialog.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'switch-access-assignments-changed',
         {select: [], next: [], previous: []});
 
     // Simulate pressing 'a' twice.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'switch-access-got-key-press-for-assignment',
         {key: 'a', keyCode: 65, device: 'usb'});
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'switch-access-got-key-press-for-assignment',
         {key: 'a', keyCode: 65, device: 'usb'});
 
@@ -215,10 +217,10 @@ suite('ManageAccessibilityPageTests', function() {
         'notifySwitchAccessActionAssignmentPaneActive');
 
     // Simulate pressing 'a', and then 'b'.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'switch-access-got-key-press-for-assignment',
         {key: 'a', keyCode: 65, device: 'usb'});
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'switch-access-got-key-press-for-assignment',
         {key: 'b', keyCode: 66, device: 'usb'});
 

@@ -5,6 +5,7 @@
 import 'chrome://os-settings/chromeos/os_settings.js';
 
 import {GuestOsBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://test/test_util.js';
 
@@ -24,7 +25,7 @@ class TestGuestOsBrowserProxy extends TestBrowserProxy {
   /** @override */
   notifyGuestOsSharedUsbDevicesPageReady() {
     this.methodCalled('notifyGuestOsSharedUsbDevicesPageReady');
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'guest-os-shared-usb-devices-changed', this.sharedUsbDevices);
   }
 
@@ -92,7 +93,7 @@ suite('SharedUsbDevices', function() {
     assertEquals('0001', args[1]);
     assertEquals(true, args[2]);
     // Simulate a change in the underlying model.
-    cr.webUIListenerCallback('guest-os-shared-usb-devices-changed', [
+    webUIListenerCallback('guest-os-shared-usb-devices-changed', [
       {
         guid: '0001',
         label: 'usb_dev1',

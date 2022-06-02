@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {assertTrue, assertFalse} from '../../chai_assert.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertFalse, assertTrue} from '../../chai_assert.js';
 
 suite('SwitchAccessSetupGuideDialogTest', function() {
   /** @type {SettingsSwitchAccessSetupGuideDialog} */
@@ -383,7 +385,7 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     assertEquals('select', assignContents.firstChild.action);
 
     // Simulate the pane exiting without successfully assigning a switch.
-    cr.webUIListenerCallback('exit-pane');
+    webUIListenerCallback('exit-pane');
 
     // Confirm the page has not changed and the pane was loaded.
     assertEquals(/*Assign select=*/ 1, dialog.currentPageId_);

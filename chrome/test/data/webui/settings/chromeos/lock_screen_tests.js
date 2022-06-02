@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
@@ -52,19 +53,19 @@ suite('LockScreenPage', function() {
     // This block is not really validating the change because it checks the same
     // state as initial. However it improves the reliability of the next assert
     // block as it adds some wait time.
-    cr.webUIListenerCallback('quick-unlock-disabled-by-policy-changed', false);
+    webUIListenerCallback('quick-unlock-disabled-by-policy-changed', false);
     await flushTasks();
     assertFalse(
         unlockTypeRadioGroup.disabled,
         'Unlock type radio group unexpectedly disabled after policy change');
 
-    cr.webUIListenerCallback('quick-unlock-disabled-by-policy-changed', true);
+    webUIListenerCallback('quick-unlock-disabled-by-policy-changed', true);
     await flushTasks();
     assertTrue(
         unlockTypeRadioGroup.disabled,
         'Unlock type radio group unexpectedly enabled after policy change');
 
-    cr.webUIListenerCallback('quick-unlock-disabled-by-policy-changed', false);
+    webUIListenerCallback('quick-unlock-disabled-by-policy-changed', false);
     await flushTasks();
     assertFalse(
         unlockTypeRadioGroup.disabled,

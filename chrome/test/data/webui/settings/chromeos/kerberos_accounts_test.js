@@ -11,6 +11,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {flushTasks} from 'chrome://test/test_util.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {waitAfterNextRender} from 'chrome://test/test_util.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
 // Tests for the Kerberos Accounts settings page.
 suite('KerberosAccountsTests', function() {
@@ -255,7 +256,7 @@ suite('KerberosAccountsTests', function() {
 
   test('AccountListIsUpdatedWhenKerberosAccountsUpdates', function() {
     assertEquals(1, browserProxy.getCallCount('getAccounts'));
-    cr.webUIListenerCallback('kerberos-accounts-changed');
+    webUIListenerCallback('kerberos-accounts-changed');
     assertEquals(2, browserProxy.getCallCount('getAccounts'));
   });
 

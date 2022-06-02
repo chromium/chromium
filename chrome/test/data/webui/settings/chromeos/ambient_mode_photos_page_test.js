@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {AmbientModeBrowserProxyImpl, AmbientModeTopicSource} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
@@ -570,7 +571,7 @@ suite('AmbientModeHandler', function() {
 
     // Update album URL.
     const url = 'url';
-    cr.webUIListenerCallback('album-preview-changed', {
+    webUIListenerCallback('album-preview-changed', {
       topicSource: AmbientModeTopicSource.ART_GALLERY,
       albumId: 'id0',
       url: url
@@ -592,7 +593,7 @@ suite('AmbientModeHandler', function() {
 
     // Different topic source will no update album URL.
     const url = 'chrome://ambient';
-    cr.webUIListenerCallback('album-preview-changed', {
+    webUIListenerCallback('album-preview-changed', {
       topicSource: AmbientModeTopicSource.GOOGLE_PHOTOS,
       albumId: 'id0',
       url: url
@@ -617,7 +618,7 @@ suite('AmbientModeHandler', function() {
 
     // Update album URL.
     const url = 'url';
-    cr.webUIListenerCallback('album-preview-changed', {
+    webUIListenerCallback('album-preview-changed', {
       topicSource: AmbientModeTopicSource.ART_GALLERY,
       albumId: 'id0',
       url: url
@@ -648,7 +649,7 @@ suite('AmbientModeHandler', function() {
 
     // Update Recent Highlights album URLs.
     const url = 'url';
-    cr.webUIListenerCallback('album-preview-changed', {
+    webUIListenerCallback('album-preview-changed', {
       topicSource: AmbientModeTopicSource.GOOGLE_PHOTOS,
       albumId: 'id0',
       recentHighlightsUrls: [url, url, url, url]
@@ -697,7 +698,7 @@ suite('AmbientModeHandler', function() {
 
     // Only update 3 images.
     const url = 'url';
-    cr.webUIListenerCallback('album-preview-changed', {
+    webUIListenerCallback('album-preview-changed', {
       topicSource: AmbientModeTopicSource.GOOGLE_PHOTOS,
       albumId: 'id0',
       recentHighlightsUrls: [url, url, url]

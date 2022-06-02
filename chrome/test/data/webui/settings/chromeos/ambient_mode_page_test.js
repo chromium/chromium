@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 import {AmbientModeBrowserProxyImpl, AmbientModeTemperatureUnit, AmbientModeTopicSource, CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://test/test_util.js';
@@ -132,12 +134,12 @@ suite('AmbientModeHandler', function() {
     assertFalse(!!topicSourceListDiv);
 
     // Select the google photos topic source.
-    cr.webUIListenerCallback('topic-source-changed', {
+    webUIListenerCallback('topic-source-changed', {
       'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
       'hasAlbums': true
     });
     // Select celsius as the initial temperature unit.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
@@ -156,12 +158,12 @@ suite('AmbientModeHandler', function() {
 
   test('topicSourceItemHasCorrectRowHeight', function() {
     // Select the google photos topic source.
-    cr.webUIListenerCallback('topic-source-changed', {
+    webUIListenerCallback('topic-source-changed', {
       'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
       'hasAlbums': true
     });
     // Select celsius as the initial temperature unit.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
@@ -177,12 +179,12 @@ suite('AmbientModeHandler', function() {
 
   test('doubleClickTopicSource', () => {
     // Select the google photos topic source.
-    cr.webUIListenerCallback('topic-source-changed', {
+    webUIListenerCallback('topic-source-changed', {
       'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
       'hasAlbums': true
     });
     // Select celsius as the initial temperature unit.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
@@ -217,12 +219,12 @@ suite('AmbientModeHandler', function() {
     Router.getInstance().navigateTo(routes.AMBIENT_MODE, params);
 
     // Select the google photos topic source.
-    cr.webUIListenerCallback('topic-source-changed', {
+    webUIListenerCallback('topic-source-changed', {
       'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
       'hasAlbums': true
     });
     // Select celsius as the initial temperature unit.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
@@ -237,7 +239,7 @@ suite('AmbientModeHandler', function() {
 
   test('temperatureUnitRadioButtonsVisibility', () => {
     // Select the google photos topic source.
-    cr.webUIListenerCallback('topic-source-changed', {
+    webUIListenerCallback('topic-source-changed', {
       'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
       'hasAlbums': true
     });
@@ -251,7 +253,7 @@ suite('AmbientModeHandler', function() {
 
     // When |selectedTemperatureUnit_| is valid the radio buttons should be
     // visible and enabled.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
@@ -263,12 +265,12 @@ suite('AmbientModeHandler', function() {
 
   test('temperatureUnitRadioButtons', async () => {
     // Select the google photos topic source.
-    cr.webUIListenerCallback('topic-source-changed', {
+    webUIListenerCallback('topic-source-changed', {
       'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
       'hasAlbums': true
     });
     // Select celsius as the initial temperature unit.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
@@ -311,12 +313,12 @@ suite('AmbientModeHandler', function() {
 
   test('temperatureUnitRadioButtonsDoubleClick', async () => {
     // Select the google photos topic source.
-    cr.webUIListenerCallback('topic-source-changed', {
+    webUIListenerCallback('topic-source-changed', {
       'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
       'hasAlbums': true
     });
     // Select celsius as the initial temperature unit.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
@@ -332,12 +334,12 @@ suite('AmbientModeHandler', function() {
 
   test('topicSourceAndWeatherDisabledWhenToggleOff', () => {
     // Select the google photos topic source.
-    cr.webUIListenerCallback('topic-source-changed', {
+    webUIListenerCallback('topic-source-changed', {
       'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
       'hasAlbums': true
     });
     // Select celsius as the initial temperature unit.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
     flush();
 
