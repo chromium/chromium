@@ -229,7 +229,7 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
   return part;
 }
 
-void LayoutTheme::AdjustStyle(const Element* e, ComputedStyle& style) {
+void LayoutTheme::AdjustStyle(const Element* element, ComputedStyle& style) {
   ControlPart original_part = style.Appearance();
   style.SetEffectiveAppearance(original_part);
   if (original_part == ControlPart::kNoControlPart)
@@ -253,12 +253,12 @@ void LayoutTheme::AdjustStyle(const Element* e, ComputedStyle& style) {
     style.SetDisplay(EDisplay::kBlock);
 
   ControlPart part = AdjustAppearanceWithAuthorStyle(
-      AdjustAppearanceWithElementType(style, e), style);
+      AdjustAppearanceWithElementType(style, element), style);
   style.SetEffectiveAppearance(part);
   DCHECK_NE(part, kAutoPart);
   if (part == kNoControlPart)
     return;
-  DCHECK(e);
+  DCHECK(element);
   // After this point, a Node must be non-null Element if
   // EffectiveAppearance() != kNoControlPart.
 
@@ -280,8 +280,8 @@ void LayoutTheme::AdjustStyle(const Element* e, ComputedStyle& style) {
       break;
   }
 
-  if (IsSliderContainer(*e))
-    AdjustSliderContainerStyle(*e, style);
+  if (IsSliderContainer(*element))
+    AdjustSliderContainerStyle(*element, style);
 }
 
 String LayoutTheme::ExtraDefaultStyleSheet() {
@@ -462,9 +462,9 @@ void LayoutTheme::AdjustMenuListStyle(ComputedStyle& style) const {
 
 void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyle&) const {}
 
-void LayoutTheme::AdjustSliderContainerStyle(const Element& e,
+void LayoutTheme::AdjustSliderContainerStyle(const Element& element,
                                              ComputedStyle& style) const {
-  DCHECK(IsSliderContainer(e));
+  DCHECK(IsSliderContainer(element));
 
   if (style.EffectiveAppearance() == kSliderVerticalPart) {
     style.SetTouchAction(TouchAction::kPanX);
@@ -474,7 +474,7 @@ void LayoutTheme::AdjustSliderContainerStyle(const Element& e,
   } else {
     style.SetTouchAction(TouchAction::kPanY);
     style.SetWritingMode(WritingMode::kHorizontalTb);
-    if (To<HTMLInputElement>(e.OwnerShadowHost())->list()) {
+    if (To<HTMLInputElement>(element.OwnerShadowHost())->list()) {
       style.SetAlignSelf(StyleSelfAlignmentData(ItemPosition::kCenter,
                                                 OverflowAlignment::kUnsafe));
     }
