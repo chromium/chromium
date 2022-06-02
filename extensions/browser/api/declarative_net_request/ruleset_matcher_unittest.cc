@@ -1383,9 +1383,7 @@ TEST_F(AllowAllRequestsTest, GetBeforeRequestAction) {
     params.first_party_origin = url::Origin::Create(google_url);
     params.is_third_party = true;
     params.element_type = url_pattern_index::flat::ElementType_SUBDOCUMENT;
-    params.parent_routing_id = content::GlobalRenderFrameHostId(
-        web_contents->GetMainFrame()->GetProcess()->GetID(),
-        web_contents->GetMainFrame()->GetRoutingID());
+    params.parent_routing_id = web_contents->GetMainFrame()->GetGlobalId();
 
     EXPECT_EQ(test_case.expected_action,
               matcher->GetBeforeRequestAction(params));
