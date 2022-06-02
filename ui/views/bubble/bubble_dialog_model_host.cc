@@ -450,6 +450,7 @@ void BubbleDialogModelHost::OnWidgetInitialized() {
     // The banner is supposed to be purely decorative.
     banner_view->GetViewAccessibility().OverrideIsIgnored(true);
     GetBubbleFrameView()->SetHeaderView(std::move(banner_view));
+    SizeToContents();
   }
 }
 
