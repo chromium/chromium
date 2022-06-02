@@ -146,12 +146,11 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
 
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    // We know that the model executor itself works fine (that's tested
+    // elsewhere), so just make sure that all the plumbing for the model
+    // execution: job, queue, background sequences, etc, are working correctly.
     base::FilePath model_file_path =
-        source_root_dir.AppendASCII("components")
-            .AppendASCII("test")
-            .AppendASCII("data")
-            .AppendASCII("optimization_guide")
-            .AppendASCII("bert_page_topics_model.tflite");
+        source_root_dir.AppendASCII("non_existent_model.tflite");
     std::unique_ptr<ModelInfo> model_info =
         TestModelInfoBuilder()
             .SetModelFilePath(model_file_path)
@@ -173,12 +172,11 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
 
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    // We know that the model executor itself works fine (that's tested
+    // elsewhere), so just make sure that all the plumbing for the model
+    // execution: job, queue, background sequences, etc, are working correctly.
     base::FilePath model_file_path =
-        source_root_dir.AppendASCII("components")
-            .AppendASCII("test")
-            .AppendASCII("data")
-            .AppendASCII("optimization_guide")
-            .AppendASCII("bert_page_topics_model.tflite");
+        source_root_dir.AppendASCII("non_existent_model.tflite");
     std::unique_ptr<ModelInfo> model_info =
         TestModelInfoBuilder()
             .SetModelFilePath(model_file_path)
@@ -246,12 +244,8 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   EXPECT_FALSE(GetMetadataForEntityId("someid").has_value());
 }
 
-// TODO(crbug.com/1286473): Flaky on Chrome OS and MSAN.
-TEST_F(PageContentAnnotationsModelManagerTest, DISABLED_PageTopics) {
+TEST_F(PageContentAnnotationsModelManagerTest, PageTopics) {
   SetupPageTopicsV2ModelExecutor();
-
-  // Running the actual model can take a while.
-  base::test::ScopedRunLoopTimeout scoped_timeout(FROM_HERE, base::Seconds(60));
 
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
@@ -271,13 +265,13 @@ TEST_F(PageContentAnnotationsModelManagerTest, DISABLED_PageTopics) {
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutor.ExecutionStatus.PageTopicsV2",
-      ExecutionStatus::kSuccess, 1);
+      ExecutionStatus::kErrorModelFileNotValid, 1);
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotations.BatchRequestedSize.PageTopics",
       1, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.BatchSuccess.PageTopics", true,
+      "OptimizationGuide.PageContentAnnotations.BatchSuccess.PageTopics", false,
       1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentAnnotations.JobExecutionTime.PageTopics",
@@ -291,7 +285,7 @@ TEST_F(PageContentAnnotationsModelManagerTest, DISABLED_PageTopics) {
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
   EXPECT_EQ(result[0].type(), AnnotationType::kPageTopics);
-  EXPECT_NE(result[0].topics(), absl::nullopt);
+  EXPECT_EQ(result[0].topics(), absl::nullopt);
   EXPECT_EQ(result[0].entities(), absl::nullopt);
   EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
 }
@@ -408,13 +402,7 @@ TEST_F(PageContentAnnotationsModelManagerTest, PageEntities) {
   EXPECT_EQ(result[1].type(), AnnotationType::kPageEntities);
 }
 
-// TODO(crbug.com/1286473): Flaky on Chrome OS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PageVisibility DISABLED_PageVisibility
-#else
-#define MAYBE_PageVisibility PageVisibility
-#endif
-TEST_F(PageContentAnnotationsModelManagerTest, MAYBE_PageVisibility) {
+TEST_F(PageContentAnnotationsModelManagerTest, PageVisibility) {
   base::HistogramTester histogram_tester;
   proto::Any any_metadata;
   any_metadata.set_type_url(
@@ -438,9 +426,6 @@ TEST_F(PageContentAnnotationsModelManagerTest, MAYBE_PageVisibility) {
       },
       &run_loop, &result);
 
-  // Running the actual model can take a while.
-  base::test::ScopedRunLoopTimeout scoped_timeout(FROM_HERE, base::Seconds(60));
-
   model_manager()->Annotate(std::move(callback), {"input"},
                             AnnotationType::kContentVisibility);
   run_loop.Run();
@@ -453,7 +438,7 @@ TEST_F(PageContentAnnotationsModelManagerTest, MAYBE_PageVisibility) {
       1, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotations.BatchSuccess.ContentVisibility",
-      true, 1);
+      false, 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentAnnotations.JobExecutionTime."
       "ContentVisibility",
@@ -467,7 +452,7 @@ TEST_F(PageContentAnnotationsModelManagerTest, MAYBE_PageVisibility) {
   EXPECT_EQ(result[0].input(), "input");
   EXPECT_EQ(result[0].topics(), absl::nullopt);
   EXPECT_EQ(result[0].entities(), absl::nullopt);
-  EXPECT_EQ(result[0].visibility_score(), absl::make_optional(-1.0));
+  EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest, PageVisibilityDisabled) {
@@ -527,20 +512,10 @@ TEST_F(PageContentAnnotationsModelManagerTest, PageVisibilityDisabled) {
   EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
 }
 
-// TODO(crbug.com/1286473): Flaky on Chrome OS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CalledTwice DISABLED_CalledTwice
-#else
-#define MAYBE_CalledTwice CalledTwice
-#endif
-TEST_F(PageContentAnnotationsModelManagerTest, MAYBE_CalledTwice) {
+TEST_F(PageContentAnnotationsModelManagerTest, CalledTwice) {
   SetupPageTopicsV2ModelExecutor();
 
   base::HistogramTester histogram_tester;
-
-  // Running the actual model can take a while.
-  base::test::ScopedRunLoopTimeout scoped_timeout(FROM_HERE,
-                                                  base::Seconds(120));
 
   base::RunLoop run_loop1;
   std::vector<BatchAnnotationResult> result1;
@@ -580,7 +555,7 @@ TEST_F(PageContentAnnotationsModelManagerTest, MAYBE_CalledTwice) {
       "OptimizationGuide.PageContentAnnotations.BatchRequestedSize.PageTopics",
       1, 2);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.BatchSuccess.PageTopics", true,
+      "OptimizationGuide.PageContentAnnotations.BatchSuccess.PageTopics", false,
       2);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentAnnotations.JobExecutionTime.PageTopics",
@@ -591,18 +566,18 @@ TEST_F(PageContentAnnotationsModelManagerTest, MAYBE_CalledTwice) {
   // The model should have only been loaded once and then used for both jobs.
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutor.ModelAvailableToLoad.PageTopicsV2", true,
-      1);
+      2);
 
   ASSERT_EQ(result1.size(), 1U);
   EXPECT_EQ(result1[0].input(), "input1");
   EXPECT_EQ(result1[0].type(), AnnotationType::kPageTopics);
-  EXPECT_NE(result1[0].topics(), absl::nullopt);
+  EXPECT_EQ(result1[0].topics(), absl::nullopt);
   EXPECT_EQ(result1[0].entities(), absl::nullopt);
   EXPECT_EQ(result1[0].visibility_score(), absl::nullopt);
   ASSERT_EQ(result2.size(), 1U);
   EXPECT_EQ(result2[0].input(), "input2");
   EXPECT_EQ(result2[0].type(), AnnotationType::kPageTopics);
-  EXPECT_NE(result2[0].topics(), absl::nullopt);
+  EXPECT_EQ(result2[0].topics(), absl::nullopt);
   EXPECT_EQ(result2[0].entities(), absl::nullopt);
   EXPECT_EQ(result2[0].visibility_score(), absl::nullopt);
 }
