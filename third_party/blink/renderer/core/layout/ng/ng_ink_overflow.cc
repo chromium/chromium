@@ -530,38 +530,20 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
   const Vector<AppliedTextDecoration>& decorations =
       style.AppliedTextDecorations();
 
-  // text-underline-position may flip underline and overline.
-  ResolvedUnderlinePosition underline_position =
-      decoration_info.UnderlinePosition();
-  bool flip_underline_and_overline = false;
-  if (underline_position == ResolvedUnderlinePosition::kOver) {
-    flip_underline_and_overline = true;
-    underline_position = ResolvedUnderlinePosition::kUnder;
-  }
-
   gfx::RectF accumulated_bound;
   for (wtf_size_t applied_decoration_index = 0;
        applied_decoration_index < decorations.size();
        ++applied_decoration_index) {
-    const AppliedTextDecoration& decoration =
-        decorations[applied_decoration_index];
-    TextDecorationLine lines = decoration.Lines();
-    bool has_underline = EnumHasFlags(lines, TextDecorationLine::kUnderline);
-    bool has_overline = EnumHasFlags(lines, TextDecorationLine::kOverline);
-    if (flip_underline_and_overline)
-      std::swap(has_underline, has_overline);
-
     decoration_info.SetDecorationIndex(applied_decoration_index);
-
-    if (has_underline) {
-      decoration_info.SetUnderlineLineData(decoration, decoration_offset);
+    if (decoration_info.HasUnderline()) {
+      decoration_info.SetUnderlineLineData(decoration_offset);
       accumulated_bound.Union(decoration_info.Bounds());
     }
-    if (has_overline) {
+    if (decoration_info.HasOverline()) {
       decoration_info.SetOverlineLineData(decoration_offset);
       accumulated_bound.Union(decoration_info.Bounds());
     }
-    if (EnumHasFlags(lines, TextDecorationLine::kLineThrough)) {
+    if (decoration_info.HasLineThrough()) {
       decoration_info.SetLineThroughLineData();
       accumulated_bound.Union(decoration_info.Bounds());
     }

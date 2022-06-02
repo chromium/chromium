@@ -161,6 +161,9 @@ void TextDecorationInfo::UpdateForDecorationIndex() {
             static_cast<int>(target_style_.AppliedTextDecorations().size()));
   applied_text_decoration_ =
       &target_style_.AppliedTextDecorations()[decoration_index_];
+  lines_ = applied_text_decoration_->Lines();
+  has_underline_ = EnumHasFlags(lines_, TextDecorationLine::kUnderline);
+  has_overline_ = EnumHasFlags(lines_, TextDecorationLine::kOverline);
 
   // Compute the |ComputedStyle| of the decorating box.
   //
@@ -174,8 +177,19 @@ void TextDecorationInfo::UpdateForDecorationIndex() {
   DCHECK(decorating_box_style);
   if (decorating_box_style != decorating_box_style_) {
     decorating_box_style_ = decorating_box_style;
-    underline_position_ = ResolveUnderlinePosition(*decorating_box_style,
-                                                   baseline_type_override_);
+    original_underline_position_ = ResolveUnderlinePosition(
+        *decorating_box_style, baseline_type_override_);
+
+    // text-underline-position may flip underline and overline.
+    flip_underline_and_overline_ =
+        original_underline_position_ == ResolvedUnderlinePosition::kOver;
+  }
+
+  if (UNLIKELY(flip_underline_and_overline_)) {
+    flipped_underline_position_ = ResolvedUnderlinePosition::kUnder;
+    std::swap(has_underline_, has_overline_);
+  } else {
+    flipped_underline_position_ = original_underline_position_;
   }
 
   // Compute the |Font| and its properties.
@@ -245,34 +259,29 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
 }
 
 void TextDecorationInfo::SetUnderlineLineData(
-    const AppliedTextDecoration& decoration,
     const TextDecorationOffsetBase& decoration_offset) {
-  ResolvedUnderlinePosition underline_position = UnderlinePosition();
-  Length line_offset;
-  if (UNLIKELY(underline_position == ResolvedUnderlinePosition::kOver)) {
-    // Don't apply text-underline-offset to overlines. |line_offset| is zero.
-    underline_position = ResolvedUnderlinePosition::kUnder;
-  } else {
-    line_offset = decoration.UnderlineOffset();
-  }
+  DCHECK(HasUnderline());
+  // Don't apply text-underline-offset to overlines. |line_offset| is zero.
+  const Length line_offset = UNLIKELY(flip_underline_and_overline_)
+                                 ? Length()
+                                 : applied_text_decoration_->UnderlineOffset();
   const int paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
-      underline_position, ComputedFontSize(), FontData(), line_offset,
+      FlippedUnderlinePosition(), ComputedFontSize(), FontData(), line_offset,
       ResolvedThickness());
   SetLineData(TextDecorationLine::kUnderline, paint_underline_offset);
 }
 
 void TextDecorationInfo::SetOverlineLineData(
     const TextDecorationOffsetBase& decoration_offset) {
-  bool flip_underline_and_overline =
-      UnderlinePosition() == ResolvedUnderlinePosition::kOver;
-
+  DCHECK(HasOverline());
   // Don't apply text-underline-offset to overline.
-  const Length line_offset = flip_underline_and_overline
+  const Length line_offset = UNLIKELY(flip_underline_and_overline_)
                                  ? applied_text_decoration_->UnderlineOffset()
                                  : Length();
   const FontVerticalPositionType position =
-      flip_underline_and_overline ? FontVerticalPositionType::TopOfEmHeight
-                                  : FontVerticalPositionType::TextTop;
+      UNLIKELY(flip_underline_and_overline_)
+          ? FontVerticalPositionType::TopOfEmHeight
+          : FontVerticalPositionType::TextTop;
   const int paint_overline_offset =
       decoration_offset.ComputeUnderlineOffsetForUnder(
           line_offset, Style().ComputedFontSize(), FontData(),
@@ -281,6 +290,7 @@ void TextDecorationInfo::SetOverlineLineData(
 }
 
 void TextDecorationInfo::SetLineThroughLineData() {
+  DCHECK(HasLineThrough());
   // For increased line thickness, the line-through decoration needs to grow
   // in both directions from its origin, subtract half the thickness to keep
   // it centered at the same origin.
@@ -361,9 +371,9 @@ float TextDecorationInfo::ComputeUnderlineThickness(
     const ComputedStyle* decorating_box_style) const {
   const float minimum_thickness = minimum_thickness_is_one_ ? 1.0f : 0.0f;
   float thickness = 0;
-  if ((underline_position_ ==
-       ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto) ||
-      underline_position_ ==
+  if (flipped_underline_position_ ==
+          ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto ||
+      flipped_underline_position_ ==
           ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont) {
     thickness = ComputeDecorationThickness(applied_decoration_thickness,
                                            computed_font_size_,

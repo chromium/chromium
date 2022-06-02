@@ -76,41 +76,29 @@ void TextPainter::PaintDecorationsExceptLineThrough(
   if (combined_text_)
     context.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
 
-  // text-underline-position may flip underline and overline.
-  ResolvedUnderlinePosition underline_position =
-      decoration_info.UnderlinePosition();
-  bool flip_underline_and_overline = false;
-  if (underline_position == ResolvedUnderlinePosition::kOver) {
-    flip_underline_and_overline = true;
-    underline_position = ResolvedUnderlinePosition::kUnder;
-  }
-
   for (wtf_size_t applied_decoration_index = 0;
        applied_decoration_index < decorations.size();
        ++applied_decoration_index) {
+    decoration_info.SetDecorationIndex(applied_decoration_index);
     const AppliedTextDecoration& decoration =
-        decorations[applied_decoration_index];
-    TextDecorationLine lines = decoration.Lines();
-    bool has_underline = EnumHasFlags(lines, TextDecorationLine::kUnderline);
-    bool has_overline = EnumHasFlags(lines, TextDecorationLine::kOverline);
+        decoration_info.GetAppliedTextDecoration();
+    const TextDecorationLine lines = decoration.Lines();
     bool is_spelling_error =
         EnumHasFlags(lines, TextDecorationLine::kSpellingError);
     bool is_grammar_error =
         EnumHasFlags(lines, TextDecorationLine::kGrammarError);
-    if (flip_underline_and_overline)
-      std::swap(has_underline, has_overline);
-
-    decoration_info.SetDecorationIndex(applied_decoration_index);
 
     float resolved_thickness = decoration_info.ResolvedThickness();
     context.SetStrokeThickness(resolved_thickness);
 
     if (is_spelling_error || is_grammar_error) {
-      DCHECK(!has_underline && !has_overline &&
-             !EnumHasFlags(lines, TextDecorationLine::kLineThrough));
+      DCHECK(!decoration_info.HasUnderline() &&
+             !decoration_info.HasOverline() &&
+             !decoration_info.HasLineThrough());
       const int paint_underline_offset =
           decoration_offset.ComputeUnderlineOffset(
-              underline_position, decoration_info.Style().ComputedFontSize(),
+              decoration_info.FlippedUnderlinePosition(),
+              decoration_info.Style().ComputedFontSize(),
               decoration_info.FontData(), decoration.UnderlineOffset(),
               resolved_thickness);
       decoration_info.SetLineData(is_spelling_error
@@ -124,22 +112,13 @@ void TextPainter::PaintDecorationsExceptLineThrough(
       continue;
     }
 
-    if (has_underline && decoration_info.FontData()) {
-      // Don't apply text-underline-offset to overline.
-      Length line_offset =
-          flip_underline_and_overline ? Length() : decoration.UnderlineOffset();
-
-      const int paint_underline_offset =
-          decoration_offset.ComputeUnderlineOffset(
-              underline_position, decoration_info.Style().ComputedFontSize(),
-              decoration_info.FontData(), line_offset, resolved_thickness);
-      decoration_info.SetLineData(TextDecorationLine::kUnderline,
-                                  paint_underline_offset);
+    if (decoration_info.HasUnderline() && decoration_info.FontData()) {
+      decoration_info.SetUnderlineLineData(decoration_offset);
       PaintDecorationUnderOrOverLine(context, decoration_info,
                                      TextDecorationLine::kUnderline);
     }
 
-    if (has_overline && decoration_info.FontData()) {
+    if (decoration_info.HasOverline() && decoration_info.FontData()) {
       decoration_info.SetOverlineLineData(decoration_offset);
       PaintDecorationUnderOrOverLine(context, decoration_info,
                                      TextDecorationLine::kOverline);
@@ -148,8 +127,7 @@ void TextPainter::PaintDecorationsExceptLineThrough(
     // We could instead build a vector of the TextDecorationLine instances
     // needing line-through but this is a rare case so better to avoid vector
     // overhead.
-    *has_line_through_decoration |=
-        EnumHasFlags(lines, TextDecorationLine::kLineThrough);
+    *has_line_through_decoration |= decoration_info.HasLineThrough();
   }
 
   // Restore rotation as needed.

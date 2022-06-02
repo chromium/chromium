@@ -56,6 +56,14 @@ class CORE_EXPORT TextDecorationInfo {
       absl::optional<FontBaseline> baseline_type_override = absl::nullopt,
       const ComputedStyle* decorating_box_style = nullptr);
 
+  const AppliedTextDecoration& GetAppliedTextDecoration() const {
+    DCHECK(applied_text_decoration_);
+    return *applied_text_decoration_;
+  }
+  bool HasUnderline() const { return has_underline_; }
+  bool HasOverline() const { return has_overline_; }
+  bool HasLineThrough() const { return Has(TextDecorationLine::kLineThrough); }
+
   // Set the decoration to use when painting and returning values.
   // Must be set before calling any other method, and can be called
   // again at any time. This object will use the most recently given
@@ -69,8 +77,7 @@ class CORE_EXPORT TextDecorationInfo {
   // through. Must be called before trying to paint or compute bounds
   // for a line.
   void SetLineData(TextDecorationLine line, float line_offset);
-  void SetUnderlineLineData(const AppliedTextDecoration& decoration,
-                            const TextDecorationOffsetBase& decoration_offset);
+  void SetUnderlineLineData(const TextDecorationOffsetBase& decoration_offset);
   void SetOverlineLineData(const TextDecorationOffsetBase& decoration_offset);
   void SetLineThroughLineData();
 
@@ -84,8 +91,11 @@ class CORE_EXPORT TextDecorationInfo {
   // It can be different from NGFragmentItem::SvgScalingFactor() if the
   // text works as a resource.
   float ScalingFactor() const { return scaling_factor_; }
-  ResolvedUnderlinePosition UnderlinePosition() const {
-    return underline_position_;
+  ResolvedUnderlinePosition FlippedUnderlinePosition() const {
+    return flipped_underline_position_;
+  }
+  ResolvedUnderlinePosition OriginalUnderlinePosition() const {
+    return original_underline_position_;
   }
   bool ShouldAntialias() const { return antialias_; }
   float InkSkipClipUpper(float bounds_upper) const {
@@ -112,6 +122,7 @@ class CORE_EXPORT TextDecorationInfo {
   void SetHighlightOverrideColor(const absl::optional<Color>&);
 
  private:
+  bool Has(TextDecorationLine line) const { return EnumHasFlags(lines_, line); }
   float ComputeThickness() const;
   float ComputeUnderlineThickness(
       const TextDecorationThickness& applied_decoration_thickness,
@@ -160,11 +171,18 @@ class CORE_EXPORT TextDecorationInfo {
   float computed_font_size_ = 0.f;
   float resolved_thickness_ = 0.f;
   const float scaling_factor_;
-  ResolvedUnderlinePosition underline_position_ =
-      ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto;
 
   int decoration_index_ = 0;
 
+  TextDecorationLine lines_ = TextDecorationLine::kNone;
+  ResolvedUnderlinePosition original_underline_position_ =
+      ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto;
+  ResolvedUnderlinePosition flipped_underline_position_ =
+      ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto;
+
+  bool has_underline_ = false;
+  bool has_overline_ = false;
+  bool flip_underline_and_overline_ = false;
   const bool minimum_thickness_is_one_ = false;
   const bool antialias_ = false;
 
