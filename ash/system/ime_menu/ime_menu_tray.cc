@@ -398,12 +398,12 @@ bool ImeMenuTray::ShouldShowBottomButtons() {
   // 2) login/lock screen.
   // 3) password input client.
 
-  bool should_show_buttom_buttoms =
+  const bool should_show_bottom_buttons =
       ime_controller_->is_extra_input_options_enabled() &&
       !ime_controller_->current_ime().third_party && !IsInLoginOrLockScreen() &&
       !IsInPasswordInputContext();
 
-  if (!should_show_buttom_buttoms) {
+  if (!should_show_bottom_buttons) {
     is_emoji_enabled_ = is_handwriting_enabled_ = is_voice_enabled_ = false;
     return false;
   }
