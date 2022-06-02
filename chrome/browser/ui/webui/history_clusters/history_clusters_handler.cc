@@ -15,19 +15,23 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/pref_names.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/cluster_metrics_utils.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/query_clusters_state.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -49,20 +53,14 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile,
   visit_mojom->normalized_url = visit.normalized_url;
   visit_mojom->url_for_display = base::UTF16ToUTF8(visit.url_for_display);
 
+  // Add the raw URLs and visit times so the UI can perform deletion.
   auto& annotated_visit = visit.annotated_visit;
-  visit_mojom->raw_urls.push_back(annotated_visit.url_row.url());
-  visit_mojom->last_visit_time = annotated_visit.visit_row.visit_time;
-  visit_mojom->first_visit_time = annotated_visit.visit_row.visit_time;
-
-  // Update the fields to reflect data held in the duplicate visits too.
+  visit_mojom->raw_visit_data = mojom::RawVisitData::New(
+      annotated_visit.url_row.url(), annotated_visit.visit_row.visit_time);
   for (const auto& duplicate : visit.duplicate_visits) {
-    visit_mojom->raw_urls.push_back(duplicate.annotated_visit.url_row.url());
-    visit_mojom->last_visit_time =
-        std::max(visit_mojom->last_visit_time,
-                 duplicate.annotated_visit.visit_row.visit_time);
-    visit_mojom->first_visit_time =
-        std::min(visit_mojom->first_visit_time,
-                 duplicate.annotated_visit.visit_row.visit_time);
+    visit_mojom->duplicates.push_back(mojom::RawVisitData::New(
+        duplicate.annotated_visit.url_row.url(),
+        duplicate.annotated_visit.visit_row.visit_time));
   }
 
   visit_mojom->page_title = base::UTF16ToUTF8(annotated_visit.url_row.title());
@@ -204,6 +202,13 @@ HistoryClustersHandler::HistoryClustersHandler(
       HistoryClustersServiceFactory::GetForBrowserContext(profile_);
   DCHECK(history_clusters_service);
   service_observation_.Observe(history_clusters_service);
+
+  history::HistoryService* local_history = HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  browsing_history_service_ = std::make_unique<history::BrowsingHistoryService>(
+      this, local_history, sync_service);
 }
 
 HistoryClustersHandler::~HistoryClustersHandler() = default;
@@ -251,41 +256,39 @@ void HistoryClustersHandler::LoadMoreClusters(const std::string& query) {
 void HistoryClustersHandler::RemoveVisits(
     std::vector<mojom::URLVisitPtr> visits,
     RemoveVisitsCallback callback) {
-  // TODO(crbug.com/1327743): Enforced here because enforcing at the UI level is
-  // too complicated to merge. We can consider removing this clause or turning
-  // it to a DCHECK after we enforce it at the UI level, but it's essentially
-  // harmless to keep it here too.
   if (!profile_->GetPrefs()->GetBoolean(
-          ::prefs::kAllowDeletingBrowserHistory)) {
+          ::prefs::kAllowDeletingBrowserHistory) ||
+      visits.empty()) {
     std::move(callback).Run(false);
     return;
   }
 
-  // Reject the request if a pending task exists or the set of visits is empty.
-  if (remove_task_tracker_.HasTrackedTasks() || visits.empty()) {
+  // If there's already a pending deletion, we have to fail here, because
+  // `BrowsingHistoryService` only supports one deletion request at a time.
+  if (!pending_deletion_.empty()) {
     std::move(callback).Run(false);
     return;
   }
 
-  std::vector<history::ExpireHistoryArgs> expire_list;
-  expire_list.reserve(visits.size());
-  for (const auto& visit_ptr : visits) {
-    expire_list.resize(expire_list.size() + 1);
-    auto& expire_args = expire_list.back();
-    expire_args.urls =
-        std::set<GURL>(visit_ptr->raw_urls.begin(), visit_ptr->raw_urls.end());
-    // ExpireHistoryArgs::end_time is not inclusive. Make sure all visits in the
-    // given timespan are removed by adding 1 second to it.
-    expire_args.end_time = visit_ptr->last_visit_time + base::Seconds(1);
-    expire_args.begin_time = visit_ptr->first_visit_time;
+  std::vector<history::BrowsingHistoryService::HistoryEntry> items_to_remove;
+  for (const auto& visit : visits) {
+    history::BrowsingHistoryService::HistoryEntry entry;
+    entry.url = visit->raw_visit_data->url;
+    entry.all_timestamps.insert(
+        visit->raw_visit_data->visit_time.ToInternalValue());
+    items_to_remove.push_back(std::move(entry));
+    for (const auto& duplicate : visit->duplicates) {
+      history::BrowsingHistoryService::HistoryEntry entry;
+      entry.url = duplicate->url;
+      entry.all_timestamps.insert(duplicate->visit_time.ToInternalValue());
+      items_to_remove.push_back(std::move(entry));
+    }
   }
-  auto* history_clusters_service =
-      HistoryClustersServiceFactory::GetForBrowserContext(profile_);
-  history_clusters_service->RemoveVisits(
-      expire_list,
-      base::BindOnce(&HistoryClustersHandler::OnVisitsRemoved,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(visits)),
-      &remove_task_tracker_);
+
+  // Transfer the visits to be deleted to the pending member variable.
+  pending_deletion_ = std::move(visits);
+
+  browsing_history_service_->RemoveVisits(items_to_remove);
   std::move(callback).Run(true);
 }
 
@@ -336,14 +339,25 @@ void HistoryClustersHandler::OnDebugMessage(const std::string& message) {
   }
 }
 
+void HistoryClustersHandler::OnRemoveVisitsComplete() {
+  page_->OnVisitsRemoved(std::move(pending_deletion_));
+  pending_deletion_.clear();
+}
+
+void HistoryClustersHandler::OnRemoveVisitsFailed() {
+  // The WebUI page doesn't expect or need a notification if the deletion
+  // failed at the History backend layer.
+  pending_deletion_.clear();
+}
+
+Profile* HistoryClustersHandler::GetProfile() {
+  DCHECK(profile_);
+  return profile_;
+}
+
 void HistoryClustersHandler::OnClustersQueryResult(
     mojom::QueryResultPtr query_result) {
   page_->OnClustersQueryResult(std::move(query_result));
-}
-
-void HistoryClustersHandler::OnVisitsRemoved(
-    std::vector<mojom::URLVisitPtr> visits) {
-  page_->OnVisitsRemoved(std::move(visits));
 }
 
 void HistoryClustersHandler::RecordVisitAction(mojom::VisitAction visit_action,

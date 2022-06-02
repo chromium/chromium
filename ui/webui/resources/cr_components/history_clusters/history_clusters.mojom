@@ -67,6 +67,12 @@ enum VisitType {
   kNonSRP
 };
 
+// Raw visit data needed to properly do deletion of all the duplicates.
+struct RawVisitData {
+  url.mojom.Url url;
+  mojo_base.mojom.Time visit_time;
+};
+
 // Represents the most recent visit to a URL within a Cluster. Visits for which
 // there are more recent visits to the same (or a qualifying near-duplicate) URL
 // within the Cluster are omitted.
@@ -91,17 +97,10 @@ struct URLVisit {
   array<MatchPosition> title_match_positions;
   array<MatchPosition> url_for_display_match_positions;
 
-  // Time of the most recent visit in the Cluster to the same (or a qualifying
-  // near-duplicate) URL.
-  mojo_base.mojom.Time last_visit_time;
-
-  // Time of the least recent visit in the Cluster to the same (or a qualifying
-  // near-duplicate) URL. Equals `last_visit_time` if there is only one visit in
-  // the Cluster to the same (or a qualifying near-duplicate) URL.
-  mojo_base.mojom.Time first_visit_time;
-
-  // List of raw visited URLs for `normalized_url`.
-  array<url.mojom.Url> raw_urls;
+  // Raw visit data that's not displayed by the UI, but needed to do proper
+  // deletion. Visits with no duplicates will have an empty `duplicates` array.
+  RawVisitData raw_visit_data;
+  array<RawVisitData> duplicates;
 
   // Localized string of approximate `last_visit_time`, e.g., "2 days ago".
   string relative_date;

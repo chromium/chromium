@@ -242,11 +242,17 @@ class HistoryClusterElement extends PolymerElement {
   private onVisitsRemoved_(removedVisits: Array<URLVisit>) {
     const visitHasBeenRemoved = (visit: URLVisit) => {
       return removedVisits.findIndex((removedVisit) => {
-        return visit.normalizedUrl.url === removedVisit.normalizedUrl.url &&
-            visit.lastVisitTime.internalValue <=
-            removedVisit.lastVisitTime.internalValue &&
-            visit.firstVisitTime.internalValue >=
-            removedVisit.firstVisitTime.internalValue;
+        if (visit.normalizedUrl.url !== removedVisit.normalizedUrl.url) {
+          return false;
+        }
+
+        // Remove the visit element if any of the removed visit's raw timestamps
+        // matches the canonical raw timestamp.
+        const rawVisitTime = visit.rawVisitData.visitTime.internalValue;
+        return (removedVisit.rawVisitData.visitTime.internalValue ===
+                rawVisitTime) ||
+            removedVisit.duplicates.map(data => data.visitTime.internalValue)
+                .includes(rawVisitTime);
       }) !== -1;
     };
 

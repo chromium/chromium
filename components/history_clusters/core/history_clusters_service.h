@@ -162,12 +162,6 @@ class HistoryClustersService : public base::SupportsUserData,
                 QueryClustersContinuationParams continuation_params,
                 QueryClustersCallback callback);
 
-  // Removes all visits to the specified URLs in the specified time ranges in
-  // `expire_list`. Calls `closure` when done.
-  void RemoveVisits(const std::vector<history::ExpireHistoryArgs>& expire_list,
-                    base::OnceClosure closure,
-                    base::CancelableTaskTracker* task_tracker);
-
   // Returns true synchronously if `query` matches a cluster keyword. This
   // ignores clusters with only one visit to avoid overtriggering.
   // Note: This depends on the cache state, so this may kick off a cache refresh
