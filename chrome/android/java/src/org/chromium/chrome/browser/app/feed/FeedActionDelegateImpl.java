@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -35,13 +36,16 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     private final BookmarkBridge mBookmarkBridge;
     private final Context mActivityContext;
     private final SnackbarManager mSnackbarManager;
+    private final CrowButtonDelegate mCrowButtonDelegate;
 
     public FeedActionDelegateImpl(Context activityContext, SnackbarManager snackbarManager,
-            NativePageNavigationDelegate navigationDelegate, BookmarkBridge bookmarkBridge) {
+            NativePageNavigationDelegate navigationDelegate, BookmarkBridge bookmarkBridge,
+            CrowButtonDelegate crowButtonDelegate) {
         mActivityContext = activityContext;
         mNavigationDelegate = navigationDelegate;
         mBookmarkBridge = bookmarkBridge;
         mSnackbarManager = snackbarManager;
+        mCrowButtonDelegate = crowButtonDelegate;
     }
     @Override
     public void downloadPage(String url) {
@@ -95,6 +99,12 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
             BookmarkUtils.addToReadingList(
                     new GURL(url), title, mSnackbarManager, mBookmarkBridge, mActivityContext);
         });
+    }
+
+    @Override
+    public void openCrow(String url) {
+        mCrowButtonDelegate.launchCustomTab(
+                mActivityContext, new GURL(url), GURL.emptyGURL(), /*isFollowing=*/true);
     }
 
     @Override

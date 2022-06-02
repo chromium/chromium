@@ -586,6 +586,7 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
     case FeedUserActionType::kShowUnfollowSucceedSnackbar:
     case FeedUserActionType::kShowUnfollowFailedSnackbar:
     case FeedUserActionType::kTappedGoToFeedOnSnackbar:
+    case FeedUserActionType::kTappedCrowButton:
       // Nothing additional for these actions. Note that some of these are iOS
       // only.
 

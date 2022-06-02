@@ -763,6 +763,19 @@ public class FeedStreamTest {
 
     @Test
     @SmallTest
+    public void testNavigateCrow() {
+        bindToView();
+
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+        handler.navigateCrow(TEST_URL);
+
+        verify(mActionDelegate).openCrow(TEST_URL);
+    }
+
+    @Test
+    @SmallTest
     public void testSendFeedback() {
         final String testUrl = TEST_URL;
         final String testTitle = "Chromium based browsers for the win!";

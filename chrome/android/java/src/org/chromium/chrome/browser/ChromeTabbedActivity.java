@@ -132,6 +132,7 @@ import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.share.crow.CrowButtonDelegateImpl;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.survey.ChromeSurveyController;
@@ -741,7 +742,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 /* chromeActivityNativeDelegate= */ this, getLifecycleDispatcher(),
                 getTabCreatorManagerSupplier().get(), getMenuOrKeyboardActionController(),
                 getMultiWindowModeStateDispatcher(), mJankTracker, getToolbarManager()::getToolbar,
-                mBackPressManager);
+                new CrowButtonDelegateImpl(), mBackPressManager);
     }
 
     private void setupCompositorContentPostNative() {
@@ -1913,7 +1914,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     getCompositorViewHolderSupplier(), getModalDialogManagerSupplier(),
                     this::getSnackbarManager, getBrowserControlsManager(), getActivityTabProvider(),
                     getLifecycleDispatcher(), getWindowAndroid(), this::getLastUserInteractionTime,
-                    this::hadWarmStart, mJankTracker, getToolbarManager()::getToolbar);
+                    this::hadWarmStart, mJankTracker, getToolbarManager()::getToolbar,
+                    new CrowButtonDelegateImpl());
         }
         return mTabDelegateFactory;
     }

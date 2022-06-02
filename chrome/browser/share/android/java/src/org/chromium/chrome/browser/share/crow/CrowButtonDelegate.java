@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.share.crow;
 
-import android.app.Activity;
+import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -26,7 +26,7 @@ public interface CrowButtonDelegate {
      * Launches a custom tab to a server-provided interaction flow.
      * Uses URL defined by the study config.
      *
-     * @param currentActivity the current Activity for which the user activated an
+     * @param currentContext the current Context for which the user activated an
      *                        entry point.
      * @param pageUrl URL for the page; passed in rather than derived from currentTab
      *     or WebContents's lastCommittedURL as it was used to construct UI in the caller.
@@ -34,7 +34,7 @@ public interface CrowButtonDelegate {
      * @param isFollowing Whether the user is following the associated host in the feed.
      */
     void launchCustomTab(
-            Activity currentActivity, GURL pageUrl, GURL canonicalUrl, boolean isFollowing);
+            Context currentContext, GURL pageUrl, GURL canonicalUrl, boolean isFollowing);
 
     /**
      * @return experiment-configured chip text.

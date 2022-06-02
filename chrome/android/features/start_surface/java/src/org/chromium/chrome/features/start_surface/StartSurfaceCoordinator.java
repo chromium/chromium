@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -101,6 +102,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     // TODO(crbug.com/1315676): Directly return the supplier from {@link TabSwitcherCoordinator}.
     private final OneshotSupplierImpl<TabSwitcherCustomViewManager>
             mTabSwitcherCustomViewManagerSupplier;
+    private final CrowButtonDelegate mCrowButtonDelegate;
 
     @VisibleForTesting
     static final String START_SHOWN_AT_STARTUP_UMA = "Startup.Android.StartSurfaceShownAtStartup";
@@ -220,6 +222,7 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
      * @param jankTracker Measures jank while feed or tab switcher are visible.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
+     * @param crowButtonDelegate The {@link CrowButtonDelegate} to handle Crow click events.
      * @param backPressManager {@link BackPressManager} to handle back press.
      */
     public StartSurfaceCoordinator(@NonNull Activity activity,
@@ -242,7 +245,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier,
-            BackPressManager backPressManager) {
+            @NonNull CrowButtonDelegate crowButtonDelegate, BackPressManager backPressManager) {
         mConstructedTimeNs = SystemClock.elapsedRealtimeNanos();
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
@@ -265,6 +268,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mToolbarSupplier = toolbarSupplier;
+        mCrowButtonDelegate = crowButtonDelegate;
 
         mTabSwitcherCustomViewManagerSupplier = new OneshotSupplierImpl<>();
         boolean excludeMVTiles = StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES.getValue()
@@ -406,7 +410,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                     mTasksSurface.getBodyViewContainer(), mPropertyModel, mBottomSheetController,
                     mParentTabSupplier, new ScrollableContainerDelegateImpl(), mSnackbarManager,
                     mShareDelegateSupplier, mWindowAndroid, mTabModelSelector, mToolbarSupplier,
-                    mConstructedTimeNs, mSwipeRefreshLayout);
+                    mConstructedTimeNs, mSwipeRefreshLayout, mCrowButtonDelegate);
         }
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,

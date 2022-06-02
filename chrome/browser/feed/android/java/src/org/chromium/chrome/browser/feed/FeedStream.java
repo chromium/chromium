@@ -147,6 +147,14 @@ public class FeedStream implements Stream {
         }
 
         @Override
+        public void navigateCrow(String url) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().reportOtherUserAction(
+                    mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_CROW_BUTTON);
+            mActionDelegate.openCrow(url);
+        }
+
+        @Override
         public void showBottomSheet(View view, View actionSourceView) {
             assert ThreadUtils.runningOnUiThread();
             dismissBottomSheet();
