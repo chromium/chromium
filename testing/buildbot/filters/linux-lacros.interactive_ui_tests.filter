@@ -26,6 +26,9 @@
 -WidgetInputMethodInteractiveTest.OneWindow
 -WidgetInputMethodInteractiveTest.TwoWindows
 
+# TODO(https://crbug.com/1331307): Started failing consistently on Lacros
+-FullscreenOnScreensChangeFullscreenControllerInteractiveTest.FullscreenOnScreensChange/1
+
 # TODO(https://crbug.com/991596): Setup guest profiles correctly for tests.
 # Lacros has restrictions on the main profile (it must match the device account
 # profile) so this test doesn't pass.
