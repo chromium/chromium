@@ -11,6 +11,14 @@ FileBrowserHandlerInternalSelectFileFunctionLacros::
 FileBrowserHandlerInternalSelectFileFunctionLacros::
     ~FileBrowserHandlerInternalSelectFileFunctionLacros() = default;
 
+void FileBrowserHandlerInternalSelectFileFunctionLacros::OnFilePathSelected(
+    bool success,
+    const base::FilePath& full_path) {
+  // Called by FileBrowserHandlerInternalSelectFileFunction::Run(), which is
+  // stubbed out.
+  NOTREACHED();
+}
+
 ExtensionFunction::ResponseAction
 FileBrowserHandlerInternalSelectFileFunctionLacros::Run() {
   NOTIMPLEMENTED();
