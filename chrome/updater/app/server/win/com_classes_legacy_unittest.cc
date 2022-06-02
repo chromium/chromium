@@ -92,16 +92,12 @@ class LegacyAppCommandWebImplTest : public testing::Test {
     if (!cmd)
       return absl::nullopt;
 
-    std::wstring command_line =
+    const std::wstring command_line =
         web->executable_.value().find_first_of(L' ') == std::wstring::npos
             ? web->executable_.value()
             : base::CommandLine(web->executable_).GetCommandLineString();
-    if (!cmd->empty()) {
-      command_line.push_back(L' ');
-      command_line.append(*cmd);
-    }
-
-    return command_line;
+    return cmd->empty() ? command_line
+                        : base::StrCat({command_line, L" ", *cmd});
   }
 
   absl::optional<std::wstring> FormatCommandLine(
@@ -275,10 +271,7 @@ TEST_F(LegacyAppCommandWebImplTest, UnformattedParameters) {
 }
 
 TEST_F(LegacyAppCommandWebImplTest, SimpleParameters) {
-  std::vector<std::wstring> parameters;
-  parameters.push_back(L"p1");
-  parameters.push_back(L"p2");
-  parameters.push_back(L"p3");
+  const std::vector<std::wstring> parameters = {L"p1", L"p2", L"p3"};
   const std::wstring process_command_line =
       GetCommandLine(base::DIR_PROGRAM_FILES, L"process.exe");
 
