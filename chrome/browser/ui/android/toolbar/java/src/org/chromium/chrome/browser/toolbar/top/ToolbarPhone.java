@@ -1552,6 +1552,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     public CaptureReadinessResult isReadyForTextureCapture() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID)) {
+            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SCROLL_ABLATION);
+        }
         if (mForceTextureCapture) {
             return CaptureReadinessResult.readyForced();
         }

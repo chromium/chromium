@@ -92395,6 +92395,7 @@ would be helpful to identify which type is being sent.
   <int value="5" label="URL_BAR_FOCUS_IN_PROGRESS"/>
   <int value="6" label="OPTIONAL_BUTTON_ANIMATION_IN_PROGRESS"/>
   <int value="7" label="STATUS_ICON_ANIMATION_IN_PROGRESS"/>
+  <int value="8" label="SCROLL_ABLATION"/>
 </enum>
 
 <enum name="TouchActions">
