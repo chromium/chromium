@@ -25,7 +25,7 @@
 #include "ash/test/view_drawn_waiter.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/assistant/test_support/scoped_assistant_browser_delegate.h"
+#include "chromeos/ash/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {

@@ -51,7 +51,7 @@ specific_include_rules = {
     "+ash/wm/tablet_mode/tablet_mode_controller.h",
     "+base/test/scoped_feature_list.h",
     "+cc/test/pixel_comparator.h",
-    "+chromeos/services/assistant/test_support/mock_assistant.h",
+    "+chromeos/ash/services/assistant/test_support/mock_assistant.h",
     "+chromeos/ui/frame/default_frame_header.h",
     "+chromeos/ui/vector_icons/vector_icons.h",
     "+components/prefs",

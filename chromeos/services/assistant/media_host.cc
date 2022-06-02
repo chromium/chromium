@@ -5,7 +5,7 @@
 #include "chromeos/services/assistant/media_host.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/assistant/media_session/assistant_media_session.h"
+#include "chromeos/ash/services/assistant/media_session/assistant_media_session.h"
 #include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"

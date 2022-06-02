@@ -170,6 +170,7 @@
                   '|ash/wallpaper/'\
                   '|ash/webui/personalization_app/'\
                   '|chromeos/ash/components/assistant/'\
+                  '|chromeos/ash/services/assistant/'\
                   '|chromeos/services/assistant/'\
                   '|chromeos/services/libassistant/'\
                   '|chrome/browser/ash/wallpaper_handlers/'\

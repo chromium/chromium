@@ -82,8 +82,8 @@ include_rules = [
   # TODO(https://crbug.com/1164001): remove when chromeos/network have migrated.
   "+chromeos/network",
   # //ash can use the public interfaces of various services.
+  "+chromeos/ash/services/assistant/test_support",
   "+chromeos/services/assistant/public" ,
-  "+chromeos/services/assistant/test_support",
   "+chromeos/services/bluetooth_config",
   "+chromeos/services/libassistant/public",
   "+chromeos/services/machine_learning/public",
