@@ -80,19 +80,23 @@ void TabDialogsViews::HideManagePasswordsBubble() {
 }
 
 void TabDialogsViews::ShowDeprecatedAppsDialog(
+    const extensions::ExtensionId& optional_launched_extension_id,
     const std::set<extensions::ExtensionId>& deprecated_app_ids,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    base::OnceClosure launch_anyways) {
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
-  DeprecatedAppsDialogView::CreateAndShowDialog(deprecated_app_ids,
-                                                web_contents);
+  DeprecatedAppsDialogView::CreateAndShowDialog(
+      optional_launched_extension_id, deprecated_app_ids, web_contents,
+      std::move(launch_anyways));
 #endif
 }
 
 void TabDialogsViews::ShowForceInstalledDeprecatedAppsDialog(
     const extensions::ExtensionId& app_id,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    base::OnceClosure launch_anyways) {
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
-  ForceInstalledDeprecatedAppsDialogView::CreateAndShowDialog(app_id,
-                                                              web_contents);
+  ForceInstalledDeprecatedAppsDialogView::CreateAndShowDialog(
+      app_id, web_contents, std::move(launch_anyways));
 #endif
 }

@@ -665,16 +665,16 @@ class StartupBrowserCreatorChromeAppShortcutTest
     }
   }
 
-  void ExpectBlockLaunch(
-      const std::string& force_installed_app_id = std::string()) {
+  void ExpectBlockLaunchAndLaunchAnyways(const std::string& app_id,
+                                         bool force_install_dialog,
+                                         bool tab_launch_expected) {
     ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
     auto waiter = views::NamedWidgetShownWaiter(
         views::test::AnyWidgetTestPasskey{},
-        force_installed_app_id.empty()
-            ? "DeprecatedAppsDialogView"
-            : "ForceInstalledDeprecatedAppsDialogView");
+        force_install_dialog ? "ForceInstalledDeprecatedAppsDialogView"
+                             : "DeprecatedAppsDialogView");
 #endif
     // Should have opened the requested homepage about:blank in 1st window.
     TabStripModel* tab_strip = browser()->tab_strip_model();
@@ -694,15 +694,48 @@ class StartupBrowserCreatorChromeAppShortcutTest
     BUILDFLAG(IS_FUCHSIA)
 
     GURL expected_url =
-        force_installed_app_id.empty()
-            ? GURL(chrome::kChromeUIAppsWithDeprecationDialogURL)
-            : GURL(chrome::kChromeUIAppsWithForceInstalledDeprecationDialogURL +
-                   force_installed_app_id);
+        force_install_dialog
+            ? GURL(chrome::kChromeUIAppsWithForceInstalledDeprecationDialogURL +
+                   app_id)
+            : GURL(chrome::kChromeUIAppsWithDeprecationDialogURL + app_id);
     EXPECT_EQ(expected_url,
               other_tab_strip->GetWebContentsAt(0)->GetVisibleURL());
 
+    std::set<Browser*> initial_browsers;
+    for (auto* initial_browser : *BrowserList::GetInstance())
+      initial_browsers.insert(initial_browser);
+
+    content::TestNavigationObserver same_tab_observer(
+        other_tab_strip->GetActiveWebContents(), 1,
+        content::MessageLoopRunner::QuitMode::DEFERRED,
+        /*ignore_uncommitted_navigations=*/false);
+
     // Verify that the Deprecated Apps Dialog View also shows up.
-    EXPECT_TRUE(waiter.WaitIfNeededAndGet() != nullptr);
+    auto* dialog = waiter.WaitIfNeededAndGet();
+    EXPECT_TRUE(dialog != nullptr);
+    if (force_install_dialog) {
+      // The 'accept' option in the force-install dialog is "launch anyways".
+      dialog->widget_delegate()->AsDialogDelegate()->Accept();
+    } else {
+      // The 'cancel' option in the deprecation dialog is "launch anyways".
+      dialog->widget_delegate()->AsDialogDelegate()->Cancel();
+    }
+    if (tab_launch_expected) {
+      same_tab_observer.Wait();
+    } else {
+      Browser* app_browser =
+          ui_test_utils::GetBrowserNotInSet(initial_browsers);
+      if (!app_browser) {
+        app_browser = ui_test_utils::WaitForBrowserToOpen();
+        // The new browser should never be in |excluded_browsers|.
+        DCHECK(!base::Contains(initial_browsers, app_browser));
+      }
+      ASSERT_TRUE(app_browser);
+      TabStripModel* app_tab_strip = app_browser->tab_strip_model();
+      EXPECT_EQ(1, app_tab_strip->count());
+      EXPECT_TRUE(app_browser->is_type_app());
+      EXPECT_FALSE(app_browser->is_type_normal());
+    }
 #endif
   }
 
@@ -750,7 +783,19 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
-  if (IsExpectedToAllowLaunch()) {
+  Browser* expected_launch_browser = browser();
+
+  if (!IsExpectedToAllowLaunch()) {
+    ExpectBlockLaunchAndLaunchAnyways(extension_app->id(),
+                                      /*force_install_dialog=*/false,
+                                      /*tab_launch_expected=*/true);
+    // When we block the launch, we always create a new browser window to
+    // display chrome://apps and the dialog.
+    ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+    Browser* expected_launch_browser = FindOneOtherBrowser(browser());
+    tab_strip = expected_launch_browser->tab_strip_model();
+    EXPECT_EQ(1, tab_strip->count());
+  } else {
     // No pref was set, so the app should have opened in a tab in the existing
     // window.
     tab_waiter.Wait();
@@ -758,20 +803,18 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
     EXPECT_EQ(2, tab_strip->count());
     EXPECT_EQ(tab_strip->GetActiveWebContents(),
               tab_strip->GetWebContentsAt(1));
-
-    // It should be a standard tabbed window, not an app window.
-    EXPECT_FALSE(browser()->is_type_app());
-    EXPECT_TRUE(browser()->is_type_normal());
-
-    // It should have loaded the requested app.
-    const std::u16string expected_title(
-        u"app_with_tab_container/empty.html title");
-    content::TitleWatcher title_watcher(tab_strip->GetActiveWebContents(),
-                                        expected_title);
-    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-  } else {
-    ExpectBlockLaunch();
   }
+
+  // It should be a standard tabbed window, not an app window.
+  EXPECT_FALSE(expected_launch_browser->is_type_app());
+  EXPECT_TRUE(expected_launch_browser->is_type_normal());
+
+  // It should have loaded the requested app.
+  const std::u16string expected_title(
+      u"app_with_tab_container/empty.html title");
+  content::TitleWatcher title_watcher(tab_strip->GetActiveWebContents(),
+                                      expected_title);
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
@@ -791,23 +834,27 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
-  if (IsExpectedToAllowLaunch()) {
-    // Pref was set to open in a window, so the app should have opened in a
-    // window.  The launch should have created a new browser. Find the new
-    // browser.
-    Browser* new_browser = browser_waiter.Wait();
-    ASSERT_TRUE(new_browser);
-
-    // Expect an app window.
-    EXPECT_TRUE(new_browser->is_type_app());
-
-    // The browser's app_name should include the app's ID.
-    EXPECT_NE(new_browser->app_name().find(extension_app->id()),
-              std::string::npos)
-        << new_browser->app_name();
-  } else {
-    ExpectBlockLaunch();
+  if (!IsExpectedToAllowLaunch()) {
+    ExpectBlockLaunchAndLaunchAnyways(extension_app->id(),
+                                      /*force_install_dialog=*/false,
+                                      /*tab_launch_expected=*/false);
+    // When we block the launch, we always create a new browser window to
+    // display chrome://apps and the dialog, and then another to launch the app.
+    ASSERT_EQ(3u, chrome::GetBrowserCount(browser()->profile()));
   }
+  // Pref was set to open in a window, so the app should have opened in a
+  // window.  The launch should have created a new browser. Find the new
+  // browser.
+  Browser* new_browser = browser_waiter.Wait();
+  ASSERT_TRUE(new_browser);
+
+  // Expect an app window.
+  EXPECT_TRUE(new_browser->is_type_app());
+
+  // The browser's app_name should include the app's ID.
+  EXPECT_NE(new_browser->app_name().find(extension_app->id()),
+            std::string::npos)
+      << new_browser->app_name();
 }
 
 IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
@@ -830,7 +877,19 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
-  if (IsExpectedToAllowLaunch()) {
+  Browser* expected_launch_browser = browser();
+
+  if (!IsExpectedToAllowLaunch()) {
+    ExpectBlockLaunchAndLaunchAnyways(extension_app->id(),
+                                      /*force_install_dialog=*/false,
+                                      /*tab_launch_expected=*/true);
+    // When we block the launch, we always create a new browser window to
+    // display chrome://apps and the dialog.
+    ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+    Browser* expected_launch_browser = FindOneOtherBrowser(browser());
+    tab_strip = expected_launch_browser->tab_strip_model();
+    EXPECT_EQ(1, tab_strip->count());
+  } else {
     // When an app shortcut is open and the pref indicates a tab should open,
     // the tab is open in the existing browser window.
     tab_waiter.Wait();
@@ -838,22 +897,20 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
     EXPECT_EQ(2, tab_strip->count());
     EXPECT_EQ(tab_strip->GetActiveWebContents(),
               tab_strip->GetWebContentsAt(1));
-
-    // The browser's app_name should not include the app's ID: it is in a normal
-    // tabbed browser.
-    EXPECT_EQ(browser()->app_name().find(extension_app->id()),
-              std::string::npos)
-        << browser()->app_name();
-
-    // It should have loaded the requested app.
-    const std::u16string expected_title(
-        u"app_with_tab_container/empty.html title");
-    content::TitleWatcher title_watcher(tab_strip->GetActiveWebContents(),
-                                        expected_title);
-    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-  } else {
-    ExpectBlockLaunch();
   }
+
+  // The browser's app_name should not include the app's ID: it is in a normal
+  // tabbed browser.
+  EXPECT_EQ(expected_launch_browser->app_name().find(extension_app->id()),
+            std::string::npos)
+      << browser()->app_name();
+
+  // It should have loaded the requested app.
+  const std::u16string expected_title(
+      u"app_with_tab_container/empty.html title");
+  content::TitleWatcher title_watcher(tab_strip->GetActiveWebContents(),
+                                      expected_title);
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
@@ -882,32 +939,36 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
-  if (IsExpectedToAllowLaunch()) {
-    tab_waiter.Wait();
+  Browser* expected_launch_browser = browser();
 
-    // Policy force-installed app should be allowed regardless of Chrome App
-    // Deprecation status.
-    //
+  if (!IsExpectedToAllowLaunch()) {
+    ExpectBlockLaunchAndLaunchAnyways(extension_app->id(), true, true);
+    // When we block the launch, we always create a new browser window to
+    // display chrome://apps and the dialog.
+    ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+    Browser* expected_launch_browser = FindOneOtherBrowser(browser());
+    tab_strip = expected_launch_browser->tab_strip_model();
+    EXPECT_EQ(1, tab_strip->count());
+  } else {
+    tab_waiter.Wait();
+    ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
     // No app launch pref was set, so the app should have opened in a tab in the
     // existing window.
-    ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
     EXPECT_EQ(2, tab_strip->count());
     EXPECT_EQ(tab_strip->GetActiveWebContents(),
               tab_strip->GetWebContentsAt(1));
-
-    // It should be a standard tabbed window, not an app window.
-    EXPECT_FALSE(browser()->is_type_app());
-    EXPECT_TRUE(browser()->is_type_normal());
-
-    // It should have loaded the requested app.
-    const std::u16string expected_title(
-        u"app_with_tab_container/empty.html title");
-    content::TitleWatcher title_watcher(tab_strip->GetActiveWebContents(),
-                                        expected_title);
-    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-  } else {
-    ExpectBlockLaunch(extension_app->id());
   }
+
+  // It should be a standard tabbed window, not an app window.
+  EXPECT_FALSE(expected_launch_browser->is_type_app());
+  EXPECT_TRUE(expected_launch_browser->is_type_normal());
+
+  // It should have loaded the requested app.
+  const std::u16string expected_title(
+      u"app_with_tab_container/empty.html title");
+  content::TitleWatcher title_watcher(tab_strip->GetActiveWebContents(),
+                                      expected_title);
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 
 INSTANTIATE_TEST_SUITE_P(
