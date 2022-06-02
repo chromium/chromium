@@ -103,6 +103,10 @@ void EventConverterEvdev::OnFileCanWriteWithoutBlocking(int fd) {
   NOTREACHED();
 }
 
+KeyboardType EventConverterEvdev::GetKeyboardType() const {
+  return KeyboardType::NOT_KEYBOARD;
+}
+
 bool EventConverterEvdev::HasKeyboard() const {
   return false;
 }

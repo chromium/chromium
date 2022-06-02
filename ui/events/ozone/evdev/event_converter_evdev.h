@@ -19,6 +19,7 @@
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/stylus_state.h"
+#include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/event_dispatch_callback.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -100,6 +101,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
 
   // Dump recent events into a file.
   virtual void DumpTouchEventLog(const char* filename);
+
+  // Returns value corresponding to keyboard status (No Keyboard, Keyboard in
+  // Blocklist, ect.).
+  virtual KeyboardType GetKeyboardType() const;
 
   // Returns true if the converter is used for a keyboard device.
   virtual bool HasKeyboard() const;

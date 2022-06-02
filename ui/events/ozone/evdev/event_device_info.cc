@@ -742,20 +742,24 @@ bool IsInKeyboardBlockList(input_id input_id_) {
 }
 
 bool EventDeviceInfo::HasKeyboard() const {
+  return GetKeyboardType() == KeyboardType::VALID_KEYBOARD;
+}
+
+KeyboardType EventDeviceInfo::GetKeyboardType() const {
   if (!HasEventType(EV_KEY))
-    return false;
+    return KeyboardType::NOT_KEYBOARD;
   if (IsInKeyboardBlockList(input_id_))
-    return false;
+    return KeyboardType::IN_BLOCKLIST;
   if (IsStylusButtonDevice())
-    return false;
+    return KeyboardType::STYLUS_BUTTON_DEVICE;
 
   // Check first 31 keys: If we have all of them, consider it a full
   // keyboard. This is exactly what udev does for ID_INPUT_KEYBOARD.
   for (int key = KEY_ESC; key <= KEY_D; ++key)
     if (!HasKeyEvent(key))
-      return false;
+      return KeyboardType::NOT_KEYBOARD;
 
-  return true;
+  return KeyboardType::VALID_KEYBOARD;
 }
 
 bool EventDeviceInfo::HasMouse() const {

@@ -53,7 +53,7 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
                           devinfo.product_id(),
                           devinfo.version()),
       input_device_fd_(std::move(fd)),
-      has_keyboard_(devinfo.HasKeyboard()),
+      keyboard_type_(devinfo.GetKeyboardType()),
       has_touchpad_(devinfo.HasTouchpad()),
       has_numberpad_(devinfo.HasNumberpad()),
       has_stylus_switch_(devinfo.HasStylusSwitch()),
@@ -96,8 +96,12 @@ void EventConverterEvdevImpl::OnFileCanReadWithoutBlocking(int fd) {
   ProcessEvents(inputs, read_size / sizeof(*inputs));
 }
 
+KeyboardType EventConverterEvdevImpl::GetKeyboardType() const {
+  return keyboard_type_;
+}
+
 bool EventConverterEvdevImpl::HasKeyboard() const {
-  return has_keyboard_;
+  return keyboard_type_ == KeyboardType::VALID_KEYBOARD;
 }
 
 bool EventConverterEvdevImpl::HasTouchpad() const {

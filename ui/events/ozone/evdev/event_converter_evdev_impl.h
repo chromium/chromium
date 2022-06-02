@@ -45,6 +45,7 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
 
   // EventConverterEvdev:
   void OnFileCanReadWithoutBlocking(int fd) override;
+  KeyboardType GetKeyboardType() const override;
   bool HasKeyboard() const override;
   bool HasTouchpad() const override;
   bool HasCapsLockLed() const override;
@@ -83,8 +84,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   // Input device file descriptor.
   const base::ScopedFD input_device_fd_;
 
+  // KeyboardType
+  KeyboardType keyboard_type_;
+
   // Input modalities for this device.
-  bool has_keyboard_;
   bool has_touchpad_;
   bool has_numberpad_;
   bool has_stylus_switch_;
