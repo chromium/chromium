@@ -4325,14 +4325,6 @@ if (!is_android) {
     } else if (enable_extensions) {
       sources -= [ "../browser/extensions/api/braille_display_private/braille_display_private_apitest.cc" ]
     }
-    if (is_chrome_branded && safe_browsing_mode == 1 && !is_mac) {
-      sources -= [
-        # These tests depend on single process mode, which is disabled in
-        # official builds.
-        "../renderer/safe_browsing/phishing_classifier_browsertest.cc",
-        "../renderer/safe_browsing/phishing_classifier_delegate_browsertest.cc",
-      ]
-    }
 
     if (is_chromeos_ash || ((is_linux || is_chromeos_lacros) && use_dbus)) {
       sources += [ "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest.cc" ]
