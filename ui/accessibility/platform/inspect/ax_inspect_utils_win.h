@@ -17,6 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/win/scoped_variant.h"
+#include "third_party/iaccessible2/ia2_api_all.h"
+#include "third_party/isimpledom/ISimpleDOMNode.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/gfx/win/hwnd_util.h"
 
@@ -48,6 +50,19 @@ AX_EXPORT HWND GetHwndForProcess(base::ProcessId pid);
 
 // Returns HWND of window matching a given tree selector.
 AX_EXPORT HWND GetHWNDBySelector(const ui::AXTreeSelector& selector);
+
+// Returns IA2 Interfaces
+template <typename ServiceType>
+HRESULT IA2QueryInterface(IAccessible* accessible,
+                          ServiceType** out_accessible) {
+  // IA2 Spec dictates that IServiceProvider should be used instead of
+  // QueryInterface when retrieving IAccessible2.
+  Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
+  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
+  if (FAILED(hr))
+    return hr;
+  return service_provider->QueryService(__uuidof(ServiceType), out_accessible);
+}
 
 // Represent MSAA child, either as IAccessible object or as VARIANT.
 class AX_EXPORT MSAAChild final {

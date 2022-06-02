@@ -154,6 +154,7 @@ source_set("platform") {
 
       public_deps += [
         "//third_party/iaccessible2",
+        "//third_party/isimpledom",
         "//ui/accessibility/platform:ichromeaccessible",
       ]
 

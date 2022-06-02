@@ -91,100 +91,6 @@ AccessibilityTreeFormatterWin::AccessibilityTreeFormatterWin() {
 
 AccessibilityTreeFormatterWin::~AccessibilityTreeFormatterWin() {}
 
-static HRESULT QuerySimpleDOMNode(IAccessible* accessible,
-                                  ISimpleDOMNode** simple_dom_node) {
-  // IA2 Spec dictates that IServiceProvider should be used instead of
-  // QueryInterface when retrieving IAccessible2.
-  Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
-  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
-  if (FAILED(hr))
-    return hr;
-  return service_provider->QueryService(IID_ISimpleDOMNode, simple_dom_node);
-}
-
-static HRESULT QueryIAccessible2(IAccessible* accessible,
-                                 IAccessible2** accessible2) {
-  // IA2 Spec dictates that IServiceProvider should be used instead of
-  // QueryInterface when retrieving IAccessible2.
-  Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
-  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
-  if (FAILED(hr))
-    return hr;
-  return service_provider->QueryService(IID_IAccessible2, accessible2);
-}
-
-static HRESULT QueryIAccessibleAction(IAccessible* accessible,
-                                      IAccessibleAction** accessibleAction) {
-  // IA2 Spec dictates that IServiceProvider should be used instead of
-  // QueryInterface when retrieving alternate interfaces.
-  Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
-  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
-  if (FAILED(hr))
-    return hr;
-
-  return service_provider->QueryService(IID_IAccessibleAction,
-                                        accessibleAction);
-}
-
-static HRESULT QueryIAccessibleHypertext(
-    IAccessible* accessible,
-    IAccessibleHypertext** accessibleHypertext) {
-  // IA2 Spec dictates that IServiceProvider should be used instead of
-  // QueryInterface when retrieving alternate interfaces.
-  Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
-  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
-  if (FAILED(hr))
-    return hr;
-  return service_provider->QueryService(IID_IAccessibleHypertext,
-                                        accessibleHypertext);
-}
-
-static HRESULT QueryIAccessibleTable(IAccessible* accessible,
-                                     IAccessibleTable** accessibleTable) {
-  // IA2 Spec dictates that IServiceProvider should be used instead of
-  // QueryInterface when retrieving alternate interfaces.
-  Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
-  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
-  if (FAILED(hr))
-    return hr;
-  return service_provider->QueryService(IID_IAccessibleTable, accessibleTable);
-}
-
-static HRESULT QueryIAccessibleTableCell(
-    IAccessible* accessible,
-    IAccessibleTableCell** accessibleTableCell) {
-  // IA2 Spec dictates that IServiceProvider should be used instead of
-  // QueryInterface when retrieving alternate interfaces.
-  Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
-  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
-  if (FAILED(hr))
-    return hr;
-  return service_provider->QueryService(IID_IAccessibleTableCell,
-                                        accessibleTableCell);
-}
-
-static HRESULT QueryIAccessibleText(IAccessible* accessible,
-                                    IAccessibleText** accessibleText) {
-  // IA2 Spec dictates that IServiceProvider should be used instead of
-  // QueryInterface when retrieving alternate interfaces.
-  Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
-  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
-  if (FAILED(hr))
-    return hr;
-  return service_provider->QueryService(IID_IAccessibleText, accessibleText);
-}
-
-static HRESULT QueryIAccessibleValue(IAccessible* accessible,
-                                     IAccessibleValue** accessibleValue) {
-  // IA2 Spec dictates that IServiceProvider should be used instead of
-  // QueryInterface when retrieving alternate interfaces.
-  Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
-  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
-  if (FAILED(hr))
-    return hr;
-  return service_provider->QueryService(IID_IAccessibleValue, accessibleValue);
-}
-
 Microsoft::WRL::ComPtr<IAccessible>
 GetIAObject(ui::AXPlatformNodeDelegate* node, LONG& root_x, LONG& root_y) {
   DCHECK(node);
@@ -483,8 +389,9 @@ void AccessibilityTreeFormatterWin::AddSimpleDOMNodeProperties(
     base::Value* dict) const {
   Microsoft::WRL::ComPtr<ISimpleDOMNode> simple_dom_node;
 
-  if (S_OK != QuerySimpleDOMNode(node.Get(), &simple_dom_node))
-    return;  // No IA2Value, we are finished with this node.
+  if (S_OK !=
+      ui::IA2QueryInterface<ISimpleDOMNode>(node.Get(), &simple_dom_node))
+    return;
 
   base::win::ScopedBstr bstr;
   if (SUCCEEDED(simple_dom_node->get_innerHTML(bstr.Receive()))) {
@@ -497,8 +404,8 @@ bool AccessibilityTreeFormatterWin::AddIA2Properties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value* dict) const {
   Microsoft::WRL::ComPtr<IAccessible2> ia2;
-  if (S_OK != QueryIAccessible2(node.Get(), &ia2))
-    return false;  // No IA2, we are finished with this node.
+  if (S_OK != ui::IA2QueryInterface<IAccessible2>(node.Get(), &ia2))
+    return false;
 
   LONG ia2_role = 0;
   if (SUCCEEDED(ia2->role(&ia2_role))) {
@@ -527,6 +434,7 @@ bool AccessibilityTreeFormatterWin::AddIA2Properties(
   if (ia2->get_attributes(bstr.Receive()) == S_OK) {
     // get_attributes() returns a semicolon delimited string. Turn it into a
     // ListValue
+
     std::vector<std::u16string> ia2_attributes =
         base::SplitString(base::WideToUTF16(bstr.Get()), std::u16string(1, ';'),
                           base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -570,8 +478,8 @@ void AccessibilityTreeFormatterWin::AddIA2ActionProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleAction> ia2action;
-  if (S_OK != QueryIAccessibleAction(node.Get(), &ia2action))
-    return;  // No IA2Value, we are finished with this node.
+  if (S_OK != ui::IA2QueryInterface<IAccessibleAction>(node.Get(), &ia2action))
+    return;
 
   // |IAccessibleAction::get_name| returns a localized string.
   base::win::ScopedBstr name;
@@ -585,8 +493,9 @@ void AccessibilityTreeFormatterWin::AddIA2HypertextProperties(
     Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleHypertext> ia2hyper;
-  if (S_OK != QueryIAccessibleHypertext(node.Get(), &ia2hyper))
-    return;  // No IA2, we are finished with this node
+  if (S_OK !=
+      ui::IA2QueryInterface<IAccessibleHypertext>(node.Get(), &ia2hyper))
+    return;
 
   base::win::ScopedBstr text_bstr;
   HRESULT hr;
@@ -653,7 +562,7 @@ void AccessibilityTreeFormatterWin::AddIA2TableProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleTable> ia2table;
-  if (S_OK != QueryIAccessibleTable(node.Get(), &ia2table))
+  if (S_OK != ui::IA2QueryInterface<IAccessibleTable>(node.Get(), &ia2table))
     return;  // No IA2Text, we are finished with this node.
 
   LONG table_rows;
@@ -692,7 +601,7 @@ void AccessibilityTreeFormatterWin::AddIA2TableCellProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleTableCell> ia2cell;
-  if (S_OK != QueryIAccessibleTableCell(node.Get(), &ia2cell))
+  if (S_OK != ui::IA2QueryInterface<IAccessibleTableCell>(node.Get(), &ia2cell))
     return;  // No IA2Text, we are finished with this node.
 
   LONG column_index;
@@ -732,8 +641,9 @@ void AccessibilityTreeFormatterWin::AddIA2TextProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleText> ia2text;
-  if (S_OK != QueryIAccessibleText(node.Get(), &ia2text))
-    return;  // No IA2Text, we are finished with this node.
+
+  if (S_OK != ui::IA2QueryInterface<IAccessibleText>(node.Get(), &ia2text))
+    return;
 
   LONG n_characters;
   if (SUCCEEDED(ia2text->get_nCharacters(&n_characters)))
@@ -799,7 +709,7 @@ void AccessibilityTreeFormatterWin::AddIA2ValueProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleValue> ia2value;
-  if (S_OK != QueryIAccessibleValue(node.Get(), &ia2value))
+  if (S_OK != ui::IA2QueryInterface<IAccessibleValue>(node.Get(), &ia2value))
     return;  // No IA2Value, we are finished with this node.
 
   base::win::ScopedVariant current_value;
@@ -886,7 +796,7 @@ AccessibilityTreeFormatterWin::FindActiveDocument(IAccessible* root) const {
       continue;
 
     Microsoft::WRL::ComPtr<IAccessible2> ia2;
-    if (FAILED(QueryIAccessible2(ia, &ia2)))
+    if (FAILED(ui::IA2QueryInterface<IAccessible2>(ia, &ia2)))
       continue;  // No IA2, we are finished with this node.
 
     LONG role = 0;
