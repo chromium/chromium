@@ -441,17 +441,6 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     return;
   }
 
-  const AtomicString& aggregatable_source_json = response.HttpHeaderField(
-      http_names::kAttributionReportingRegisterAggregatableSource);
-  if (!aggregatable_source_json.IsNull() &&
-      !attribution_response_parsing::ParseAttributionAggregatableSource(
-          aggregatable_source_json, source_data->aggregation_keys)) {
-    loader_->LogAuditIssue(AttributionReportingIssueType::kInvalidHeader,
-                           aggregatable_source_json,
-                           /*element=*/nullptr, request_id);
-    return;
-  }
-
   data_host_->SourceDataAvailable(std::move(source_data));
 }
 

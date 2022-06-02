@@ -902,9 +902,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
   http_response->AddCustomHeader(
       "Attribution-Reporting-Register-Source",
-      R"({"source_event_id":"9", "destination":"https://d.test"})");
-  http_response->AddCustomHeader(
-      "Attribution-Reporting-Register-Aggregatable-Source", "");
+      R"({"source_event_id":"9", "destination":"https://d.test", "aggregation_keys":""})");
   http_response->AddCustomHeader("Location",
                                  "/register_aggregatable_source_headers.html");
   register_response->Send(http_response->ToResponseString());

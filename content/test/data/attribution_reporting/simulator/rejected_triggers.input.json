@@ -7,10 +7,10 @@
       "source_type": "navigation",
       "Attribution-Reporting-Register-Source": {
         "destination": "https://d.test",
-        "source_event_id": "123"
-      },
-      "Attribution-Reporting-Register-Aggregatable-Source": {
+        "source_event_id": "123",
+        "aggregation_keys": {
           "a": "0x159"
+        }
       }
     }
   ],

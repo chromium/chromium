@@ -19,6 +19,7 @@ class uint128;
 
 namespace blink {
 
+class JSONValue;
 class ResourceResponse;
 
 namespace attribution_response_parsing {
@@ -38,8 +39,8 @@ namespace attribution_response_parsing {
 // }]
 //
 // Returns whether parsing was successful.
-CORE_EXPORT bool ParseAttributionAggregatableSource(
-    const String& json_string,
+CORE_EXPORT bool ParseAggregationKeys(
+    const JSONValue* json,
     WTF::HashMap<String, absl::uint128>& aggregation_keys);
 
 // Parses a debug key, which is a 64-bit unsigned integer encoded as a base-10

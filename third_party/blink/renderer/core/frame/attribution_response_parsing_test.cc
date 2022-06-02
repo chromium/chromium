@@ -14,6 +14,7 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
+#include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -81,55 +82,56 @@ class VectorBuilder {
 
 }  // namespace
 
-TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSource) {
+TEST(AttributionResponseParsingTest, ParseAggregationKeys) {
   const struct {
     String description;
-    String header;
+    std::unique_ptr<JSONValue> json;
     bool valid;
     WTF::HashMap<String, absl::uint128> expected;
   } kTestCases[] = {
-      {"Empty header", "", false, {}},
-      {"Invalid JSON", "{", false, {}},
-      {"Not a dictionary", "[]", false, {}},
-      {"key not a string", R"({"key":123})", false, {}},
-      {"Invalid key", R"({"key":"0xG59"})", false, {}},
+      {"Null", nullptr, true, {}},
+      {"Not a dictionary", std::make_unique<JSONArray>(), false, {}},
+      {"key not a string", ParseJSON(R"({"key":123})"), false, {}},
+      {"Invalid key", ParseJSON(R"({"key":"0xG59"})"), false, {}},
       {"One valid key",
-       R"({"key":"0x159"})",
+       ParseJSON(R"({"key":"0x159"})"),
        true,
        {{"key", absl::MakeUint128(/*high=*/0, /*low=*/345)}}},
       {"Two valid keys",
-       R"({"key1":"0x159","key2":"0x50000000000000159"})",
+       ParseJSON(R"({"key1":"0x159","key2":"0x50000000000000159"})"),
        true,
        {
            {"key1", absl::MakeUint128(/*high=*/0, /*low=*/345)},
            {"key2", absl::MakeUint128(/*high=*/5, /*low=*/345)},
        }},
-      {"Second key invalid", R"({"key1":"0x159","key2":""})", false, {}},
+      {"Second key invalid",
+       ParseJSON(R"({"key1":"0x159","key2":""})"),
+       false,
+       {}},
   };
 
   for (const auto& test_case : kTestCases) {
     WTF::HashMap<String, absl::uint128> actual;
-    bool valid = ParseAttributionAggregatableSource(test_case.header, actual);
+    bool valid = ParseAggregationKeys(test_case.json.get(), actual);
     EXPECT_EQ(test_case.valid, valid) << test_case.description;
     if (test_case.valid)
       EXPECT_EQ(test_case.expected, actual) << test_case.description;
   }
 }
 
-TEST(AttributionResponseParsingTest,
-     ParseAttributionAggregatableSource_CheckSize) {
+TEST(AttributionResponseParsingTest, ParseAggregationKeys_CheckSize) {
   struct AttributionAggregatableSourceSizeTestCase {
     String description;
     bool valid;
     wtf_size_t key_count;
     wtf_size_t key_size;
 
-    String GetHeader() const {
-      JSONObject object;
+    std::unique_ptr<JSONValue> GetHeader() const {
+      auto object = std::make_unique<JSONObject>();
       for (wtf_size_t i = 0u; i < key_count; ++i) {
-        object.SetString(GetKey(i), "0x1");
+        object->SetString(GetKey(i), "0x1");
       }
-      return object.ToJSONString();
+      return object;
     }
 
     WTF::HashMap<String, absl::uint128> GetAggregationKeys() const {
@@ -168,9 +170,9 @@ TEST(AttributionResponseParsingTest,
   };
 
   for (const auto& test_case : kTestCases) {
+    std::unique_ptr<JSONValue> json = test_case.GetHeader();
     WTF::HashMap<String, absl::uint128> actual;
-    bool valid =
-        ParseAttributionAggregatableSource(test_case.GetHeader(), actual);
+    bool valid = ParseAggregationKeys(json.get(), actual);
     EXPECT_EQ(test_case.valid, valid) << test_case.description;
     if (test_case.valid) {
       EXPECT_EQ(test_case.GetAggregationKeys(), actual)
@@ -1212,11 +1214,11 @@ TEST(AttributionResponseParsingTest, FiltersSizeHistogram) {
 
 TEST(AttributionResponseParsingTest, SourceAggregatableKeysHistogram) {
   const auto make_aggregatable_source_with_keys = [](wtf_size_t n) {
-    JSONObject object;
+    auto object = std::make_unique<JSONObject>();
     for (wtf_size_t i = 0; i < n; ++i) {
-      object.SetString(String::Number(i), "0x1");
+      object->SetString(String::Number(i), "0x1");
     }
-    return object.ToJSONString();
+    return object;
   };
 
   const struct {
@@ -1230,9 +1232,9 @@ TEST(AttributionResponseParsingTest, SourceAggregatableKeysHistogram) {
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
+    auto json = make_aggregatable_source_with_keys(test_case.size);
     WTF::HashMap<String, absl::uint128> aggregation_keys;
-    ParseAttributionAggregatableSource(
-        make_aggregatable_source_with_keys(test_case.size), aggregation_keys);
+    ParseAggregationKeys(json.get(), aggregation_keys);
     histograms.ExpectUniqueSample("Conversions.AggregatableKeysPerSource",
                                   test_case.size, test_case.expected);
   }

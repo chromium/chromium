@@ -79,14 +79,14 @@ The JSON schema is as follows.
 
                 // Optional uint64 formatted as a base-10 string. Defaults to
                 // null.
-                "debug_key": "987"
-              },
+                "debug_key": "987",
 
-              // Optional dictionary of aggregation key identifiers and
-              // corresponding key pieces.
-              "Attribution-Reporting-Register-Aggregatable-Source": {
+                // Optional dictionary of aggregation key identifiers and
+                // corresponding key pieces.
+                "aggregation_keys": {
                   // Value is uint128 formatted as a base-16 string.
                   "a": "0x1"
+                }
               }
             }
           }

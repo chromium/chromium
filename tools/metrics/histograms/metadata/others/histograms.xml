@@ -3246,10 +3246,9 @@ chromium-metrics-reviews@google.com.
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
-    Measures the number of keys provided in the
-    Attribution-Reporting-Register-Aggregatable-Source header when present.
-    Recorded once for each aggregatable source when parsed from the
-    attributionsrc response.
+    Measures the number of aggregation keys provided in attribution source
+    registration headers. Recorded once for each source registration header when
+    parsed from the attributionsrc response.
   </summary>
 </histogram>
 

@@ -242,6 +242,7 @@ class AttributionSimulatorInputParser {
     int64_t priority = 0;
     base::TimeDelta expiry;
     AttributionFilterData filter_data;
+    AttributionAggregatableSource aggregatable_source;
 
     if (!ParseAttributionEvent(
             source_dict, "Attribution-Reporting-Register-Source",
@@ -254,12 +255,10 @@ class AttributionSimulatorInputParser {
               filter_data = ParseFilterData(
                   dict, "filter_data",
                   &AttributionFilterData::FromSourceFilterValues);
+              aggregatable_source = ParseAggregatableSource(dict);
             }))) {
       return;
     }
-
-    AttributionAggregatableSource aggregatable_source =
-        ParseAggregatableSource(source_dict);
 
     if (has_error())
       return;
@@ -571,8 +570,7 @@ class AttributionSimulatorInputParser {
 
   AttributionAggregatableSource ParseAggregatableSource(
       const base::Value::Dict& cfg) {
-    static constexpr char kKey[] =
-        "Attribution-Reporting-Register-Aggregatable-Source";
+    static constexpr char kKey[] = "aggregation_keys";
 
     const base::Value* value = cfg.Find(kKey);
     if (!value)

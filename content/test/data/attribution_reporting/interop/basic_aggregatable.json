@@ -14,10 +14,10 @@
           "response": {
             "Attribution-Reporting-Register-Source": {
               "destination": "https://destination.test",
-              "source_event_id": "123"
-            },
-            "Attribution-Reporting-Register-Aggregatable-Source": {
-              "a": "0x159"
+              "source_event_id": "123",
+              "aggregation_keys": {
+                "a": "0x159"
+              }
             }
           }
         }]

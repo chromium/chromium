@@ -143,13 +143,12 @@ bool ParseAttributionFilterData(
 
 }  // namespace
 
-bool ParseAttributionAggregatableSource(
-    const String& json_string,
+bool ParseAggregationKeys(
+    const JSONValue* json,
     WTF::HashMap<String, absl::uint128>& aggregation_keys) {
-  // TODO(apaseltiner): Consider applying a max stack depth to this.
-  std::unique_ptr<JSONValue> json = ParseJSON(json_string);
+  // Aggregation keys may be omitted.
   if (!json)
-    return false;
+    return true;
 
   const int kExclusiveMaxHistogramValue = 101;
 
@@ -158,7 +157,7 @@ bool ParseAttributionAggregatableSource(
           kExclusiveMaxHistogramValue,
       "Bump the version for histogram Conversions.AggregatableKeysPerSource");
 
-  const auto* object = JSONObject::Cast(json.get());
+  const auto* object = JSONObject::Cast(json);
   if (!object)
     return false;
 
@@ -263,6 +262,11 @@ bool ParseSourceRegistrationHeader(
   // TODO(apaseltiner): Report a DevTools issue for this.
   if (source_data.filter_data->filter_values.Contains("source_type"))
     return false;
+
+  if (!ParseAggregationKeys(object->Get("aggregation_keys"),
+                            source_data.aggregation_keys)) {
+    return false;
+  }
 
   return true;
 }

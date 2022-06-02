@@ -155,10 +155,10 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       "Attribution-Reporting-Register-Source": {
         "source_event_id": "789",
         "destination": "https://c.d.test",
-        "expiry": "864001"
-      },
-      "Attribution-Reporting-Register-Aggregatable-Source": {
-        "a": "0x1"
+        "expiry": "864001",
+        "aggregation_keys": {
+          "a": "0x1"
+        }
       }
     }
   ]})json";
@@ -739,7 +739,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"]: must be a dictionary)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["aggregation_keys"]: must be a dictionary)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "event",
@@ -747,13 +747,13 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
           "source_origin": "https://a.s.test",
           "Attribution-Reporting-Register-Source": {
             "source_event_id": "123",
-            "destination": "https://a.d.test"
-          },
-          "Attribution-Reporting-Register-Aggregatable-Source": ""
+            "destination": "https://a.d.test",
+            "aggregation_keys": ""
+          }
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"]["a"]: must be a uint128 formatted as a base-16 string)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["aggregation_keys"]["a"]: must be a uint128 formatted as a base-16 string)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "event",
@@ -761,10 +761,10 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
           "source_origin": "https://a.s.test",
           "Attribution-Reporting-Register-Source": {
             "source_event_id": "123",
-            "destination": "https://a.d.test"
-          },
-          "Attribution-Reporting-Register-Aggregatable-Source": {
-            "a": "0xG"
+            "destination": "https://a.d.test",
+            "aggregation_keys": {
+              "a": "0xG"
+            }
           }
         }]})json",
     },
