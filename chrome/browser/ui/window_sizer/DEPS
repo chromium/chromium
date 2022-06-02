@@ -1,5 +1,6 @@
 specific_include_rules = {
-  ".*chromeos.*test.*": [
-   "+ash",
+  ".*test.*": [
+   "!ash",
+   "+ash/public",
   ],
 }

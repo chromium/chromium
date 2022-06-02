@@ -37,11 +37,7 @@ int RotationToDegrees(display::Display::Rotation rotation) {
 
 }  // namespace
 
-DisplayInfoProvider::DisplayInfoProvider(display::Screen* screen)
-    : screen_(screen ? screen : display::Screen::GetScreen()) {
-  // Do not use/call on the screen object in this constructor yet because a
-  // subclass may pass not-yet-initialized screen instance.
-}
+DisplayInfoProvider::DisplayInfoProvider() = default;
 
 DisplayInfoProvider::~DisplayInfoProvider() = default;
 
@@ -115,8 +111,9 @@ void DisplayInfoProvider::EnableUnifiedDesktop(bool enable) {}
 void DisplayInfoProvider::GetAllDisplaysInfo(
     bool /* single_unified*/,
     base::OnceCallback<void(DisplayUnitInfoList result)> callback) {
-  int64_t primary_id = screen_->GetPrimaryDisplay().id();
-  std::vector<display::Display> displays = screen_->GetAllDisplays();
+  display::Screen* screen = display::Screen::GetScreen();
+  int64_t primary_id = screen->GetPrimaryDisplay().id();
+  std::vector<display::Display> displays = screen->GetAllDisplays();
   DisplayUnitInfoList all_displays;
   for (const display::Display& display : displays) {
     api::system_display::DisplayUnitInfo unit =

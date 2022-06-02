@@ -131,6 +131,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/view_prop.h"
 #include "ui/base/win/window_event_target.h"
+#include "ui/display/win/test/scoped_screen_win.h"
 #endif
 
 using testing::_;
@@ -3762,6 +3763,11 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
        ScrollEventsOverscrollWithFling) {
   SetUpOverscrollEnvironment();
 
+#if BUILDFLAG(IS_WIN)
+  // Create a ScopedScreenWin.
+  display::win::test::ScopedScreenWin scoped_screen_win;
+#endif
+
   // Send a wheel event. ACK the event as not processed. This should not
   // initiate an overscroll gesture since it doesn't cross the threshold yet.
   SimulateWheelEvent(10, 0, 0, true, WebMouseWheelEvent::kPhaseBegan);
@@ -3837,6 +3843,11 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
 TEST_F(RenderWidgetHostViewAuraOverscrollTest,
        ScrollEventsOverscrollWithZeroFling) {
   SetUpOverscrollEnvironment();
+
+#if BUILDFLAG(IS_WIN)
+  // Create a ScopedScreenWin.
+  display::win::test::ScopedScreenWin scoped_screen_win;
+#endif
 
   // Send a wheel event. ACK the event as not processed. This should not
   // initiate an overscroll gesture since it doesn't cross the threshold yet.
@@ -3914,6 +3925,11 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
 TEST_F(RenderWidgetHostViewAuraOverscrollTest,
        MAYBE_ReverseFlingCancelsOverscroll) {
   SetUpOverscrollEnvironment();
+
+#if BUILDFLAG(IS_WIN)
+  // Create a ScopedScreenWin.
+  display::win::test::ScopedScreenWin scoped_screen_win;
+#endif
 
   {
     PressAndSetTouchActionAuto();
@@ -4785,6 +4801,11 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
        OverscrollStateResetsAfterScroll) {
   SetUpOverscrollEnvironment();
 
+#if BUILDFLAG(IS_WIN)
+  // Create a ScopedScreenWin.
+  display::win::test::ScopedScreenWin scoped_screen_win;
+#endif
+
   SimulateWheelEvent(0, 5, 0, true,
                      WebMouseWheelEvent::kPhaseBegan);  // sent directly
   SimulateWheelEvent(0, 30, 0, true,
@@ -5221,6 +5242,11 @@ TEST_F(RenderWidgetHostViewAuraTest, CorrectNumberOfAcksAreDispatched) {
 // isn't surpassed and the overscroll mode stays OVERSCROLL_NONE.
 TEST_F(RenderWidgetHostViewAuraOverscrollTest, ScrollDeltasResetOnEnd) {
   SetUpOverscrollEnvironment();
+
+#if BUILDFLAG(IS_WIN)
+  // Create a ScopedScreenWin.
+  display::win::test::ScopedScreenWin scoped_screen_win;
+#endif
 
   PressAndSetTouchActionAuto();
   // Wheel event scroll ending with mouse move.

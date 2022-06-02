@@ -16,8 +16,7 @@
 
 namespace extensions {
 
-MockDisplayInfoProvider::MockDisplayInfoProvider()
-    : DisplayInfoProvider(&screen_) {}
+MockDisplayInfoProvider::MockDisplayInfoProvider() = default;
 
 MockDisplayInfoProvider::~MockDisplayInfoProvider() = default;
 

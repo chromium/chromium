@@ -46,6 +46,10 @@
 #include "ui/events/event.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/display/win/test/scoped_screen_win.h"
+#endif
+
 using blink::SyntheticWebGestureEventBuilder;
 using blink::SyntheticWebMouseEventBuilder;
 using blink::SyntheticWebMouseWheelEventBuilder;
@@ -966,6 +970,9 @@ TEST_F(InputRouterImplTest, TouchTypesIgnoringAck) {
 TEST_F(InputRouterImplTest, DISABLED_GestureTypesIgnoringAck) {
   // We test every gesture type, ensuring that the stream of gestures is valid.
 
+#if BUILDFLAG(IS_WIN)
+  display::win::test::ScopedScreenWin scoped_screen_win_;
+#endif
   const WebInputEvent::Type eventTypes[] = {
       WebInputEvent::Type::kGestureTapDown,
       WebInputEvent::Type::kGestureShowPress,

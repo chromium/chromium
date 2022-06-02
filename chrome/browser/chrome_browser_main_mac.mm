@@ -56,7 +56,8 @@ ChromeBrowserMainPartsMac::ChromeBrowserMainPartsMac(bool is_integration_test,
                                                      StartupData* startup_data)
     : ChromeBrowserMainPartsPosix(is_integration_test, startup_data) {}
 
-ChromeBrowserMainPartsMac::~ChromeBrowserMainPartsMac() = default;
+ChromeBrowserMainPartsMac::~ChromeBrowserMainPartsMac() {
+}
 
 int ChromeBrowserMainPartsMac::PreEarlyInitialization() {
   if (base::mac::WasLaunchedAsLoginItemRestoreState()) {
@@ -68,6 +69,7 @@ int ChromeBrowserMainPartsMac::PreEarlyInitialization() {
         base::CommandLine::ForCurrentProcess();
     singleton_command_line->AppendSwitch(switches::kNoStartupWindow);
   }
+
   return ChromeBrowserMainPartsPosix::PreEarlyInitialization();
 }
 

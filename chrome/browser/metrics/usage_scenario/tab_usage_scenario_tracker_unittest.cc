@@ -40,16 +40,17 @@ class TabUsageScenarioTrackerTest : public ChromeRenderViewHostTestHarness {
       delete;
 
   void SetUp() override {
-    display::Screen::SetScreenInstance(&screen_);
     ChromeRenderViewHostTestHarness::SetUp();
+    previous_screen_ = display::Screen::SetScreenInstance(&screen_);
     tab_usage_scenario_tracker_ =
         std::make_unique<TabUsageScenarioTracker>(&usage_scenario_data_store_);
   }
 
   void TearDown() override {
     tab_usage_scenario_tracker_.reset();
+    display::Screen::SetScreenInstance(previous_screen_);
+    previous_screen_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
-    display::Screen::SetScreenInstance(nullptr);
   }
 
   std::unique_ptr<content::WebContents> CreateWebContents() {
@@ -82,6 +83,7 @@ class TabUsageScenarioTrackerTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   display::test::TestScreen screen_;
+  raw_ptr<display::Screen> previous_screen_;
   UsageScenarioDataStoreImpl usage_scenario_data_store_;
   std::unique_ptr<TabUsageScenarioTracker> tab_usage_scenario_tracker_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;

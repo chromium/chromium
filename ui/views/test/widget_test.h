@@ -19,10 +19,6 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/display/screen.h"
-#endif
-
 namespace ui {
 namespace internal {
 class InputMethodDelegate;
@@ -160,11 +156,6 @@ class DesktopWidgetTestInteractive : public DesktopWidgetTest {
 
   // DesktopWidgetTest
   void SetUp() override;
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  void TearDown() override;
-  std::unique_ptr<display::Screen> screen_;
-#endif
 };
 
 // A helper WidgetDelegate for tests that require hooks into WidgetDelegate

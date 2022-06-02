@@ -15,5 +15,4 @@ include_rules = [
   "+third_party/ocmock",
   "+third_party/protobuf/src",
   "+services/network/public/cpp",
-  "+ui/display",
 ]

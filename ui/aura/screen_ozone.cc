@@ -13,13 +13,10 @@
 
 namespace aura {
 
-ScreenOzone::ScreenOzone() {
-  DCHECK(!display::Screen::HasScreen());
-  display::Screen::SetScreenInstance(this);
-}
+ScreenOzone::ScreenOzone() = default;
 
 ScreenOzone::~ScreenOzone() {
-  display::Screen::SetScreenInstance(nullptr);
+  display::Screen::SetScreenInstance(old_screen_);
 }
 
 void ScreenOzone::Initialize() {
@@ -35,11 +32,6 @@ void ScreenOzone::Initialize() {
     NOTREACHED()
         << "PlatformScreen is not implemented for this ozone platform.";
   }
-}
-
-// static
-bool ScreenOzone::IsOzoneInitialized() {
-  return ui::OzonePlatform::IsInitialized();
 }
 
 gfx::Point ScreenOzone::GetCursorScreenPoint() {
@@ -156,18 +148,5 @@ gfx::AcceleratedWidget ScreenOzone::GetAcceleratedWidgetForWindow(
 }
 
 void ScreenOzone::OnBeforePlatformScreenInit() {}
-
-ScopedScreenOzone::ScopedScreenOzone(const base::Location& location)
-    : ScopedNativeScreen(/*call_maybe_init=*/false, location) {
-  MaybeInit();
-}
-
-ScopedScreenOzone::~ScopedScreenOzone() = default;
-
-display::Screen* ScopedScreenOzone::CreateScreen() {
-  auto* screen = new ScreenOzone();
-  screen->Initialize();
-  return screen;
-}
 
 }  // namespace aura

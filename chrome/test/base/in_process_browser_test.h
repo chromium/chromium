@@ -52,10 +52,6 @@ class ViewsDelegate;
 }
 #endif  // defined(TOOLKIT_VIEWS)
 
-namespace display {
-class Screen;
-}
-
 class Browser;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class FakeAccountManagerUI;
@@ -229,7 +225,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   [[nodiscard]] virtual bool SetUpUserDataDirectory();
 
   // Initializes the display::Screen instance.
-  virtual void SetScreenInstance();
+  virtual void SetScreenInstance() {}
 
   // BrowserTestBase:
   void PreRunTestOnMainThread() override;
@@ -317,10 +313,6 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   FakeAccountManagerUI* GetFakeAccountManagerUI() const;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<display::Screen> screen_;
-#endif
 
  private:
   void Initialize();

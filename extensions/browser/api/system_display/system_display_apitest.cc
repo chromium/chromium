@@ -13,17 +13,24 @@
 #include "extensions/browser/api/system_display/system_display_api.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/mock_display_info_provider.h"
+#include "extensions/browser/mock_screen.h"
 #include "extensions/common/api/system_display.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/result_catcher.h"
+#include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/test/scoped_screen_override.h"
 
 namespace extensions {
 
+using display::Screen;
+using display::test::ScopedScreenOverride;
+
 class SystemDisplayApiTest : public ShellApiTest {
  public:
-  SystemDisplayApiTest() : provider_(new MockDisplayInfoProvider) {}
+  SystemDisplayApiTest()
+      : provider_(new MockDisplayInfoProvider), screen_(new MockScreen) {}
 
   SystemDisplayApiTest(const SystemDisplayApiTest&) = delete;
   SystemDisplayApiTest& operator=(const SystemDisplayApiTest&) = delete;
@@ -32,7 +39,15 @@ class SystemDisplayApiTest : public ShellApiTest {
 
   void SetUpOnMainThread() override {
     ShellApiTest::SetUpOnMainThread();
+    ANNOTATE_LEAKING_OBJECT_PTR(Screen::GetScreen());
+    scoped_screen_override_ =
+        std::make_unique<ScopedScreenOverride>(screen_.get());
     DisplayInfoProvider::InitializeForTesting(provider_.get());
+  }
+
+  void TearDownOnMainThread() override {
+    ShellApiTest::TearDownOnMainThread();
+    scoped_screen_override_.reset();
   }
 
  protected:
@@ -43,6 +58,8 @@ class SystemDisplayApiTest : public ShellApiTest {
         base::BindOnce([](absl::optional<std::string>) {}));
   }
   std::unique_ptr<MockDisplayInfoProvider> provider_;
+  std::unique_ptr<Screen> screen_;
+  std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
