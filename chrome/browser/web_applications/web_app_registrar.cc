@@ -973,10 +973,6 @@ void WebAppRegistrar::SetRegistry(Registry&& registry) {
   registry_ = std::move(registry);
 }
 
-WebAppRegistrar::AppSet WebAppRegistrar::FilterApps(Filter filter) const {
-  return AppSet(this, filter, /*empty=*/registry_profile_being_deleted_);
-}
-
 void WebAppRegistrar::CountMutation() {
 #if DCHECK_IS_ON()
   ++mutations_count_;
@@ -997,7 +993,7 @@ WebApp* WebAppRegistrarMutable::GetAppByIdMutable(const AppId& app_id) {
   return const_cast<WebApp*>(GetAppById(app_id));
 }
 
-WebAppRegistrar::AppSet WebAppRegistrarMutable::FilterAppsMutable(
+WebAppRegistrar::AppSet WebAppRegistrarMutable::FilterAppsMutableForTesting(
     Filter filter) {
   return AppSet(this, filter, /*empty=*/registry_profile_being_deleted_);
 }

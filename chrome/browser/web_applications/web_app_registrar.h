@@ -434,8 +434,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   Registry& registry() { return registry_; }
   void SetRegistry(Registry&& registry);
 
-  AppSet FilterApps(Filter filter) const;
-
   void CountMutation();
 
   // Gets the IDs for all apps in `app_set`.
@@ -467,7 +465,7 @@ class WebAppRegistrarMutable : public WebAppRegistrar {
 
   WebApp* GetAppByIdMutable(const AppId& app_id);
 
-  AppSet FilterAppsMutable(Filter filter);
+  AppSet FilterAppsMutableForTesting(Filter filter);
 
   AppSet GetAppsIncludingStubsMutable();
   AppSet GetAppsMutable();

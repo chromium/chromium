@@ -286,12 +286,12 @@ TEST_F(WebAppRegistrarTest, FilterApps) {
   auto ids = RegisterAppsForTesting(std::move(registry));
 
   for ([[maybe_unused]] const WebApp& web_app :
-       mutable_registrar().FilterAppsMutable(
+       mutable_registrar().FilterAppsMutableForTesting(
            [](const WebApp& web_app) { return false; })) {
     NOTREACHED();
   }
 
-  for (const WebApp& web_app : mutable_registrar().FilterAppsMutable(
+  for (const WebApp& web_app : mutable_registrar().FilterAppsMutableForTesting(
            [](const WebApp& web_app) { return true; })) {
     const size_t num_removed = ids.erase(web_app.app_id());
     EXPECT_EQ(1U, num_removed);
