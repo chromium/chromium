@@ -79,6 +79,9 @@ tast_disabled_tests_from_chrome_all = [
   "security.NetworkListenersARC",
   "security.SELinuxProcessesARC",
 
+  # https://b/232952603
+  "security.SELinuxProcessesARC.vm",
+
   # https://crbug.com/1282369
   "apps.LaunchHelpAppOffline",
 
