@@ -518,11 +518,6 @@ void CommandBufferProxyImpl::CreateGpuFence(uint32_t gpu_fence_id,
       gpu_fence_id, gpu_fence->GetGpuFenceHandle().Clone());
 }
 
-void CommandBufferProxyImpl::SetDisplayTransform(
-    gfx::OverlayTransform transform) {
-  NOTREACHED();
-}
-
 void CommandBufferProxyImpl::GetGpuFence(
     uint32_t gpu_fence_id,
     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {

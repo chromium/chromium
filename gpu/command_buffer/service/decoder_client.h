@@ -44,8 +44,7 @@ class GPU_EXPORT DecoderClient {
   // because the fence completed.
   virtual void OnRescheduleAfterFinished() = 0;
 
-  // Called when SwapBuffers, PostSubBufferCHROMIUM,
-  // SwapBuffersWithBoundsCHROMIUM or CommitOverlayPlanesCHROMIUM is called.
+  // Called when SwapBuffers is called.
   virtual void OnSwapBuffers(uint64_t swap_id, uint32_t flags) = 0;
 
   // Notifies the client that the shared GrContext may have been used by this

@@ -824,16 +824,6 @@ error::Error DoGetUniformsES3CHROMIUM(GLuint program,
                                       std::vector<uint8_t>* data);
 error::Error DoGetTranslatedShaderSourceANGLE(GLuint shader,
                                               std::string* source);
-error::Error DoSwapBuffersWithBoundsCHROMIUM(uint64_t swap_id,
-                                             GLsizei count,
-                                             const volatile GLint* rects,
-                                             GLbitfield flags);
-error::Error DoPostSubBufferCHROMIUM(uint64_t swap_id,
-                                     GLint x,
-                                     GLint y,
-                                     GLint width,
-                                     GLint height,
-                                     GLbitfield flags);
 error::Error DoCopyTextureCHROMIUM(GLuint source_id,
                                    GLint source_level,
                                    GLenum dest_target,
@@ -901,59 +891,6 @@ error::Error DoWaitSyncTokenCHROMIUM(CommandBufferNamespace namespace_id,
                                      GLuint64 release_count);
 error::Error DoDrawBuffersEXT(GLsizei count, const volatile GLenum* bufs);
 error::Error DoDiscardBackbufferCHROMIUM();
-error::Error DoScheduleOverlayPlaneCHROMIUM(GLint plane_z_order,
-                                            GLenum plane_transform,
-                                            GLuint overlay_texture_id,
-                                            GLint bounds_x,
-                                            GLint bounds_y,
-                                            GLint bounds_width,
-                                            GLint bounds_height,
-                                            GLfloat uv_x,
-                                            GLfloat uv_y,
-                                            GLfloat uv_width,
-                                            GLfloat uv_height,
-                                            bool enable_blend,
-                                            GLuint gpu_fence_id);
-error::Error DoScheduleCALayerSharedStateCHROMIUM(
-    GLfloat opacity,
-    GLboolean is_clipped,
-    const GLfloat* clip_rect,
-    const GLfloat* rounded_corner_bounds,
-    GLint sorting_context_id,
-    const GLfloat* transform);
-error::Error DoScheduleCALayerCHROMIUM(GLuint contents_texture_id,
-                                       const GLfloat* contents_rect,
-                                       GLuint background_color,
-                                       GLuint edge_aa_mask,
-                                       GLenum filter,
-                                       const GLfloat* bounds_rect);
-error::Error DoScheduleCALayerInUseQueryCHROMIUM(
-    GLsizei n,
-    const volatile GLuint* textures);
-error::Error DoScheduleDCLayerCHROMIUM(GLuint texture_0,
-                                       GLuint texture_1,
-                                       GLint z_order,
-                                       GLint content_x,
-                                       GLint content_y,
-                                       GLint content_width,
-                                       GLint content_height,
-                                       GLint quad_x,
-                                       GLint quad_y,
-                                       GLint quad_width,
-                                       GLint quad_height,
-                                       GLfloat transform_c1r1,
-                                       GLfloat transform_c2r1,
-                                       GLfloat transform_c1r2,
-                                       GLfloat transform_c2r2,
-                                       GLfloat transform_tx,
-                                       GLfloat transform_ty,
-                                       GLboolean is_clipped,
-                                       GLint clip_x,
-                                       GLint clip_y,
-                                       GLint clip_width,
-                                       GLint clip_height,
-                                       GLuint protected_video_type);
-error::Error DoCommitOverlayPlanesCHROMIUM(uint64_t swap_id, GLbitfield flags);
 error::Error DoSetColorSpaceMetadataCHROMIUM(GLuint texture_id,
                                              gfx::ColorSpace color_space);
 error::Error DoFlushDriverCachesCHROMIUM();
@@ -1073,12 +1010,6 @@ error::Error DoBindFragDataLocationEXT(GLuint program,
 error::Error DoGetFragDataIndexEXT(GLuint program,
                                    const char* name,
                                    GLint* index);
-
-error::Error DoSetDrawRectangleCHROMIUM(GLint x,
-                                        GLint y,
-                                        GLint width,
-                                        GLint height);
-error::Error DoSetEnableDCLayersCHROMIUM(GLboolean enable);
 
 error::Error DoWindowRectanglesEXT(GLenum mode,
                                    GLsizei n,

@@ -312,7 +312,6 @@ GL_APICALL void         GL_APIENTRY glGetTransformFeedbackVaryingsCHROMIUM (GLid
 GL_APICALL void         GL_APIENTRY glGetUniformsES3CHROMIUM (GLidProgram program, GLsizeiNotNegative bufsize, GLsizei* size, void* info);
 GL_APICALL void         GL_APIENTRY glDescheduleUntilFinishedCHROMIUM (void);
 GL_APICALL void         GL_APIENTRY glGetTranslatedShaderSourceANGLE (GLidShader shader, GLsizeiNotNegative bufsize, GLsizeiOptional* length, char* source);
-GL_APICALL void         GL_APIENTRY glPostSubBufferCHROMIUM (GLuint64 swap_id, GLint x, GLint y, GLint width, GLint height, GLbitfieldSwapBuffersFlags flags = 0);
 GL_APICALL void         GL_APIENTRY glCopyTextureCHROMIUM (GLuint source_id, GLint source_level, GLenumTextureTarget dest_target, GLuint dest_id, GLint dest_level, GLintTextureInternalFormat internalformat, GLenumPixelType dest_type, GLboolean unpack_flip_y, GLboolean unpack_premultiply_alpha, GLboolean unpack_unmultiply_alpha);
 GL_APICALL void         GL_APIENTRY glCopySubTextureCHROMIUM (GLuint source_id, GLint source_level, GLenumTextureTarget dest_target, GLuint dest_id, GLint dest_level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height, GLboolean unpack_flip_y, GLboolean unpack_premultiply_alpha, GLboolean unpack_unmultiply_alpha);
 GL_APICALL void         GL_APIENTRY glDrawArraysInstancedANGLE (GLenumDrawMode mode, GLint first, GLsizei count, GLsizei primcount);
@@ -330,14 +329,8 @@ GL_APICALL void         GL_APIENTRY glDiscardFramebufferEXT (GLenumFramebufferTa
 GL_APICALL void         GL_APIENTRY glLoseContextCHROMIUM (GLenumResetStatus current, GLenumResetStatus other);
 GL_APICALL void         GL_APIENTRY glDrawBuffersEXT (GLsizei count, const GLenum* bufs);
 GL_APICALL void         GL_APIENTRY glDiscardBackbufferCHROMIUM (void);
-GL_APICALL void         GL_APIENTRY glScheduleOverlayPlaneCHROMIUM (GLint plane_z_order, GLenum plane_transform, GLuint overlay_texture_id, GLint bounds_x, GLint bounds_y, GLint bounds_width, GLint bounds_height, GLfloat uv_x, GLfloat uv_y, GLfloat uv_width, GLfloat uv_height, GLboolean enable_blend, GLuint gpu_fence_id);
-GL_APICALL void         GL_APIENTRY glScheduleCALayerSharedStateCHROMIUM (GLfloat opacity, GLboolean is_clipped, const GLfloat* clip_rect, const GLfloat* rounded_corner_bounds, GLint sorting_context_id, const GLfloat* transform);
-GL_APICALL void         GL_APIENTRY glScheduleCALayerCHROMIUM (GLuint contents_texture_id, const GLfloat* contents_rect, GLuint background_color, GLuint edge_aa_mask, const GLfloat* bounds_rect, GLuint filter);
-GL_APICALL void         GL_APIENTRY glScheduleCALayerInUseQueryCHROMIUM (GLsizei count, const GLuint* textures);
-GL_APICALL void         GL_APIENTRY glCommitOverlayPlanesCHROMIUM (GLuint64 swap_id, GLbitfieldSwapBuffersFlags flags = 0);
 GL_APICALL void         GL_APIENTRY glFlushDriverCachesCHROMIUM (void);
 GL_APICALL GLuint       GL_APIENTRY glGetLastFlushIdCHROMIUM (void);
-GL_APICALL void         GL_APIENTRY glScheduleDCLayerCHROMIUM (GLuint texture_0, GLuint texture_1, GLint z_order, GLint content_x, GLint content_y, GLint content_width, GLint content_height, GLint quad_x, GLint quad_y, GLint quad_width, GLint quad_height, GLfloat transform_c1r1, GLfloat transform_c2r1, GLfloat transform_c1r2, GLfloat transform_c2r2, GLfloat transform_tx, GLfloat transform_ty, GLboolean is_clipped, GLint clip_x, GLint clip_y, GLint clip_width, GLint clip_height, GLuint protected_video_type);
 GL_APICALL void         GL_APIENTRY glSetActiveURLCHROMIUM (const char* url);
 
 // Extension CHROMIUM_context_visibility_hint
@@ -356,14 +349,6 @@ GL_APICALL void GL_APIENTRY glBlendBarrierKHR (void);
 GL_APICALL void         GL_APIENTRY glBindFragDataLocationIndexedEXT (GLidProgram program, GLuint colorNumber, GLuint index, const char* name);
 GL_APICALL void         GL_APIENTRY glBindFragDataLocationEXT (GLidProgram program, GLuint colorNumber, const char* name);
 GL_APICALL GLint        GL_APIENTRY glGetFragDataIndexEXT (GLidProgram program, const char* name);
-
-GL_APICALL void         GL_APIENTRY glSwapBuffersWithBoundsCHROMIUM (GLuint64 swap_id, GLsizei count, const GLint* rects, GLbitfieldSwapBuffersFlags flags = 0);
-
-// Extension CHROMIUM_set_draw_rectangle
-GL_APICALL void         GL_APIENTRY glSetDrawRectangleCHROMIUM (GLint x, GLint y, GLint width, GLint height);
-
-// Extension CHROMIUM_dc_overlays
-GL_APICALL void         GL_APIENTRY glSetEnableDCLayersCHROMIUM (GLboolean enabled);
 
 // Extension CHROMIUM_discardable_textures
 GL_APICALL void         GL_APIENTRY glInitializeDiscardableTextureCHROMIUM (GLuint texture_id);

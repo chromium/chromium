@@ -158,29 +158,6 @@ class ContextSupportStub : public ContextSupport {
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override {
   }
 
-  void Swap(uint32_t flags,
-            SwapCompletedCallback swap_completed,
-            PresentationCallback presentation_callback) override {}
-  void SwapWithBounds(const std::vector<gfx::Rect>& rects,
-                      uint32_t flags,
-                      SwapCompletedCallback swap_completed,
-                      PresentationCallback presentation_callback) override {}
-  void PartialSwapBuffers(const gfx::Rect& sub_buffer,
-                          uint32_t flags,
-                          SwapCompletedCallback swap_completed,
-                          PresentationCallback presentation_callback) override {
-  }
-  void CommitOverlayPlanes(
-      uint32_t flags,
-      SwapCompletedCallback swap_completed,
-      PresentationCallback presentation_callback) override {}
-  void ScheduleOverlayPlane(int plane_z_order,
-                            gfx::OverlayTransform plane_transform,
-                            unsigned overlay_texture_id,
-                            const gfx::Rect& display_bounds,
-                            const gfx::RectF& uv_rect,
-                            bool enable_blend,
-                            unsigned gpu_fence_id) override {}
   uint64_t ShareGroupTracingGUID() const override { return 0; }
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)> callback) override {}
@@ -217,8 +194,6 @@ class ContextSupportStub : public ContextSupport {
   void SetGrContext(GrDirectContext* gr) override {}
   void WillCallGLFromSkia() override {}
   void DidCallGLFromSkia() override {}
-  void SetDisplayTransform(gfx::OverlayTransform transform) override {}
-  void SetFrameRate(float frame_rate) override {}
 
  private:
   std::unique_ptr<char[]> mapped_transfer_cache_entry_;

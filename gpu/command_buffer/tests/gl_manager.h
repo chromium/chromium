@@ -161,7 +161,6 @@ class GLManager : private GpuControl {
                        base::OnceClosure callback) override;
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
   bool CanWaitUnverifiedSyncToken(const gpu::SyncToken& sync_token) override;
-  void SetDisplayTransform(gfx::OverlayTransform transform) override;
 
   size_t GetSharedMemoryBytesAllocated() const;
   ContextType GetContextType() const;

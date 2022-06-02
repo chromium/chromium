@@ -108,14 +108,6 @@ class GPU_EXPORT GpuControl {
   // channel as the wait command guarantee that the fence sync will be enqueued
   // first so does not need to be flushed.
   virtual bool CanWaitUnverifiedSyncToken(const SyncToken& sync_token) = 0;
-
-  // Notifies the onscreen surface of the display transform applied to the swaps
-  // from the client.
-  virtual void SetDisplayTransform(gfx::OverlayTransform transform) = 0;
-
-  // Notifies the surface of the ideal frame rate that the content is updated
-  // at. This can be used to tune the hardware refresh rate.
-  virtual void SetFrameRate(float frame_rate) {}
 };
 
 }  // namespace gpu

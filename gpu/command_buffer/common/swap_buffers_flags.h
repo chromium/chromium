@@ -7,9 +7,7 @@
 
 namespace gpu {
 
-// Flags for calling glSwapBuffers, glPostiSubBufferCHROMIUM,
-// glSwapBuffersWithBoundsCHROMIUM and glCommitOverlayPlanesCHROMIUM with
-// Chromium GLES2 command buffer.
+// Flags for calling glSwapBuffers with Chromium GLES2 command buffer.
 class SwapBuffersFlags {
  public:
   enum : uint32_t {

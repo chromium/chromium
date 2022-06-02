@@ -555,10 +555,6 @@ bool GLManager::CanWaitUnverifiedSyncToken(const gpu::SyncToken& sync_token) {
   return false;
 }
 
-void GLManager::SetDisplayTransform(gfx::OverlayTransform transform) {
-  NOTREACHED();
-}
-
 ContextType GLManager::GetContextType() const {
   return context_type_;
 }

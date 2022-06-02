@@ -762,12 +762,6 @@ virtual void GetTranslatedShaderSourceANGLE(GLuint shader,
                                             GLsizei bufsize,
                                             GLsizei* length,
                                             char* source) = 0;
-virtual void PostSubBufferCHROMIUM(GLuint64 swap_id,
-                                   GLint x,
-                                   GLint y,
-                                   GLint width,
-                                   GLint height,
-                                   GLbitfield flags = 0) = 0;
 virtual void CopyTextureCHROMIUM(GLuint source_id,
                                  GLint source_level,
                                  GLenum dest_target,
@@ -829,61 +823,8 @@ virtual void DiscardFramebufferEXT(GLenum target,
 virtual void LoseContextCHROMIUM(GLenum current, GLenum other) = 0;
 virtual void DrawBuffersEXT(GLsizei count, const GLenum* bufs) = 0;
 virtual void DiscardBackbufferCHROMIUM() = 0;
-virtual void ScheduleOverlayPlaneCHROMIUM(GLint plane_z_order,
-                                          GLenum plane_transform,
-                                          GLuint overlay_texture_id,
-                                          GLint bounds_x,
-                                          GLint bounds_y,
-                                          GLint bounds_width,
-                                          GLint bounds_height,
-                                          GLfloat uv_x,
-                                          GLfloat uv_y,
-                                          GLfloat uv_width,
-                                          GLfloat uv_height,
-                                          GLboolean enable_blend,
-                                          GLuint gpu_fence_id) = 0;
-virtual void ScheduleCALayerSharedStateCHROMIUM(
-    GLfloat opacity,
-    GLboolean is_clipped,
-    const GLfloat* clip_rect,
-    const GLfloat* rounded_corner_bounds,
-    GLint sorting_context_id,
-    const GLfloat* transform) = 0;
-virtual void ScheduleCALayerCHROMIUM(GLuint contents_texture_id,
-                                     const GLfloat* contents_rect,
-                                     GLuint background_color,
-                                     GLuint edge_aa_mask,
-                                     const GLfloat* bounds_rect,
-                                     GLuint filter) = 0;
-virtual void ScheduleCALayerInUseQueryCHROMIUM(GLsizei count,
-                                               const GLuint* textures) = 0;
-virtual void CommitOverlayPlanesCHROMIUM(GLuint64 swap_id,
-                                         GLbitfield flags = 0) = 0;
 virtual void FlushDriverCachesCHROMIUM() = 0;
 virtual GLuint GetLastFlushIdCHROMIUM() = 0;
-virtual void ScheduleDCLayerCHROMIUM(GLuint texture_0,
-                                     GLuint texture_1,
-                                     GLint z_order,
-                                     GLint content_x,
-                                     GLint content_y,
-                                     GLint content_width,
-                                     GLint content_height,
-                                     GLint quad_x,
-                                     GLint quad_y,
-                                     GLint quad_width,
-                                     GLint quad_height,
-                                     GLfloat transform_c1r1,
-                                     GLfloat transform_c2r1,
-                                     GLfloat transform_c1r2,
-                                     GLfloat transform_c2r2,
-                                     GLfloat transform_tx,
-                                     GLfloat transform_ty,
-                                     GLboolean is_clipped,
-                                     GLint clip_x,
-                                     GLint clip_y,
-                                     GLint clip_width,
-                                     GLint clip_height,
-                                     GLuint protected_video_type) = 0;
 virtual void SetActiveURLCHROMIUM(const char* url) = 0;
 virtual void ContextVisibilityHintCHROMIUM(GLboolean visibility) = 0;
 virtual void CoverageModulationCHROMIUM(GLenum components) = 0;
@@ -897,15 +838,6 @@ virtual void BindFragDataLocationEXT(GLuint program,
                                      GLuint colorNumber,
                                      const char* name) = 0;
 virtual GLint GetFragDataIndexEXT(GLuint program, const char* name) = 0;
-virtual void SwapBuffersWithBoundsCHROMIUM(GLuint64 swap_id,
-                                           GLsizei count,
-                                           const GLint* rects,
-                                           GLbitfield flags = 0) = 0;
-virtual void SetDrawRectangleCHROMIUM(GLint x,
-                                      GLint y,
-                                      GLint width,
-                                      GLint height) = 0;
-virtual void SetEnableDCLayersCHROMIUM(GLboolean enabled) = 0;
 virtual void InitializeDiscardableTextureCHROMIUM(GLuint texture_id) = 0;
 virtual void UnlockDiscardableTextureCHROMIUM(GLuint texture_id) = 0;
 virtual bool LockDiscardableTextureCHROMIUM(GLuint texture_id) = 0;

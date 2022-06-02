@@ -3091,12 +3091,6 @@ _FUNCTION_INFO = {
     'type': 'Custom',
     'impl_func': False,
   },
-  'PostSubBufferCHROMIUM': {
-    'type': 'Custom',
-    'impl_func': False,
-    'client_test': False,
-    'extension': True,
-  },
   'ProduceTextureDirectCHROMIUM': {
     'decoder_func': 'DoProduceTextureDirectCHROMIUM',
     'impl_func': False,
@@ -3249,15 +3243,6 @@ _FUNCTION_INFO = {
     'extension': True,
     'trace_level': 1,
     'trace_queueing_flow': True,
-  },
-  'SwapBuffersWithBoundsCHROMIUM': {
-    'type': 'PUTn',
-    'count': 4,
-    'decoder_func': 'DoSwapBuffersWithBoundsCHROMIUM',
-    'impl_func': False,
-    'client_test': False,
-    'unit_test': False,
-    'extension': True,
   },
   'TexImage2D': {
     'type': 'Custom',
@@ -3939,69 +3924,6 @@ _FUNCTION_INFO = {
     'type': 'Custom',
     'extension': True,
     'trace_level': 2,
-  },
-  'ScheduleOverlayPlaneCHROMIUM': {
-    'type': 'Custom',
-    'client_test': False,
-    'extension': 'CHROMIUM_schedule_overlay_plane',
-  },
-  'ScheduleCALayerSharedStateCHROMIUM': {
-    'type': 'Custom',
-    'impl_func': False,
-    'client_test': False,
-    'cmd_args': 'GLfloat opacity, GLboolean is_clipped, '
-                'GLint sorting_context_id, '
-                'GLuint shm_id, GLuint shm_offset',
-    'extension': 'CHROMIUM_schedule_ca_layer',
-  },
-  'ScheduleCALayerCHROMIUM': {
-    'type': 'Custom',
-    'impl_func': False,
-    'client_test': False,
-    'cmd_args': 'GLuint contents_texture_id, GLuint background_color, '
-                'GLuint edge_aa_mask, GLuint filter, GLuint shm_id, '
-                'GLuint shm_offset',
-    'extension': 'CHROMIUM_schedule_ca_layer',
-  },
-  'ScheduleCALayerInUseQueryCHROMIUM': {
-    'type': 'PUTn',
-    'count': 1,
-    'decoder_func': 'DoScheduleCALayerInUseQueryCHROMIUM',
-    'cmd_args': 'GLsizei count, const GLuint* textures',
-    'extension': 'CHROMIUM_schedule_ca_layer',
-    'unit_test': False,
-  },
-  'ScheduleDCLayerCHROMIUM': {
-    'cmd_args': 'GLuint texture_0, GLuint texture_1, GLint z_order, '
-                'GLint content_x, GLint content_y, GLint content_width, '
-                'GLint content_height, GLint quad_x, GLint quad_y, '
-                'GLint quad_width, GLint quad_height, '
-                'GLfloat transform_c1r1, GLfloat transform_c2r1, '
-                'GLfloat transform_c1r2, GLfloat transform_c2r2, '
-                'GLfloat transform_tx, GLfloat transform_ty, '
-                'GLboolean is_clipped, GLint clip_x, GLint clip_y, '
-                'GLint clip_width, GLint clip_height, '
-                'GLuint protected_video_type',
-    'decoder_func': 'DoScheduleDCLayerCHROMIUM',
-    'extension': 'CHROMIUM_schedule_dc_layer',
-    'unit_test': False,
-  },
-  'CommitOverlayPlanesCHROMIUM': {
-    'impl_func': False,
-    'decoder_func': 'DoCommitOverlayPlanes',
-    'unit_test': False,
-    'client_test': False,
-    'extension': 'CHROMIUM_commit_overlay_planes',
-  },
-  'SetDrawRectangleCHROMIUM': {
-    'decoder_func': 'DoSetDrawRectangleCHROMIUM',
-    'unit_test': False,
-    'extension': 'CHROMIUM_set_draw_rectangle',
-  },
-  'SetEnableDCLayersCHROMIUM': {
-    'decoder_func': 'DoSetEnableDCLayersCHROMIUM',
-    'unit_test': False,
-    'extension': 'CHROMIUM_dc_layers',
   },
   'InitializeDiscardableTextureCHROMIUM': {
     'type': 'Custom',

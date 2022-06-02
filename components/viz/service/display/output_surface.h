@@ -188,7 +188,13 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   virtual void BindFramebuffer() = 0;
 
   // Marks that the given rectangle will be drawn to on the default, bound
-  // framebuffer. Only valid if |capabilities().supports_dc_layers| is true.
+  // framebuffer. The contents of the framebuffer are undefined after this
+  // command and must be filled in completely before a swap happens. Drawing
+  // outside this rectangle causes undefined behavior.
+  //
+  // Note: This is only valid to call if `capabilities().supports_dc_layers` is
+  // true. It can only be called once per swap and must be called before
+  // drawing to the default framebuffer.
   virtual void SetDrawRectangle(const gfx::Rect& rect);
 
   // Enable or disable DC layers. Must be called before DC layers are scheduled.

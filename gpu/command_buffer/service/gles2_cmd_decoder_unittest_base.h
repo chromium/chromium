@@ -703,8 +703,6 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
   std::unique_ptr<GLES2Decoder> decoder_;
   std::unique_ptr<MemoryTracker> memory_tracker_;
 
-  bool surface_supports_draw_rectangle_ = false;
-
   GLuint client_buffer_id_;
   GLuint client_framebuffer_id_;
   GLuint client_program_id_;

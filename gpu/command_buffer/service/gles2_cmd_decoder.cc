@@ -1123,18 +1123,10 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // Wrapper for SwapBuffers.
   void DoSwapBuffers(uint64_t swap_id, GLbitfield flags);
 
-  // Wrapper for SwapBuffersWithBoundsCHROMIUM.
-  void DoSwapBuffersWithBoundsCHROMIUM(uint64_t swap_id,
-                                       GLsizei count,
-                                       const volatile GLint* rects,
-                                       GLbitfield flags);
-
   // Callback for async SwapBuffers.
   void FinishAsyncSwapBuffers(uint64_t swap_id,
                               gfx::SwapCompletionResult result);
   void FinishSwapBuffers(gfx::SwapResult result);
-
-  void DoCommitOverlayPlanes(uint64_t swap_id, GLbitfield flags);
 
   // Wrapper for CopyTexSubImage2D.
   void DoCopyTexSubImage2D(
@@ -1251,35 +1243,8 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   void DoFlushDriverCachesCHROMIUM(void);
 
-  void DoScheduleCALayerInUseQueryCHROMIUM(GLsizei count,
-                                           const volatile GLuint* textures);
-
   void DoFlushMappedBufferRange(
       GLenum target, GLintptr offset, GLsizeiptr size);
-
-  void DoScheduleDCLayerCHROMIUM(GLuint texture_0,
-                                 GLuint texture_1,
-                                 GLint z_order,
-                                 GLint content_x,
-                                 GLint content_y,
-                                 GLint content_width,
-                                 GLint content_height,
-                                 GLint quad_x,
-                                 GLint quad_y,
-                                 GLint quad_width,
-                                 GLint quad_height,
-                                 GLfloat transform_c1r1,
-                                 GLfloat transform_c2r1,
-                                 GLfloat transform_c1r2,
-                                 GLfloat transform_c2r2,
-                                 GLfloat transform_tx,
-                                 GLfloat transform_ty,
-                                 GLboolean is_clipped,
-                                 GLint clip_x,
-                                 GLint clip_y,
-                                 GLint clip_width,
-                                 GLint clip_height,
-                                 GLuint protected_video_type);
 
   // Creates a Program for the given program.
   Program* CreateProgram(GLuint client_id, GLuint service_id) {
@@ -1971,11 +1936,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void DoMultiDrawBeginCHROMIUM(GLsizei drawcount);
   void DoMultiDrawEndCHROMIUM();
 
-  // Wrapper for glSetDrawRectangleCHROMIUM
-  void DoSetDrawRectangleCHROMIUM(GLint x, GLint y, GLint width, GLint height);
-
-  void DoSetEnableDCLayersCHROMIUM(GLboolean enable);
-
   // Wrapper for glReadBuffer
   void DoReadBuffer(GLenum src);
 
@@ -2515,10 +2475,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // using GL_RGBA and glColorMask.
   bool ChromiumImageNeedsRGBEmulation();
 
-  // The GL_CHROMIUM_schedule_ca_layer extension requires that SwapBuffers and
-  // equivalent functions reset shared state.
-  void ClearScheduleCALayerState();
-
   // Helper method to call glClear workaround.
   void ClearFramebufferForWorkaround(GLbitfield mask);
 
@@ -2830,8 +2786,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   GLfloat line_width_range_[2] = {0.0, 1.0};
 
   SamplerState default_sampler_state_;
-
-  std::unique_ptr<CALayerSharedState> ca_layer_shared_state_;
 
   // All currently outstanding AbstractTextures that we've created.
   std::set<ValidatingAbstractTextureImpl*> abstract_textures_;
@@ -9862,58 +9816,6 @@ void GLES2DecoderImpl::DoLinkProgram(GLuint program_id) {
   ExitCommandProcessingEarly();
 }
 
-void GLES2DecoderImpl::DoSetDrawRectangleCHROMIUM(GLint x,
-                                                  GLint y,
-                                                  GLint width,
-                                                  GLint height) {
-  Framebuffer* framebuffer = GetFramebufferInfoForTarget(GL_DRAW_FRAMEBUFFER);
-  if (framebuffer) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glSetDrawRectangleCHROMIUM",
-                       "framebuffer must not be bound");
-    return;
-  }
-  if (!supports_dc_layers_) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glSetDrawRectangleCHROMIUM",
-                       "surface doesn't support SetDrawRectangle");
-    return;
-  }
-  gfx::Rect rect(x, y, width, height);
-  if (!surface_->SetDrawRectangle(rect)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glSetDrawRectangleCHROMIUM",
-                       "failed on surface");
-    // If SetDrawRectangle failed, we may not have a current context any
-    // more, make sure to report lost context.
-    LOG(ERROR) << "Context lost because SetDrawRectangleCHROMIUM failed.";
-    MarkContextLost(error::kUnknown);
-    group_->LoseContexts(error::kUnknown);
-    return;
-  }
-  OnFboChanged();
-}
-
-void GLES2DecoderImpl::DoSetEnableDCLayersCHROMIUM(GLboolean enable) {
-  Framebuffer* framebuffer = GetFramebufferInfoForTarget(GL_DRAW_FRAMEBUFFER);
-  if (framebuffer) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glSetEnableDCLayersCHROMIUM",
-                       "framebuffer must not be bound");
-    return;
-  }
-  if (!supports_dc_layers_) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glSetEnableDCLayersCHROMIUM",
-                       "surface doesn't support SetEnableDCLayers");
-    return;
-  }
-  if (!surface_->SetEnableDCLayers(!!enable)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glSetEnableDCLayersCHROMIUM",
-                       "failed on surface");
-    // If SetEnableDCLayers failed, we may not have a current context any
-    // more, make sure to report lost context.
-    LOG(ERROR) << "Context lost because SetEnableDCLayers failed.";
-    MarkContextLost(error::kUnknown);
-    group_->LoseContexts(error::kUnknown);
-  }
-}
-
 void GLES2DecoderImpl::DoReadBuffer(GLenum src) {
   Framebuffer* framebuffer = GetFramebufferInfoForTarget(GL_READ_FRAMEBUFFER);
   if (framebuffer) {
@@ -13630,231 +13532,6 @@ error::Error GLES2DecoderImpl::HandlePixelStorei(
   return error::kNoError;
 }
 
-void GLES2DecoderImpl::DoSwapBuffersWithBoundsCHROMIUM(
-    uint64_t swap_id,
-    GLsizei count,
-    const volatile GLint* rects,
-    GLbitfield flags) {
-  TRACE_EVENT0("gpu", "GLES2DecoderImpl::SwapBuffersWithBoundsCHROMIUM");
-  if (!supports_swap_buffers_with_bounds_) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glSwapBuffersWithBoundsCHROMIUM",
-                       "command not supported by surface");
-    return;
-  }
-  bool is_tracing;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("gpu.debug"),
-                                     &is_tracing);
-  if (is_tracing) {
-    bool is_offscreen = !!offscreen_target_frame_buffer_.get();
-    ScopedFramebufferBinder binder(this, GetBoundDrawFramebufferServiceId());
-    gpu_state_tracer_->TakeSnapshotWithCurrentFramebuffer(
-        is_offscreen ? offscreen_size_ : surface_->GetSize());
-  }
-
-  ClearScheduleCALayerState();
-
-  std::vector<gfx::Rect> bounds(count);
-  for (GLsizei i = 0; i < count; ++i) {
-    bounds[i] = gfx::Rect(rects[i * 4 + 0], rects[i * 4 + 1], rects[i * 4 + 2],
-                          rects[i * 4 + 3]);
-  }
-  client()->OnSwapBuffers(swap_id, flags);
-  FinishSwapBuffers(surface_->SwapBuffersWithBounds(bounds, base::DoNothing()));
-}
-
-error::Error GLES2DecoderImpl::HandlePostSubBufferCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::PostSubBufferCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::PostSubBufferCHROMIUM*>(
-          cmd_data);
-  TRACE_EVENT0("gpu", "GLES2DecoderImpl::HandlePostSubBufferCHROMIUM");
-  if (!supports_post_sub_buffer_) {
-    LOCAL_SET_GL_ERROR(
-        GL_INVALID_OPERATION,
-        "glPostSubBufferCHROMIUM", "command not supported by surface");
-    return error::kNoError;
-  }
-  bool is_tracing;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("gpu.debug"),
-                                     &is_tracing);
-  if (is_tracing) {
-    bool is_offscreen = !!offscreen_target_frame_buffer_.get();
-    ScopedFramebufferBinder binder(this, GetBoundDrawFramebufferServiceId());
-    gpu_state_tracer_->TakeSnapshotWithCurrentFramebuffer(
-        is_offscreen ? offscreen_size_ : surface_->GetSize());
-  }
-
-  ClearScheduleCALayerState();
-
-  if (supports_async_swap_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "gpu", "AsyncSwapBuffers",
-        TRACE_ID_WITH_SCOPE("AsyncSwapBuffers", c.swap_id()));
-
-    client()->OnSwapBuffers(c.swap_id(), c.flags);
-    surface_->PostSubBufferAsync(
-        c.x, c.y, c.width, c.height,
-        base::BindOnce(&GLES2DecoderImpl::FinishAsyncSwapBuffers,
-                       weak_ptr_factory_.GetWeakPtr(), c.swap_id()),
-        base::DoNothing());
-  } else {
-    client()->OnSwapBuffers(c.swap_id(), c.flags);
-    FinishSwapBuffers(surface_->PostSubBuffer(c.x, c.y, c.width, c.height,
-                                              base::DoNothing()));
-  }
-
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderImpl::HandleScheduleOverlayPlaneCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::ScheduleOverlayPlaneCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::ScheduleOverlayPlaneCHROMIUM*>(
-          cmd_data);
-  TextureRef* ref = texture_manager()->GetTexture(c.overlay_texture_id);
-  if (!ref) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE,
-                       "glScheduleOverlayPlaneCHROMIUM",
-                       "unknown texture");
-    return error::kNoError;
-  }
-  Texture::ImageState image_state;
-  gl::GLImage* image =
-      ref->texture()->GetLevelImage(ref->texture()->target(), 0, &image_state);
-  if (!image) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE,
-                       "glScheduleOverlayPlaneCHROMIUM",
-                       "unsupported texture format");
-    return error::kNoError;
-  }
-  gfx::OverlayTransform transform = GetGFXOverlayTransform(c.plane_transform);
-  if (transform == gfx::OVERLAY_TRANSFORM_INVALID) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_ENUM,
-                       "glScheduleOverlayPlaneCHROMIUM",
-                       "invalid transform enum");
-    return error::kNoError;
-  }
-  GLuint gpu_fence_id = static_cast<GLuint>(c.gpu_fence_id);
-  std::unique_ptr<gfx::GpuFence> gpu_fence;
-  if (gpu_fence_id > 0) {
-    gpu_fence = GetGpuFenceManager()->GetGpuFence(gpu_fence_id);
-    if (!gpu_fence) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "glScheduleOverlayPlaneCHROMIUM",
-                         "unknown fence");
-      return error::kNoError;
-    }
-  }
-  if (!surface_->ScheduleOverlayPlane(
-          image, std::move(gpu_fence),
-          gfx::OverlayPlaneData(
-              c.plane_z_order, transform,
-              gfx::RectF(c.bounds_x, c.bounds_y, c.bounds_width,
-                         c.bounds_height),
-              gfx::RectF(c.uv_x, c.uv_y, c.uv_width, c.uv_height),
-              c.enable_blend,
-              /*damage_rect=*/gfx::Rect(), /*opacity*/ 1.0f,
-              gfx::OverlayPriorityHint::kNone,
-              /*rounded_corners*/ gfx::RRectF(), image->color_space(),
-              /*hdr_metadata=*/absl::nullopt))) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION,
-                       "glScheduleOverlayPlaneCHROMIUM",
-                       "failed to schedule overlay");
-  }
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderImpl::HandleScheduleCALayerSharedStateCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::ScheduleCALayerSharedStateCHROMIUM& c =
-      *static_cast<
-          const volatile gles2::cmds::ScheduleCALayerSharedStateCHROMIUM*>(
-          cmd_data);
-
-  // 4 for |clip_rect|, 5 for |rounded_corner_bounds|, 16 for |transform|.
-  const GLfloat* mem = GetSharedMemoryAs<const GLfloat*>(c.shm_id, c.shm_offset,
-                                                         25 * sizeof(GLfloat));
-  if (!mem) {
-    return error::kOutOfBounds;
-  }
-  gfx::RectF clip_rect(mem[0], mem[1], mem[2], mem[3]);
-  gfx::RRectF rounded_corner_bounds(mem[4], mem[5], mem[6], mem[7], mem[8]);
-  gfx::Transform transform(mem[9], mem[13], mem[17], mem[21], mem[10], mem[14],
-                           mem[18], mem[22], mem[11], mem[15], mem[19], mem[23],
-                           mem[12], mem[16], mem[20], mem[24]);
-  ca_layer_shared_state_ = std::make_unique<CALayerSharedState>();
-  ca_layer_shared_state_->opacity = c.opacity;
-  ca_layer_shared_state_->is_clipped = c.is_clipped ? true : false;
-  ca_layer_shared_state_->clip_rect = gfx::ToEnclosingRect(clip_rect);
-  ca_layer_shared_state_->rounded_corner_bounds = rounded_corner_bounds;
-  ca_layer_shared_state_->sorting_context_id = c.sorting_context_id;
-  ca_layer_shared_state_->transform = transform;
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderImpl::HandleScheduleCALayerCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::ScheduleCALayerCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::ScheduleCALayerCHROMIUM*>(
-          cmd_data);
-  GLuint filter = c.filter;
-  if (filter != GL_NEAREST && filter != GL_LINEAR) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glScheduleCALayerCHROMIUM",
-                       "invalid filter");
-    return error::kNoError;
-  }
-
-  if (!ca_layer_shared_state_) {
-    LOCAL_SET_GL_ERROR(
-        GL_INVALID_OPERATION, "glScheduleCALayerCHROMIUM",
-        "glScheduleCALayerSharedStateCHROMIUM has not been called");
-    return error::kNoError;
-  }
-
-  gl::GLImage* image = nullptr;
-  GLuint contents_texture_id = c.contents_texture_id;
-  if (contents_texture_id) {
-    TextureRef* ref = texture_manager()->GetTexture(contents_texture_id);
-    if (!ref) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glScheduleCALayerCHROMIUM",
-                         "unknown texture");
-      return error::kNoError;
-    }
-    Texture::ImageState image_state;
-    image = ref->texture()->GetLevelImage(ref->texture()->target(), 0,
-                                          &image_state);
-    if (!image) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glScheduleCALayerCHROMIUM",
-                         "unsupported texture format");
-      return error::kNoError;
-    }
-  }
-
-  const GLfloat* mem = GetSharedMemoryAs<const GLfloat*>(c.shm_id, c.shm_offset,
-                                                         8 * sizeof(GLfloat));
-  if (!mem) {
-    return error::kOutOfBounds;
-  }
-  gfx::RectF contents_rect(mem[0], mem[1], mem[2], mem[3]);
-  gfx::RectF bounds_rect(mem[4], mem[5], mem[6], mem[7]);
-
-  ui::CARendererLayerParams params = ui::CARendererLayerParams(
-      ca_layer_shared_state_->is_clipped, ca_layer_shared_state_->clip_rect,
-      ca_layer_shared_state_->rounded_corner_bounds,
-      ca_layer_shared_state_->sorting_context_id,
-      ca_layer_shared_state_->transform, image, contents_rect,
-      gfx::ToEnclosingRect(bounds_rect), c.background_color, c.edge_aa_mask,
-      ca_layer_shared_state_->opacity, filter, gfx::ProtectedVideoType::kClear);
-  if (!surface_->ScheduleCALayer(params)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glScheduleCALayerCHROMIUM",
-                       "failed to schedule CALayer");
-  }
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderImpl::HandleSetColorSpaceMetadataCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -13886,34 +13563,6 @@ error::Error GLES2DecoderImpl::HandleSetColorSpaceMetadataCHROMIUM(
 
   image->SetColorSpace(color_space);
   return error::kNoError;
-}
-
-void GLES2DecoderImpl::DoScheduleCALayerInUseQueryCHROMIUM(
-    GLsizei count,
-    const volatile GLuint* textures) {
-  std::vector<gl::GLSurface::CALayerInUseQuery> queries;
-  queries.reserve(count);
-  for (GLsizei i = 0; i < count; ++i) {
-    gl::GLImage* image = nullptr;
-    GLuint texture_id = textures[i];
-    if (texture_id) {
-      // If a |texture_id| is invalid (due to a client error), report that it
-      // is not in use. Failing the GL call can result in compositor hangs.
-      // https://crbug.com/1120795
-      TextureRef* ref = texture_manager()->GetTexture(texture_id);
-      if (ref) {
-        Texture::ImageState image_state;
-        image = ref->texture()->GetLevelImage(ref->texture()->target(), 0,
-                                              &image_state);
-      }
-    }
-    gl::GLSurface::CALayerInUseQuery query;
-    query.image = image;
-    query.texture = texture_id;
-    queries.push_back(query);
-  }
-
-  surface_->ScheduleCALayerInUseQuery(std::move(queries));
 }
 
 error::Error GLES2DecoderImpl::GetAttribLocationHelper(
@@ -14245,8 +13894,6 @@ error::Error GLES2DecoderImpl::HandleGetString(uint32_t immediate_data_size,
           extension_set.erase(
               kWEBGLMultiDrawInstancedBaseVertexBaseInstanceExtension);
       }
-      if (supports_post_sub_buffer_)
-        extension_set.insert("GL_CHROMIUM_post_sub_buffer");
       extensions = gfx::MakeExtensionString(extension_set);
       str = extensions.c_str();
       break;
@@ -16966,8 +16613,6 @@ void GLES2DecoderImpl::DoSwapBuffers(uint64_t swap_id, GLbitfield flags) {
         is_offscreen ? offscreen_size_ : surface_->GetSize());
   }
 
-  ClearScheduleCALayerState();
-
   // If offscreen then don't actually SwapBuffers to the display. Just copy
   // the rendered frame to another frame buffer.
   if (is_offscreen) {
@@ -17082,8 +16727,7 @@ void GLES2DecoderImpl::FinishAsyncSwapBuffers(
 
 void GLES2DecoderImpl::FinishSwapBuffers(gfx::SwapResult result) {
   if (result == gfx::SwapResult::SWAP_FAILED) {
-    // If SwapBuffers/SwapBuffersWithBounds/PostSubBuffer failed, we may not
-    // have a current context any more.
+    // If SwapBuffers failed, we may not have a current context any more.
     LOG(ERROR) << "Context lost because SwapBuffers failed.";
     if (!context_->IsCurrent(surface_.get()) || !CheckResetStatus()) {
       MarkContextLost(error::kUnknown);
@@ -17095,27 +16739,6 @@ void GLES2DecoderImpl::FinishSwapBuffers(gfx::SwapResult result) {
     // The second buffer after a resize is new and needs to be cleared to
     // known values.
     backbuffer_needs_clear_bits_ |= GL_COLOR_BUFFER_BIT;
-  }
-}
-
-void GLES2DecoderImpl::DoCommitOverlayPlanes(uint64_t swap_id,
-                                             GLbitfield flags) {
-  TRACE_EVENT0("gpu", "GLES2DecoderImpl::DoCommitOverlayPlanes");
-  if (!supports_commit_overlay_planes_) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glCommitOverlayPlanes",
-                       "command not supported by surface");
-    return;
-  }
-  ClearScheduleCALayerState();
-  if (supports_async_swap_) {
-    client()->OnSwapBuffers(swap_id, flags);
-    surface_->CommitOverlayPlanesAsync(
-        base::BindOnce(&GLES2DecoderImpl::FinishAsyncSwapBuffers,
-                       weak_ptr_factory_.GetWeakPtr(), swap_id),
-        base::DoNothing());
-  } else {
-    client()->OnSwapBuffers(swap_id, flags);
-    FinishSwapBuffers(surface_->CommitOverlayPlanes(base::DoNothing()));
   }
 }
 
@@ -19699,83 +19322,6 @@ void GLES2DecoderImpl::DoFlushMappedBufferRange(
   api()->glFlushMappedBufferRangeFn(target, offset, size);
 }
 
-void GLES2DecoderImpl::DoScheduleDCLayerCHROMIUM(GLuint texture_0,
-                                                 GLuint texture_1,
-                                                 GLint z_order,
-                                                 GLint content_x,
-                                                 GLint content_y,
-                                                 GLint content_width,
-                                                 GLint content_height,
-                                                 GLint quad_x,
-                                                 GLint quad_y,
-                                                 GLint quad_width,
-                                                 GLint quad_height,
-                                                 GLfloat transform_c1r1,
-                                                 GLfloat transform_c2r1,
-                                                 GLfloat transform_c1r2,
-                                                 GLfloat transform_c2r2,
-                                                 GLfloat transform_tx,
-                                                 GLfloat transform_ty,
-                                                 GLboolean is_clipped,
-                                                 GLint clip_x,
-                                                 GLint clip_y,
-                                                 GLint clip_width,
-                                                 GLint clip_height,
-                                                 GLuint protected_video_type) {
-  if (protected_video_type >
-      static_cast<GLuint>(gfx::ProtectedVideoType::kMaxValue)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glScheduleDCLayerCHROMIUM",
-                       "invalid protected video type");
-    return;
-  }
-
-  if (!texture_0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glScheduleDCLayerCHROMIUM",
-                       "invalid texture");
-    return;
-  }
-
-  std::unique_ptr<ui::DCRendererLayerParams> params =
-      std::make_unique<ui::DCRendererLayerParams>();
-  GLuint texture_ids[] = {texture_0, texture_1};
-  size_t i = 0;
-  for (GLuint texture_id : texture_ids) {
-    if (!texture_id)
-      break;
-    TextureRef* ref = texture_manager()->GetTexture(texture_id);
-    if (!ref) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glScheduleDCLayerCHROMIUM",
-                         "unknown texture");
-      return;
-    }
-    gl::GLImage* image =
-        ref->texture()->GetLevelImage(ref->texture()->target(), 0);
-    if (!image) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glScheduleDCLayerCHROMIUM",
-                         "unsupported texture format");
-      return;
-    }
-    params->images[i++] = scoped_refptr<gl::GLImage>(image);
-  }
-  params->z_order = z_order;
-  params->content_rect =
-      gfx::Rect(content_x, content_y, content_width, content_height);
-  params->quad_rect = gfx::Rect(quad_x, quad_y, quad_width, quad_height);
-  params->transform =
-      gfx::Transform(transform_c1r1, transform_c2r1, transform_c1r2,
-                     transform_c2r2, transform_tx, transform_ty);
-  if (is_clipped) {
-    params->clip_rect = gfx::Rect(clip_x, clip_y, clip_width, clip_height);
-  }
-  params->protected_video_type =
-      static_cast<gfx::ProtectedVideoType>(protected_video_type);
-
-  if (!surface_->ScheduleDCLayer(std::move(params))) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glScheduleDCLayerCHROMIUM",
-                       "failed to schedule DCLayer");
-  }
-}
-
 // Note that GL_LOST_CONTEXT is specific to GLES.
 // For desktop GL we have to query the reset status proactively.
 void GLES2DecoderImpl::OnContextLostError() {
@@ -19861,10 +19407,6 @@ bool GLES2DecoderImpl::NeedsCopyTextureImageWorkaround(
 bool GLES2DecoderImpl::ChromiumImageNeedsRGBEmulation() {
   gpu::ImageFactory* factory = GetContextGroup()->image_factory();
   return factory ? !factory->SupportsFormatRGB() : false;
-}
-
-void GLES2DecoderImpl::ClearScheduleCALayerState() {
-  ca_layer_shared_state_.reset();
 }
 
 void GLES2DecoderImpl::ClearFramebufferForWorkaround(GLbitfield mask) {

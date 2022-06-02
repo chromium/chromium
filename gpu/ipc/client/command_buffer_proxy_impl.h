@@ -130,7 +130,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   void GetGpuFence(uint32_t gpu_fence_id,
                    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
                        callback) override;
-  void SetDisplayTransform(gfx::OverlayTransform transform) override;
 
   void SetLock(base::Lock* lock) override;
   void EnsureWorkVisible() override;

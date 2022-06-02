@@ -1280,30 +1280,6 @@ bool InProcessCommandBuffer::CanWaitUnverifiedSyncToken(
   return sync_token.namespace_id() == GetNamespaceID();
 }
 
-void InProcessCommandBuffer::SetDisplayTransform(
-    gfx::OverlayTransform transform) {
-  ScheduleGpuTask(
-      base::BindOnce(&InProcessCommandBuffer::SetDisplayTransformOnGpuThread,
-                     gpu_thread_weak_ptr_factory_.GetWeakPtr(), transform));
-}
-
-void InProcessCommandBuffer::SetDisplayTransformOnGpuThread(
-    gfx::OverlayTransform transform) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  surface_->SetDisplayTransform(transform);
-}
-
-void InProcessCommandBuffer::SetFrameRate(float frame_rate) {
-  ScheduleGpuTask(
-      base::BindOnce(&InProcessCommandBuffer::SetFrameRateOnGpuThread,
-                     gpu_thread_weak_ptr_factory_.GetWeakPtr(), frame_rate));
-}
-
-void InProcessCommandBuffer::SetFrameRateOnGpuThread(float frame_rate) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  surface_->SetFrameRate(frame_rate);
-}
-
 #if BUILDFLAG(IS_WIN)
 void InProcessCommandBuffer::DidCreateAcceleratedSurfaceChildWindow(
     SurfaceHandle parent_window,

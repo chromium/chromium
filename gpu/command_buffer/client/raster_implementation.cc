@@ -621,47 +621,6 @@ void RasterImplementation::SetAggressivelyFreeResources(
   }
 }
 
-void RasterImplementation::Swap(
-    uint32_t /* flags */,
-    SwapCompletedCallback /* swap_completed */,
-    PresentationCallback /* presentation_callback */) {
-  NOTREACHED();
-}
-
-void RasterImplementation::SwapWithBounds(
-    const std::vector<gfx::Rect>& /* rects */,
-    uint32_t /* flags */,
-    SwapCompletedCallback /* swap_completed */,
-    PresentationCallback /* presentation_callback */) {
-  NOTREACHED();
-}
-
-void RasterImplementation::PartialSwapBuffers(
-    const gfx::Rect& /* sub_buffer */,
-    uint32_t /* flags */,
-    SwapCompletedCallback /* swap_completed */,
-    PresentationCallback /* presentation_callback */) {
-  NOTREACHED();
-}
-
-void RasterImplementation::CommitOverlayPlanes(
-    uint32_t /* flags */,
-    SwapCompletedCallback /* swap_completed */,
-    PresentationCallback /* presentation_callback */) {
-  NOTREACHED();
-}
-
-void RasterImplementation::ScheduleOverlayPlane(
-    int /* plane_z_order */,
-    gfx::OverlayTransform /* plane_transform */,
-    unsigned /* overlay_texture_id */,
-    const gfx::Rect& /* display_bounds */,
-    const gfx::RectF& /* uv_rect */,
-    bool /* enable_blend */,
-    unsigned /* gpu_fence_id */) {
-  NOTREACHED();
-}
-
 uint64_t RasterImplementation::ShareGroupTracingGUID() const {
   NOTREACHED();
   return 0;

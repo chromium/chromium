@@ -2789,19 +2789,6 @@ void GetTranslatedShaderSourceANGLE(GLuint shader, uint32_t bucket_id) {
   }
 }
 
-void PostSubBufferCHROMIUM(GLuint64 swap_id,
-                           GLint x,
-                           GLint y,
-                           GLint width,
-                           GLint height,
-                           GLbitfield flags) {
-  gles2::cmds::PostSubBufferCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::PostSubBufferCHROMIUM>();
-  if (c) {
-    c->Init(swap_id, x, y, width, height, flags);
-  }
-}
-
 void CopyTextureCHROMIUM(GLuint source_id,
                          GLint source_level,
                          GLenum dest_target,
@@ -2991,114 +2978,11 @@ void DiscardBackbufferCHROMIUM() {
   }
 }
 
-void ScheduleOverlayPlaneCHROMIUM(GLint plane_z_order,
-                                  GLenum plane_transform,
-                                  GLuint overlay_texture_id,
-                                  GLint bounds_x,
-                                  GLint bounds_y,
-                                  GLint bounds_width,
-                                  GLint bounds_height,
-                                  GLfloat uv_x,
-                                  GLfloat uv_y,
-                                  GLfloat uv_width,
-                                  GLfloat uv_height,
-                                  GLboolean enable_blend,
-                                  GLuint gpu_fence_id) {
-  gles2::cmds::ScheduleOverlayPlaneCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::ScheduleOverlayPlaneCHROMIUM>();
-  if (c) {
-    c->Init(plane_z_order, plane_transform, overlay_texture_id, bounds_x,
-            bounds_y, bounds_width, bounds_height, uv_x, uv_y, uv_width,
-            uv_height, enable_blend, gpu_fence_id);
-  }
-}
-
-void ScheduleCALayerSharedStateCHROMIUM(GLfloat opacity,
-                                        GLboolean is_clipped,
-                                        GLint sorting_context_id,
-                                        GLuint shm_id,
-                                        GLuint shm_offset) {
-  gles2::cmds::ScheduleCALayerSharedStateCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::ScheduleCALayerSharedStateCHROMIUM>();
-  if (c) {
-    c->Init(opacity, is_clipped, sorting_context_id, shm_id, shm_offset);
-  }
-}
-
-void ScheduleCALayerCHROMIUM(GLuint contents_texture_id,
-                             GLuint background_color,
-                             GLuint edge_aa_mask,
-                             GLuint filter,
-                             GLuint shm_id,
-                             GLuint shm_offset) {
-  gles2::cmds::ScheduleCALayerCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::ScheduleCALayerCHROMIUM>();
-  if (c) {
-    c->Init(contents_texture_id, background_color, edge_aa_mask, filter, shm_id,
-            shm_offset);
-  }
-}
-
-void ScheduleCALayerInUseQueryCHROMIUMImmediate(GLsizei count,
-                                                const GLuint* textures) {
-  const uint32_t size =
-      gles2::cmds::ScheduleCALayerInUseQueryCHROMIUMImmediate::ComputeSize(
-          count);
-  gles2::cmds::ScheduleCALayerInUseQueryCHROMIUMImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          gles2::cmds::ScheduleCALayerInUseQueryCHROMIUMImmediate>(size);
-  if (c) {
-    c->Init(count, textures);
-  }
-}
-
-void CommitOverlayPlanesCHROMIUM(GLuint64 swap_id, GLbitfield flags) {
-  gles2::cmds::CommitOverlayPlanesCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::CommitOverlayPlanesCHROMIUM>();
-  if (c) {
-    c->Init(swap_id, flags);
-  }
-}
-
 void FlushDriverCachesCHROMIUM() {
   gles2::cmds::FlushDriverCachesCHROMIUM* c =
       GetCmdSpace<gles2::cmds::FlushDriverCachesCHROMIUM>();
   if (c) {
     c->Init();
-  }
-}
-
-void ScheduleDCLayerCHROMIUM(GLuint texture_0,
-                             GLuint texture_1,
-                             GLint z_order,
-                             GLint content_x,
-                             GLint content_y,
-                             GLint content_width,
-                             GLint content_height,
-                             GLint quad_x,
-                             GLint quad_y,
-                             GLint quad_width,
-                             GLint quad_height,
-                             GLfloat transform_c1r1,
-                             GLfloat transform_c2r1,
-                             GLfloat transform_c1r2,
-                             GLfloat transform_c2r2,
-                             GLfloat transform_tx,
-                             GLfloat transform_ty,
-                             GLboolean is_clipped,
-                             GLint clip_x,
-                             GLint clip_y,
-                             GLint clip_width,
-                             GLint clip_height,
-                             GLuint protected_video_type) {
-  gles2::cmds::ScheduleDCLayerCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::ScheduleDCLayerCHROMIUM>();
-  if (c) {
-    c->Init(texture_0, texture_1, z_order, content_x, content_y, content_width,
-            content_height, quad_x, quad_y, quad_width, quad_height,
-            transform_c1r1, transform_c2r1, transform_c1r2, transform_c2r2,
-            transform_tx, transform_ty, is_clipped, clip_x, clip_y, clip_width,
-            clip_height, protected_video_type);
   }
 }
 
@@ -3162,36 +3046,6 @@ void GetFragDataIndexEXT(GLuint program,
       GetCmdSpace<gles2::cmds::GetFragDataIndexEXT>();
   if (c) {
     c->Init(program, name_bucket_id, index_shm_id, index_shm_offset);
-  }
-}
-
-void SwapBuffersWithBoundsCHROMIUMImmediate(GLuint64 swap_id,
-                                            GLsizei count,
-                                            const GLint* rects,
-                                            GLbitfield flags) {
-  const uint32_t size =
-      gles2::cmds::SwapBuffersWithBoundsCHROMIUMImmediate::ComputeSize(count);
-  gles2::cmds::SwapBuffersWithBoundsCHROMIUMImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          gles2::cmds::SwapBuffersWithBoundsCHROMIUMImmediate>(size);
-  if (c) {
-    c->Init(swap_id, count, rects, flags);
-  }
-}
-
-void SetDrawRectangleCHROMIUM(GLint x, GLint y, GLint width, GLint height) {
-  gles2::cmds::SetDrawRectangleCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::SetDrawRectangleCHROMIUM>();
-  if (c) {
-    c->Init(x, y, width, height);
-  }
-}
-
-void SetEnableDCLayersCHROMIUM(GLboolean enabled) {
-  gles2::cmds::SetEnableDCLayersCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::SetEnableDCLayersCHROMIUM>();
-  if (c) {
-    c->Init(enabled);
   }
 }
 

@@ -2933,24 +2933,6 @@ TEST_F(GLES2ImplementationTest, DiscardBackbufferCHROMIUM) {
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
-TEST_F(GLES2ImplementationTest, ScheduleCALayerInUseQueryCHROMIUM) {
-  GLuint data[1][1] = {{0}};
-  struct Cmds {
-    cmds::ScheduleCALayerInUseQueryCHROMIUMImmediate cmd;
-    GLuint data[1][1];
-  };
-
-  Cmds expected;
-  for (int ii = 0; ii < 1; ++ii) {
-    for (int jj = 0; jj < 1; ++jj) {
-      data[ii][jj] = static_cast<GLuint>(ii * 1 + jj);
-    }
-  }
-  expected.cmd.Init(1, &data[0][0]);
-  gl_->ScheduleCALayerInUseQueryCHROMIUM(1, &data[0][0]);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
 TEST_F(GLES2ImplementationTest, FlushDriverCachesCHROMIUM) {
   struct Cmds {
     cmds::FlushDriverCachesCHROMIUM cmd;
@@ -2962,19 +2944,6 @@ TEST_F(GLES2ImplementationTest, FlushDriverCachesCHROMIUM) {
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
-TEST_F(GLES2ImplementationTest, ScheduleDCLayerCHROMIUM) {
-  struct Cmds {
-    cmds::ScheduleDCLayerCHROMIUM cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                    true, 19, 20, 21, 22, 23);
-
-  gl_->ScheduleDCLayerCHROMIUM(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-                               15, 16, 17, true, 19, 20, 21, 22, 23);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
 TEST_F(GLES2ImplementationTest, CoverageModulationCHROMIUM) {
   struct Cmds {
     cmds::CoverageModulationCHROMIUM cmd;
@@ -2983,28 +2952,6 @@ TEST_F(GLES2ImplementationTest, CoverageModulationCHROMIUM) {
   expected.cmd.Init(GL_RGB);
 
   gl_->CoverageModulationCHROMIUM(GL_RGB);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
-TEST_F(GLES2ImplementationTest, SetDrawRectangleCHROMIUM) {
-  struct Cmds {
-    cmds::SetDrawRectangleCHROMIUM cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init(1, 2, 3, 4);
-
-  gl_->SetDrawRectangleCHROMIUM(1, 2, 3, 4);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
-TEST_F(GLES2ImplementationTest, SetEnableDCLayersCHROMIUM) {
-  struct Cmds {
-    cmds::SetEnableDCLayersCHROMIUM cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init(true);
-
-  gl_->SetEnableDCLayersCHROMIUM(true);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
