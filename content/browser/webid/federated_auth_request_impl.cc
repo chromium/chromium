@@ -1003,6 +1003,21 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
                                                  bool is_sign_in,
                                                  bool should_embargo) {
+  // Check if the user has disabled the FedCM API after the FedCM UI is
+  // displayed. This ensures that requests are not wrongfully sent to IDPs when
+  // settings are changed while an existing FedCM UI is displayed. Ideally, we
+  // should enforce this check before all requests but users typically won't
+  // have time to disable the FedCM API in other types of requests.
+  if (GetApiPermissionContext()->GetApiPermissionStatus(origin_) !=
+      FederatedApiPermissionStatus::GRANTED) {
+    RecordRequestIdTokenStatus(IdTokenStatus::kDisabledInSettings,
+                               render_frame_host_->GetPageUkmSourceId());
+
+    CompleteRequest(FederatedAuthRequestResult::kErrorDisabledInSettings, "",
+                    /*should_call_callback=*/false);
+    return;
+  }
+
   // This could happen if user didn't select any accounts.
   if (account_id.empty()) {
     base::TimeTicks dismiss_dialog_time = base::TimeTicks::Now();

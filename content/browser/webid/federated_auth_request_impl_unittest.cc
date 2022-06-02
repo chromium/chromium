@@ -1756,4 +1756,60 @@ TEST_P(FederatedAuthRequestImplTestCancelConsistency, AccountNotSelected) {
   EXPECT_EQ(RequestIdTokenStatus::kErrorCanceled, auth_helper_.status());
 }
 
+// Test that the request fails if user proceeds with the sign in workflow after
+// disabling the API while an existing accounts dialog is shown.
+TEST_F(BasicFederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
+  base::HistogramTester histogram_tester_;
+
+  EXPECT_CALL(*mock_dialog_controller(),
+              ShowAccountsDialog(_, _, _, _, _, _, _))
+      .WillOnce(Invoke(
+          [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
+              base::span<const content::IdentityRequestAccount> accounts,
+              const IdentityProviderMetadata& idp_metadata,
+              const ClientIdData& client_id_data, SignInMode sign_in_mode,
+              IdentityRequestDialogController::AccountSelectionCallback
+                  on_selected) {
+            // Disable FedCM API
+            test_api_permission_delegate_->permission_override_ =
+                std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
+                               ApiPermissionStatus::BLOCKED_SETTINGS);
+
+            std::move(on_selected)
+                .Run(/*account_id=*/"", /*is_sign_in=*/false,
+                     /*should_embargo=*/false);
+          }));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.customized_dialog = true;
+  RequestExpectations expectations = {
+      RequestIdTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorDisabledInSettings,
+      FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN & ~FetchedEndpoint::TOKEN};
+
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  ukm_loop.Run();
+
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
+                                     1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
+                                       IdTokenStatus::kDisabledInSettings, 1);
+
+  ExpectTimingUKM("Timing.ShowAccountsDialog");
+  ExpectNoTimingUKM("Timing.ContinueOnDialog");
+  ExpectNoTimingUKM("Timing.IdTokenResponse");
+  ExpectNoTimingUKM("Timing.TurnaroundTime");
+
+  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kDisabledInSettings);
+}
+
 }  // namespace content
