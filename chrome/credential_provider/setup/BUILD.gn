@@ -16,7 +16,16 @@ process_version_rc_template("version") {
   output = "$root_out_dir/gcp_setup_version.rc"
 }
 
+config("common_config") {
+  visibility = [ ":*" ]
+  defines = [
+    # Make single parameter CString constructors explicit.
+    "_ATL_CSTRING_EXPLICIT_CONSTRUCTORS",
+  ]
+}
+
 source_set("common") {
+  public_configs = [ ":common_config" ]
   sources = [
     "gcpw_files.cc",
     "gcpw_files.h",

@@ -39,10 +39,7 @@
 // The ATL headers don't like to be compiled with INITGUID defined.
 #if !defined(INITGUID)
 
-#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS  // some CString ctors are explicit
-#include <atlbase.h>
-#include <atlcom.h>
-#include <atlstr.h>
+#include "base/win/atl.h"
 
 #endif
 

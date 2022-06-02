@@ -11,9 +11,6 @@
 #include <winternl.h>
 
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
-#include <atlbase.h>
-#include <atlcom.h>
-#include <atlcomcli.h>
 #include <malloc.h>
 #include <memory.h>
 #include <ntsecapi.h>  // For LsaLookupAuthenticationPackage()
@@ -40,6 +37,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/atl.h"
 #include "base/win/current_module.h"
 #include "base/win/embedded_i18n/language_selector.h"
 #include "base/win/win_util.h"

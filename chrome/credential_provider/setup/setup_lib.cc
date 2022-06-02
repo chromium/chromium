@@ -4,7 +4,6 @@
 
 #include "chrome/credential_provider/setup/setup_lib.h"
 
-#include <atlbase.h>
 #include <shlobj.h>
 
 #include <iomanip>
@@ -19,6 +18,7 @@
 #include "base/process/launch.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"

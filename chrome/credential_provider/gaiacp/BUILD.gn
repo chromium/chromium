@@ -225,6 +225,9 @@ source_set("gaiacp_lib") {
 
 config("gaiacp_config") {
   defines = [
+    # Make single parameter CString constructors explicit.
+    "_ATL_CSTRING_EXPLICIT_CONSTRUCTORS",
+
     # Needed to build COM objects that will be hosted in a DLL.
     "_WINDLL",
   ]
