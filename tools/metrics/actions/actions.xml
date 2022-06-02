@@ -27864,6 +27864,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromNTPFeedTopPromo">
+  <owner>mrefaat@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    Recorded when showing sign in entry in the NTP feed top section promo.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromPasswordBubble" not_user_triggered="true">
   <owner>gogerald@chromium.org</owner>
   <description>
@@ -28002,6 +28011,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_ImpressionWithAccount_FromNTPFeedTopPromo"
+    not_user_triggered="true">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <description>
+    Recorded when starting sign-in using the promo view, with a default account,
+    from NTP Feed top section
+    (signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO).
+  </description>
+</action>
+
 <action name="Signin_ImpressionWithAccount_FromPasswordBubble"
     not_user_triggered="true">
   <owner>msarda@chromium.org</owner>
@@ -28110,6 +28131,18 @@ should be able to be added at any place in this file.
     Recorded when starting sign-in using the promo view, with no default
     account, from NTP content suggestions
     (signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS).
+  </description>
+</action>
+
+<action name="Signin_ImpressionWithNoAccount_FromNTPFeedTopPromo"
+    not_user_triggered="true">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <description>
+    Recorded when starting sign-in using the promo view, with no default
+    account, from NTP content suggestions
+    (signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO).
   </description>
 </action>
 
@@ -28428,6 +28461,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromNTPFeedTopPromo">
+  <owner>jlebel@chromium.org</owner>
+  <owner>mrefaat@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO.
   </description>
 </action>
 
@@ -28775,6 +28817,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_SigninNewAccountExistingAccount_FromNTPFeedTopPromo">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO, with a new
+    account, while Chrome already has other accounts.
+  </description>
+</action>
+
 <action name="Signin_SigninNewAccountExistingAccount_FromPasswordBubble">
   <owner>bsazonov@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
@@ -28895,6 +28947,17 @@ should be able to be added at any place in this file.
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS, with a
     new account, while Chrome does not have other accounts.
+  </description>
+</action>
+
+<action name="Signin_SigninNewAccountNoExistingAccount_FromNTPFeedTopPromo">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO, with a new
+    account, while Chrome does not have other accounts.
   </description>
 </action>
 
@@ -29146,6 +29209,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_SigninNotDefault_FromNTPFeedTopPromo">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO, using another
+    account than the default one.
+  </description>
+</action>
+
 <action name="Signin_SigninNotDefault_FromPasswordBubble">
   <owner>bsazonov@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
@@ -29270,6 +29344,17 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS, using the
+    default account.
+  </description>
+</action>
+
+<action name="Signin_SigninWithDefault_FromNTPFeedTopPromo">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO, using the
     default account.
   </description>
 </action>

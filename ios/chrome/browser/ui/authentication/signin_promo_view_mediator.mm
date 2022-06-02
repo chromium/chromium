@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -43,6 +44,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
       return true;
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
@@ -87,13 +89,18 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     int displayed_count) {
   switch (access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
-      UMA_HISTOGRAM_COUNTS_100(
+      base::UmaHistogramCounts100(
           "MobileSignInPromo.BookmarkManager.ImpressionsTilSigninButtons",
           displayed_count);
       break;
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
-      UMA_HISTOGRAM_COUNTS_100(
+      base::UmaHistogramCounts100(
           "MobileSignInPromo.SettingsManager.ImpressionsTilSigninButtons",
+          displayed_count);
+      break;
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+      base::UmaHistogramCounts100(
+          "MobileSignInPromo.NTPFeedTop.ImpressionsTilSigninButtons",
           displayed_count);
       break;
     case signin_metrics::AccessPoint::
@@ -143,13 +150,18 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     int displayed_count) {
   switch (access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
-      UMA_HISTOGRAM_COUNTS_100(
+      base::UmaHistogramCounts100(
           "MobileSignInPromo.BookmarkManager.ImpressionsTilDismiss",
           displayed_count);
       break;
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
-      UMA_HISTOGRAM_COUNTS_100(
+      base::UmaHistogramCounts100(
           "MobileSignInPromo.SettingsManager.ImpressionsTilDismiss",
+          displayed_count);
+      break;
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+      base::UmaHistogramCounts100(
+          "MobileSignInPromo.NTPFeedTop.ImpressionsTilDismiss",
           displayed_count);
       break;
     case signin_metrics::AccessPoint::
@@ -199,13 +211,18 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     int displayed_count) {
   switch (access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
-      UMA_HISTOGRAM_COUNTS_100(
+      base::UmaHistogramCounts100(
           "MobileSignInPromo.BookmarkManager.ImpressionsTilXButton",
           displayed_count);
       break;
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
-      UMA_HISTOGRAM_COUNTS_100(
+      base::UmaHistogramCounts100(
           "MobileSignInPromo.SettingsManager.ImpressionsTilXButton",
+          displayed_count);
+      break;
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+      base::UmaHistogramCounts100(
+          "MobileSignInPromo.NTPFeedTop.ImpressionsTilXButton",
           displayed_count);
       break;
     case signin_metrics::AccessPoint::
@@ -256,6 +273,8 @@ const char* DisplayedCountPreferenceKey(
       return prefs::kIosBookmarkSigninPromoDisplayedCount;
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
       return prefs::kIosSettingsSigninPromoDisplayedCount;
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+      return prefs::kIosNtpFeedTopSigninPromoDisplayedCount;
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
@@ -302,6 +321,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
       return prefs::kIosBookmarkPromoAlreadySeen;
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
       return prefs::kIosSettingsPromoAlreadySeen;
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+      return prefs::kIosNtpFeedTopPromoAlreadySeen;
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
@@ -390,6 +411,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // Settings
   registry->RegisterBooleanPref(prefs::kIosSettingsPromoAlreadySeen, false);
   registry->RegisterIntegerPref(prefs::kIosSettingsSigninPromoDisplayedCount,
+                                0);
+  // NTP Feed
+  registry->RegisterBooleanPref(prefs::kIosNtpFeedTopPromoAlreadySeen, false);
+  registry->RegisterIntegerPref(prefs::kIosNtpFeedTopSigninPromoDisplayedCount,
                                 0);
 }
 

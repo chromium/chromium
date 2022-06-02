@@ -30,6 +30,8 @@ extern const char kIosBookmarkSigninPromoDisplayedCount[];
 extern const char kIosDiscoverFeedLastRefreshTime[];
 extern const char kIosSettingsPromoAlreadySeen[];
 extern const char kIosSettingsSigninPromoDisplayedCount[];
+extern const char kIosNtpFeedTopPromoAlreadySeen[];
+extern const char kIosNtpFeedTopSigninPromoDisplayedCount[];
 extern const char kLinkPreviewEnabled[];
 extern const char kNTPContentSuggestionsEnabled[];
 extern const char kNTPFollowingFeedSortType[];

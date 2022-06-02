@@ -120,6 +120,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromSigninInterceptFirstRunExperience"));
       break;
+    case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromNTPFeedTopPromo"));
+      break;
     case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is only used to trigger non-sync sign-in and this"
@@ -185,6 +189,10 @@ void RecordSigninWithDefaultUserActionForAccessPoint(
     case AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
       base::RecordAction(base::UserMetricsAction(
           "Signin_SigninWithDefault_FromNTPContentSuggestions"));
+      break;
+    case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_SigninWithDefault_FromNTPFeedTopPromo"));
       break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_START_PAGE:
@@ -259,6 +267,10 @@ void RecordSigninNotDefaultUserActionForAccessPoint(
     case AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
       base::RecordAction(base::UserMetricsAction(
           "Signin_SigninNotDefault_FromNTPContentSuggestions"));
+      break;
+    case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_SigninNotDefault_FromNTPFeedTopPromo"));
       break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_START_PAGE:
@@ -337,6 +349,10 @@ void RecordSigninNewAccountNoExistingAccountUserActionForAccessPoint(
       base::RecordAction(base::UserMetricsAction(
           "Signin_SigninNewAccountNoExistingAccount_FromNTPContentSuggestions"));  // NOLINT(whitespace/line_length)
       // clang-format on
+      break;
+    case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_SigninNewAccountNoExistingAccount_FromNTPFeedTopPromo"));
       break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_START_PAGE:
@@ -418,6 +434,10 @@ void RecordSigninNewAccountExistingAccountUserActionForAccessPoint(
     case AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
       base::RecordAction(base::UserMetricsAction(
           "Signin_SigninNewAccountExistingAccount_FromNTPContentSuggestions"));
+      break;
+    case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_SigninNewAccountExistingAccount_FromNTPFeedTopPromo"));
       break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_START_PAGE:
@@ -841,6 +861,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromSendTabToSelfPromo"));
       break;
+    case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Impression_FromNTPFeedTopPromo"));
+      break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_CONTENT_AREA:
     case AccessPoint::ACCESS_POINT_EXTENSIONS:
@@ -946,6 +970,15 @@ void RecordSigninImpressionWithAccountUserActionForAccessPoint(
       } else {
         base::RecordAction(base::UserMetricsAction(
             "Signin_ImpressionWithNoAccount_FromNTPContentSuggestions"));
+      }
+      break;
+    case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+      if (with_account) {
+        base::RecordAction(base::UserMetricsAction(
+            "Signin_ImpressionWithAccount_FromNTPFeedTopPromo"));
+      } else {
+        base::RecordAction(base::UserMetricsAction(
+            "Signin_ImpressionWithNoAccount_FromNTPFeedTopPromo"));
       }
       break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:

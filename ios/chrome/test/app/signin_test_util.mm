@@ -117,6 +117,8 @@ void ResetSigninPromoPreferences() {
   prefs->SetBoolean(prefs::kIosBookmarkPromoAlreadySeen, false);
   prefs->SetInteger(prefs::kIosSettingsSigninPromoDisplayedCount, 0);
   prefs->SetBoolean(prefs::kIosSettingsPromoAlreadySeen, false);
+  prefs->SetInteger(prefs::kIosNtpFeedTopSigninPromoDisplayedCount, 0);
+  prefs->SetBoolean(prefs::kIosNtpFeedTopPromoAlreadySeen, false);
   prefs->SetBoolean(prefs::kSigninShouldPromptForSigninAgain, false);
 }
 

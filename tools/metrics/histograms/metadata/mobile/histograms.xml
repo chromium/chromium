@@ -1112,6 +1112,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MobileSignInPromo.NTPFeedTop.ImpressionsTilDismiss"
+    units="impressions" expires_after="2023-06-01">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts how many times the signin promo is implicitly dismissed (by leaving
+    the NTP) per impression of the NTP feed top section sign in promo.
+  </summary>
+</histogram>
+
+<histogram name="MobileSignInPromo.NTPFeedTop.ImpressionsTilSigninButtons"
+    units="impressions" expires_after="2023-06-01">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts how many times one of the &quot;sign in&quot; buttons (any of the
+    signed-out &quot;Sign in to Chrome&quot; button, the &quot;Continue as
+    |name|&quot; button, or the &quot;Not |email|?&quot; button) is clicked per
+    impression of the NTP feed top section sign in promo.
+  </summary>
+</histogram>
+
+<histogram name="MobileSignInPromo.NTPFeedTop.ImpressionsTilXButton"
+    units="impressions" expires_after="2023-06-01">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts how many times the explicit &quot;X&quot;-to-close button is clicked
+    per impression of the NTP feed top section sign in promo.
+  </summary>
+</histogram>
+
 <histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilDismiss"
     units="impressions" expires_after="2023-04-01">
   <owner>jlebel@chromium.org</owner>

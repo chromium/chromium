@@ -38,7 +38,8 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR,
     AccessPoint::ACCESS_POINT_TAB_SWITCHER,
     AccessPoint::ACCESS_POINT_MACHINE_LOGON,
-    AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS};
+    AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS,
+    AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO};
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_START_PAGE,
@@ -57,7 +58,8 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN,
     AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS,
     AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR,
-    AccessPoint::ACCESS_POINT_TAB_SWITCHER};
+    AccessPoint::ACCESS_POINT_TAB_SWITCHER,
+    AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO};
 
 const AccessPoint kAccessPointsThatSupportPersonalizedPromos[] = {
     AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER,
@@ -68,7 +70,8 @@ const AccessPoint kAccessPointsThatSupportPersonalizedPromos[] = {
     AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
     AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
     AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
-    AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS};
+    AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS,
+    AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO};
 
 class SigninMetricsTest : public ::testing::Test {
  public:
@@ -140,6 +143,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "SigninInterceptFirstRunExperience";
       case AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
         return "SendTabToSelfPromo";
+      case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+        return "NTPFeedTopPromo";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

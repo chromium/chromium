@@ -98,6 +98,16 @@ const char kIosSettingsPromoAlreadySeen[] = "ios.settings.promo_already_seen";
 const char kIosSettingsSigninPromoDisplayedCount[] =
     "ios.settings.signin_promo_displayed_count";
 
+// Preference that hold a boolean indicating if the user has already dismissed
+// the sign-in promo in the ntp feed top section.
+const char kIosNtpFeedTopPromoAlreadySeen[] =
+    "ios.ntp_feed_top.promo_already_seen";
+
+// Integer to represent the number of time the sign-in promo has been displayed
+// in the ntp feed top section.
+const char kIosNtpFeedTopSigninPromoDisplayedCount[] =
+    "ios.ntp_feed_top.signin_promo_displayed_count";
+
 // Preference that holds a boolean indicating whether the link previews are
 // enabled. Link previews display a live preview of the selected link after a
 // long press.
