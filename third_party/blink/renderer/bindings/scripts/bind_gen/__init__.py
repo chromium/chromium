@@ -22,8 +22,8 @@ def _setup_sys_path():
         # //third_party/blink/renderer/build/scripts/blinkbuild
         os.path.join(root_dir, 'third_party', 'blink', 'renderer', 'build',
                      'scripts'),
-        # //third_party/mako/mako
-        os.path.join(root_dir, 'third_party', 'mako'),
+        # //third_party/mako/mako/mako
+        os.path.join(root_dir, 'third_party', 'mako', 'mako'),
     )
     for module_dir in reversed(module_dirs):
         # Preserve sys.path[0] as is.

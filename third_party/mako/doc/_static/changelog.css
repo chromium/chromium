@@ -1,7 +1,0 @@
-a.changelog-reference {
-	visibility: hidden;
-}
-
-li:hover a.changelog-reference {
-   visibility: visible;
-}
