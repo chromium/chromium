@@ -250,17 +250,17 @@ TEST_F(AutofillAssistantAgentBrowserTest, SetElementValueForInput) {
   base::MockCallback<base::OnceCallback<void(bool)>> callback;
   EXPECT_CALL(callback, Run(true));
 
-  const int backend_node_id = 3;  // Incrementally assigned, extracted manually.
-  autofill_assistant_agent_->SetElementValue(backend_node_id, u"value",
-                                             /* send_events= */ true,
-                                             callback.Get());
-  base::RunLoop().RunUntilIdle();
-
   const auto web_element = GetMainRenderFrame()
                                ->GetWebFrame()
                                ->GetDocument()
                                .GetElementById(blink::WebString::FromUTF8("id"))
                                .To<blink::WebFormControlElement>();
+
+  autofill_assistant_agent_->SetElementValue(
+      web_element.GetDevToolsNodeIdForTest(), u"value",
+      /* send_events= */ true, callback.Get());
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(web_element.Value(), "value");
 }
 
@@ -282,10 +282,9 @@ TEST_F(AutofillAssistantAgentBrowserTest, SetElementValueForSelect) {
 
   EXPECT_EQ(web_element.Value(), "dog");
 
-  const int backend_node_id = 3;  // Incrementally assigned, extracted manually.
-  autofill_assistant_agent_->SetElementValue(backend_node_id, u"cat",
-                                             /* send_events= */ true,
-                                             callback.Get());
+  autofill_assistant_agent_->SetElementValue(
+      web_element.GetDevToolsNodeIdForTest(), u"cat",
+      /* send_events= */ true, callback.Get());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(web_element.Value(), "cat");
@@ -299,10 +298,13 @@ TEST_F(AutofillAssistantAgentBrowserTest,
   base::MockCallback<base::OnceCallback<void(bool)>> callback;
   EXPECT_CALL(callback, Run(false));
 
-  const int backend_node_id = 3;  // Incrementally assigned, extracted manually.
-  autofill_assistant_agent_->SetElementValue(backend_node_id, u"value",
-                                             /* send_events= */ true,
-                                             callback.Get());
+  const auto web_element =
+      GetMainRenderFrame()->GetWebFrame()->GetDocument().GetElementById(
+          blink::WebString::FromUTF8("id"));
+
+  autofill_assistant_agent_->SetElementValue(
+      web_element.GetDevToolsNodeIdForTest(), u"value",
+      /* send_events= */ true, callback.Get());
   base::RunLoop().RunUntilIdle();
 }
 
