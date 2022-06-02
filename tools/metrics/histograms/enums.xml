@@ -21860,6 +21860,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="66" label="CONTAINER_STOP_FAILED"/>
   <int value="67" label="CONTAINER_STOP_CANCELLED"/>
   <int value="68" label="WAYLAND_SERVER_CREATION_FAILED"/>
+  <int value="69" label="CONFIGURE_CONTAINER_TIMED_OUT"/>
+  <int value="70" label="RESTART_REQUEST_CANCELLED"/>
 </enum>
 
 <enum name="CrostiniSettingsEvent">

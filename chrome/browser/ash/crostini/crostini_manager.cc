@@ -479,7 +479,7 @@ void CrostiniManager::CrostiniRestarter::CancelRequest(RestartId restart_id) {
             return request.restart_id == restart_id;
           },
           restart_id),
-      CrostiniResult::RESTART_ABORTED);
+      CrostiniResult::RESTART_REQUEST_CANCELLED);
 
   if (requests_.empty()) {
     // May delete |this|.

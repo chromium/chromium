@@ -100,7 +100,9 @@ enum class CrostiniResult {
   CONTAINER_STOP_CANCELLED = 67,
   WAYLAND_SERVER_CREATION_FAILED = 68,
   CONFIGURE_CONTAINER_TIMED_OUT = 69,
-  kMaxValue = CONFIGURE_CONTAINER_TIMED_OUT,
+  // Prior to M104, RESTART_ABORTED was used for this.
+  RESTART_REQUEST_CANCELLED = 70,
+  kMaxValue = RESTART_REQUEST_CANCELLED,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };
