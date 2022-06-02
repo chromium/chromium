@@ -194,6 +194,8 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
                            std::unique_ptr<CopyOutputRequest> request);
 
   void Throttle(const std::vector<FrameSinkId>& ids, base::TimeDelta interval);
+  void StartThrottlingAllFrameSinks(base::TimeDelta interval);
+  void StopThrottlingAllFrameSinks();
 
   // Add/Remove an observer to receive notifications of when the host receives
   // new hit test data.

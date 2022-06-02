@@ -153,6 +153,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       const DebugRendererSettings& debug_settings) override;
   void Throttle(const std::vector<FrameSinkId>& ids,
                 base::TimeDelta interval) override;
+  void StartThrottlingAllFrameSinks(base::TimeDelta interval) override;
+  void StopThrottlingAllFrameSinks() override;
 
   void DestroyFrameSinkBundle(const FrameSinkBundleId& id);
 
@@ -395,8 +397,15 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Ids of the frame sinks that have been requested to throttle.
   std::vector<FrameSinkId> frame_sink_ids_to_throttle_;
 
-  // The throttling interval which defines how often BeginFrames are sent.
+  // The throttling interval which defines how often BeginFrames are sent for
+  // frame sinks in `frame_sink_ids_to_throttle_`, if
+  // `global_throttle_interval_` is unset or if this interval is longer than
+  // `global_throttle_interval_`.
   base::TimeDelta throttle_interval_ = BeginFrameArgs::DefaultInterval();
+
+  // If present, the throttling interval which defines the upper bound of how
+  // often BeginFrames are sent for all current and future frame sinks.
+  absl::optional<base::TimeDelta> global_throttle_interval_ = absl::nullopt;
 
   base::flat_map<uint32_t, base::ScopedClosureRunner> cached_back_buffers_;
 

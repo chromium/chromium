@@ -17,6 +17,7 @@ class HighEfficiencyModePolicyHelper {
 
  private:
   void OnHighEfficiencyModeChanged();
+  void OnBatterySaverModeChanged();
 
   PrefChangeRegistrar pref_change_registrar_;
 };

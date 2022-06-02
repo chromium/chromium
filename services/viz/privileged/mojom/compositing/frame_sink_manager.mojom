@@ -147,6 +147,17 @@ interface FrameSinkManager {
   Throttle(array<FrameSinkId> frame_sink_ids,
            mojo_base.mojom.TimeDelta interval);
 
+  // Throttles all current and future frame sinks to send BeginFrames at an
+  // interval at least as long as |interval|. Because there is a single viz
+  // process, which itself contains a single host frame sink manager, calling
+  // this multiple times from anywhere will apply the throttling described by
+  // the latest call.
+  StartThrottlingAllFrameSinks(mojo_base.mojom.TimeDelta interval);
+
+  // Disables the global throttling triggered by StartThrottlingAllFrameSinks().
+  // If throttling is already disabled, this has no effect.
+  StopThrottlingAllFrameSinks();
+
   // Takes a snapshot of |surface_id| or a newer surface with the same
   // FrameSinkId. The request will be queued up until such surface exists and is
   // reachable from the root surface.

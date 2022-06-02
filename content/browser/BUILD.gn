@@ -1345,6 +1345,7 @@ source_set("browser") {
     "payments/respond_with_callback.cc",
     "payments/respond_with_callback.h",
     "per_web_ui_browser_interface_broker.cc",
+    "performance_manager/frame_rate_throttling.cc",
     "permissions/permission_controller_impl.cc",
     "permissions/permission_controller_impl.h",
     "permissions/permission_service_context.cc",

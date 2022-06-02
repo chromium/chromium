@@ -53,6 +53,9 @@ const base::Feature kHighPMFDiscardPolicy{"HighPMFDiscardPolicy",
 const base::Feature kHighEfficiencyModeAvailable{
     "HighEfficiencyModeAvailable", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kBatterySaverModeAvailable{
+    "BatterySaverModeAvailable", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::FeatureParam<base::TimeDelta> kHighEfficiencyModeTimeBeforeDiscard{
     &kHighEfficiencyModeAvailable, "time_before_discard", base::Minutes(5)};
 #endif

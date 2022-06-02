@@ -202,10 +202,16 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
   extension_watcher_ =
       std::make_unique<performance_manager::ExtensionWatcher>();
 #endif
+}
 
+void ChromeBrowserMainExtraPartsPerformanceManager::PreMainMessageLoopRun() {
 #if !BUILDFLAG(IS_ANDROID)
+  // This object requires the host frame sink manager to exist, which is created
+  // after all the extra parts have run their PostCreateThreads.
   if (base::FeatureList::IsEnabled(
-          performance_manager::features::kHighEfficiencyModeAvailable)) {
+          performance_manager::features::kHighEfficiencyModeAvailable) ||
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kBatterySaverModeAvailable)) {
     high_efficiency_mode_policy_helper_ = std::make_unique<
         performance_manager::policies::HighEfficiencyModePolicyHelper>(
         g_browser_process->local_state());

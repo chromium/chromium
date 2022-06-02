@@ -61,10 +61,11 @@ extern const base::Feature kHighPMFDiscardPolicy;
 // directly from Performance Manager rather than via TabLoader.
 extern const base::Feature kBackgroundTabLoadingFromPerformanceManager;
 
-// Makes the High-Efficiency Mode available to users. If this is enabled, it
-// doesn't mean High-Efficiency Mode is enabled, just that the user has the
-// option of toggling it.
+// Make the High-Efficiency or Battery Saver Modes available to users. If this
+// is enabled, it doesn't mean the specific Mode is enabled, just that the user
+// has the option of toggling it.
 extern const base::Feature kHighEfficiencyModeAvailable;
+extern const base::Feature kBatterySaverModeAvailable;
 
 // Defines the time in seconds before a background tab is discarded for
 // High-Efficiency Mode.

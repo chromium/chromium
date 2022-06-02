@@ -69,6 +69,7 @@ class ChromeBrowserMainExtraPartsPerformanceManager
 
   // ChromeBrowserMainExtraParts overrides.
   void PostCreateThreads() override;
+  void PreMainMessageLoopRun() override;
   void PostMainMessageLoopRun() override;
 
   // ProfileManagerObserver:
