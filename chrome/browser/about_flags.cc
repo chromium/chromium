@@ -1021,17 +1021,17 @@ const FeatureEntry::FeatureParam kJourneysOmniboxActionOnNonNoisyURLsParams[] =
         {"omnibox_action_with_pedals", "true"},
 };
 const FeatureEntry::FeatureParam
-    kJourneysOmniboxActionOnNonNavigationIntentsParams[] = {
+    kJourneysOmniboxActionOnNavigationIntentsParams[] = {
         {"omnibox_action_on_urls", "false"},
         {"omnibox_action_on_noisy_urls", "false"},
-        {"omnibox_action_on_navigation_intents", "false"},
-        {"omnibox_action_with_pedals", "true"},
+        {"omnibox_action_on_navigation_intents", "true"},
+        {"omnibox_action_with_pedals", "false"},
 };
 const FeatureEntry::FeatureParam kJourneysOmniboxActionWithPedalsParams[] = {
     {"omnibox_action_on_urls", "false"},
     {"omnibox_action_on_noisy_urls", "false"},
-    {"omnibox_action_on_navigation_intents", "true"},
-    {"omnibox_action_with_pedals", "false"},
+    {"omnibox_action_on_navigation_intents", "false"},
+    {"omnibox_action_with_pedals", "true"},
 };
 const FeatureEntry::FeatureVariation kJourneysOmniboxActionVariations[] = {
     {"Action Chips on All URLs", kJourneysOmniboxActionOnAllURLsParams,
@@ -1039,11 +1039,10 @@ const FeatureEntry::FeatureVariation kJourneysOmniboxActionVariations[] = {
     {"Action Chips on Non-Noisy URLs",
      kJourneysOmniboxActionOnNonNoisyURLsParams,
      std::size(kJourneysOmniboxActionOnNonNoisyURLsParams), nullptr},
-    {"Action Chips Disabled on Navigation Intents",
-     kJourneysOmniboxActionOnNonNavigationIntentsParams,
-     std::size(kJourneysOmniboxActionOnNonNavigationIntentsParams), nullptr},
-    {"Action Chips Disabled with Pedals",
-     kJourneysOmniboxActionWithPedalsParams,
+    {"Action Chips Enabled on Navigation Intents",
+     kJourneysOmniboxActionOnNavigationIntentsParams,
+     std::size(kJourneysOmniboxActionOnNavigationIntentsParams), nullptr},
+    {"Action Chips Enabled with Pedals", kJourneysOmniboxActionWithPedalsParams,
      std::size(kJourneysOmniboxActionWithPedalsParams), nullptr},
 };
 const FeatureEntry::FeatureParam kJourneysLabelsWithEntitiesParams[] = {

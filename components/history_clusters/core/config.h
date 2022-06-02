@@ -74,7 +74,10 @@ struct Config {
   bool omnibox_action = false;
 
   // If enabled, allows the Omnibox Action chip to also appear on URLs. This
-  // does nothing if `omnibox_action` is disabled.
+  // does nothing if `omnibox_action` is disabled. Note, that if you turn this
+  // flag to true, you almost certainly will want to set
+  // `omnibox_action_on_navigation_intents` to true as well, as otherwise your
+  // desired action chips on URLs will almost certainly all be suppressed.
   bool omnibox_action_on_urls = false;
 
   // If enabled, allows the Omnibox Action chip to appear on URLs from noisy
@@ -85,7 +88,7 @@ struct Config {
   // user is intending to perform a navigation. This does not affect which
   // suggestions are allowed to display the chip. Does nothing if
   // `omnibox_action` is disabled.
-  bool omnibox_action_on_navigation_intents = true;
+  bool omnibox_action_on_navigation_intents = false;
 
   // If `omnibox_action_on_navigation_intents` is enabled, this threshold
   // helps determine when the user is intending to perform a navigation.
@@ -93,7 +96,7 @@ struct Config {
 
   // If enabled, allows the Omnibox Action chip to appear when the suggestions
   // contain pedals. Does nothing if `omnibox_action` is disabled.
-  bool omnibox_action_with_pedals = true;
+  bool omnibox_action_with_pedals = false;
 
   // If enabled, adds the keywords of aliases for detected entity names to a
   // cluster.
