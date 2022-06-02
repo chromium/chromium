@@ -108,13 +108,6 @@
 # Unexpected infobar hung_plugin
 -InfoBarUiTest.InvokeUi_multiple_infobars
 
-# TODO(crbug.com/1326968): [loopback_server.cc(887)] Loopback sync cannot read the persistent state
-# file (/tmp/.org.chromium.Chromium.JpoHmf/user_data/FakeSyncServer/profile.pb) with error
-# FILE_ERROR_NOT_FOUND Possibly broken because profile sign in isn't supported, although it could be
-# because /tmp isn't being created
--MetricsServiceUserDemographicsBrowserTest.AddSyncedUserBirthYearAndGenderToProtoData/0
--MetricsServiceUserDemographicsBrowserTest.AddSyncedUserBirthYearAndGenderToProtoData/1
-
 # TODO(crbug.com/1326969): Expects click to deselect text, but click seems like it might not be
 # hitting the right location
 -OmniboxPopupContentsViewTest.ClickOmnibox
