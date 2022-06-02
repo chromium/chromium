@@ -3,39 +3,36 @@
 # found in the LICENSE file.
 
 import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("./access_code_cast.gni")
 
 assert(!is_android, "access_code_cast is not for android.")
 
 resources_grd_file = "$target_gen_dir/resources.grd"
 
-html_to_js("web_components") {
-  js_files = [
-    "access_code_cast.ts",
-    "error_message/error_message.ts",
-    "passcode_input/passcode_input.ts",
-  ]
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
-copy("copy_browser_proxy") {
-  sources = [ "browser_proxy.ts" ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+preprocess_if_expr("preprocess_src") {
+  in_folder = "."
+  out_folder = target_gen_dir
+  in_files = ts_files
 }
 
 copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/access_code_cast:mojo_bindings_webui_js" ]
-  mojom_folder =
-      "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/access_code_cast/"
-  sources = [ "$mojom_folder/access_code_cast.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
+  deps = [
+    "//chrome/browser/ui/webui/access_code_cast:mojo_bindings_webui_js",
+    "//components/media_router/common/mojom:route_request_result_code_webui_js",
+  ]
 
-copy("copy_mojo_dep") {
-  deps = [ "//components/media_router/common/mojom:route_request_result_code_webui_js" ]
-  mojom_folder = "$root_gen_dir/mojom-webui/components/media_router/common/mojom/"
-  sources = [ "$mojom_folder/route_request_result_code.mojom-webui.js" ]
+  sources = [
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/components/media_router/common/mojom/route_request_result_code.mojom-webui.js",
+  ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
@@ -45,23 +42,18 @@ ts_library("build_ts") {
     "//ui/webui/resources:library",
   ]
   extra_deps = [
-    ":copy_browser_proxy",
     ":copy_mojo",
-    ":copy_mojo_dep",
-    ":web_components",
+    ":html_wrapper_files",
+    ":preprocess_src",
   ]
-  root_dir = "$target_gen_dir"
+  root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "access_code_cast.mojom-webui.js",
-    "access_code_cast.ts",
-    "browser_proxy.ts",
-    "error_message/error_message.ts",
-    "passcode_input/passcode_input.ts",
-    "route_request_result_code.mojom-webui.js",
-  ]
+  in_files = ts_files + html_wrapper_files + [
+               "access_code_cast.mojom-webui.js",
+               "route_request_result_code.mojom-webui.js",
+             ]
 }
 
 generate_grd("build_grd") {
