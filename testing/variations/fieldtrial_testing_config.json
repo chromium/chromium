@@ -5769,6 +5769,21 @@
             ]
         }
     ],
+    "OmniboxPostTaskFocusTabAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PostTaskFocusTab"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxPrerender": [
         {
             "platforms": [
@@ -6501,21 +6516,6 @@
                     "name": "Enabled_1",
                     "enable_features": [
                         "PermissionQuietChip"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PostTaskFocusTab": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PostTaskFocusTab"
                     ]
                 }
             ]
