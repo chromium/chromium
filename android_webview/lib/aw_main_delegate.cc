@@ -12,7 +12,6 @@
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
-#include "android_webview/browser/scoped_add_feature_flags.h"
 #include "android_webview/browser/tracing/aw_trace_event_args_allowlist.h"
 #include "android_webview/common/aw_descriptors.h"
 #include "android_webview/common/aw_features.h"
@@ -32,6 +31,7 @@
 #include "base/i18n/icu_util.h"
 #include "base/i18n/rtl.h"
 #include "base/posix/global_descriptors.h"
+#include "base/scoped_add_feature_flags.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -185,7 +185,7 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
   }
 
   {
-    ScopedAddFeatureFlags features(cl);
+    base::ScopedAddFeatureFlags features(cl);
 
     if (base::android::BuildInfo::GetInstance()->sdk_int() >=
         base::android::SDK_VERSION_OREO) {
@@ -298,6 +298,11 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     // Have the network service in the browser process even if we have separate
     // renderer processes. See also: switches::kInProcessGPU above.
     features.EnableIfNotSet(::features::kNetworkServiceInProcess);
+
+    // Disable Event.path on Canary and Dev to help the deprecation and removal.
+    // See crbug.com/1277431 for more details.
+    if (version_info::android::GetChannel() < version_info::Channel::BETA)
+      features.DisableIfNotSet(blink::features::kEventPath);
   }
 
   android_webview::RegisterPathProvider();

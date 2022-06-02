@@ -617,7 +617,6 @@ test("android_webview_unittests") {
     "../browser/renderer_host/auto_login_parser_unittest.cc",
     "../browser/safe_browsing/aw_ping_manager_unittest.cc",
     "../browser/safe_browsing/aw_safe_browsing_allowlist_manager_unittest.cc",
-    "../browser/scoped_add_feature_flags_unittests.cc",
     "../browser/state_serializer_unittest.cc",
     "../browser/tracing/aw_background_tracing_metrics_provider_unittest.cc",
     "../browser/tracing/aw_tracing_delegate_unittest.cc",

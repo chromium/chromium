@@ -183,8 +183,6 @@ source_set("browser") {
     "safe_browsing/aw_safe_browsing_ui_manager.h",
     "safe_browsing/aw_url_checker_delegate_impl.cc",
     "safe_browsing/aw_url_checker_delegate_impl.h",
-    "scoped_add_feature_flags.cc",
-    "scoped_add_feature_flags.h",
     "state_serializer.cc",
     "state_serializer.h",
     "tracing/aw_background_tracing_metrics_provider.cc",
