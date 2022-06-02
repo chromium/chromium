@@ -12,8 +12,8 @@
 
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
-#include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 
+struct BrowserInfo;
 class DevToolsClient;
 class DevToolsEventListener;
 class DevToolsHttpClient;
@@ -21,8 +21,6 @@ class Status;
 class WebView;
 class WebViewImpl;
 class WebViewsInfo;
-struct BrowserInfo;
-struct DeviceMetrics;
 
 class ChromeImpl : public Chrome {
  public:
@@ -63,14 +61,9 @@ class ChromeImpl : public Chrome {
              std::unique_ptr<DevToolsClient> websocket_client,
              std::vector<std::unique_ptr<DevToolsEventListener>>
                  devtools_event_listeners,
-             std::unique_ptr<DeviceMetrics> device_metrics,
-             SyncWebSocketFactory socket_factory,
              std::string page_load_strategy);
 
   virtual Status QuitImpl() = 0;
-
-  std::unique_ptr<DevToolsClient> CreateClient(const std::string& id);
-  Status CloseFrontends(const std::string& for_client_id);
 
   struct Window {
     int id;
@@ -88,9 +81,7 @@ class ChromeImpl : public Chrome {
                          const std::string& target_id,
                          std::unique_ptr<base::DictionaryValue> bounds);
 
-  bool quit_ = false;
-  std::unique_ptr<DeviceMetrics> device_metrics_;
-  SyncWebSocketFactory socket_factory_;
+  bool quit_;
   std::unique_ptr<DevToolsHttpClient> devtools_http_client_;
   std::unique_ptr<DevToolsClient> devtools_websocket_client_;
 

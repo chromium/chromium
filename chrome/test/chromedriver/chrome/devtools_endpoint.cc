@@ -52,3 +52,7 @@ std::string DevToolsEndpoint::GetListUrl() const {
 std::string DevToolsEndpoint::GetCloseUrl(const std::string& id) const {
   return server_url_.Resolve("json/close/" + id).spec();
 }
+
+std::string DevToolsEndpoint::GetActivateUrl(const std::string& id) const {
+  return server_url_.Resolve("json/activate/" + id).spec();
+}

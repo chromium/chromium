@@ -4,14 +4,11 @@
 #ifndef CHROME_TEST_CHROMEDRIVER_LOG_REPLAY_CHROME_REPLAY_IMPL_H_
 #define CHROME_TEST_CHROMEDRIVER_LOG_REPLAY_CHROME_REPLAY_IMPL_H_
 
-#include <memory>
 #include "chrome/test/chromedriver/chrome/chrome_desktop_impl.h"
-#include "chrome/test/chromedriver/chrome/device_metrics.h"
 
 class DevToolsClient;
 class DevToolsHttpClient;
 class Status;
-struct DeviceMetrics;
 
 // Same as ChromeDesktopImpl except that it completely ignores the existence
 // of the |process| passed into the constructor. This allows running Chrome
@@ -23,8 +20,6 @@ class ChromeReplayImpl : public ChromeDesktopImpl {
                    std::unique_ptr<DevToolsClient> websocket_client,
                    std::vector<std::unique_ptr<DevToolsEventListener>>
                        devtools_event_listeners,
-                   std::unique_ptr<DeviceMetrics> device_metrics,
-                   SyncWebSocketFactory socket_factory,
                    std::string page_load_strategy,
                    base::Process process,
                    const base::CommandLine& command,
