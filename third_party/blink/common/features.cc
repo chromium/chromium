@@ -1131,11 +1131,6 @@ const base::Feature kClipboardCustomFormats{"ClipboardCustomFormats",
 const base::Feature kUsePageViewportInLCP{"UsePageViewportInLCP",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable `Sec-CH-UA-Platform` client hint and request header to be sent by
-// default
-const base::Feature kUACHPlatformEnabledByDefault{
-    "UACHPlatformEnabledByDefault", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, allow dropping alpha on media streams for rendering sinks if
 // other sinks connected do not use alpha.
 const base::Feature kAllowDropAlphaForMediaStream{

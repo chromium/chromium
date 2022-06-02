@@ -513,9 +513,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kClipboardCustomFormats;
 // heuristic where images occupying the full viewport are ignored.
 BLINK_COMMON_EXPORT extern const base::Feature kUsePageViewportInLCP;
 
-// Enable "Sec-CH-UA-Platform" client hint and request header for all requests
-BLINK_COMMON_EXPORT extern const base::Feature kUACHPlatformEnabledByDefault;
-
 // When enabled, allow dropping alpha on media streams for rendering sinks if
 // other sinks connected do not use alpha.
 BLINK_COMMON_EXPORT extern const base::Feature kAllowDropAlphaForMediaStream;

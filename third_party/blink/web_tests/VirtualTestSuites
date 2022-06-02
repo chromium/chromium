@@ -1056,12 +1056,6 @@
     "args": ["--disable-features=DialogFocusNewSpecBehavior"]
   },
   {
-    "prefix": "disable-ua-ch-platform",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/client-hints", "wpt_internal/client-hints"],
-    "args": ["--disable-features=UACHPlatformEnabledByDefault"]
-  },
-  {
     "prefix": "object-param-url",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/embedded-content/the-object-element/object-param-url.html"],
