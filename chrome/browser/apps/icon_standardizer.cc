@@ -16,7 +16,7 @@ constexpr float kCircleOutlineStrokeWidthRatio = 0.1f;
 
 constexpr int kMinimumVisibleAlpha = 40;
 
-constexpr float kCircleShapePixelDifferenceThreshold = 0.01f;
+constexpr float kCircleShapePixelDifferenceThreshold = 0.02f;
 
 constexpr float kIconScaleToFit = 0.85f;
 
