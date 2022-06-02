@@ -58148,6 +58148,7 @@ from previous Chrome versions.
   <int value="176526479" label="AccessibilityPageZoom:enabled"/>
   <int value="176773784" label="EnableHardwareMirrorMode:disabled"/>
   <int value="176882922" label="ux-study-1"/>
+  <int value="176898248" label="FilesAppExperimental:enabled"/>
   <int value="178337215" label="enable-md-history"/>
   <int value="178693406" label="LockScreenMediaControls:disabled"/>
   <int value="179083323" label="HelpAppBackgroundPage:disabled"/>
@@ -59002,6 +59003,7 @@ from previous Chrome versions.
   <int value="728937354" label="ShutdownSupportForKeepalive:disabled"/>
   <int value="729726508" label="NtpModulesFirstRunExperience:disabled"/>
   <int value="730024226" label="enable-out-of-process-pdf"/>
+  <int value="730478037" label="FilesAppExperimental:disabled"/>
   <int value="730750097" label="PermissionsBlacklist:disabled"/>
   <int value="731318054" label="WebAssemblySimd:enabled"/>
   <int value="731593144" label="ReadPrinterCapabilitiesWithXps:enabled"/>

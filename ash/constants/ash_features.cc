@@ -692,6 +692,10 @@ const base::Feature kFastPairSubsequentPairingUX{
 const base::Feature kFastPairSavedDevices{"FastPairSavedDevices",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables experimental UI features in Files app.
+const base::Feature kFilesAppExperimental{"FilesAppExperimental",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables mounting various archive formats (in two tiers) in Files App. This
 // flag controls the second tier, whose support is more experimental.
 // https://crbug.com/1216245

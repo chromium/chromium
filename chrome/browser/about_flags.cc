@@ -5026,6 +5026,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDriveFsChromeNetworkingName,
      flag_descriptions::kDriveFsChromeNetworkingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kDriveFsChromeNetworking)},
+    {"files-app-experimental", flag_descriptions::kFilesAppExperimentalName,
+     flag_descriptions::kFilesAppExperimentalDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kFilesAppExperimental)},
     {"files-archivemount2", flag_descriptions::kFilesArchivemount2Name,
      flag_descriptions::kFilesArchivemount2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kFilesArchivemount2)},
@@ -5038,6 +5041,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"files-filters-in-recents-v2", flag_descriptions::kFiltersInRecentsV2Name,
      flag_descriptions::kFiltersInRecentsV2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kFiltersInRecentsV2)},
+
     {"files-single-partition-format",
      flag_descriptions::kFilesSinglePartitionFormatName,
      flag_descriptions::kFilesSinglePartitionFormatDescription, kOsCrOS,

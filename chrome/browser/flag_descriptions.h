@@ -2814,6 +2814,9 @@ extern const char kMagnifierContinuousMouseFollowingModeSettingDescription[];
 extern const char kDockedMagnifierResizingName[];
 extern const char kDockedMagnifierResizingDescription[];
 
+extern const char kFilesAppExperimentalName[];
+extern const char kFilesAppExperimentalDescription[];
+
 extern const char kFilesArchivemount2Name[];
 extern const char kFilesArchivemount2Description[];
 

@@ -1003,6 +1003,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
                 chromeos::features::kFilesSinglePartitionFormat));
   dict->Set("EXTRACT_ARCHIVE", base::FeatureList::IsEnabled(
                                    chromeos::features::kFilesExtractArchive));
+  dict->Set(
+      "FILES_APP_EXPERIMENTAL",
+      base::FeatureList::IsEnabled(chromeos::features::kFilesAppExperimental));
 
   dict->Set("FUSEBOX",
             base::FeatureList::IsEnabled(chromeos::features::kFuseBox));

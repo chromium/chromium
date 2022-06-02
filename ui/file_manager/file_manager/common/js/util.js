@@ -1333,6 +1333,16 @@ util.isExtractArchiveEnabled = () => {
   return loadTimeData.getBoolean('EXTRACT_ARCHIVE');
 };
 
+
+/**
+ * Whether the Files app Experimental flag is enabled.
+ * @returns {boolean}
+ */
+util.isFilesAppExperimental = () => {
+  return loadTimeData.valueExists('FILES_APP_EXPERIMENTAL') &&
+      loadTimeData.getBoolean('FILES_APP_EXPERIMENTAL');
+};
+
 /**
  * Returns true if FuseBox flag is enabled.
  * @return {boolean}
