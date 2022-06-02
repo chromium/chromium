@@ -3201,23 +3201,10 @@ GLenum WebGLRenderingContextBase::getError() {
   return ContextGL()->GetError();
 }
 
-const char* const* WebGLRenderingContextBase::ExtensionTracker::Prefixes()
-    const {
-  static const char* const kUnprefixed[] = {
-      "",
-      nullptr,
-  };
-  return prefixes_ ? prefixes_ : kUnprefixed;
-}
-
-bool WebGLRenderingContextBase::ExtensionTracker::MatchesNameWithPrefixes(
+bool WebGLRenderingContextBase::ExtensionTracker::MatchesName(
     const String& name) const {
-  const char* const* prefix_set = Prefixes();
-  for (; *prefix_set; ++prefix_set) {
-    String prefixed_name = String(*prefix_set) + ExtensionName();
-    if (DeprecatedEqualIgnoringCase(prefixed_name, name)) {
-      return true;
-    }
+  if (DeprecatedEqualIgnoringCase(ExtensionName(), name)) {
+    return true;
   }
   return false;
 }
@@ -3256,7 +3243,7 @@ ScriptValue WebGLRenderingContextBase::getExtension(ScriptState* script_state,
 
   if (!isContextLost()) {
     for (ExtensionTracker* tracker : extensions_) {
-      if (tracker->MatchesNameWithPrefixes(name)) {
+      if (tracker->MatchesName(name)) {
         if (ExtensionSupportedAndAllowed(tracker)) {
           extension = tracker->GetExtension(this);
           if (extension) {
@@ -3995,11 +3982,7 @@ WebGLRenderingContextBase::getSupportedExtensions() {
 
   for (ExtensionTracker* tracker : extensions_) {
     if (ExtensionSupportedAndAllowed(tracker)) {
-      const char* const* prefixes = tracker->Prefixes();
-      for (; *prefixes; ++prefixes) {
-        String prefixed_name = String(*prefixes) + tracker->ExtensionName();
-        result.push_back(prefixed_name);
-      }
+      result.push_back(tracker->ExtensionName());
     }
   }
 

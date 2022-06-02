@@ -169,11 +169,6 @@ ImageBitmap* WebGLRenderingContext::TransferToImageBitmap(
 }
 
 void WebGLRenderingContext::RegisterContextExtensions() {
-  // Register extensions.
-  static const char* const kBothPrefixes[] = {
-      "", "WEBKIT_", nullptr,
-  };
-
   RegisterExtension(angle_instanced_arrays_);
   RegisterExtension(ext_blend_min_max_);
   RegisterExtension(ext_color_buffer_half_float_);
@@ -185,8 +180,7 @@ void WebGLRenderingContext::RegisterContextExtensions() {
   RegisterExtension(ext_shader_texture_lod_);
   RegisterExtension(ext_texture_compression_bptc_);
   RegisterExtension(ext_texture_compression_rgtc_);
-  RegisterExtension(ext_texture_filter_anisotropic_, kApprovedExtension,
-                    kBothPrefixes);
+  RegisterExtension(ext_texture_filter_anisotropic_, kApprovedExtension);
   RegisterExtension(exts_rgb_);
   RegisterExtension(khr_parallel_shader_compile_);
   RegisterExtension(oes_element_index_uint_);
@@ -201,16 +195,14 @@ void WebGLRenderingContext::RegisterContextExtensions() {
   RegisterExtension(webgl_compressed_texture_astc_);
   RegisterExtension(webgl_compressed_texture_etc_);
   RegisterExtension(webgl_compressed_texture_etc1_);
-  RegisterExtension(webgl_compressed_texture_pvrtc_, kApprovedExtension,
-                    kBothPrefixes);
-  RegisterExtension(webgl_compressed_texture_s3tc_, kApprovedExtension,
-                    kBothPrefixes);
+  RegisterExtension(webgl_compressed_texture_pvrtc_, kApprovedExtension);
+  RegisterExtension(webgl_compressed_texture_s3tc_, kApprovedExtension);
   RegisterExtension(webgl_compressed_texture_s3tc_srgb_);
   RegisterExtension(webgl_debug_renderer_info_);
   RegisterExtension(webgl_debug_shaders_);
-  RegisterExtension(webgl_depth_texture_, kApprovedExtension, kBothPrefixes);
+  RegisterExtension(webgl_depth_texture_, kApprovedExtension);
   RegisterExtension(webgl_draw_buffers_);
-  RegisterExtension(webgl_lose_context_, kApprovedExtension, kBothPrefixes);
+  RegisterExtension(webgl_lose_context_, kApprovedExtension);
   RegisterExtension(webgl_multi_draw_);
   RegisterExtension(webgl_video_texture_, kDraftExtension);
   RegisterExtension(webgl_webcodecs_video_frame_, kDraftExtension);

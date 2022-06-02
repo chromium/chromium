@@ -513,7 +513,6 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'ANGLE_instanced_arrays',
           'EXT_blend_minmax',
           'EXT_texture_filter_anisotropic',
-          'WEBKIT_EXT_texture_filter_anisotropic',
           'OES_element_index_uint',
           'OES_standard_derivatives',
           'OES_texture_float',
@@ -524,10 +523,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'WEBGL_compressed_texture_etc1',
           'WEBGL_debug_renderer_info',
           'WEBGL_depth_texture',
-          'WEBKIT_WEBGL_depth_texture',
           'WEBGL_draw_buffers',
           'WEBGL_lose_context',
-          'WEBKIT_WEBGL_lose_context',
       ]
       tab = self.tab
       for ext in ext_list:

@@ -949,17 +949,15 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   class ExtensionTracker : public GarbageCollected<ExtensionTracker>,
                            public NameClient {
    public:
-    ExtensionTracker(ExtensionFlags flags, const char* const* prefixes)
+    explicit ExtensionTracker(ExtensionFlags flags)
         : draft_(flags & kDraftExtension),
-          developer_(flags & kDeveloperExtension),
-          prefixes_(prefixes) {}
+          developer_(flags & kDeveloperExtension) {}
     ~ExtensionTracker() override = default;
 
     bool Draft() const { return draft_; }
     bool Developer() const { return developer_; }
 
-    const char* const* Prefixes() const;
-    bool MatchesNameWithPrefixes(const String&) const;
+    bool MatchesName(const String&) const;
 
     virtual WebGLExtension* GetExtension(WebGLRenderingContextBase*) = 0;
     virtual bool Supported(WebGLRenderingContextBase*) const = 0;
@@ -977,17 +975,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
    private:
     bool draft_;
     bool developer_;
-    const char* const* prefixes_;
   };
 
   template <typename T>
   class TypedExtensionTracker final : public ExtensionTracker {
    public:
-    TypedExtensionTracker(Member<T>& extension_field,
-                          ExtensionFlags flags,
-                          const char* const* prefixes)
-        : ExtensionTracker(flags, prefixes),
-          extension_field_(extension_field) {}
+    TypedExtensionTracker(Member<T>& extension_field, ExtensionFlags flags)
+        : ExtensionTracker(flags), extension_field_(extension_field) {}
 
     WebGLExtension* GetExtension(WebGLRenderingContextBase* context) override {
       if (!extension_) {
@@ -1034,10 +1028,9 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   template <typename T>
   void RegisterExtension(Member<T>& extension_ptr,
-                         ExtensionFlags flags = kApprovedExtension,
-                         const char* const* prefixes = nullptr) {
-    extensions_.push_back(MakeGarbageCollected<TypedExtensionTracker<T>>(
-        extension_ptr, flags, prefixes));
+                         ExtensionFlags flags = kApprovedExtension) {
+    extensions_.push_back(
+        MakeGarbageCollected<TypedExtensionTracker<T>>(extension_ptr, flags));
   }
 
   bool ExtensionSupportedAndAllowed(const ExtensionTracker*);
