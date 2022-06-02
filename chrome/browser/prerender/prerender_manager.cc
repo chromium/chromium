@@ -365,6 +365,14 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
       return;
     }
 
+    // TODO(https://crbug.com/1329011): Metric for investigation. Remove this
+    // one after we get more than 30k records.
+    base::UmaHistogramBoolean(
+        "Prerender.Experimental.DefaultSearchEngine."
+        "SearchTermExtractorCorrectness",
+        IsSearchDestinationMatch(search_terms, *web_contents(),
+                                 match.destination_url));
+
     {
       // Undo the change. This information might be used during activation so
       // we should not change it.

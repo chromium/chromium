@@ -1437,6 +1437,18 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram
+    name="Prerender.Experimental.DefaultSearchEngine.SearchTermExtractorCorrectness"
+    enum="Boolean" expires_after="2022-07-27">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records whether the search terms obtained via the search_terms_args are the
+    same as the search terms extracted from the URLs. This is recorded when
+    PrerenderManager attempts to start a new prerender.
+  </summary>
+</histogram>
+
 <histogram name="Prerender.Experimental.PredictionStatus.DefaultSearchEngine"
     enum="PrerenderPredictionStatus" expires_after="2022-11-27">
   <owner>asamidoi@chromium.org</owner>
