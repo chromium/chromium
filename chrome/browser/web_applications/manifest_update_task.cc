@@ -312,6 +312,8 @@ void ManifestUpdateTask::OnDidGetInstallableData(
     return;
   }
 
+  CHECK(!web_contents()->IsBeingDestroyed());
+
   install_info_.emplace();
   UpdateWebAppInfoFromManifest(data.manifest, data.manifest_url,
                                &install_info_.value());

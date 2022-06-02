@@ -80,6 +80,7 @@ class WebAppIconDownloader : private content::WebContentsObserver {
   void DidUpdateFaviconURL(
       content::RenderFrameHost* rfh,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
+  void WebContentsDestroyed() override;
 
   void CompleteCallback();
   void CancelDownloads(IconsDownloadedResult result,

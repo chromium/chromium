@@ -766,6 +766,9 @@ void WebAppInstallTask::OnDidCheckForIntentToPlayStore(
     bool skip_page_favicons,
     const std::string& intent,
     bool should_intent_to_store) {
+  if (ShouldStopInstall())
+    return;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (should_intent_to_store && !intent.empty()) {
     auto* arc_service_manager = arc::ArcServiceManager::Get();
