@@ -221,7 +221,7 @@ class RecommendAppsElement extends RecommendAppsElementBase {
    * Handles Skip button click.
    */
   onSkip_() {
-    chrome.send('recommendAppsSkip');
+    this.userActed('recommendAppsSkip');
   }
 
   /**
@@ -234,15 +234,14 @@ class RecommendAppsElement extends RecommendAppsElementBase {
         // Can't use this.$.appsList here as the element is in a <dom-if>.
         const appsList = this.shadowRoot.querySelector('#appsList');
         const packageNames = appsList.getSelectedApps();
-        chrome.send('recommendAppsInstall', [packageNames]);
+        this.userActed(['recommendAppsInstall', packageNames]);
         return;
       }
       // Can't use this.$.appView here as the element is in a <dom-if>.
       const appListView = this.shadowRoot.querySelector('#appView');
-      appListView.executeScript(
-          {code: 'getSelectedPackages();'}, function(result) {
-            chrome.send('recommendAppsInstall', [result[0]]);
-          });
+      appListView.executeScript({code: 'getSelectedPackages();'}, (result) => {
+        this.userActed(['recommendAppsInstall', result[0]]);
+      });
     }
   }
 
