@@ -279,8 +279,6 @@
     <dimen name="custom_tabs_screenshot_height">300dp</dimen>
     <dimen name="custom_tabs_screenshot_width">190dp</dimen>
     <dimen name="custom_tabs_handle_height">16dp</dimen>
-    <dimen name="custom_tabs_elevation">8dp</dimen>
-    <dimen name="custom_tabs_shadow_offset">4dp</dimen>
     <dimen name="custom_tabs_default_corner_radius">16dp</dimen>
 
     <!-- Account chooser dialog dimensions -->

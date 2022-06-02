@@ -27,7 +27,6 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.ViewStub;
 import android.view.Window;
@@ -117,11 +116,7 @@ public class PartialCustomTabHeightStrategyTest {
     @Mock
     private View mToolbarView;
     @Mock
-    private View mToolbarCoordinator;
-    @Mock
     private FrameLayout mParentView;
-    @Mock
-    private ViewGroup mCoordinatorLayout;
 
     private List<WindowManager.LayoutParams> mAttributeResults;
     private DisplayMetrics mRealMetrics;
@@ -141,8 +136,6 @@ public class PartialCustomTabHeightStrategyTest {
         when(mActivity.getWindowManager()).thenReturn(mWindowManager);
         when(mActivity.findViewById(R.id.custom_tabs_handle_view_stub)).thenReturn(mHandleViewStub);
         when(mActivity.findViewById(R.id.custom_tabs_handle_view)).thenReturn(mHandleView);
-        when(mHandleView.getLayoutParams()).thenReturn(mLayoutParams);
-        when(mToolbarCoordinator.getLayoutParams()).thenReturn(mLayoutParams);
         mAttributes = new WindowManager.LayoutParams();
         when(mWindow.getAttributes()).thenReturn(mAttributes);
         when(mWindow.getDecorView()).thenReturn(mDecorView);
@@ -159,7 +152,6 @@ public class PartialCustomTabHeightStrategyTest {
         when(mSpinnerView.getParent()).thenReturn(mParentView);
         when(mSpinnerView.animate()).thenReturn(mViewAnimator);
         when(mParentView.getLayoutParams()).thenReturn(mLayoutParams);
-        when(mParentView.getParent()).thenReturn(mCoordinatorLayout);
 
         mParentViewSupplier.set(mParentView);
 
@@ -258,8 +250,7 @@ public class PartialCustomTabHeightStrategyTest {
         PartialCustomTabHeightStrategy strategy = new PartialCustomTabHeightStrategy(mActivity,
                 mParentViewSupplier, 500, mMultiWindowModeStateDispatcher, null, null,
                 mOnResizedCallback, mActivityLifecycleDispatcher);
-        strategy.setMockViewForTesting(
-                mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
+        strategy.setMockViewForTesting(mNavbar, mSpinnerView, mSpinner, mToolbarView);
 
         verifyWindowFlagsSet();
 
@@ -336,8 +327,7 @@ public class PartialCustomTabHeightStrategyTest {
         PartialCustomTabHeightStrategy strategy = new PartialCustomTabHeightStrategy(mActivity,
                 mParentViewSupplier, 800, mMultiWindowModeStateDispatcher, null, null,
                 mOnResizedCallback, mActivityLifecycleDispatcher);
-        strategy.setMockViewForTesting(
-                mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
+        strategy.setMockViewForTesting(mNavbar, mSpinnerView, mSpinner, mToolbarView);
 
         // Pass null because we have a mock Activity and we don't depend on the GestureDetector
         // inside as we test MotionEvents directly.
@@ -358,8 +348,7 @@ public class PartialCustomTabHeightStrategyTest {
         PartialCustomTabHeightStrategy strategy = new PartialCustomTabHeightStrategy(mActivity,
                 mParentViewSupplier, 800, mMultiWindowModeStateDispatcher, null, null,
                 mOnResizedCallback, mActivityLifecycleDispatcher);
-        strategy.setMockViewForTesting(
-                mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
+        strategy.setMockViewForTesting(mNavbar, mSpinnerView, mSpinner, mToolbarView);
 
         mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
         mRealMetrics.widthPixels = DEVICE_HEIGHT;
@@ -397,8 +386,7 @@ public class PartialCustomTabHeightStrategyTest {
         PartialCustomTabHeightStrategy strategy = new PartialCustomTabHeightStrategy(mActivity,
                 mParentViewSupplier, 500, mMultiWindowModeStateDispatcher, null, null,
                 mOnResizedCallback, mActivityLifecycleDispatcher);
-        strategy.setMockViewForTesting(
-                mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
+        strategy.setMockViewForTesting(mNavbar, mSpinnerView, mSpinner, mToolbarView);
 
         verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
         verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
@@ -438,8 +426,7 @@ public class PartialCustomTabHeightStrategyTest {
         PartialCustomTabHeightStrategy strategy = new PartialCustomTabHeightStrategy(mActivity,
                 mParentViewSupplier, 500, mMultiWindowModeStateDispatcher, null, null,
                 mOnResizedCallback, mActivityLifecycleDispatcher);
-        strategy.setMockViewForTesting(
-                mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
+        strategy.setMockViewForTesting(mNavbar, mSpinnerView, mSpinner, mToolbarView);
 
         verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
         verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
@@ -501,8 +488,7 @@ public class PartialCustomTabHeightStrategyTest {
         PartialCustomTabHeightStrategy strategy = new PartialCustomTabHeightStrategy(mActivity,
                 mParentViewSupplier, 500, mMultiWindowModeStateDispatcher, null, null,
                 mOnResizedCallback, mActivityLifecycleDispatcher);
-        strategy.setMockViewForTesting(
-                mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
+        strategy.setMockViewForTesting(mNavbar, mSpinnerView, mSpinner, mToolbarView);
 
         verifyWindowFlagsSet();
 
