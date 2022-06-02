@@ -1294,6 +1294,10 @@ void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
 }
 
 RenderFrameHostImpl* WebContentsImpl::GetMainFrame() {
+  return GetPrimaryMainFrame();
+}
+
+RenderFrameHostImpl* WebContentsImpl::GetPrimaryMainFrame() {
   return primary_frame_tree_.root()->current_frame_host();
 }
 

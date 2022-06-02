@@ -357,11 +357,13 @@ class WebContents : public PageNavigator,
   // WebContents' main frame.
   virtual const GURL& GetLastCommittedURL() = 0;
 
-  // Returns the main frame for the currently active view. Always non-null
-  // except during WebContents destruction. With MPArch, this returns the
-  // primary main frame. This WebContents may have additional main frames for
-  // prerendered pages, bfcached pages, etc.
+  // Deprecated. Use `GetPrimaryMainFrame` instead.
   virtual RenderFrameHost* GetMainFrame() = 0;
+
+  // Returns the primary main frame for the currently active page. Always
+  // non-null except during WebContents destruction. This WebContents may
+  // have additional main frames for prerendered pages, bfcached pages, etc.
+  virtual RenderFrameHost* GetPrimaryMainFrame() = 0;
 
   // Returns the current page in the primary frame tree of this WebContents.
   // If this WebContents is associated with an omnibox, usually the URL of the
