@@ -2727,6 +2727,9 @@ EVENT_TYPE(AUTH_HANDLER_CREATE_RESULT)
 // The END phase has the following parameters:
 //  {
 //       "succeeded": <bool indicating whether the initialization succeeded>
+//       "allows_default_credentials": whether the default credentials may be
+//                                     used for the `origin` passed into
+//                                    `InitFromChallenge`.
 //  }
 EVENT_TYPE(AUTH_HANDLER_INIT)
 
