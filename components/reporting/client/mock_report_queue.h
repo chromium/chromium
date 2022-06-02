@@ -23,6 +23,13 @@ class MockReportQueueStrict : public ReportQueue {
   MockReportQueueStrict();
   ~MockReportQueueStrict() override;
 
+  // Mock AddRecord with record producer.
+  // Rarely used, by default calls plain-text AddRecord.
+  MOCK_METHOD(void,
+              AddProducedRecord,
+              (RecordProducer, Priority, EnqueueCallback),
+              (const override));
+
   MOCK_METHOD(void,
               AddRecord,
               (std::string, Priority, EnqueueCallback),
@@ -35,6 +42,14 @@ class MockReportQueueStrict : public ReportQueue {
       PrepareToAttachActualQueue,
       (),
       (const override));
+
+ private:
+  // Helper method that executes |record_producer| and in case of success
+  // forwards the result to |AddRecord|. In case of failure passes Status to
+  // |callback|.
+  void ForwardProducedRecord(RecordProducer record_producer,
+                             Priority priority,
+                             EnqueueCallback callback);
 };
 
 // Most of the time no need to log uninterested calls.

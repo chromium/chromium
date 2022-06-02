@@ -104,6 +104,9 @@ namespace reporting {
 
 class ReportQueue {
  public:
+  // A callback to asynchronously generate data to be added to |Storage|.
+  using RecordProducer = base::OnceCallback<StatusOr<std::string>()>;
+
   // An EnqueueCallback is called on the completion of any |Enqueue| call.
   using EnqueueCallback = base::OnceCallback<void(Status)>;
 
@@ -152,10 +155,10 @@ class ReportQueue {
       void(StatusOr<std::unique_ptr<ReportQueue>>)>
   PrepareToAttachActualQueue() const = 0;
 
- protected:
-  virtual void AddRecord(std::string record,
-                         Priority priority,
-                         EnqueueCallback callback) const = 0;
+ private:
+  virtual void AddProducedRecord(RecordProducer record_producer,
+                                 Priority priority,
+                                 EnqueueCallback callback) const = 0;
 };
 
 }  // namespace reporting

@@ -53,24 +53,27 @@ ReportQueue::~ReportQueue() = default;
 void ReportQueue::Enqueue(std::string record,
                           Priority priority,
                           ReportQueue::EnqueueCallback callback) const {
-  AddRecord(std::move(record), priority, std::move(callback));
+  AddProducedRecord(base::BindOnce(
+                        [](std::string record) -> StatusOr<std::string> {
+                          return std::move(record);
+                        },
+                        std::move(record)),
+                    priority, std::move(callback));
 }
 
 void ReportQueue::Enqueue(base::Value::Dict record,
                           Priority priority,
                           ReportQueue::EnqueueCallback callback) const {
-  ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(std::string json_record, callback,
-                                     ValueToJson(std::move(record)));
-  AddRecord(json_record, priority, std::move(callback));
+  AddProducedRecord(base::BindOnce(&ValueToJson, std::move(record)), priority,
+                    std::move(callback));
 }
 
 void ReportQueue::Enqueue(
     std::unique_ptr<const google::protobuf::MessageLite> record,
     Priority priority,
     ReportQueue::EnqueueCallback callback) const {
-  ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(std::string protobuf_record, callback,
-                                     ProtoToString(std::move(record)));
-  AddRecord(protobuf_record, priority, std::move(callback));
+  AddProducedRecord(base::BindOnce(&ProtoToString, std::move(record)), priority,
+                    std::move(callback));
 }
 
 }  // namespace reporting

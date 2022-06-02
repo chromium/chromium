@@ -358,5 +358,74 @@ TEST_F(ReportQueueImplTest, FlushUninitializedSpeculativeReportQueue) {
   EXPECT_EQ(result.error_code(), error::FAILED_PRECONDITION);
 }
 
+TEST_F(ReportQueueImplTest, AsyncProcessingReportQueue) {
+  auto mock_queue = std::make_unique<MockReportQueue>();
+  EXPECT_CALL(*mock_queue, AddProducedRecord)
+      .Times(3)
+      .WillRepeatedly([](ReportQueue::RecordProducer record_producer,
+                         Priority event_priority,
+                         ReportQueue::EnqueueCallback cb) {
+        std::move(cb).Run(Status::StatusOK());
+      });
+
+  test::TestEvent<Status> a_string;
+  mock_queue->Enqueue(std::string(kTestMessage), priority_, a_string.cb());
+
+  test::TestEvent<Status> a_proto;
+  test::TestMessage test_message;
+  test_message.set_test(kTestMessage);
+  mock_queue->Enqueue(std::make_unique<test::TestMessage>(test_message),
+                      priority_, a_proto.cb());
+
+  test::TestEvent<Status> a_json;
+  constexpr char kTestKey[] = "TEST_KEY";
+  constexpr char kTestValue[] = "TEST_VALUE";
+  base::Value::Dict test_dict;
+  test_dict.Set(kTestKey, kTestValue);
+  mock_queue->Enqueue(std::move(test_dict), priority_, a_json.cb());
+
+  EXPECT_OK(a_string.result());
+  EXPECT_OK(a_proto.result());
+  EXPECT_OK(a_json.result());
+}
+
+TEST_F(ReportQueueImplTest, AsyncProcessingSpeculativeReportQueue) {
+  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+
+  test::TestEvent<Status> a_string;
+  speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
+                                    a_string.cb());
+
+  test::TestEvent<Status> a_proto;
+  test::TestMessage test_message;
+  test_message.set_test(kTestMessage);
+  speculative_report_queue->Enqueue(
+      std::make_unique<test::TestMessage>(test_message), priority_,
+      a_proto.cb());
+
+  test::TestEvent<Status> a_json;
+  constexpr char kTestKey[] = "TEST_KEY";
+  constexpr char kTestValue[] = "TEST_VALUE";
+  base::Value::Dict test_dict;
+  test_dict.Set(kTestKey, kTestValue);
+  speculative_report_queue->Enqueue(std::move(test_dict), priority_,
+                                    a_json.cb());
+
+  EXPECT_OK(a_string.result());
+  EXPECT_OK(a_proto.result());
+  EXPECT_OK(a_json.result());
+
+  auto mock_queue = std::make_unique<MockReportQueue>();
+  EXPECT_CALL(*mock_queue, AddProducedRecord)
+      .Times(3)
+      .WillRepeatedly([](ReportQueue::RecordProducer record_producer,
+                         Priority event_priority,
+                         ReportQueue::EnqueueCallback cb) {
+        std::move(cb).Run(Status::StatusOK());
+      });
+  speculative_report_queue->AttachActualQueue(std::move(mock_queue));
+  // Let everything ongoing to finish.
+  task_environment_.RunUntilIdle();
+}
 }  // namespace
 }  // namespace reporting

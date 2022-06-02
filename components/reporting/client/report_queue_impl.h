@@ -62,21 +62,12 @@ class ReportQueueImpl : public ReportQueue {
                   scoped_refptr<StorageModuleInterface> storage);
 
  private:
-  void AddRecord(std::string record,
-                 Priority priority,
-                 EnqueueCallback callback) const override;
+  void AddProducedRecord(RecordProducer record_producer,
+                         Priority priority,
+                         EnqueueCallback callback) const override;
 
-  void SendRecordToStorage(std::string record,
-                           Priority priority,
-                           EnqueueCallback callback) const;
-
-  [[nodiscard]] reporting::Record AugmentRecord(std::string record_data) const;
-
-  std::unique_ptr<ReportQueueConfiguration> config_;
-  scoped_refptr<StorageModuleInterface> storage_;
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  const std::unique_ptr<ReportQueueConfiguration> config_;
+  const scoped_refptr<StorageModuleInterface> storage_;
 };
 
 class SpeculativeReportQueueImpl : public ReportQueue {
@@ -100,14 +91,13 @@ class SpeculativeReportQueueImpl : public ReportQueue {
   // Initiates processesing of all pending records.
   void AttachActualQueue(std::unique_ptr<ReportQueue> actual_queue);
 
- protected:
-  // Forwards |AddRecord| to |ReportQueue|, if already created.
-  // Records the record internally otherwise.
-  void AddRecord(std::string record,
-                 Priority priority,
-                 EnqueueCallback callback) const override;
-
  private:
+  // Forwards |AddProducedRecord| to |ReportQueue|, if already created.
+  // Records the record internally otherwise.
+  void AddProducedRecord(RecordProducer record_producer,
+                         Priority priority,
+                         EnqueueCallback callback) const override;
+
   // Private constructor, used by the factory method  only.
   explicit SpeculativeReportQueueImpl(
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
@@ -117,9 +107,9 @@ class SpeculativeReportQueueImpl : public ReportQueue {
 
   // Optionally enqueues |record| (owned) to actual queue, if ready.
   // Otherwise adds it to the end of |pending_records_|.
-  void MaybeEnqueueRecord(std::string record,
-                          Priority priority,
-                          EnqueueCallback callback) const;
+  void MaybeEnqueueRecord(Priority priority,
+                          EnqueueCallback callback,
+                          StatusOr<std::string> record) const;
 
   // Task runner that protects |report_queue_| and |pending_records_|
   // and allows to synchronize the initialization.
@@ -127,12 +117,13 @@ class SpeculativeReportQueueImpl : public ReportQueue {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Actual |ReportQueue|, once created.
-  std::unique_ptr<ReportQueue> report_queue_;
+  std::unique_ptr<ReportQueue> report_queue_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Queue of the pending records, collected before actual queue has been
   // created. Declared 'mutable', because it is accessed by 'const' methods.
   mutable std::queue<std::pair<std::string /*record*/, Priority /*priority*/>>
-      pending_records_;
+      pending_records_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Weak pointer factory.
   base::WeakPtrFactory<SpeculativeReportQueueImpl> weak_ptr_factory_{this};
