@@ -207,6 +207,7 @@ MEDIA_EXPORT extern const base::Feature kUseR16Texture;
 #if BUILDFLAG(IS_LINUX)
 MEDIA_EXPORT extern const base::Feature kVaapiVideoDecodeLinux;
 MEDIA_EXPORT extern const base::Feature kVaapiVideoEncodeLinux;
+MEDIA_EXPORT extern const base::Feature kVaapiIgnoreDriverChecks;
 #endif  // BUILDFLAG(IS_LINUX)
 MEDIA_EXPORT extern const base::Feature kVaapiAV1Decoder;
 MEDIA_EXPORT extern const base::Feature kVaapiLowPowerEncoderGen9x;

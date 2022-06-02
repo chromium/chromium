@@ -515,6 +515,12 @@ const base::Feature kVaapiVideoDecodeLinux{"VaapiVideoDecoder",
 
 const base::Feature kVaapiVideoEncodeLinux{"VaapiVideoEncoder",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Ignore the non-intel driver blacklist for VaapiVideoDecoder implementations.
+// Intended for manual usage only in order to gague the status of newer driver
+// implementations.
+const base::Feature kVaapiIgnoreDriverChecks{"VaapiIgnoreDriverChecks",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Enable VA-API hardware decode acceleration for AV1.

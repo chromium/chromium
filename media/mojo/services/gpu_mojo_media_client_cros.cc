@@ -91,6 +91,8 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
           // NVIDIA drivers have a broken implementation of most va_* methods,
           // ARM & AMD aren't tested yet, and ImgTec/Qualcomm don't have a vaapi
           // driver.
+          if (base::FeatureList::IsEnabled(kVaapiIgnoreDriverChecks))
+            return VideoDecoderType::kVaapi;
           return VideoDecoderType::kUnknown;
         }
       }
