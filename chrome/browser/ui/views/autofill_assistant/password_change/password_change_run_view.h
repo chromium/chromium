@@ -14,7 +14,6 @@
 
 namespace views {
 class ImageView;
-class Label;
 }  // namespace views
 
 class PasswordChangeRunController;
@@ -26,6 +25,20 @@ class PasswordChangeRunView : public views::View,
                               public PasswordChangeRunDisplay {
  public:
   METADATA_HEADER(PasswordChangeRunView);
+
+  // IDs that identify a view within the dialog that was used in browsertests.
+  enum class ChildrenViewsIds : int {
+    none = 0,
+
+    kTitleContainer,
+    kTitle,
+    kSuggestedPassword,
+
+    kBody,
+    kLineSeparator,
+    kDescription
+  };
+
   PasswordChangeRunView(base::WeakPtr<PasswordChangeRunController> controller,
                         raw_ptr<AssistantDisplayDelegate> display_delegate);
   ~PasswordChangeRunView() override;
@@ -63,10 +76,10 @@ class PasswordChangeRunView : public views::View,
   raw_ptr<AssistantDisplayDelegate> display_delegate_;
 
   raw_ptr<views::ImageView> top_icon_ = nullptr;
-  raw_ptr<views::Label> title_ = nullptr;
-  raw_ptr<views::Label> description_ = nullptr;
-  // The body is used to render stuff under the title and description, i.e
-  // prompts.
+  raw_ptr<views::View> title_container_ = nullptr;
+
+  // The body is used to render stuff under the title, i.e
+  // prompts and descriptions.
   raw_ptr<views::View> body_ = nullptr;
 
   // Factory for weak pointers to this view.

@@ -16,7 +16,9 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 
@@ -57,17 +59,22 @@ void PasswordChangeRunView::CreateView() {
           views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
   top_icon_ = AddChildView(views::Builder<views::ImageView>().Build());
+  title_container_ = AddChildView(
+      views::Builder<views::View>()
+          .SetID(static_cast<int>(ChildrenViewsIds::kTitleContainer))
+          .SetLayoutManager(std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kVertical))
+          .Build());
 
-  // TODO(crbug.com/1322419): Adjust style (multiline, font style, etc.)
-  title_ = AddChildView(std::make_unique<views::Label>());
-
-  // TODO(crbug.com/1322419): Add and initialize progress bar.
-
-  // TODO(crbug.com/1322419): Adjust style (multiline, font style, etc.)
-  description_ = AddChildView(std::make_unique<views::Label>());
-
-  // TODO(crbug.com/1322419): Add appropriate layout manager.
-  body_ = AddChildView(std::make_unique<views::View>());
+  body_ = AddChildView(views::Builder<views::View>()
+                           .SetID(static_cast<int>(ChildrenViewsIds::kBody))
+                           .Build());
+  auto* body_layout_manager =
+      body_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  body_layout_manager->set_between_child_spacing(
+      views::LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 }
 
 void PasswordChangeRunView::SetTopIcon(
@@ -77,12 +84,32 @@ void PasswordChangeRunView::SetTopIcon(
       GetApcTopIconFromEnum(top_icon), kTopIconSize, gfx::kPlaceholderColor));
 }
 
-// TODO(crbug.com/1322419): Implement set methods.
-void PasswordChangeRunView::SetTitle(const std::u16string& body_title) {}
-
-void PasswordChangeRunView::SetDescription(
-    const std::u16string& progress_description) {}
-
+void PasswordChangeRunView::SetTitle(const std::u16string& title) {
+  title_container_->RemoveAllChildViews();
+  title_container_->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(title)
+          .SetMultiLine(true)
+          .SetTextStyle(views::style::STYLE_PRIMARY)
+          .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+          .SetID(static_cast<int>(ChildrenViewsIds::kTitle))
+          .Build());
+}
+void PasswordChangeRunView::SetDescription(const std::u16string& description) {
+  body_->RemoveAllChildViews();
+  if (description.empty()) {
+    return;
+  }
+  body_->AddChildView(std::make_unique<views::Separator>());
+  body_->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(description)
+          .SetMultiLine(true)
+          .SetTextStyle(views::style::STYLE_SECONDARY)
+          .SetTextContext(views::style::CONTEXT_LABEL)
+          .SetID(static_cast<int>(ChildrenViewsIds::kDescription))
+          .Build());
+}
 void PasswordChangeRunView::SetProgressBarStep(
     autofill_assistant::password_change::ProgressStep progress_step) {}
 
