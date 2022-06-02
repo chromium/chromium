@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/at_exit.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "media/base/media_switches.h"
@@ -158,11 +157,6 @@ DEFINE_TEXT_PROTO_FUZZER(
 
   // Request a full GC upon returning.
   auto scoped_gc = MakeScopedGarbageCollectionRequest();
-
-  // The platform audio encoder and some Image related classes that use
-  // base::Singleton will expect this to exist for registering exit
-  // callbacks (e.g. DarkModeImageClassifier).
-  base::AtExitManager exit_manager;
 
 #if HAS_AAC_ENCODER
   base::test::ScopedFeatureList platform_aac(media::kPlatformAudioEncoder);

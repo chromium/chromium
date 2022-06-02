@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/at_exit.h"
 #include "base/run_loop.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -41,10 +40,6 @@ DEFINE_TEXT_PROTO_FUZZER(
 
   // Request a full GC upon returning.
   auto scoped_gc = MakeScopedGarbageCollectionRequest();
-
-  // Some Image related classes that use base::Singleton will expect this to
-  // exist for registering exit callbacks (e.g. DarkModeImageClassifier).
-  base::AtExitManager exit_manager;
 
   //
   // NOTE: GC objects that need to survive iterations of the loop below
