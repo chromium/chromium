@@ -54,21 +54,6 @@ enum class ActionType {
   kMove,
 };
 
-// Edit states related to the mouse input and focus for |ActionLabel|.
-enum class EditState {
-  kNone,
-  // Default edit state when no mouse hovers or no focus.
-  kEditDefault,
-  // Edit state when the mouse hovers. This can be overridden by |kEditFocus|.
-  kEditHover,
-  // Edit state when the |ActionLabel| is focused.
-  kEditFocus,
-  // Edit state when a wrong/unsupported input tries to bind.
-  kEditError,
-  // Edit state when a input binding is removed.
-  kEditUnbind,
-};
-
 }  // namespace input_overlay
 }  // namespace arc
 

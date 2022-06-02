@@ -22,13 +22,11 @@ namespace input_overlay {
 namespace {
 // UI specs.
 constexpr int kSideInset = 6;
-constexpr gfx::Size kMinimumSmallSize(32, 32);
-constexpr gfx::Size kMinimumLargeSize(48, 48);
+constexpr gfx::Size kLabelSize(32, 32);
 constexpr int kCornerRadiusView = 6;
 constexpr int kIconSize = 20;
 constexpr char kFontSytle[] = "Google Sans";
-constexpr int kSmallFontSize = 16;
-constexpr int kLargeFontSize = 20;
+constexpr int kFontSize = 16;
 
 // About colors.
 constexpr SkColor kViewModeBgColor = SkColorSetA(SK_ColorGRAY, 0x99);
@@ -222,16 +220,7 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
 
 gfx::Size ActionLabel::CalculatePreferredSize() const {
   auto size = LabelButton::CalculatePreferredSize();
-  switch (edit_state_) {
-    case EditState::kNone:
-    case EditState::kEditDefault:
-    case EditState::kEditUnbind:
-      size.SetToMax(kMinimumSmallSize);
-      break;
-    default:
-      size.SetToMax(kMinimumLargeSize);
-      break;
-  }
+  size.SetToMax(kLabelSize);
   return size;
 }
 
@@ -280,8 +269,8 @@ bool ActionLabel::ClearFocus() {
 void ActionLabel::SetToViewMode() {
   ClearFocus();
   SetInstallFocusRingOnFocus(false);
-  label()->SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL,
-                                     kSmallFontSize, gfx::Font::Weight::BOLD));
+  label()->SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL, kFontSize,
+                                     gfx::Font::Weight::BOLD));
   SetEnabledTextColors(kViewTextColor);
 
   if (mouse_action_ != MouseAction::NONE) {
@@ -327,38 +316,31 @@ void ActionLabel::SetToEditMode() {
 }
 
 void ActionLabel::SetToEditDefault() {
-  edit_state_ = EditState::kEditDefault;
-  label()->SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL,
-                                     kSmallFontSize, gfx::Font::Weight::BOLD));
-  SetPreferredSize(CalculatePreferredSize());
+  label()->SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL, kFontSize,
+                                     gfx::Font::Weight::BOLD));
+  views::FocusRing::Get(this)->SetColor(absl::nullopt);
   SetBackground(
       views::CreateRoundedRectBackground(kEditModeBgColor, kCornerRadiusView));
 }
 
 void ActionLabel::SetToEditHover() {
-  edit_state_ = EditState::kEditHover;
-  auto* focus_ring = views::FocusRing::Get(this);
-  focus_ring->SetColor(kFocusRingGreyColor);
-  SetPreferredSize(CalculatePreferredSize());
+  views::FocusRing::Get(this)->SetColor(kFocusRingGreyColor);
 }
 
 void ActionLabel::SetToEditFocus() {
-  edit_state_ = EditState::kEditFocus;
   views::FocusRing::Get(this)->SetColor(kFocusRingBlueColor);
-  label()->SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL,
-                                     kLargeFontSize, gfx::Font::Weight::BOLD));
+  label()->SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL, kFontSize,
+                                     gfx::Font::Weight::BOLD));
   SetPreferredSize(CalculatePreferredSize());
   SetBackground(
       views::CreateRoundedRectBackground(kEditModeBgColor, kCornerRadiusView));
 }
 
 void ActionLabel::SetToEditError() {
-  edit_state_ = EditState::kEditError;
   views::FocusRing::Get(this)->SetColor(kFocusRingRedColor);
 }
 
 void ActionLabel::SetToEditUnBind() {
-  edit_state_ = EditState::kEditUnbind;
   SetPreferredSize(CalculatePreferredSize());
   SetBackground(views::CreateRoundedRectBackground(kEditedUnboundBgColor,
                                                    kCornerRadiusView));

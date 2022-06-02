@@ -67,7 +67,6 @@ class ActionLabel : public views::LabelButton {
   void SetToEditUnBind();
 
   MouseAction mouse_action_ = MouseAction::NONE;
-  EditState edit_state_ = EditState::kNone;
 };
 }  // namespace input_overlay
 }  // namespace arc
