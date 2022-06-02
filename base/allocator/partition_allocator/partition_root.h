@@ -1391,7 +1391,8 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
   // direct-mapped allocations are uncommon.
   if (PA_LIKELY(flags.with_thread_cache &&
                 !IsDirectMappedBucket(slot_span->bucket))) {
-    size_t bucket_index = slot_span->bucket - this->buckets;
+    size_t bucket_index =
+        static_cast<size_t>(slot_span->bucket - this->buckets);
     auto* thread_cache = ThreadCache::Get();
     if (PA_LIKELY(ThreadCache::IsValid(thread_cache) &&
                   thread_cache->MaybePutInCache(slot_start, bucket_index))) {
@@ -1615,8 +1616,7 @@ PA_ALWAYS_INLINE uint16_t PartitionRoot<thread_safe>::SizeToBucketIndex(
     bool with_denser_bucket_distribution) {
   if (with_denser_bucket_distribution)
     return internal::BucketIndexLookup::GetIndexForDenserBuckets(size);
-  else
-    return internal::BucketIndexLookup::GetIndex(size);
+  return internal::BucketIndexLookup::GetIndex(size);
 }
 
 template <bool thread_safe>
@@ -1923,7 +1923,7 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocWithFlags(
       // size.
       raw_size =
           static_cast<size_t>(1)
-          << (sizeof(size_t) * 8 -
+          << (int{sizeof(size_t) * 8} -
               partition_alloc::internal::base::bits::CountLeadingZeroBits(
                   raw_size - 1));
     }

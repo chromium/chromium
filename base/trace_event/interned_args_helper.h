@@ -38,7 +38,7 @@ struct BASE_EXPORT TraceSourceLocation {
   explicit TraceSourceLocation(const base::Location& location)
       : function_name(location.function_name()),
         file_name(location.file_name()),
-        line_number(location.line_number()) {}
+        line_number(static_cast<size_t>(location.line_number())) {}
 
   bool operator==(const TraceSourceLocation& other) const {
     return file_name == other.file_name &&
