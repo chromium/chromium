@@ -40,7 +40,7 @@ class ThreadPoolTestHelpers;
 // The thread pool doesn't create threads until Start() is called. Tasks can
 // be posted at any time but will not run until after Start() is called.
 //
-// The instance methods of this class are thread-safe.
+// The instance methods of this class are thread-safe unless otherwise noted.
 //
 // Note: All thread pool users should go through base/task/thread_pool.h instead
 // of this interface except for the one callsite per process which manages the
@@ -142,7 +142,7 @@ class BASE_EXPORT ThreadPoolInstance {
   // - CONTINUE_ON_SHUTDOWN tasks might still be running.
   // Note that an implementation can keep threads and other resources alive to
   // support running CONTINUE_ON_SHUTDOWN after this returns. This can only be
-  // called once.
+  // called once. Must be called on the same sequence as Start().
   virtual void Shutdown() = 0;
 
   // Waits until there are no pending undelayed tasks. May be called in tests
@@ -190,7 +190,8 @@ class BASE_EXPORT ThreadPoolInstance {
   static void CreateAndStartWithDefaultParams(StringPiece name);
 
   // Same as CreateAndStartWithDefaultParams() but allows callers to split the
-  // Create() and StartWithDefaultParams() calls.
+  // Create() and StartWithDefaultParams() calls. Start() is called by this
+  // method; it is invalid to call it again afterwards.
   void StartWithDefaultParams();
 #endif  // !BUILDFLAG(IS_NACL)
 
@@ -247,7 +248,7 @@ class BASE_EXPORT ThreadPoolInstance {
   // manager was already running prior to launching full chrome. BeginFence
   // does not wait for ongoing tasks as those pertain to the previous phase and
   // cannot interfere with the upcoming "single-threaded" initialization
-  // phase.
+  // phase. These methods must be called from the same sequence as Start().
   virtual void BeginFence() = 0;
   virtual void EndFence() = 0;
   virtual void BeginBestEffortFence() = 0;

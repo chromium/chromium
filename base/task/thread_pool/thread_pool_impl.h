@@ -28,6 +28,7 @@
 #include "base/task/thread_pool/thread_group_impl.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/task/updateable_sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -39,7 +40,8 @@ namespace base {
 
 namespace internal {
 
-// Default ThreadPoolInstance implementation. This class is thread-safe.
+// Default ThreadPoolInstance implementation. This class is thread-safe, except
+// for methods noted otherwise in thread_pool_instance.h.
 class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
                                    public TaskExecutor,
                                    public ThreadGroup::Delegate,
@@ -153,18 +155,16 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   // which can race with its initialization.
   std::atomic<TimeDelta> task_leeway_{PendingTask::kDefaultLeeway};
 
-  // Whether this TaskScheduler was started. Access controlled by
-  // |sequence_checker_|.
-  bool started_ = false;
+  // Whether this TaskScheduler was started.
+  bool started_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // Whether the --disable-best-effort-tasks switch is preventing execution of
   // BEST_EFFORT tasks until shutdown.
   const bool has_disable_best_effort_switch_;
 
   // Number of fences preventing execution of tasks of any/BEST_EFFORT priority.
-  // Access controlled by |sequence_checker_|.
-  int num_fences_ = 0;
-  int num_best_effort_fences_ = 0;
+  int num_fences_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  int num_best_effort_fences_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
 #if DCHECK_IS_ON()
   // Set once JoinForTesting() has returned.
