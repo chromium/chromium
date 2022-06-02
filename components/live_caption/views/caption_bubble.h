@@ -158,6 +158,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void OnInactivityTimeout();
 
   void MediaFoundationErrorCheckboxPressed();
+  bool HasMediaFoundationError();
 
   // Unowned. Owned by views hierarchy.
   raw_ptr<CaptionBubbleLabel> label_;

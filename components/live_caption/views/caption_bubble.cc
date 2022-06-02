@@ -993,9 +993,7 @@ void CaptionBubble::UpdateContentSize() {
 #if BUILDFLAG(IS_WIN)
   // The Media Foundation renderer error message should not scale with the
   // user's caption style preference.
-  if (model_ && model_->HasError() &&
-      model_->ErrorType() ==
-          CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED) {
+  if (HasMediaFoundationError()) {
     width = kMaxWidthDip;
     content_height =
         media_foundation_renderer_error_message_->GetPreferredSize().height();
@@ -1070,6 +1068,9 @@ void CaptionBubble::Hide() {
 }
 
 void CaptionBubble::OnInactivityTimeout() {
+  if (HasMediaFoundationError())
+    return;
+
   Hide();
 
   // Clear the partial and final text in the caption bubble model and the label.
@@ -1089,6 +1090,12 @@ void CaptionBubble::MediaFoundationErrorCheckboxPressed() {
       CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED,
       media_foundation_renderer_error_checkbox_->GetChecked());
 #endif
+}
+
+bool CaptionBubble::HasMediaFoundationError() {
+  return (model_ && model_->HasError() &&
+          model_->ErrorType() ==
+              CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED);
 }
 
 bool CaptionBubble::HasActivity() {
