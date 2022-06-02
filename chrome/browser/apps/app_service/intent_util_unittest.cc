@@ -41,6 +41,7 @@
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
+#include "net/base/filename_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -987,13 +988,14 @@ class IntentUtilsFileTest : public ::testing::Test {
   TestingProfile* profile_;
 };
 
-TEST_F(IntentUtilsFileTest, AppServiceIntentToCrosapi) {
+TEST_F(IntentUtilsFileTest, ConvertFileSystemScheme) {
   auto app_service_intent = apps::mojom::Intent::New();
   app_service_intent->action = "action";
   app_service_intent->mime_type = "*/*";
   const std::string path = "Documents/foo.txt";
   const std::string mime_type = "text/plain";
   auto url = ToGURL(base::FilePath(storage::kTestDir), path);
+  EXPECT_TRUE(url.SchemeIsFileSystem());
   app_service_intent->files = std::vector<apps::mojom::IntentFilePtr>{};
   auto file = apps::mojom::IntentFile::New();
   file->url = url;
@@ -1006,6 +1008,29 @@ TEST_F(IntentUtilsFileTest, AppServiceIntentToCrosapi) {
   ASSERT_TRUE(crosapi_intent->files.has_value());
   ASSERT_EQ(crosapi_intent->files.value().size(), 1U);
   EXPECT_EQ(crosapi_intent->files.value()[0]->file_path, base::FilePath(path));
+  EXPECT_EQ(crosapi_intent->files.value()[0]->mime_type, mime_type);
+}
+
+TEST_F(IntentUtilsFileTest, ConvertFileScheme) {
+  auto app_service_intent = apps::mojom::Intent::New();
+  app_service_intent->action = "action";
+  app_service_intent->mime_type = "*/*";
+  base::FilePath path("/path/to/document.txt");
+  const std::string mime_type = "text/plain";
+  auto url = net::FilePathToFileURL(path);
+  EXPECT_TRUE(url.SchemeIsFile());
+  app_service_intent->files = std::vector<apps::mojom::IntentFilePtr>{};
+  auto file = apps::mojom::IntentFile::New();
+  file->url = url;
+  file->mime_type = mime_type;
+  app_service_intent->files->push_back(std::move(file));
+  auto crosapi_intent = apps_util::ConvertAppServiceToCrosapiIntent(
+      app_service_intent, GetProfile());
+  EXPECT_EQ(app_service_intent->action, crosapi_intent->action);
+  EXPECT_EQ(app_service_intent->mime_type, crosapi_intent->mime_type);
+  ASSERT_TRUE(crosapi_intent->files.has_value());
+  ASSERT_EQ(crosapi_intent->files.value().size(), 1U);
+  EXPECT_EQ(crosapi_intent->files.value()[0]->file_path, path);
   EXPECT_EQ(crosapi_intent->files.value()[0]->mime_type, mime_type);
 }
 

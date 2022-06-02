@@ -47,6 +47,7 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/intent_filter.h"
+#include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #endif
 
@@ -936,12 +937,19 @@ crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
   if (app_service_intent->files.has_value() && profile) {
     std::vector<crosapi::mojom::IntentFilePtr> crosapi_files;
     for (const auto& file : app_service_intent->files.value()) {
-      auto file_system_url = apps::GetFileSystemURL(profile, file->url);
-      if (file_system_url.is_valid()) {
+      if (file->url.SchemeIsFile()) {
         auto crosapi_file = crosapi::mojom::IntentFile::New();
-        crosapi_file->file_path = file_system_url.path();
+        net::FileURLToFilePath(file->url, &crosapi_file->file_path);
         crosapi_file->mime_type = file->mime_type;
         crosapi_files.push_back(std::move(crosapi_file));
+      } else if (file->url.SchemeIsFileSystem()) {
+        auto file_system_url = apps::GetFileSystemURL(profile, file->url);
+        if (file_system_url.is_valid()) {
+          auto crosapi_file = crosapi::mojom::IntentFile::New();
+          crosapi_file->file_path = file_system_url.path();
+          crosapi_file->mime_type = file->mime_type;
+          crosapi_files.push_back(std::move(crosapi_file));
+        }
       }
     }
     crosapi_intent->files = std::move(crosapi_files);
