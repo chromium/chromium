@@ -452,7 +452,8 @@ std::vector<AppId> WebAppRegistrar::GetAppsFromSyncAndPendingInstallation()
   AppSet apps_in_sync_install = AppSet(
       this,
       [](const WebApp& web_app) {
-        return web_app.is_from_sync_and_pending_installation();
+        return WebAppSourceSupported(web_app) &&
+               web_app.is_from_sync_and_pending_installation();
       },
       /*empty=*/registry_profile_being_deleted_);
 
@@ -922,6 +923,7 @@ WebAppRegistrar::AppSet::AppSet(const WebAppRegistrar* registrar,
       mutations_count_(registrar->mutations_count_)
 #endif
 {
+  DCHECK(filter);
 }
 
 WebAppRegistrar::AppSet::~AppSet() {
@@ -955,7 +957,10 @@ WebAppRegistrar::AppSet::const_iterator WebAppRegistrar::AppSet::end() const {
 }
 
 WebAppRegistrar::AppSet WebAppRegistrar::GetAppsIncludingStubs() const {
-  return AppSet(this, nullptr, /*empty=*/registry_profile_being_deleted_);
+  return AppSet(
+      this,
+      [](const WebApp& web_app) { return WebAppSourceSupported(web_app); },
+      /*empty=*/registry_profile_being_deleted_);
 }
 
 WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
@@ -999,7 +1004,10 @@ WebAppRegistrar::AppSet WebAppRegistrarMutable::FilterAppsMutableForTesting(
 }
 
 WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsIncludingStubsMutable() {
-  return AppSet(this, nullptr, /*empty=*/registry_profile_being_deleted_);
+  return AppSet(
+      this,
+      [](const WebApp& web_app) { return WebAppSourceSupported(web_app); },
+      /*empty=*/registry_profile_being_deleted_);
 }
 
 WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsMutable() {

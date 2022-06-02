@@ -384,9 +384,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
      private:
       void FilterAndSkipApps() {
-        if (!filter_)
-          return;
-
         while (internal_iter_ != internal_end_ && !filter_(**this))
           ++internal_iter_;
       }
