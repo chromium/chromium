@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "url/gurl.h"
 
 namespace {
@@ -45,12 +46,19 @@ bool IsUsernameAlreadyUsed(SavedPasswordsView all_forms,
   return base::ranges::any_of(all_forms, has_conflicting_username);
 }
 
-// Returns trues if there is at least one password store that contains both
-// passwords.
-constexpr bool ShareSameStore(const password_manager::PasswordForm& lhs,
-                              const password_manager::PasswordForm& rhs) {
-  return (lhs.in_store & rhs.in_store) != Store::kNotSet;
+password_manager::PasswordForm GenerateFormFromCredential(
+    password_manager::CredentialUIEntry credential) {
+  password_manager::PasswordForm form;
+  form.url = credential.url;
+  form.signon_realm = credential.signon_realm;
+  form.username_value = credential.username;
+  form.password_value = credential.password;
+  form.notes = credential.notes;
+  DCHECK(!credential.stored_in.empty());
+  form.in_store = *credential.stored_in.begin();
+  return form;
 }
+
 }  // namespace
 
 namespace password_manager {
@@ -82,13 +90,18 @@ void SavedPasswordsPresenter::Init() {
 }
 
 void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
-  std::string current_form_key = CreateSortKey(form, IgnoreStore(true));
-  const auto range = sort_key_to_password_forms_.equal_range(current_form_key);
+  RemoveCredential(CredentialUIEntry(form));
+}
+
+void SavedPasswordsPresenter::RemoveCredential(
+    const CredentialUIEntry& credential) {
+  const auto range =
+      sort_key_to_password_forms_.equal_range(credential.key().value());
 
   std::for_each(range.first, range.second, [&](const auto& pair) {
     const auto& current_form = pair.second;
     // Make sure |form| and |current_form| share the same store.
-    if (ShareSameStore(form, current_form)) {
+    if (credential.stored_in.contains(current_form.in_store)) {
       // |current_form| is unchanged result obtained from
       // 'OnGetPasswordStoreResultsFrom'. So it can be present only in one store
       // at a time..
@@ -98,25 +111,36 @@ void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
 }
 
 bool SavedPasswordsPresenter::AddPassword(const PasswordForm& form) {
-  if (!password_manager_util::IsValidPasswordURL(form.url))
+  return AddCredential(CredentialUIEntry(form));
+}
+
+bool SavedPasswordsPresenter::AddCredential(
+    const CredentialUIEntry& credential) {
+  if (!password_manager_util::IsValidPasswordURL(credential.url))
     return false;
-  if (form.password_value.empty())
+  if (credential.password.empty())
     return false;
 
-  auto have_equal_username_and_realm = [&form](const PasswordForm& entry) {
-    return form.signon_realm == entry.signon_realm &&
-           form.username_value == entry.username_value;
-  };
+  auto have_equal_username_and_realm =
+      [&credential](const PasswordForm& entry) {
+        return credential.signon_realm == entry.signon_realm &&
+               credential.username == entry.username_value;
+      };
   if (base::ranges::any_of(passwords_, have_equal_username_and_realm))
     return false;
 
   // Try to unblocklist in both stores anyway because if credentials don't
   // exist, the unblocklist operation is no-op.
-  auto form_digest = PasswordFormDigest(PasswordForm::Scheme::kHtml,
-                                        form.signon_realm, form.url);
+  auto form_digest = PasswordFormDigest(
+      PasswordForm::Scheme::kHtml, credential.signon_realm, credential.url);
   profile_store_->Unblocklist(form_digest);
   if (account_store_)
     account_store_->Unblocklist(form_digest);
+
+  PasswordForm form = GenerateFormFromCredential(credential);
+  form.type = password_manager::PasswordForm::Type::kManuallyAdded;
+  form.date_created = base::Time::Now();
+  form.date_password_modified = base::Time::Now();
 
   GetStoreFor(form).AddLogin(form);
   metrics_util::LogUserInteractionsWhenAddingCredentialFromSettings(
@@ -159,6 +183,20 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
                           std::back_inserter(forms_to_change),
                           [](const auto& pair) { return pair.second; });
   return EditSavedPasswords(forms_to_change, new_username, new_password);
+}
+
+bool SavedPasswordsPresenter::EditSavedCredentials(
+    const CredentialUIEntry& credential) {
+  const auto range =
+      sort_key_to_password_forms_.equal_range(credential.key().value());
+  std::vector<PasswordForm> forms_to_change;
+  base::ranges::transform(range.first, range.second,
+                          std::back_inserter(forms_to_change),
+                          [](const auto& pair) { return pair.second; });
+  std::u16string new_note =
+      credential.notes.empty() ? u"" : credential.notes[0].value;
+  return EditSavedPasswords(forms_to_change, credential.username,
+                            credential.password, new_note);
 }
 
 bool SavedPasswordsPresenter::EditSavedPasswords(
@@ -252,6 +290,17 @@ std::vector<PasswordForm> SavedPasswordsPresenter::GetUniquePasswordForms()
   }
 
   return forms;
+}
+
+std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedCredentials()
+    const {
+  std::vector<PasswordForm> forms = GetUniquePasswordForms();
+  std::vector<CredentialUIEntry> credentials;
+  credentials.reserve(forms.size());
+  base::ranges::transform(
+      forms, std::back_inserter(credentials),
+      [](const PasswordForm& form) { return CredentialUIEntry(form); });
+  return credentials;
 }
 
 std::vector<std::u16string> SavedPasswordsPresenter::GetUsernamesForRealm(

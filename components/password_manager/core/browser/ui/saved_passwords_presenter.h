@@ -19,6 +19,7 @@
 namespace password_manager {
 
 struct PasswordForm;
+struct CredentialUIEntry;
 
 // This interface provides a way for clients to obtain a list of all saved
 // passwords and register themselves as observers for changes. In contrast to
@@ -66,25 +67,31 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void Init();
 
   // Removes the credential and all its duplicates from the store.
+  // TODO(crbug.com/1330906): Remove in favor of EditSavedCredentials.
   void RemovePassword(const PasswordForm& form);
+  void RemoveCredential(const CredentialUIEntry& credential);
 
   // Adds the credential to the store specified in the |form|. Returns true
   // if the password was added, false if |form|'s data is not valid (invalid
   // url/empty password), or an entry with such signon_realm and username
   // already exists in any (profile or account) store.
+  // TODO(crbug.com/1330906): Remove in favor of EditSavedCredentials.
   bool AddPassword(const PasswordForm& form);
+  bool AddCredential(const CredentialUIEntry& credential);
 
   // Tries to edit |password|. After checking whether |form| is present in
   // |passwords_|, this will ask the password store to change the underlying
   // password_value to |new_password| in case it was found. This will also
   // notify clients that an edit event happened in case |form| was present
   // in |passwords_|.
+  // TODO(crbug.com/1330906): Remove in favor of EditSavedCredentials.
   bool EditPassword(const PasswordForm& form, std::u16string new_password);
 
   // Modifies the provided password form and its duplicates
   // with `new_username` and `new_password`.
   //
   // Note: this will also change duplicates of 'form' in all stores.
+  // TODO(crbug.com/1330906): Remove in favor of EditSavedCredentials.
   bool EditSavedPasswords(const PasswordForm& form,
                           const std::u16string& new_username,
                           const std::u16string& new_password);
@@ -92,21 +99,28 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // Modifies provided password forms, with |new_username|, |new_password| and
   // |new_note|. |forms| must represent single credential, with its duplicates,
   // or the same form saved on another store type.
+  // TODO(crbug.com/1330906): Remove in favor of EditSavedCredentials.
   bool EditSavedPasswords(const SavedPasswordsView forms,
                           const std::u16string& new_username,
                           const std::u16string& new_password,
                           const std::u16string& new_note = std::u16string());
 
+  // Modifies all the saved credentials with a matching key. Only username,
+  // password and notes are modified.
+  bool EditSavedCredentials(const CredentialUIEntry& credential);
+
   // Returns a list of the currently saved credentials.
   SavedPasswordsView GetSavedPasswords() const;
 
-  // Returns a list of unique password forms which includes normal credentials,
+  // Returns a list of unique passwords which includes normal credentials,
   // federated credentials and blocked forms. If a same form is present both on
   // account and profile stores it will be represented as a single entity.
   // Uniqueness is determined using site name, username, password. For Android
   // credentials package name is also taken into account and for Federated
   // credentials federation origin.
+  // TODO(crbug.com/1330906): Replace all API to work with CredentialUIEntry.
   std::vector<PasswordForm> GetUniquePasswordForms() const;
+  std::vector<CredentialUIEntry> GetSavedCredentials() const;
 
   // Returns all the usernames for credentials saved for `signon_realm`. If
   // `is_using_account_store` is true, this method will only consider
