@@ -15,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -80,6 +79,12 @@ WaylandEventSource::PointerFrame& WaylandEventSource::PointerFrame::operator=(
     const PointerFrame&) = default;
 WaylandEventSource::PointerFrame& WaylandEventSource::PointerFrame::operator=(
     PointerFrame&&) = default;
+
+WaylandEventSource::TouchFrame::TouchFrame(const TouchEvent& e,
+                                           base::OnceCallback<void()> cb)
+    : event(e), completion_cb(std::move(cb)) {}
+
+WaylandEventSource::TouchFrame::~TouchFrame() = default;
 
 // WaylandEventSource implementation
 
@@ -329,10 +334,12 @@ void WaylandEventSource::OnPointerAxisStopEvent(uint32_t axis) {
   current_pointer_frame_.is_axis_stop = true;
 }
 
-void WaylandEventSource::OnTouchPressEvent(WaylandWindow* window,
-                                           const gfx::PointF& location,
-                                           base::TimeTicks timestamp,
-                                           PointerId id) {
+void WaylandEventSource::OnTouchPressEvent(
+    WaylandWindow* window,
+    const gfx::PointF& location,
+    base::TimeTicks timestamp,
+    PointerId id,
+    EventDispatchPolicy dispatch_policy) {
   DCHECK(window);
   HandleTouchFocusChange(window, true);
 
@@ -347,7 +354,9 @@ void WaylandEventSource::OnTouchPressEvent(WaylandWindow* window,
   PointerDetails details(PointerDetailsForDispatching(id));
   TouchEvent event(ET_TOUCH_PRESSED, location, location, timestamp, details,
                    keyboard_modifiers_);
-  DispatchEvent(&event);
+  DCHECK_EQ(dispatch_policy, DispatchPolicy::kOnFrame);
+  touch_frames_.push_front(
+      std::make_unique<TouchFrame>(event, base::NullCallback()));
 }
 
 void WaylandEventSource::OnTouchReleaseEvent(base::TimeTicks timestamp,
@@ -424,6 +433,15 @@ void WaylandEventSource::OnTouchCancelEvent() {
   }
   touch_points_.clear();
   last_touch_stylus_tool_.clear();
+}
+
+void WaylandEventSource::OnTouchFrame() {
+  for (auto& touch_frame : touch_frames_) {
+    DispatchEvent(&(touch_frame->event));
+    if (!touch_frame->completion_cb.is_null())
+      std::move(touch_frame->completion_cb).Run();
+  }
+  touch_frames_.clear();
 }
 
 void WaylandEventSource::OnTouchFocusChanged(WaylandWindow* window) {

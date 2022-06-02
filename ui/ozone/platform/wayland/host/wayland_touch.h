@@ -84,15 +84,21 @@ class WaylandTouch {
 
 class WaylandTouch::Delegate {
  public:
+  enum class EventDispatchPolicy {
+    kImmediate,
+    kOnFrame,
+  };
   virtual void OnTouchPressEvent(WaylandWindow* window,
                                  const gfx::PointF& location,
                                  base::TimeTicks timestamp,
-                                 PointerId id) = 0;
+                                 PointerId id,
+                                 EventDispatchPolicy dispatch_policy) = 0;
   virtual void OnTouchReleaseEvent(base::TimeTicks timestamp, PointerId id) = 0;
   virtual void OnTouchMotionEvent(const gfx::PointF& location,
                                   base::TimeTicks timestamp,
                                   PointerId id) = 0;
   virtual void OnTouchCancelEvent() = 0;
+  virtual void OnTouchFrame() = 0;
   virtual void OnTouchFocusChanged(WaylandWindow* window) = 0;
   virtual std::vector<PointerId> GetActiveTouchPointIds() = 0;
   virtual const WaylandWindow* GetTouchTarget(PointerId id) const = 0;

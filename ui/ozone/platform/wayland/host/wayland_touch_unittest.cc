@@ -80,6 +80,7 @@ TEST_P(WaylandTouchTest, TouchPressAndMotion) {
 
   wl_touch_send_down(touch_->resource(), 1, 0, surface_->resource(), 0 /* id */,
                      wl_fixed_from_int(50), wl_fixed_from_int(100));
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
   CheckEventType(ui::ET_TOUCH_PRESSED, event.get());
@@ -107,6 +108,7 @@ TEST_P(WaylandTouchTest, TouchPressAndMotionWithStylus) {
 
   wl_touch_send_down(touch_->resource(), 1, 0, surface_->resource(), 0 /* id */,
                      wl_fixed_from_int(50), wl_fixed_from_int(100));
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
   CheckEventType(ui::ET_TOUCH_PRESSED, event.get(), ui::EventPointerType::kPen);
@@ -133,6 +135,7 @@ TEST_P(WaylandTouchTest, CheckTouchFocus) {
 
   wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
                      touch_id1, wl_fixed_from_int(50), wl_fixed_from_int(100));
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
 
@@ -146,6 +149,7 @@ TEST_P(WaylandTouchTest, CheckTouchFocus) {
 
   wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
                      touch_id1, wl_fixed_from_int(30), wl_fixed_from_int(40));
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
 
@@ -153,8 +157,10 @@ TEST_P(WaylandTouchTest, CheckTouchFocus) {
 
   wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
                      touch_id2, wl_fixed_from_int(30), wl_fixed_from_int(40));
+  wl_touch_send_frame(touch_->resource());
   wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
                      touch_id3, wl_fixed_from_int(30), wl_fixed_from_int(40));
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
 
@@ -185,6 +191,7 @@ TEST_P(WaylandTouchTest, CheckTouchFocus) {
                      touch_id2, wl_fixed_from_int(30), wl_fixed_from_int(40));
   wl_touch_send_down(touch_->resource(), ++serial, ++time, surface_->resource(),
                      touch_id3, wl_fixed_from_int(30), wl_fixed_from_int(40));
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
 
@@ -217,6 +224,7 @@ TEST_P(WaylandTouchTest, KeyboardFlagsSet) {
   wl_touch_send_down(touch_->resource(), ++serial, ++timestamp,
                      surface_->resource(), 0 /* id */, wl_fixed_from_int(50),
                      wl_fixed_from_int(100));
+  wl_touch_send_frame(touch_->resource());
   Sync();
   CheckEventType(ui::ET_TOUCH_PRESSED, event.get());
   EXPECT_TRUE(event->flags() & ui::EF_CONTROL_DOWN);
@@ -240,6 +248,7 @@ TEST_P(WaylandTouchTest, KeyboardFlagsSet) {
   wl_touch_send_down(touch_->resource(), ++serial, ++timestamp,
                      surface_->resource(), 0 /* id */, wl_fixed_from_int(50),
                      wl_fixed_from_int(100));
+  wl_touch_send_frame(touch_->resource());
   Sync();
   CheckEventType(ui::ET_TOUCH_PRESSED, event.get());
   EXPECT_FALSE(event->flags() & ui::EF_CONTROL_DOWN);

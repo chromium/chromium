@@ -55,7 +55,8 @@ void WaylandTouch::Down(void* data,
   gfx::PointF location = touch->connection_->MaybeConvertLocation(
       gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), window);
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
-  touch->delegate_->OnTouchPressEvent(window, location, timestamp, id);
+  touch->delegate_->OnTouchPressEvent(window, location, timestamp, id,
+                                      Delegate::EventDispatchPolicy::kOnFrame);
 }
 
 void WaylandTouch::Up(void* data,
@@ -95,7 +96,11 @@ void WaylandTouch::Cancel(void* data, wl_touch* obj) {
   touch->delegate_->OnTouchCancelEvent();
 }
 
-void WaylandTouch::Frame(void* data, wl_touch* obj) {}
+void WaylandTouch::Frame(void* data, wl_touch* obj) {
+  auto* touch = static_cast<WaylandTouch*>(data);
+  DCHECK(touch);
+  touch->delegate_->OnTouchFrame();
+}
 
 void WaylandTouch::SetupStylus() {
   auto* stylus_v2 = connection_->stylus_v2();

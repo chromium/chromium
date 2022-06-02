@@ -127,6 +127,7 @@ class WaylandClipboardTestBase : public WaylandTest {
                        surface_->resource(), /*touch_id=*/0,
                        wl_fixed_from_int(location.x()),
                        wl_fixed_from_int(location.y()));
+    wl_touch_send_frame(touch_->resource());
   }
 
   void SendTouchUp() {

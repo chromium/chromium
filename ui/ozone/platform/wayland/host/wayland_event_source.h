@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -115,15 +116,18 @@ class WaylandEventSource : public PlatformEventSource,
   const WaylandWindow* GetPointerTarget() const override;
 
   // WaylandTouch::Delegate
+  using DispatchPolicy = WaylandTouch::Delegate::EventDispatchPolicy;
   void OnTouchPressEvent(WaylandWindow* window,
                          const gfx::PointF& location,
                          base::TimeTicks timestamp,
-                         PointerId id) override;
+                         PointerId id,
+                         EventDispatchPolicy dispatch_policy) override;
   void OnTouchReleaseEvent(base::TimeTicks timestamp, PointerId id) override;
   void OnTouchMotionEvent(const gfx::PointF& location,
                           base::TimeTicks timestamp,
                           PointerId id) override;
   void OnTouchCancelEvent() override;
+  void OnTouchFrame() override;
   void OnTouchFocusChanged(WaylandWindow* window) override;
   std::vector<PointerId> GetActiveTouchPointIds() override;
   const WaylandWindow* GetTouchTarget(PointerId id) const override;
@@ -158,7 +162,16 @@ class WaylandEventSource : public PlatformEventSource,
     bool is_axis_stop = false;
   };
 
-  struct TouchPoint;
+  struct TouchFrame {
+    TouchFrame(const TouchEvent& event,
+               base::OnceCallback<void()> completion_cb);
+    TouchFrame(const TouchFrame& other) = delete;
+    TouchFrame(TouchFrame&&) = delete;
+    ~TouchFrame();
+
+    TouchEvent event;
+    base::OnceCallback<void()> completion_cb;
+  };
 
   // PlatformEventSource:
   void OnDispatcherListChanged() override;
@@ -220,8 +233,13 @@ class WaylandEventSource : public PlatformEventSource,
   // Front is newer, and back is older.
   std::deque<PointerFrame> recent_pointer_frames_;
 
+  // Order set of touch events to be dispatching on the next
+  // wl_touch::frame event.
+  std::deque<std::unique_ptr<TouchFrame>> touch_frames_;
+
   // Map that keeps track of the current touch points, associating touch IDs to
   // to the surface/location where they happened.
+  struct TouchPoint;
   base::flat_map<PointerId, std::unique_ptr<TouchPoint>> touch_points_;
 
   std::unique_ptr<WaylandEventWatcher> event_watcher_;

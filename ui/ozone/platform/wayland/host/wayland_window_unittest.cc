@@ -1727,6 +1727,7 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
   wl_touch_send_down(server_.seat()->touch()->resource(), ++serial, 0,
                      toplevel_surface->resource(), 0 /* id */,
                      wl_fixed_from_int(50), wl_fixed_from_int(100));
+  wl_touch_send_frame(server_.seat()->touch()->resource());
 
   Sync();
 
@@ -2951,6 +2952,8 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
     wl_touch_send_down(server_.seat()->touch()->resource(), touch_down_serial,
                        0, surface_->resource(), 0 /* id */,
                        wl_fixed_from_int(50), wl_fixed_from_int(100));
+    wl_touch_send_frame(server_.seat()->touch()->resource());
+
     wl_touch_send_up(server_.seat()->touch()->resource(), touch_up_serial, 1000,
                      0 /* id */);
 
@@ -2985,6 +2988,7 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
     wl_touch_send_down(server_.seat()->touch()->resource(), touch_down_serial,
                        0, surface_->resource(), 0 /* id */,
                        wl_fixed_from_int(50), wl_fixed_from_int(100));
+    wl_touch_send_frame(server_.seat()->touch()->resource());
 
     Sync();
 
