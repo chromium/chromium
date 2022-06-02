@@ -68,6 +68,14 @@ HRESULT TSFTextStore::Initialize() {
     return hr;
   }
 
+  hr = ::CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr,
+                          CLSCTX_INPROC_SERVER,
+                          IID_PPV_ARGS(&input_processor_profile_mgr_));
+  if (FAILED(hr)) {
+    DVLOG(1) << "Failed to initialize InputProcessorProfileMgr.";
+    return hr;
+  }
+
   return S_OK;
 }
 
@@ -636,8 +644,10 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
         is_tic_write_in_progress_ = false;
       } else {
         composition_start_ = selection_.start();
-        if (!selection_.EqualsIgnoringDirection(selection_from_client_))
+        if (!selection_.EqualsIgnoringDirection(selection_from_client_) &&
+            !IsInputIME()) {
           text_input_client_->SetEditableSelectionRange(selection_);
+        }
         CalculateTextandSelectionDiffAndNotifyIfNeeded();
       }
       ResetCacheAfterEditSession();
@@ -1480,7 +1490,7 @@ void TSFTextStore::CommitTextAndEndCompositionIfAny(size_t old_size,
     text_input_client_->ClearCompositionText();
   }
 
-  if (!selection_.is_empty() && !is_selection_interim_char_ &&
+  if (!selection_.is_empty() && !IsInputIME() &&
       selection_.GetMax() <= string_buffer_document_.size()) {
     text_input_client_->SetEditableSelectionRange(selection_);
   }
@@ -1582,10 +1592,6 @@ void TSFTextStore::GetStyle(const TF_DISPLAYATTRIBUTE& attribute,
 void TSFTextStore::ResetCacheAfterEditSession() {
   // reset the flag since we've already inserted/replaced the text.
   new_text_inserted_ = false;
-  if (is_selection_interim_char_) {
-    // Need to reset |selection_| for interim char selection.
-    selection_ = gfx::Range(selection_.GetMax());
-  }
   is_selection_interim_char_ = false;
   // reset |on_start_composition_called_| for next edit session.
   on_start_composition_called_ = false;
@@ -1593,6 +1599,16 @@ void TSFTextStore::ResetCacheAfterEditSession() {
   // reset string_buffer_ if composition is no longer active.
   if (text_input_client_ && !text_input_client_->HasCompositionText())
     string_pending_insertion_.clear();
+}
+
+bool TSFTextStore::IsInputIME() const {
+  TF_INPUTPROCESSORPROFILE profile;
+  if (SUCCEEDED(input_processor_profile_mgr_->GetActiveProfile(
+          GUID_TFCAT_TIP_KEYBOARD, &profile))) {
+    return profile.hkl == NULL &&
+           profile.dwProfileType == TF_PROFILETYPE_INPUTPROCESSOR;
+  }
+  return false;
 }
 
 }  // namespace ui
