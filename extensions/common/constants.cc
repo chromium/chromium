@@ -123,7 +123,7 @@ const int kUnknownTabId = -1;
 const int kUnknownWindowId = -1;
 const int kCurrentWindowId = -2;
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_CAST_RECEIVER)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMECAST)
 // The extension id for the built-in component extension.
 const char kChromeVoxExtensionId[] = "mndnfokpggljbaajbnioimlmbfngpief";
 #else

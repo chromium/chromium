@@ -69,7 +69,7 @@ declare_args() {
 # lacros-chrome switches to target_os="chromeos"
 enable_scrambled_message_ids =
     enable_mojom_message_id_scrambling &&
-    (is_mac || is_win || (is_linux && !is_castos) ||
+    (is_mac || is_win || (is_linux && !is_chromecast) ||
      ((enable_nacl || is_nacl) &&
       (target_os != "chromeos" && !chromeos_is_browser_only)))
 
