@@ -127,6 +127,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   WeakMember<ExecutionContext> execution_context_;
   TransferredValues data_;
   Member<EventPropagator> event_propagator_;
+  HeapHashSet<WeakMember<MediaStreamTrack::Observer>> observers_;
 };
 
 }  // namespace blink

@@ -17,6 +17,17 @@ namespace blink {
 
 namespace {
 using testing::_;
+
+class TestObserver : public GarbageCollected<TestObserver>,
+                     public MediaStreamTrack::Observer {
+ public:
+  void TrackChangedState() override { observation_count_++; }
+  int ObservationCount() const { return observation_count_; }
+
+ private:
+  int observation_count_ = 0;
+};
+
 }  // namespace
 
 class TransferredMediaStreamTrackTest : public testing::Test {
@@ -172,4 +183,25 @@ TEST_F(TransferredMediaStreamTrackTest, ConstraintsAppliedAfterImplementation) {
   transferred_track_->applyConstraints(scope.GetScriptState(),
                                        MediaTrackConstraints::Create());
 }
+
+TEST_F(TransferredMediaStreamTrackTest, SetImplementationTriggersObservers) {
+  V8TestingScope scope;
+  CustomSetUp(scope);
+  TestObserver* testObserver = MakeGarbageCollected<TestObserver>();
+  transferred_track_->AddObserver(testObserver);
+  transferred_track_->SetImplementation(
+      MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>());
+  EXPECT_EQ(testObserver->ObservationCount(), 1);
+}
+
+TEST_F(TransferredMediaStreamTrackTest, ObserversAddedToImpl) {
+  V8TestingScope scope;
+  CustomSetUp(scope);
+  transferred_track_->AddObserver(MakeGarbageCollected<TestObserver>());
+  MockMediaStreamTrack* mock_impl =
+      MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>();
+  EXPECT_CALL(*mock_impl, AddObserver(_));
+  transferred_track_->SetImplementation(mock_impl);
+}
+
 }  // namespace blink

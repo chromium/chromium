@@ -200,6 +200,15 @@ void TransferredMediaStreamTrack::SetImplementation(MediaStreamTrack* track) {
   // Set up an EventPropagator helper to forward any events fired on track so
   // that they're re-dispatched to anything that's listening on this.
   event_propagator_ = MakeGarbageCollected<EventPropagator>(track, this);
+
+  // Observers may dispatch events which create and add new Observers. Such
+  // observers are added directly to the implementation track since track_ is
+  // now set.
+  for (auto observer : observers_) {
+    observer->TrackChangedState();
+    track_->AddObserver(observer);
+  }
+  observers_.clear();
 }
 
 void TransferredMediaStreamTrack::SetConstraints(
@@ -315,9 +324,9 @@ void TransferredMediaStreamTrack::CloseFocusWindowOfOpportunity() {
 void TransferredMediaStreamTrack::AddObserver(Observer* observer) {
   if (track_) {
     track_->AddObserver(observer);
+  } else {
+    observers_.insert(observer);
   }
-  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
-  // initialized.
 }
 
 TransferredMediaStreamTrack::EventPropagator::EventPropagator(
@@ -349,6 +358,7 @@ void TransferredMediaStreamTrack::Trace(Visitor* visitor) const {
   visitor->Trace(track_);
   visitor->Trace(execution_context_);
   visitor->Trace(event_propagator_);
+  visitor->Trace(observers_);
 }
 
 }  // namespace blink
