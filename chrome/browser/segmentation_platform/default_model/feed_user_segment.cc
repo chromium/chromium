@@ -49,6 +49,8 @@ static constexpr std::array<std::pair<float, /*FeedUserSubsegment*/ int>, 8>
     }};
 
 // InputFeatures.
+// Any updates to these strings need to also update the field trials allowlist
+// in go/segmentation-field-trials-map.
 constexpr std::array<MetadataWriter::UMAFeature, 9> kFeedUserUMAFeatures = {
     MetadataWriter::UMAFeature::FromUserAction(
         "ContentSuggestions.Feed.CardAction.Open",

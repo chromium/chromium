@@ -221,6 +221,8 @@ float ZeroValueFraction(const std::vector<float>& tensor) {
 
 // Should map to SegmentationModel variant in
 // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
+// Should also update the field trials allowlist in
+// go/segmentation-field-trials-map.
 std::string OptimizationTargetToHistogramVariant(SegmentId segment_id) {
   switch (segment_id) {
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:
@@ -247,6 +249,8 @@ std::string OptimizationTargetToHistogramVariant(SegmentId segment_id) {
 const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
   // Please keep in sync with SegmentationKey variant in
   // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
+  // Should also update the field trials allowlist in
+  // go/segmentation-field-trials-map.
   if (segmentation_key == kAdaptiveToolbarSegmentationKey) {
     return "AdaptiveToolbar";
   } else if (segmentation_key == kDummySegmentationKey) {
