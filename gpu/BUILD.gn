@@ -647,10 +647,6 @@ test("gpu_unittests") {
     ]
   }
 
-  if (use_dawn) {
-    sources += [ "command_buffer/service/dawn_caching_interface_unittest.cc" ]
-  }
-
   configs += [ "//build/config:precompiled_headers" ]
 
   deps = [
@@ -701,15 +697,6 @@ test("gpu_unittests") {
     deps += [
       "//ui/android:ui_java",
       "//ui/gl:gl_jni_headers",
-    ]
-  }
-
-  if (use_dawn) {
-    deps += [
-      "//net:test_support",
-      "//third_party/dawn/src/dawn:cpp",
-      "//third_party/dawn/src/dawn:proc",
-      "//third_party/dawn/src/dawn/native",
     ]
   }
 
