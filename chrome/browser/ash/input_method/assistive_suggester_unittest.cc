@@ -407,7 +407,8 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabled) {
       AssistiveTextInputState::kFeatureEnabled, 1);
 }
 
-TEST_F(AssistiveSuggesterTest, DiacriticsSugestionOnKeyDownLongpress) {
+TEST_F(AssistiveSuggesterTest,
+       DiacriticsSuggestionOnKeyDownLongpressForUSEnglish) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
@@ -423,7 +424,22 @@ TEST_F(AssistiveSuggesterTest, DiacriticsSugestionOnKeyDownLongpress) {
 }
 
 TEST_F(AssistiveSuggesterTest,
-       DiacriticsSugestionOnKeyDownLongpressNotInterruptedByOtherKeys) {
+       NoDiacriticsSuggestionOnKeyDownLongpressForNonUSEnglish) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
+      /*disabled_features=*/{});
+  assistive_suggester_->OnActivate(kSpainSpanishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  EXPECT_FALSE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::US_A)));
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+}
+
+TEST_F(AssistiveSuggesterTest,
+       DiacriticsSuggestionOnKeyDownLongpressNotInterruptedByOtherKeys) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
@@ -440,7 +456,7 @@ TEST_F(AssistiveSuggesterTest,
 }
 
 TEST_F(AssistiveSuggesterTest,
-       DiacriticsSugestionWithoutContextIgnoresOnKeyDownLongpress) {
+       DiacriticsSuggestionWithoutContextIgnoresOnKeyDownLongpress) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
@@ -453,7 +469,7 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"");
 }
 
-TEST_F(AssistiveSuggesterTest, DiacriticsSugestionInterruptedDoesNotSuggest) {
+TEST_F(AssistiveSuggesterTest, DiacriticsSuggestionInterruptedDoesNotSuggest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},

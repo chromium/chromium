@@ -392,17 +392,18 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
     }
   }
 
-  // Longpress diacritics behaviour overrides the longpress to repeat key
-  // behaviour for alphabetical keys.
-  if (base::FeatureList::IsEnabled(
-          features::kDiacriticsOnPhysicalKeyboardLongpress) &&
-      event.is_repeat() &&
-      kDefaultLongpressEnabledKeys.contains(event.GetCharacter())) {
-    return true;  // Do not propagate this event.
+  // Diacritics is only enabled for US English Engine.
+  if (IsUsEnglishEngine(active_engine_id_)) {
+    // Longpress diacritics behaviour overrides the longpress to repeat key
+    // behaviour for alphabetical keys.
+    if (base::FeatureList::IsEnabled(
+            features::kDiacriticsOnPhysicalKeyboardLongpress) &&
+        event.is_repeat() &&
+        kDefaultLongpressEnabledKeys.contains(event.GetCharacter())) {
+      return true;  // Do not propagate this event.
+    }
+    HandleLongpressEnabledKeyEvent(event);
   }
-
-  HandleLongpressEnabledKeyEvent(event);
-
   return false;
 }
 
@@ -629,8 +630,8 @@ std::vector<ime::TextSuggestion> AssistiveSuggester::GetSuggestions() {
 }
 
 void AssistiveSuggester::OnActivate(const std::string& engine_id) {
+  active_engine_id_ = engine_id;
   if (features::IsAssistiveMultiWordEnabled()) {
-    active_engine_id_ = engine_id;
     RecordAssistiveUserPrefForMultiWord(
         IsPredictiveWritingPrefEnabled(profile_->GetPrefs(), engine_id));
   }
