@@ -1269,6 +1269,12 @@ class ComputedStyle : public ComputedStyleBase,
     }
     return FlexDirection() == EFlexDirection::kColumnReverse;
   }
+  bool ResolvedIsRowFlexDirection() const {
+    if (IsDeprecatedWebkitBox())
+      return BoxOrient() == EBoxOrient::kHorizontal;
+    return FlexDirection() == EFlexDirection::kRow ||
+           FlexDirection() == EFlexDirection::kRowReverse;
+  }
   bool ResolvedIsRowReverseFlexDirection() const {
     if (IsDeprecatedWebkitBox()) {
       return BoxOrient() == EBoxOrient::kHorizontal &&

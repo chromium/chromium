@@ -1480,6 +1480,8 @@ crbug.com/591099 external/wpt/appmanifest/start_url-member/start_url-member-pass
 ### external/wpt/css/css-flexbox/
 crbug.com/591099 external/wpt/css/css-flexbox/fieldset-baseline-alignment.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/percentage-size-quirks-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/negative-overflow.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/negative-overflow-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/abspos/position-absolute-014.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/abspos/position-absolute-015.html [ Failure ]
 
