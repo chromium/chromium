@@ -205,7 +205,16 @@ public class StatusView extends LinearLayout {
                 TransitionDrawable newImage = new TransitionDrawable(new Drawable[] {
                         existingDrawable,
                         transitionType == IconTransitionType.ROTATE ? getRotatedIcon(targetIcon)
-                                                                    : targetIcon});
+                                                                    : targetIcon}) {
+                    @Override
+                    public void draw(Canvas canvas) {
+                        super.draw(canvas);
+                        // Use this drawable's draw method to check if the animation is over or not.
+                        // Originally we tried #dispatchDraw() but this doesn't seem to work with
+                        // animations/drawables. See https://crbug.com/1325875.
+                        updateAnimationStatus();
+                    }
+                };
 
                 mIconView.setImageDrawable(newImage);
 
@@ -533,10 +542,7 @@ public class StatusView extends LinearLayout {
         }
     }
 
-    @Override
-    protected void dispatchDraw(Canvas canvas) {
-        super.dispatchDraw(canvas);
-
+    private void updateAnimationStatus() {
         long currentTimeMs = SystemClock.uptimeMillis();
         if (mIsAnimatingStatusIconChange
                 && currentTimeMs - mTimeAtTransitionStartMs >= mCurrentTransitionDuration) {
