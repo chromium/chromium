@@ -652,21 +652,9 @@ class GTestTest(RemoteTest):
       os.remove(self._on_device_script)
 
     if self._test_launcher_summary_output and self._rdb_client:
-      if not os.path.exists(self._test_launcher_summary_output):
-        logging.error('Unable to locate %s in order to upload results to RDB.',
-                      self._test_launcher_summary_output)
-        return
-      with open(self._test_launcher_summary_output) as f:
-        raw_results = json.load(f)
-      parsed_results = json_results.ParseResultsFromJson(raw_results)
-      for r in parsed_results:
-        self._rdb_client.Post(
-            r.GetName(),
-            r.GetType(),
-            r.GetDuration(),
-            r.GetLog(),
-            None,
-            failure_reason=r.GetFailureReason())
+      logging.error('Native ResultDB integration is not supported for GTests. '
+                    'Upload results via result_adapter instead. '
+                    'See crbug.com/1330441.')
 
 
 def device_test(args, unknown_args):
