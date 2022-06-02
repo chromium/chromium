@@ -33,7 +33,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/render_frame_host.h"
@@ -56,6 +55,7 @@
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/ash/crosapi/test_local_printer_ash.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/login/login_state/login_state.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/test/chromeos/printing/fake_local_printer_chromeos.h"
@@ -384,23 +384,22 @@ class PrintPreviewHandlerTest : public testing::Test {
 #endif
 
   void SetUp() override {
-    ASSERT_TRUE(testing_profile_manager_.SetUp());
-    profile_ = testing_profile_manager_.CreateSystemProfile();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    local_printer_ = std::make_unique<TestLocalPrinterAsh>(profile_, nullptr);
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+    local_printer_ = std::make_unique<TestLocalPrinterAsh>(&profile_, nullptr);
     crosapi::IdleServiceAsh::DisableForTesting();
     chromeos::LoginState::Initialize();
     manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 #endif
     initiator_web_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(profile_));
+        content::WebContents::CreateParams(&profile_));
     content::WebContents* initiator = initiator_web_contents_.get();
     // Ensure the initiator has a RenderFrameHost with a live RenderFrame, as
     // the print code will not bother to send IPCs to a non-live RenderFrame.
     content::NavigationSimulator::NavigateAndCommitFromDocument(
         GURL("about:blank"), initiator->GetMainFrame());
     preview_web_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(profile_));
+        content::WebContents::CreateParams(&profile_));
     PrintViewManager::CreateForWebContents(initiator);
     PrintViewManager::FromWebContents(initiator)->PrintPreviewNow(
         initiator->GetMainFrame(), false);
@@ -674,9 +673,8 @@ class PrintPreviewHandlerTest : public testing::Test {
         ->GetRemoteAssociatedInterfaces();
   }
 
-  const Profile* profile() { return profile_; }
   sync_preferences::TestingPrefServiceSyncable* prefs() {
-    return profile_->GetTestingPrefService();
+    return profile_.GetTestingPrefService();
   }
   content::TestWebUI* web_ui() { return web_ui_.get(); }
   TestPrintPreviewHandler* handler() { return handler_; }
@@ -685,9 +683,15 @@ class PrintPreviewHandlerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  raw_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestLocalPrinterAsh> local_printer_;
+  std::unique_ptr<crosapi::CrosapiManager> manager_;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  TestLocalPrinter local_printer_;
+#endif
+  TestingProfile profile_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<content::WebContents> preview_web_contents_;
@@ -695,12 +699,6 @@ class PrintPreviewHandlerTest : public testing::Test {
   std::vector<PrinterInfo> printers_;
   raw_ptr<TestPrinterHandler> printer_handler_;
   raw_ptr<TestPrintPreviewHandler> handler_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<TestLocalPrinterAsh> local_printer_;
-  std::unique_ptr<crosapi::CrosapiManager> manager_;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  TestLocalPrinter local_printer_;
-#endif
 };
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsSimple) {

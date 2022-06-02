@@ -180,7 +180,9 @@ class BrowserReportGeneratorTest : public ::testing::Test {
 
   void InitializeIrregularProfiles() {
     profile_manager_.CreateGuestProfile();
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     profile_manager_.CreateSystemProfile();
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     profile_manager_.CreateTestingProfile(chrome::kInitialProfile);

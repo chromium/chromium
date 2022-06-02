@@ -38,7 +38,9 @@
 #endif
 
 const char kGuestProfileName[] = "Guest";
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kSystemProfileName[] = "System";
+#endif
 
 TestingProfileManager::TestingProfileManager(TestingBrowserProcess* process)
     : called_set_up_(false),
@@ -177,6 +179,7 @@ TestingProfile* TestingProfileManager::CreateGuestProfile() {
   return profile_ptr;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TestingProfile* TestingProfileManager::CreateSystemProfile() {
   DCHECK(called_set_up_);
 
@@ -196,6 +199,7 @@ TestingProfile* TestingProfileManager::CreateSystemProfile() {
 
   return profile_ptr;
 }
+#endif
 
 void TestingProfileManager::DeleteTestingProfile(const std::string& name) {
   DCHECK(called_set_up_);
@@ -242,6 +246,7 @@ void TestingProfileManager::DeleteGuestProfile() {
   profile_manager_->profiles_info_.erase(ProfileManager::GetGuestProfilePath());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void TestingProfileManager::DeleteSystemProfile() {
   DCHECK(called_set_up_);
 
@@ -251,6 +256,7 @@ void TestingProfileManager::DeleteSystemProfile() {
   profile_manager_->profiles_info_.erase(
       ProfileManager::GetSystemProfilePath());
 }
+#endif
 
 void TestingProfileManager::DeleteProfileAttributesStorage() {
   profile_manager_->profile_attributes_storage_.reset(nullptr);

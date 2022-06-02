@@ -226,8 +226,10 @@ class ProfileManager : public Profile::Delegate {
   // Returns the full path to be used for guest profiles.
   static base::FilePath GetGuestProfilePath();
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns the full path to be used for system profiles.
   static base::FilePath GetSystemProfilePath();
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns the full path of the primary profile on lacros.

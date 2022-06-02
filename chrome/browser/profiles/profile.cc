@@ -394,8 +394,14 @@ PrefService* Profile::GetReadOnlyOffTheRecordPrefs() {
 }
 
 bool Profile::IsSystemProfile() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DCHECK_NE(profile_metrics::GetBrowserProfileType(this),
+            profile_metrics::BrowserProfileType::kSystem);
+  return false;
+#else
   return profile_metrics::GetBrowserProfileType(this) ==
          profile_metrics::BrowserProfileType::kSystem;
+#endif
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

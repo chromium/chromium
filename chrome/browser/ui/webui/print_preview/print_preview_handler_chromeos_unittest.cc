@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/chromeos/printing/fake_local_printer_chromeos.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -28,6 +27,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/login/login_state/login_state.h"
 #endif
 
@@ -100,15 +100,14 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   ~PrintPreviewHandlerChromeOSTest() override = default;
 
   void SetUp() override {
-    ASSERT_TRUE(testing_profile_manager_.SetUp());
-    profile_ = testing_profile_manager_.CreateSystemProfile();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
     crosapi::IdleServiceAsh::DisableForTesting();
     chromeos::LoginState::Initialize();
     manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 #endif
     preview_web_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(profile_));
+        content::WebContents::CreateParams(&profile_));
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(preview_web_contents_.get());
 
@@ -124,12 +123,12 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
     web_ui()->SetController(std::move(preview_ui));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     manager_.reset();
     chromeos::LoginState::Shutdown();
-  }
 #endif
+  }
 
   void DisableAshChrome() {
     local_printer_ = nullptr;
@@ -158,12 +157,12 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  TestingProfile* profile_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<crosapi::CrosapiManager> manager_;
 #endif
+  TestingProfile profile_;
   std::unique_ptr<TestLocalPrinter> local_printer_;
   std::unique_ptr<content::WebContents> preview_web_contents_;
   std::unique_ptr<content::TestWebUI> web_ui_;

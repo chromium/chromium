@@ -458,9 +458,11 @@ ProfileImpl::ProfileImpl(
   if (path == ProfileManager::GetGuestProfilePath()) {
       profile_metrics::SetBrowserProfileType(
           this, profile_metrics::BrowserProfileType::kGuest);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (path == ProfileManager::GetSystemProfilePath()) {
     profile_metrics::SetBrowserProfileType(
         this, profile_metrics::BrowserProfileType::kSystem);
+#endif
   } else {
     profile_metrics::SetBrowserProfileType(
         this, profile_metrics::BrowserProfileType::kRegular);
