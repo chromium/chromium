@@ -15,7 +15,7 @@ class ChromeBrowserState;
 @interface AutofillCreditCardTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
-// The designated initializer. |browser| must not be nil.
+// The designated initializer. `browser` must not be nil.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 // Use -initWithBrowser:.

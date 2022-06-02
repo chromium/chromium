@@ -42,8 +42,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @interface AutofillProfileEditTableViewController ()
 
-// Initializes a AutofillProfileEditTableViewController with |profile| and
-// |dataManager|.
+// Initializes a AutofillProfileEditTableViewController with `profile` and
+// `dataManager`.
 - (instancetype)initWithProfile:(const autofill::AutofillProfile&)profile
             personalDataManager:(autofill::PersonalDataManager*)dataManager
     NS_DESIGNATED_INITIALIZER;

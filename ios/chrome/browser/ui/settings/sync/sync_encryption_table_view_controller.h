@@ -12,7 +12,7 @@ class Browser;
 // Controller to allow user to specify encryption passphrase for Sync.
 @interface SyncEncryptionTableViewController : SettingsRootTableViewController
 
-// Designated initializer. |browserState| must not be nil.
+// Designated initializer. `browserState` must not be nil.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

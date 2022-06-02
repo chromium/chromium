@@ -147,7 +147,7 @@
 
   // Navigation controller configuration.
   self.title = l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
-  // Adds the "Done" button and hooks it up to |dismiss|.
+  // Adds the "Done" button and hooks it up to `dismiss`.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self

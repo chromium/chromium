@@ -22,7 +22,7 @@
 // Returns YES if "offer translate" setting is enabled.
 + (BOOL)offersTranslation;
 
-// YES if user has set a preference to block the translation of |language|
+// YES if user has set a preference to block the translation of `language`
 // ("Never Translate This Language" option).
 + (BOOL)isBlockedLanguage:(NSString*)language;
 

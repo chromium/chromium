@@ -19,7 +19,7 @@ class Browser;
 @interface SettingsTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
-// Initializes a new SettingsTableViewController. |browser| must not
+// Initializes a new SettingsTableViewController. `browser` must not
 // be nil and must not be associated with an off the record browser state.
 - (instancetype)
     initWithBrowser:(Browser*)browser

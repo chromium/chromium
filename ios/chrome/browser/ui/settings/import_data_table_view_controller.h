@@ -23,8 +23,8 @@ extern NSString* const kImportDataContinueButtonId;
 // ImportDataTableViewController.
 @protocol ImportDataControllerDelegate
 
-// Indicates that the user chose the clear data policy to be |shouldClearData|
-// when presented with |controller|.
+// Indicates that the user chose the clear data policy to be `shouldClearData`
+// when presented with `controller`.
 - (void)didChooseClearDataPolicy:(ImportDataTableViewController*)controller
                  shouldClearData:(ShouldClearData)shouldClearData;
 
@@ -33,10 +33,10 @@ extern NSString* const kImportDataContinueButtonId;
 // Table View that handles how to import data during account switching.
 @interface ImportDataTableViewController : SettingsRootTableViewController
 
-// |fromEmail| is the email of the previously signed in account.
-// |toIdentity| is the email of the account switched to.
+// `fromEmail` is the email of the previously signed in account.
+// `toIdentity` is the email of the account switched to.
 //
-// |fromEmail| and |toEmail| must not be NULL.
+// `fromEmail` and `toEmail` must not be NULL.
 - (instancetype)initWithDelegate:(id<ImportDataControllerDelegate>)delegate
                        fromEmail:(NSString*)fromEmail
                          toEmail:(NSString*)toEmail NS_DESIGNATED_INITIALIZER;

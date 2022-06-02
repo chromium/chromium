@@ -109,8 +109,8 @@
 
 #pragma mark - Private
 
-// Updates the |AutofillUIType| of the |creditCard| with the value of
-// |cardProperty|.
+// Updates the `AutofillUIType` of the `creditCard` with the value of
+// `cardProperty`.
 + (void)updateCreditCard:(autofill::CreditCard*)creditCard
             cardProperty:(NSString*)cardValue
           autofillUIType:(AutofillUIType)fieldType

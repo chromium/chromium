@@ -17,8 +17,8 @@ class Browser;
 @interface AccountsTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
-// |browser| must not be nil.
-// If |closeSettingsOnAddAccount| is YES, then this account table view
+// `browser` must not be nil.
+// If `closeSettingsOnAddAccount` is YES, then this account table view
 // controller will close the settings view when an account is added.
 - (instancetype)initWithBrowser:(Browser*)browser
       closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount

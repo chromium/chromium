@@ -18,8 +18,8 @@
     : SettingsRootTableViewController <LanguageSettingsConsumer,
                                        SettingsControllerProtocol>
 
-// The designated initializer. |dataSource| and |commandHandler| must not be
-// nil. |commandHandler| will not be retained.
+// The designated initializer. `dataSource` and `commandHandler` must not be
+// nil. `commandHandler` will not be retained.
 - (instancetype)initWithDataSource:(id<LanguageSettingsDataSource>)dataSource
                     commandHandler:(id<LanguageSettingsCommands>)commandHandler
     NS_DESIGNATED_INITIALIZER;

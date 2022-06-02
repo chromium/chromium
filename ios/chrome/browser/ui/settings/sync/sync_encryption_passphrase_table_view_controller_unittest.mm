@@ -97,7 +97,7 @@ class SyncEncryptionPassphraseTableViewControllerTest
         controller());
   }
 
-  // Weak, owned by |profile_|.
+  // Weak, owned by `profile_`.
   NiceMock<SyncSetupServiceMock>* mock_sync_setup_service_;
 };
 
@@ -175,7 +175,7 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
        TestOnStateChangedWrongPassphrase) {
   SyncEncryptionPassphraseTableViewController* sync_controller =
       SyncController();
-  // Sets up a UINavigationController that has |controller_| as the second view
+  // Sets up a UINavigationController that has `controller_` as the second view
   // controller on the navigation stack.
   SetUpNavigationController(sync_controller);
   EXPECT_EQ([nav_controller_ topViewController], sync_controller);
@@ -192,7 +192,7 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
        TestOnStateChangedCorrectPassphrase) {
   SyncEncryptionPassphraseTableViewController* sync_controller =
       SyncController();
-  // Sets up a UINavigationController that has |controller_| as the second view
+  // Sets up a UINavigationController that has `controller_` as the second view
   // controller on the navigation stack.
   SetUpNavigationController(sync_controller);
   EXPECT_EQ([nav_controller_ topViewController], sync_controller);

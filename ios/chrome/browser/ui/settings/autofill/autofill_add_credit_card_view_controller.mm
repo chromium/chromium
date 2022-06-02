@@ -225,8 +225,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
 
-  // Use |ObjCCast| because |cell| might not be |TableViewTextEditCell|.
-  // Set the delegate and style for only |TableViewTextEditCell| type of cell
+  // Use `ObjCCast` because `cell` might not be `TableViewTextEditCell`.
+  // Set the delegate and style for only `TableViewTextEditCell` type of cell
   // not other types.
   TableViewTextEditCell* editCell =
       base::mac::ObjCCast<TableViewTextEditCell>(cell);
@@ -272,8 +272,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                sectionIdentifier:SectionIdentifierCreditCardDetails];
 }
 
-// Reads and returns the data from the item with passed |itemType| and
-// |sectionIdentifier|.
+// Reads and returns the data from the item with passed `itemType` and
+// `sectionIdentifier`.
 - (NSString*)readTextFromItemtype:(NSInteger)itemType
                 sectionIdentifier:(NSInteger)sectionIdentifier {
   NSIndexPath* path =
@@ -285,8 +285,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return text;
 }
 
-// Updates TableView cell of |itemType| in |sectionIdentifier| textfieldValue
-// with |text|.
+// Updates TableView cell of `itemType` in `sectionIdentifier` textfieldValue
+// with `text`.
 - (void)updateCellForItemType:(NSInteger)itemType
           inSectionIdentifier:(NSInteger)sectionIdentifier
                      withText:(NSString*)text {

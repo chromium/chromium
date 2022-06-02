@@ -248,7 +248,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 // Updates the privacy safe browsing section according to the user consent. If
-// |notifyConsumer| is YES, the consumer is notified about model changes.
+// `notifyConsumer` is YES, the consumer is notified about model changes.
 - (void)updatePrivacySafeBrowsingSectionAndNotifyConsumer:(BOOL)notifyConsumer {
   for (TableViewItem* item in self.safeBrowsingItems) {
     TableViewInfoButtonItem* infoButtonItem =

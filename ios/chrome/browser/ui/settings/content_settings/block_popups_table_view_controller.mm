@@ -287,7 +287,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Private
 
-// Deletes the item at the |indexPaths|. Removes the SectionIdentifierExceptions
+// Deletes the item at the `indexPaths`. Removes the SectionIdentifierExceptions
 // if it is now empty.
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
   NSSortDescriptor* sortDescriptor =
@@ -311,7 +311,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
             ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
             CONTENT_SETTING_DEFAULT);
 
-    // Remove the site from |_exceptions|.
+    // Remove the site from `_exceptions`.
     _exceptions.EraseListIter(exceptions_view.begin() + urlIndex);
   }
   [self.tableView
@@ -342,8 +342,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 // Fetch the urls that can display popups and
-// add items set by the user to |_exceptions|,
-// add items set by the policy to |_allowPopupsByPolicy|.
+// add items set by the user to `_exceptions`,
+// add items set by the policy to `_allowPopupsByPolicy`.
 - (void)populateExceptionsList {
   // The body of this method was mostly copied from
   // chrome/browser/ui/webui/options/content_settings_handler.cc and simplified
@@ -367,7 +367,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     if (entries[i].secondary_pattern == ContentSettingsPattern::Wildcard() &&
         entries[i].GetContentSetting() == CONTENT_SETTING_ALLOW) {
       if (entries[i].source == "policy") {
-        // Add the urls to |_allowPopupsByPolicy| if the allowed urls are set by
+        // Add the urls to `_allowPopupsByPolicy` if the allowed urls are set by
         // the policy.
         _allowPopupsByPolicy.Append(entries[i].primary_pattern.ToString());
       } else {

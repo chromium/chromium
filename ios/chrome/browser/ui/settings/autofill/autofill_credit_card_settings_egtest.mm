@@ -86,7 +86,7 @@ id<GREYMatcher> BottomToolbar() {
   [super tearDown];
 }
 
-// Returns the label for |creditCard| in the settings page for Autofill credit
+// Returns the label for `creditCard` in the settings page for Autofill credit
 // cards.
 - (NSString*)creditCardLabel:(NSString*)lastDigits {
   return [NSString stringWithFormat:kCreditCardLabelTemplate, lastDigits];
@@ -98,7 +98,7 @@ id<GREYMatcher> BottomToolbar() {
   [ChromeEarlGreyUI tapSettingsMenuButton:PaymentMethodsButton()];
 }
 
-// Helper to open the settings page for the Autofill credit card with |label|.
+// Helper to open the settings page for the Autofill credit card with `label`.
 - (void)openEditCreditCard:(NSString*)label {
   [self openCreditCardsSettings];
 

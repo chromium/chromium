@@ -12,7 +12,7 @@
 @protocol GoogleServicesSettingsCommandHandler <NSObject>
 
 // Presents the sign-out dialog to the user.
-// |targetRect| rect in table view system coordinate to display the signout
+// `targetRect` rect in table view system coordinate to display the signout
 // popover dialog.
 - (void)showSignOutFromTargetRect:(CGRect)targetRect
                        completion:(signin_ui::CompletionCallback)completion;

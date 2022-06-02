@@ -16,7 +16,7 @@
 using AutofillCreditCardUtilTest = PlatformTest;
 using base::SysUTF8ToNSString;
 
-// Tests that the |AutofillCreditCardUtil::isValidCreditCardExpirationYear|
+// Tests that the `AutofillCreditCardUtil::isValidCreditCardExpirationYear`
 // returns false when the expiration year is invalid.
 TEST_F(AutofillCreditCardUtilTest, TestExpiryYear) {
   EXPECT_FALSE([AutofillCreditCardUtil
@@ -29,14 +29,14 @@ TEST_F(AutofillCreditCardUtilTest, TestExpiryYear) {
                              appLocal:"en"]);
 }
 
-// Tests that the |AutofillCreditCardUtil::isValidCreditCardExpirationMonth|
+// Tests that the `AutofillCreditCardUtil::isValidCreditCardExpirationMonth`
 // returns false when the expiration month is invalid.
 TEST_F(AutofillCreditCardUtilTest, TestExpiryMonth) {
   EXPECT_FALSE([AutofillCreditCardUtil isValidCreditCardExpirationMonth:@"13"]);
   EXPECT_TRUE([AutofillCreditCardUtil isValidCreditCardExpirationMonth:@"1"]);
 }
 
-// Tests that the |AutofillCreditCardUtil::isValidCreditCardNumber| returns
+// Tests that the `AutofillCreditCardUtil::isValidCreditCardNumber` returns
 // false when the credit card number is invalid.
 TEST_F(AutofillCreditCardUtilTest, TestCreditCardNumber) {
   EXPECT_FALSE([AutofillCreditCardUtil isValidCreditCardNumber:@"13"
@@ -46,7 +46,7 @@ TEST_F(AutofillCreditCardUtilTest, TestCreditCardNumber) {
                      appLocal:"en"]);
 }
 
-// Tests that the |AutofillCreditCardUtil::isValidCreditCard| returns false when
+// Tests that the `AutofillCreditCardUtil::isValidCreditCard` returns false when
 // the credit card details are invalid.
 TEST_F(AutofillCreditCardUtilTest, TestCreditCardValidity) {
   EXPECT_FALSE([AutofillCreditCardUtil
@@ -63,7 +63,7 @@ TEST_F(AutofillCreditCardUtilTest, TestCreditCardValidity) {
                appLocal:"en"]);
 }
 
-// Tests that the |AutofillCreditCardUtil::updateCreditCard| updates the credit
+// Tests that the `AutofillCreditCardUtil::updateCreditCard` updates the credit
 // card data.
 TEST_F(AutofillCreditCardUtilTest, TestCreditCardData) {
   autofill::CreditCard card =

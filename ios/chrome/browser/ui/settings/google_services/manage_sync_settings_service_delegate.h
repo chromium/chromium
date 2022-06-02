@@ -15,7 +15,7 @@
 - (void)toggleSwitchItem:(SyncSwitchItem*)switchItem withValue:(BOOL)value;
 
 // Called when the cell is tapped.
-// |cellRect| cell rect in table view system coordinate.
+// `cellRect` cell rect in table view system coordinate.
 - (void)didSelectItem:(TableViewItem*)item cellRect:(CGRect)cellRect;
 
 @end

@@ -47,7 +47,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSString* _fromEmail;
   NSString* _toEmail;
 
-  // Set to |SHOULD_CLEAR_DATA_USER_CHOICE| to indicate the user did not make
+  // Set to `SHOULD_CLEAR_DATA_USER_CHOICE` to indicate the user did not make
   // any choice to import or clear the data.
   ShouldClearData _shouldClearData;
 
@@ -179,7 +179,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Private
 
-// Updates the UI based on the value of |_shouldClearData|.
+// Updates the UI based on the value of `_shouldClearData`.
 - (void)updateUI {
   switch (_shouldClearData) {
     case SHOULD_CLEAR_DATA_USER_CHOICE:

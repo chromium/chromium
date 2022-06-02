@@ -11,19 +11,19 @@
 @interface EnterpriseInfoPopoverViewController : PopoverLabelViewController
 
 // Initializes the popover with default primary text, and secondary text based
-// on the given |enterpriseName|.
+// on the given `enterpriseName`.
 - (instancetype)initWithEnterpriseName:(NSString*)enterpriseName;
 
-// Initializes the popover with default behavior with the given |message| as
-// primary text, and secondary text based on the given |enterpriseName|.
-// By default, the value of |isPresentingFromButton| is set to YES and the value
-// of |addLearnMoreLink| is set to YES.
+// Initializes the popover with default behavior with the given `message` as
+// primary text, and secondary text based on the given `enterpriseName`.
+// By default, the value of `isPresentingFromButton` is set to YES and the value
+// of `addLearnMoreLink` is set to YES.
 - (instancetype)initWithMessage:(NSString*)message
                  enterpriseName:(NSString*)enterpriseName;
 
-// Initializes the popover with the given |message| as primary text, a secondary
-// text based on the given |enterpriseName|, a boolean |isPresentingFromButton|
-// to determine if it is shown from a button and a boolean |addLearnMoreLink|
+// Initializes the popover with the given `message` as primary text, a secondary
+// text based on the given `enterpriseName`, a boolean `isPresentingFromButton`
+// to determine if it is shown from a button and a boolean `addLearnMoreLink`
 // to add a "Learn More" link.
 - (instancetype)initWithMessage:(NSString*)message
                  enterpriseName:(NSString*)enterpriseName

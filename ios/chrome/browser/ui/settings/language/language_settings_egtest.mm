@@ -94,7 +94,7 @@ id<GREYMatcher> SearchBarScrim() {
 }
 
 // Matcher for a language entry with the given accessibility label. Matches a
-// button if |tappable| is true.
+// button if `tappable` is true.
 id<GREYMatcher> LanguageEntry(NSString* label, BOOL tappable = YES) {
   return grey_allOf(tappable ? ButtonWithAccessibilityLabel(label)
                              : grey_accessibilityLabel(label),
@@ -116,7 +116,7 @@ id<GREYMatcher> OfferToTranslateButton() {
 }
 
 // Matcher for an element with or without the
-// UIAccessibilityTraitSelected accessibility trait depending on |selected|.
+// UIAccessibilityTraitSelected accessibility trait depending on `selected`.
 id<GREYMatcher> ElementIsSelected(BOOL selected) {
   return selected
              ? grey_accessibilityTrait(UIAccessibilityTraitSelected)

@@ -12,7 +12,7 @@
 // BlockPopupsAppInterface provides app-side helpers for BlockPopupsTest.
 @interface BlockPopupsAppInterface : NSObject
 
-// Sets the popup content setting policy for the given |pattern|.
+// Sets the popup content setting policy for the given `pattern`.
 + (void)setPopupPolicy:(ContentSetting)policy forPattern:(NSString*)pattern;
 
 @end

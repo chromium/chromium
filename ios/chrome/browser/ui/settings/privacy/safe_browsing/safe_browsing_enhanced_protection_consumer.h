@@ -14,7 +14,7 @@
 // Consumer protocol for Safe Browsing Enhanced Protection view.
 @protocol SafeBrowsingEnhancedProtectionConsumer
 
-// Initializes item array for |safeBrowsingEnhancedProtectionItems|.
+// Initializes item array for `safeBrowsingEnhancedProtectionItems`.
 - (void)setSafeBrowsingEnhancedProtectionItems:
     (NSArray<TableViewItem*>*)safeBrowsingEnhancedProtectionItems;
 

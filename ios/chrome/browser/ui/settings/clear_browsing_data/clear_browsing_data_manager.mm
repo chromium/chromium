@@ -448,8 +448,8 @@ static NSDictionary* imageNamesByItemTypes = @{
 
 #pragma mark Items
 
-// Creates item of type |itemType| with |mask| of data to be cleared if
-// selected, |prefName|, and |titleId| of item.
+// Creates item of type `itemType` with `mask` of data to be cleared if
+// selected, `prefName`, and `titleId` of item.
 - (TableViewClearBrowsingDataItem*)
     clearDataItemWithType:(ClearBrowsingDataItemType)itemType
                   titleID:(int)titleMessageID
@@ -480,7 +480,7 @@ static NSDictionary* imageNamesByItemTypes = @{
     // displayed.
     clearDataItem.detailText = l10n_util::GetNSString(IDS_DEL_COOKIES_COUNTER);
   } else {
-    // Having a placeholder |detailText| helps reduce the observable
+    // Having a placeholder `detailText` helps reduce the observable
     // row-height changes induced by the counter callbacks.
     clearDataItem.detailText = @"\u00A0";
     __weak ClearBrowsingDataManager* weakSelf = self;
@@ -655,7 +655,7 @@ static NSDictionary* imageNamesByItemTypes = @{
 
 #pragma mark - Private Methods
 
-// Signs the user out of Chrome if the sign-in state is |ConsentLevel::kSignin|.
+// Signs the user out of Chrome if the sign-in state is `ConsentLevel::kSignin`.
 - (void)signOutIfNotSyncing {
   DCHECK(self.browserState);
   signin::IdentityManager* identityManager =
@@ -697,7 +697,7 @@ static NSDictionary* imageNamesByItemTypes = @{
     const bool showDialog =
         // 1. The dialog is relevant for the user.
         _shouldPopupDialogAboutOtherFormsOfBrowsingHistory &&
-        // 2. The notice has been shown less than |kMaxTimesHistoryNoticeShown|.
+        // 2. The notice has been shown less than `kMaxTimesHistoryNoticeShown`.
         noticeShownTimes < kMaxTimesHistoryNoticeShown;
     if (!showDialog) {
       return;

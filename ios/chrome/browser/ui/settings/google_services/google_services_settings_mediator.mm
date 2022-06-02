@@ -267,7 +267,7 @@ bool GetStatusForSigninPolicy() {
 }
 
 // Updates the non-personalized section according to the user consent. If
-// |notifyConsumer| is YES, the consumer is notified about model changes.
+// `notifyConsumer` is YES, the consumer is notified about model changes.
 - (void)updateNonPersonalizedSectionWithNotification:(BOOL)notifyConsumer {
   for (TableViewItem* item in self.nonPersonalizedItems) {
     ItemType type = static_cast<ItemType>(item.type);

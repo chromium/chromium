@@ -35,7 +35,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, copy) NSString* processingMessage;
 @property(nonatomic, copy) NSString* syncErrorMessage;
 
-// |browserState| must not be nil.
+// `browserState` must not be nil.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
@@ -44,9 +44,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @interface SyncEncryptionPassphraseTableViewController (Subclassing) <
     UITextFieldDelegate>
 
-// Whether this controller is for encryption or decryption. Returns |YES|, if
+// Whether this controller is for encryption or decryption. Returns `YES`, if
 // the used for the user to enter an existing passphrase that is not yet
-// available on the device. Returns |NO| if the user is setting a new
+// available on the device. Returns `NO` if the user is setting a new
 // passphrase.
 - (BOOL)forDecryption;
 
@@ -59,19 +59,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Whether the text field(s) is(are) filled.
 - (BOOL)areAllFieldsFilled;
 
-// Registers listening to the events of |textField|.
+// Registers listening to the events of `textField`.
 - (void)registerTextField:(UITextField*)textField;
 
-// Unregisters listening to the events of |textField|.
+// Unregisters listening to the events of `textField`.
 - (void)unregisterTextField:(UITextField*)textField;
 
-// Called after a touch event entering a |UITextField|.
+// Called after a touch event entering a `UITextField`.
 - (void)textFieldDidBeginEditing:(id)sender;
 
-// Called after a touch event changing a |UITextField|.
+// Called after a touch event changing a `UITextField`.
 - (void)textFieldDidChange:(id)sender;
 
-// Called after a touch event leaving a |UITextField| by clicking "return" key.
+// Called after a touch event leaving a `UITextField` by clicking "return" key.
 - (void)textFieldDidEndEditing:(id)sender;
 
 // Stops observing the sync service. This is required during the shutdown phase

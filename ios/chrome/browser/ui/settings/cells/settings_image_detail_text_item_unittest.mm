@@ -18,7 +18,7 @@
 using SettingsImageDetailTextItemTest = PlatformTest;
 
 // Tests that the text, detail text and image are honoured after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(SettingsImageDetailTextItemTest, ConfigureCell) {
   SettingsImageDetailTextItem* item =
       [[SettingsImageDetailTextItem alloc] initWithType:0];
@@ -47,7 +47,7 @@ TEST_F(SettingsImageDetailTextItemTest, ConfigureCell) {
 }
 
 // Tests that the attributed text is honoured after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(SettingsImageDetailTextItemTest, ConfigureAttributedText) {
   SettingsImageDetailTextItem* item =
       [[SettingsImageDetailTextItem alloc] initWithType:0];
@@ -91,7 +91,7 @@ TEST_F(SettingsImageDetailTextItemTest, setDetailTextColor) {
 }
 
 // Tests that the text, detail text and image are honoured after a call to
-// |configureCell:|, and then a second call.
+// `configureCell:`, and then a second call.
 TEST_F(SettingsImageDetailTextItemTest, ConfigureCellTwice) {
   SettingsImageDetailTextItem* item =
       [[SettingsImageDetailTextItem alloc] initWithType:0];

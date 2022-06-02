@@ -119,7 +119,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
   }
 
   // Adds a prepopulated search engine to TemplateURLService.
-  // |prepopulate_id| should be big enough (>1000) to avoid collision with real
+  // `prepopulate_id` should be big enough (>1000) to avoid collision with real
   // prepopulated search engines. The collision happens when
   // TemplateURLService::SetUserSelectedDefaultSearchProvider is called, in the
   // callback of PrefService the DefaultSearchManager will update the searchable

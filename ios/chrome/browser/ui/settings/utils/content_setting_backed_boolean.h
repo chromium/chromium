@@ -15,8 +15,8 @@ class HostContentSettingsMap;
 // An observable boolean backed by a setting from a HostContentSettingsMap.
 @interface ContentSettingBackedBoolean : NSObject<ObservableBoolean>
 
-// Returns a ContentSettingBackedBoolean backed by |settingID| from
-// |settingsMap|. |inverted| specifies that the ON state of the boolean value
+// Returns a ContentSettingBackedBoolean backed by `settingID` from
+// `settingsMap`. `inverted` specifies that the ON state of the boolean value
 // corresponds to the OFF state of the content setting. For example, a boolean
 // value for "disable popups" that corresponds to a model object that allows
 // popups.

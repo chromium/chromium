@@ -64,8 +64,8 @@ TEST_F(AutofillAddCreditCardMediatorTest,
        TestSavingCreditCardWithInvalidNumber) {
   PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager_);
 
-  // |creditCardMediatorHasInvalidCardNumber|expected to be called by
-  // |add_credit_card_mediator_| if the credit card has invalid number.
+  // `creditCardMediatorHasInvalidCardNumber|expected to be called by
+  // `add_credit_card_mediator_` if the credit card has invalid number.
   OCMExpect([add_credit_card_mediator_delegate_mock_
       creditCardMediatorHasInvalidCardNumber:[OCMArg any]]);
 
@@ -95,8 +95,8 @@ TEST_F(AutofillAddCreditCardMediatorTest,
        TestSavingCreditCardWithInvalidMonth) {
   PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager_);
 
-  // |creditCardMediatorHasInvalidExpirationDate| expected to be called by
-  // |add_credit_card_mediator_| if the credit card has invalid expiration date.
+  // `creditCardMediatorHasInvalidExpirationDate` expected to be called by
+  // `add_credit_card_mediator_` if the credit card has invalid expiration date.
   OCMExpect([add_credit_card_mediator_delegate_mock_
       creditCardMediatorHasInvalidExpirationDate:[OCMArg any]]);
 
@@ -123,8 +123,8 @@ TEST_F(AutofillAddCreditCardMediatorTest,
 TEST_F(AutofillAddCreditCardMediatorTest, TestSavingCreditCardWithInvalidYear) {
   PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager_);
 
-  // |creditCardMediatorHasInvalidExpirationDate| expected to be called by
-  // |add_credit_card_mediator_| if the credit card has invalid expiration date.
+  // `creditCardMediatorHasInvalidExpirationDate` expected to be called by
+  // `add_credit_card_mediator_` if the credit card has invalid expiration date.
   OCMExpect([add_credit_card_mediator_delegate_mock_
       creditCardMediatorHasInvalidExpirationDate:[OCMArg any]]);
 
@@ -153,8 +153,8 @@ TEST_F(AutofillAddCreditCardMediatorTest,
        TestSavingCreditCardWithInvalidNickname) {
   PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager_);
 
-  // |creditCardMediatorHasInvalidExpirationDate| expected to be called by
-  // |add_credit_card_mediator_| if the credit card has invalid expiration date.
+  // `creditCardMediatorHasInvalidExpirationDate` expected to be called by
+  // `add_credit_card_mediator_` if the credit card has invalid expiration date.
   OCMExpect([add_credit_card_mediator_delegate_mock_
       creditCardMediatorHasInvalidNickname:[OCMArg any]]);
 
@@ -181,8 +181,8 @@ TEST_F(AutofillAddCreditCardMediatorTest,
 TEST_F(AutofillAddCreditCardMediatorTest, TestSavingValidCreditCard) {
   PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager_);
 
-  // |creditCardMediatorDidFinish| expected to be called by
-  // |add_credit_card_mediator_| if the credit card has valid data.
+  // `creditCardMediatorDidFinish` expected to be called by
+  // `add_credit_card_mediator_` if the credit card has valid data.
   OCMExpect([add_credit_card_mediator_delegate_mock_
       creditCardMediatorDidFinish:[OCMArg any]]);
 
@@ -209,8 +209,8 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingValidCreditCard) {
 TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
   PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager_);
 
-  // |creditCardMediatorDidFinish| expected to be called by
-  // |add_credit_card_mediator_| if the credit card has valid data.
+  // `creditCardMediatorDidFinish` expected to be called by
+  // `add_credit_card_mediator_` if the credit card has valid data.
   OCMExpect([add_credit_card_mediator_delegate_mock_
       creditCardMediatorDidFinish:[OCMArg any]]);
 

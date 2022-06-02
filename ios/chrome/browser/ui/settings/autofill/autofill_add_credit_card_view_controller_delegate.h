@@ -24,28 +24,28 @@
 - (void)addCreditCardViewControllerDidCancel:
     (AutofillAddCreditCardViewController*)viewController;
 
-// Checks if a credit card has a valid |cardNumber|.
+// Checks if a credit card has a valid `cardNumber`.
 - (bool)addCreditCardViewController:
             (AutofillAddCreditCardViewController*)viewController
             isValidCreditCardNumber:(NSString*)cardNumber;
 
-// Checks if a credit card has a valid |expirationMonth|.
+// Checks if a credit card has a valid `expirationMonth`.
 - (bool)addCreditCardViewController:
             (AutofillAddCreditCardViewController*)viewController
     isValidCreditCardExpirationMonth:(NSString*)expirationMonth;
 
-// Checks if a credit card has a valid |expirationYear|.
+// Checks if a credit card has a valid `expirationYear`.
 - (bool)addCreditCardViewController:
             (AutofillAddCreditCardViewController*)viewController
     isValidCreditCardExpirationYear:(NSString*)expirationYear;
 
-// Checks if a credit card has a valid |cardNickname|.
+// Checks if a credit card has a valid `cardNickname`.
 - (bool)addCreditCardViewController:
             (AutofillAddCreditCardViewController*)viewController
                 isValidCardNickname:(NSString*)cardNickname;
 
-// Checks if a credit card has a valid |cardNumber|, |expirationMonth|, a
-// |expirationYear|, and |cardNickname|.
+// Checks if a credit card has a valid `cardNumber`, `expirationMonth`, a
+// `expirationYear`, and `cardNickname`.
 - (bool)addCreditCardViewController:
             (AutofillAddCreditCardViewController*)viewController
             isValidCreditCardNumber:(NSString*)cardNumber

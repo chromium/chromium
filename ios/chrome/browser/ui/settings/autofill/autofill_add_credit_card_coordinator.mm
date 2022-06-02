@@ -148,7 +148,7 @@
   [self.actionSheetCoordinator start];
 }
 
-// Shows alert with received message by |AlertCoordinator|.
+// Shows alert with received message by `AlertCoordinator`.
 - (void)showAlertWithMessage:(NSString*)message {
   self.alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.addCreditCardViewController

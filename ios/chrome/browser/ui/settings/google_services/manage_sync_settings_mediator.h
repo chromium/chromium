@@ -41,7 +41,7 @@ class SyncService;
 @property(nonatomic, assign) BOOL forcedSigninEnabled;
 
 // Designated initializer.
-// |syncService|: Sync service. Should not be null.
+// `syncService`: Sync service. Should not be null.
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
                     userPrefService:(PrefService*)userPrefService
     NS_DESIGNATED_INITIALIZER;

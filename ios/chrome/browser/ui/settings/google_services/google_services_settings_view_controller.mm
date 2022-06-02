@@ -68,8 +68,8 @@
                               targetRect:targetRect];
 }
 
-// Shows an enterprise info popover anchored on  |buttonView| giving |message|.
-// A default message is used when |message| is nil.
+// Shows an enterprise info popover anchored on  `buttonView` giving `message`.
+// A default message is used when `message` is nil.
 - (void)showEntepriseInfoPopoverOnButton:(UIButton*)buttonView
                              withMessage:(NSString*)message {
   if (message) {

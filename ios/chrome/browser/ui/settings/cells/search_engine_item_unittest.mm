@@ -22,7 +22,7 @@ namespace {
 using SearchEngineItemTest = PlatformTest;
 }  // namespace
 
-// Tests that the UILabels are set properly after a call to |configureCell:|.
+// Tests that the UILabels are set properly after a call to `configureCell:`.
 TEST_F(SearchEngineItemTest, BasicProperties) {
   NSString* text = @"Title text";
   NSString* detailText = @"www.google.com";

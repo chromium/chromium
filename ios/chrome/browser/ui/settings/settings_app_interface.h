@@ -48,7 +48,7 @@
 + (void)resetSearchEngine;
 
 // Adds a URL rewriter to replace all requests having their host containing a
-// string |host| from |hosts|. Those URL are rewritten to
+// string `host` from `hosts`. Those URL are rewritten to
 // 127.0.0.1:<port>/<host>.
 + (void)addURLRewriterForHosts:(NSArray<NSString*>*)hosts
                         onPort:(NSString*)port;

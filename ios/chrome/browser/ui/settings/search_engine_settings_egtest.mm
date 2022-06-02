@@ -52,8 +52,8 @@ std::unique_ptr<net::test_server::HttpResponse> SearchResponse(
   return std::move(http_response);
 }
 
-// Responses for the test http server. |server_url| is the URL of the server,
-// used for absolute URL in the response. |open_search_queried| is set to true
+// Responses for the test http server. `server_url` is the URL of the server,
+// used for absolute URL in the response. `open_search_queried` is set to true
 // when the OpenSearchDescription is queried.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     std::string* server_url,

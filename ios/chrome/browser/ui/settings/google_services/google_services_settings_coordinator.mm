@@ -153,8 +153,8 @@ using signin_metrics::PromoAction;
                          message:nil
                             rect:targetRect
                             view:self.viewController.view];
-  // Because setting |title| to nil automatically forces the title-style text on
-  // |message| in the UIAlertController, the attributed message below
+  // Because setting `title` to nil automatically forces the title-style text on
+  // `message` in the UIAlertController, the attributed message below
   // specifically denotes the font style to apply.
   if (isSyncConsentGiven) {
     self.signOutCoordinator.attributedMessage = [[NSAttributedString alloc]

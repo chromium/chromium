@@ -19,7 +19,7 @@ class PersonalDataManager;
 @interface AutofillAddCreditCardMediator
     : NSObject <AddCreditCardViewControllerDelegate>
 
-// Designated initializer. |addCreditCardMediatorDelegate| and |dataManager|
+// Designated initializer. `addCreditCardMediatorDelegate` and `dataManager`
 // should not be nil.
 - (instancetype)initWithDelegate:(id<AddCreditCardMediatorDelegate>)
                                      addCreditCardMediatorDelegate

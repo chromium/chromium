@@ -28,19 +28,19 @@
 @property(nonatomic, strong) UIImageView* leadingImageView;
 
 // Constraint that is used to define trailing text constraint without
-// |trailingImageView| |activityIndicator| and |infoButton|.
+// `trailingImageView` `activityIndicator` and `infoButton`.
 @property(nonatomic, strong)
     NSLayoutConstraint* textNoTrailingContentsConstraint;
 
 // Constraint that is used to define trailing text constraint with either
-// |trailingImageView| or |activityIndicator| or |infoButton| showing.
+// `trailingImageView` or `activityIndicator` or `infoButton` showing.
 @property(nonatomic, strong)
     NSLayoutConstraint* textWithTrailingContentsConstraint;
 
-// Constraint used for leading text constraint without |leadingImage|.
+// Constraint used for leading text constraint without `leadingImage`.
 @property(nonatomic, strong) NSLayoutConstraint* textNoLeadingImageConstraint;
 
-// Constraint used for leading text constraint with |leadingImage| showing.
+// Constraint used for leading text constraint with `leadingImage` showing.
 @property(nonatomic, strong) NSLayoutConstraint* textWithLeadingImageConstraint;
 
 @end
@@ -58,7 +58,7 @@
 
     // Attributes of row contents in order or appearance (if present).
 
-    // |_leadingImageView| attributes
+    // `_leadingImageView` attributes
     _leadingImageView = [[UIImageView alloc] init];
     _leadingImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _leadingImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -66,14 +66,14 @@
     [contentView addSubview:_leadingImageView];
 
     // Text attributes.
-    // |_textLabel| attributes.
+    // `_textLabel` attributes.
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _textLabel.adjustsFontForContentSizeCategory = YES;
     _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     [contentView addSubview:_textLabel];
-    // |detailText| attributes.
+    // `detailText` attributes.
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.numberOfLines = 0;
     _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -83,20 +83,20 @@
     _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     [contentView addSubview:_detailTextLabel];
 
-    // Only |_trailingImageView| or |_activityIndicator| or |_infoButton| is
-    // shown, not all at once. |trailingImage| attributes.
+    // Only `_trailingImageView` or `_activityIndicator` or `_infoButton` is
+    // shown, not all at once. `trailingImage` attributes.
     _trailingImageView = [[UIImageView alloc] init];
     _trailingImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _trailingImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     _trailingImageView.hidden = YES;
     [contentView addSubview:_trailingImageView];
-    // |activityIndictor| attributes.
+    // `activityIndictor` attributes.
     // Creates default activity indicator. Color depends on appearance.
     _activityIndicator = [[UIActivityIndicatorView alloc] init];
     _activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
     _activityIndicator.hidden = YES;
     [contentView addSubview:_activityIndicator];
-    // |_infoButton| attribues.
+    // `_infoButton` attribues.
     _infoButton = [UIButton buttonWithType:UIButtonTypeSystem];
     _infoButton.translatesAutoresizingMaskIntoConstraints = NO;
     _infoButton.hidden = YES;
@@ -135,8 +135,8 @@
       heightConstraint,
       _textNoTrailingContentsConstraint,
 
-      // Constraints for |_trailingImageView| (same position as
-      // |_activityIndictor|).
+      // Constraints for `_trailingImageView` (same position as
+      // `_activityIndictor`).
       [_trailingImageView.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-kTableViewHorizontalSpacing],
@@ -149,8 +149,8 @@
       [_trailingImageView.leadingAnchor
           constraintEqualToAnchor:_activityIndicator.leadingAnchor],
 
-      // Constraints for |_infoButton| (same position as
-      // |_trailingImageView|).
+      // Constraints for `_infoButton` (same position as
+      // `_trailingImageView`).
       [_infoButton.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-kTableViewHorizontalSpacing],
@@ -163,8 +163,8 @@
       [_infoButton.leadingAnchor
           constraintEqualToAnchor:_activityIndicator.leadingAnchor],
 
-      // Constraints for |_activityIndictor| (same position as
-      // |_trailingImageView|).
+      // Constraints for `_activityIndictor` (same position as
+      // `_trailingImageView`).
       [_activityIndicator.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-kTableViewHorizontalSpacing],
@@ -175,7 +175,7 @@
       [_activityIndicator.centerYAnchor
           constraintEqualToAnchor:textLayoutGuide.centerYAnchor],
 
-      // Constraints for |_leadingImageView|.
+      // Constraints for `_leadingImageView`.
       [_leadingImageView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
@@ -186,7 +186,7 @@
       [_leadingImageView.centerYAnchor
           constraintEqualToAnchor:textLayoutGuide.centerYAnchor],
 
-      // Constraints for |_textLabel| and |_detailTextLabel|.
+      // Constraints for `_textLabel` and `_detailTextLabel`.
       [textLayoutGuide.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
       [textLayoutGuide.leadingAnchor
@@ -203,7 +203,7 @@
       [_textLabel.bottomAnchor
           constraintEqualToAnchor:_detailTextLabel.topAnchor],
     ]];
-    // Make sure there are top and bottom margins of at least |margin|.
+    // Make sure there are top and bottom margins of at least `margin`.
     AddOptionalVerticalPadding(self.contentView, textLayoutGuide,
                                kTableViewTwoLabelsCellVerticalSpacing);
   }
@@ -250,7 +250,7 @@
   BOOL hidden = !leadingImage;
   self.leadingImageView.image = leadingImage;
   self.leadingImageView.hidden = hidden;
-  // Update the leading text constraint based on |image| being provided.
+  // Update the leading text constraint based on `image` being provided.
   if (hidden) {
     _textWithLeadingImageConstraint.active = NO;
     _textNoLeadingImageConstraint.active = YES;
@@ -283,11 +283,11 @@
 
 #pragma mark - Private Methods
 
-// Updates the constraints around the trailing image for when |trailingImage| or
-// |activityIndicator| or |infoButton| is shown or hidden.
+// Updates the constraints around the trailing image for when `trailingImage` or
+// `activityIndicator` or `infoButton` is shown or hidden.
 - (void)updateTrailingImageTextConstraints {
-  // Active proper |textLayoutGuide| trailing constraint to show
-  // |trailingImageView| or |activityIndicator| or |infoButton|.
+  // Active proper `textLayoutGuide` trailing constraint to show
+  // `trailingImageView` or `activityIndicator` or `infoButton`.
   if (self.activityIndicator.hidden && self.trailingImageView.hidden &&
       self.infoButton.hidden) {
     _textWithTrailingContentsConstraint.active = NO;

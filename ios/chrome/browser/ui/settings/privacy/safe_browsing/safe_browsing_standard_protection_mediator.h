@@ -25,9 +25,9 @@ class IdentityManager;
 @property(nonatomic, weak) id<SafeBrowsingStandardProtectionConsumer> consumer;
 
 // Designated initializer. All the parameters should not be null.
-// |userPrefService|: preference service from the browser state.
-// |authService|: authentication service from browser state.
-// |identityManager|: identity manager from browser state.
+// `userPrefService`: preference service from the browser state.
+// `authService`: authentication service from browser state.
+// `identityManager`: identity manager from browser state.
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
                             authService:(AuthenticationService*)authService
                         identityManager:

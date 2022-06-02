@@ -15,7 +15,7 @@ class Browser;
 @interface ContentSettingsTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
-// The designated initializer. |browser| must not be null.
+// The designated initializer. `browser` must not be null.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 @end

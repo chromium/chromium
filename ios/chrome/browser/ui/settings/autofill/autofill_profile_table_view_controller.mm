@@ -421,8 +421,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Switch Helpers
 
-// Sets switchItem's state to |on|. It is important that there is only one item
-// of |switchItemType| in SectionIdentifierSwitches.
+// Sets switchItem's state to `on`. It is important that there is only one item
+// of `switchItemType` in SectionIdentifierSwitches.
 - (void)setSwitchItemOn:(BOOL)on itemType:(ItemType)switchItemType {
   NSIndexPath* switchPath =
       [self.tableViewModel indexPathForItemType:switchItemType
@@ -433,9 +433,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switchItem.on = on;
 }
 
-// Sets switchItem's enabled status to |enabled| and reconfigures the
+// Sets switchItem's enabled status to `enabled` and reconfigures the
 // corresponding cell. It is important that there is no more than one item of
-// |switchItemType| in SectionIdentifierSwitches.
+// `switchItemType` in SectionIdentifierSwitches.
 - (void)setSwitchItemEnabled:(BOOL)enabled itemType:(ItemType)switchItemType {
   TableViewModel* model = self.tableViewModel;
 

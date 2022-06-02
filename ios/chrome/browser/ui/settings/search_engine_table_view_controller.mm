@@ -444,7 +444,7 @@ const char kUmaSelectDefaultSearchEngine[] =
 #pragma mark - Private methods
 
 // Loads all TemplateURLs from TemplateURLService and classifies them into
-// |_firstList| and |_secondList|. If a TemplateURL is
+// `_firstList` and `_secondList`. If a TemplateURL is
 // prepopulated, created by policy or the default search engine, it will get
 // into the first list, otherwise the second list.
 - (void)loadSearchEngines {
@@ -466,7 +466,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   // Do not sort prepopulated search engines, they are already sorted by
   // locale use.
 
-  // Partially sort |_secondList| by TemplateURL's last_visited time.
+  // Partially sort `_secondList` by TemplateURL's last_visited time.
   auto begin = _secondList.begin();
   auto end = _secondList.end();
   auto pivot = begin + std::min(kMaxcustomSearchEngines, _secondList.size());
@@ -475,7 +475,7 @@ const char kUmaSelectDefaultSearchEngine[] =
                       return lhs->last_visited() > rhs->last_visited();
                     });
 
-  // Keep the search engines visited within |kMaxVisitAge| and erase others.
+  // Keep the search engines visited within `kMaxVisitAge` and erase others.
   const base::Time cutoff = base::Time::Now() - kMaxVisitAge;
   auto cutBegin = std::find_if(begin, pivot, [cutoff](const TemplateURL* url) {
     return url->last_visited() < cutoff;
@@ -483,7 +483,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   _secondList.erase(cutBegin, end);
 }
 
-// Creates a SearchEngineItem for |templateURL|.
+// Creates a SearchEngineItem for `templateURL`.
 - (SearchEngineItem*)createSearchEngineItemFromTemplateURL:
     (const TemplateURL*)templateURL {
   SearchEngineItem* item = nil;
@@ -518,19 +518,19 @@ const char kUmaSelectDefaultSearchEngine[] =
       SEARCH_ENGINE_MAX);
 }
 
-// Deletes custom search engines at |indexPaths|. If a custom engine is selected
+// Deletes custom search engines at `indexPaths`. If a custom engine is selected
 // as the default engine, resets default engine to the first prepopulated
 // engine.
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
-  // Update |_templateURLService|, |_firstList| and |_secondList|.
+  // Update `_templateURLService`, `_firstList` and `_secondList`.
   _updatingBackend = YES;
   size_t removedItemsInSecondList = 0;
   NSInteger firstSection = [self.tableViewModel
       sectionForSectionIdentifier:SectionIdentifierFirstList];
   bool resetDefaultEngine = false;
 
-  // Remove search engines from |_firstList|, |_secondList| and
-  // |_templateURLService|.
+  // Remove search engines from `_firstList`, `_secondList` and
+  // `_templateURLService`.
   for (NSIndexPath* path : indexPaths) {
     TemplateURL* engine = nullptr;
     if (path.section == firstSection) {
@@ -550,7 +550,7 @@ const char kUmaSelectDefaultSearchEngine[] =
       _secondList[path.row] = nullptr;
       ++removedItemsInSecondList;
     }
-    // If |engine| is selected as default search engine, reset the default
+    // If `engine` is selected as default search engine, reset the default
     // engine to the first prepopulated engine.
     if (engine == _templateURLService->GetDefaultSearchProvider()) {
       DCHECK(_firstList.size() > 0);
@@ -652,8 +652,8 @@ const char kUmaSelectDefaultSearchEngine[] =
                         withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
-// Returns whether the |item| is different from an item that would be created
-// from |templateURL|.
+// Returns whether the `item` is different from an item that would be created
+// from `templateURL`.
 - (BOOL)isItem:(SearchEngineItem*)item
     differentForTemplateURL:(TemplateURL*)templateURL {
   NSString* name = base::SysUTF16ToNSString(templateURL->short_name());
