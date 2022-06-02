@@ -304,12 +304,18 @@ LocalNetworkRequestsPageLoadMetricsObserver::
 LocalNetworkRequestsPageLoadMetricsObserver::
     ~LocalNetworkRequestsPageLoadMetricsObserver() {}
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+const char* LocalNetworkRequestsPageLoadMetricsObserver::GetObserverName()
+    const {
+  static const char kName[] = "LocalNetworkRequestsPageLoadMetricsObserver";
+  return kName;
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 LocalNetworkRequestsPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  return STOP_OBSERVING;
+  // This class needs forwarding for the event OnLoadedResource.
+  return FORWARD_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
