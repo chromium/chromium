@@ -277,6 +277,10 @@ absl::optional<arc::UserInteractionType> GetUserInterationType(
       user_interaction_type = arc::UserInteractionType::
           APP_STARTED_FROM_SMART_TEXT_SELECTION_CONTEXT_MENU;
       break;
+    case apps::mojom::LaunchSource::kFromOtherApp:
+      user_interaction_type =
+          arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP;
+      break;
     default:
       NOTREACHED();
       return absl::nullopt;

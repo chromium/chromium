@@ -34,6 +34,10 @@ class MediaAppPageHandler : public media_app_ui::mojom::PageHandler {
   void IsFileBrowserWritable(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       IsFileBrowserWritableCallback callback) override;
+  void EditInPhotos(
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
+      const std::string& mime_type,
+      EditInPhotosCallback callback) override;
 
  private:
   mojo::Receiver<media_app_ui::mojom::PageHandler> receiver_;

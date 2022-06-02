@@ -64,6 +64,13 @@ mediaApp.AbstractFile.prototype.error;
  * @type {function(): !Promise<boolean>|undefined}
  */
 mediaApp.AbstractFile.prototype.isBrowserWritable;
+
+/**
+ * A function that attempts to launch the original file in Photos in editing
+ * mode. Returns a promise that resolves when the launch has initiated.
+ * @type {function(): !Promise<undefined>|undefined}
+ */
+mediaApp.AbstractFile.prototype.editInPhotos;
 /**
  * A function that will overwrite the original file with the provided Blob.
  * Returns a promise that resolves when the write operations are complete. Or

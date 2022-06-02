@@ -7,6 +7,9 @@
 
 #include <string>
 
+#include "base/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -17,6 +20,8 @@ class MediaAppUIDelegate {
  public:
   virtual ~MediaAppUIDelegate() = default;
 
+  virtual base::WeakPtr<MediaAppUIDelegate> GetWeakPtr() = 0;
+
   // Opens the native chrome feedback dialog scoped to chrome://media-app.
   // Returns an optional error message if unable to open the dialog or nothing
   // if the dialog was determined to have opened successfully.
@@ -24,6 +29,13 @@ class MediaAppUIDelegate {
 
   // Toggles fullscreen mode on the Browser* hosting this MediaApp instance.
   virtual void ToggleBrowserFullscreenMode() = 0;
+
+  // Launches the file at |url| in the Photos Android app with an intent to
+  // edit.
+  virtual void EditFileInPhotos(
+      absl::optional<storage::FileSystemURL> url,
+      const std::string& mime_type,
+      base::OnceCallback<void()> edit_in_photos_callback) = 0;
 };
 
 }  // namespace ash

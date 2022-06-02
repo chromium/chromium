@@ -4,21 +4,37 @@
 
 #include "chrome/browser/ash/web_applications/media_app/chrome_media_app_ui_delegate.h"
 
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "base/bind.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/channel_info.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/version_info/channel.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
 ChromeMediaAppUIDelegate::ChromeMediaAppUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
+
+ChromeMediaAppUIDelegate::~ChromeMediaAppUIDelegate() {}
+
+base::WeakPtr<ash::MediaAppUIDelegate> ChromeMediaAppUIDelegate::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
 
 absl::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
   Profile* profile = Profile::FromWebUI(web_ui_);
@@ -46,4 +62,39 @@ void ChromeMediaAppUIDelegate::ToggleBrowserFullscreenMode() {
   if (browser) {
     chrome::ToggleFullscreenMode(browser);
   }
+}
+
+void ChromeMediaAppUIDelegate::EditFileInPhotos(
+    absl::optional<storage::FileSystemURL> url,
+    const std::string& mime_type,
+    base::OnceCallback<void()> edit_in_photos_callback) {
+  if (!url.has_value()) {
+    std::move(edit_in_photos_callback).Run();
+    return;
+  }
+
+  auto* web_contents = web_ui_->GetWebContents();
+  auto* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(Profile::FromWebUI(web_ui_));
+
+  GURL filesystem_url;
+  file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
+      proxy->profile(), url->path(), GURL(ash::kChromeUIMediaAppURL),
+      &filesystem_url);
+
+  auto intent = apps_util::CreateEditIntentFromFile(filesystem_url, mime_type);
+
+  proxy->LaunchAppWithIntent(
+      arc::kGooglePhotosAppId, ui::EF_NONE, std::move(intent),
+      apps::mojom::LaunchSource::kFromOtherApp, nullptr,
+      base::BindOnce(
+          [](base::OnceCallback<void()> callback,
+             base::WeakPtr<content::WebContents> web_contents,
+             bool launch_success) {
+            if (launch_success && web_contents) {
+              web_contents->Close();
+            }
+            std::move(callback).Run();
+          },
+          std::move(edit_in_photos_callback), web_contents->GetWeakPtr()));
 }

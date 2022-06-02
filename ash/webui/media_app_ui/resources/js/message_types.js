@@ -13,6 +13,7 @@
  */
 export const Message = {
   DELETE_FILE: 'delete-file',
+  EDIT_IN_PHOTOS: 'edit-in-photos',
   IFRAME_READY: 'iframe-ready',
   IS_FILE_BROWSER_WRITABLE: 'is-file-browser-writable',
   LOAD_EXTRA_FILES: 'load-extra-files',
@@ -71,6 +72,14 @@ export let IsFileBrowserWritableMessage;
 
 /** @typedef {{writable: boolean}} */
 export let IsFileBrowserWritableResponse;
+
+/**
+ * Message sent by the unprivileged context to the privileged context requesting
+ * the current file to be launched in Photos with an edit intent. If the
+ * supplied file `token` is invalid the request is rejected.
+ * @typedef {{token: number, mimeType: string}}
+ */
+export let EditInPhotosMessage;
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting

@@ -5,7 +5,7 @@
 import './sandboxed_load_time_data.js';
 
 import {assertCast, MessagePipe} from './message_pipe.m.js';
-import {FileContext, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
+import {EditInPhotosMessage, FileContext, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
 import {loadPiex} from './piex_module_loader.js';
 
 /** A pipe through which we can send messages to the parent frame. */
@@ -53,6 +53,16 @@ class ReceivedFile {
         await parentMessagePipe.sendMessage(
             Message.IS_FILE_BROWSER_WRITABLE, message));
     return writable;
+  }
+
+  /**
+   * @override
+   */
+  async editInPhotos() {
+    /** @type {!EditInPhotosMessage} */
+    const message = {token: this.token, mimeType: this.mimeType};
+
+    await parentMessagePipe.sendMessage(Message.EDIT_IN_PHOTOS, message);
   }
 
   /**

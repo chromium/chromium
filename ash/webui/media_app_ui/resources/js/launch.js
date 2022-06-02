@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import * as error_reporter from './error_reporter.js';
 import {assertCast, MessagePipe} from './message_pipe.m.js';
-import {DeleteFileMessage, FileContext, IsFileBrowserWritableMessage, LoadFilesMessage, Message, NavigateMessage, NotifyCurrentFileMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
+import {DeleteFileMessage, EditInPhotosMessage, FileContext, IsFileBrowserWritableMessage, LoadFilesMessage, Message, NavigateMessage, NotifyCurrentFileMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
 import {mediaAppPageHandler} from './mojo_api_bootstrap.js';
 
 const DEFAULT_APP_ICON = 'app';
@@ -225,6 +225,17 @@ guestMessagePipe.registerHandler(Message.OPEN_IN_SANDBOXED_VIEWER, message => {
   window.open(
       `./viewpdfhost.html?${new URLSearchParams(message)}`, '_blank',
       'popup=1');
+});
+
+guestMessagePipe.registerHandler(Message.EDIT_IN_PHOTOS, message => {
+  const editInPhotosMsg = /** @type {!EditInPhotosMessage} */ (message);
+  const fileHandle = fileHandleForToken(editInPhotosMsg.token);
+
+  const transferToken = new blink.mojom.FileSystemAccessTransferTokenRemote(
+      Mojo.getFileSystemAccessTransferToken(fileHandle));
+
+  return mediaAppPageHandler.editInPhotos(
+      transferToken, editInPhotosMsg.mimeType);
 });
 
 guestMessagePipe.registerHandler(Message.IS_FILE_BROWSER_WRITABLE, message => {
