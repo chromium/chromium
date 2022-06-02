@@ -31,7 +31,7 @@
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/platform_keys/chaps_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"

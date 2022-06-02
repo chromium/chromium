@@ -33,7 +33,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/google/google_brand_chromeos.h"
 #include "chrome/browser/net/nss_service.h"

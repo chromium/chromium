@@ -18,7 +18,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_connection_tracker.h"

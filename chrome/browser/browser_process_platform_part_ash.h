@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_CHROMEOS_H_
-#define CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_CHROMEOS_H_
+#ifndef CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_ASH_H_
+#define CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_ASH_H_
 
 #include <memory>
 
@@ -211,4 +211,4 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-#endif  // CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_CHROMEOS_H_
+#endif  // CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_ASH_H_

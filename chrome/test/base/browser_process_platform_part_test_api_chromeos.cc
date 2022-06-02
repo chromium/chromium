@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 
 BrowserProcessPlatformPartTestApi::BrowserProcessPlatformPartTestApi(
