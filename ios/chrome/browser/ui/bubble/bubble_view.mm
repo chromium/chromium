@@ -431,7 +431,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   UIView* background = self.background;
   UIView* label = self.label;
   UIView* arrow = self.arrow;
-  // Ensure that the label is top aligned and properly aligned horizontaly.
+  // Ensure that the label is top aligned and properly aligned horizontally.
   NSArray<NSLayoutConstraint*>* labelAlignmentConstraints = @[
     [label.topAnchor constraintEqualToAnchor:background.topAnchor
                                     constant:kBubbleVerticalPadding],
@@ -456,6 +456,12 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   for (NSLayoutConstraint* constraint in bubbleMarginConstraints) {
     constraint.priority = UILayoutPriorityDefaultHigh;
   }
+  // Make sure that if one of the bubbleMarginConstraints is overridden, the
+  // bubble still stays centered.
+  NSLayoutConstraint* backgroundCentering =
+      [self.centerXAnchor constraintEqualToAnchor:background.centerXAnchor];
+  bubbleMarginConstraints =
+      [bubbleMarginConstraints arrayByAddingObject:backgroundCentering];
   // Ensure that the arrow is inside the background's bound. These constraints
   // shouldn't affect the arrow's position.
   NSArray<NSLayoutConstraint*>* bubbleArrowMarginConstraints = @[
