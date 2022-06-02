@@ -239,24 +239,6 @@ action("gen_devtools_client_api") {
   ]
 }
 
-if (headless_fontconfig_utils && !is_fuchsia) {
-  static_library("headless_fontconfig_utils") {
-    sources = [
-      "public/headless_export.h",
-      "public/util/fontconfig.cc",
-      "public/util/fontconfig.h",
-    ]
-
-    deps = [
-      "//base",
-      "//build/config/freetype",
-      "//third_party/fontconfig",
-    ]
-
-    configs += [ ":inside_headless_component" ]
-  }
-}
-
 inspector_protocol_generate("protocol_sources") {
   visibility = [
     ":backend_cdp_bindings",
@@ -622,10 +604,6 @@ component("headless_non_renderer") {
   if (use_dbus) {
     defines += [ "USE_DBUS" ]
     deps += [ "//device/bluetooth" ]
-  }
-
-  if (headless_fontconfig_utils && !is_fuchsia) {
-    deps += [ ":headless_fontconfig_utils" ]
   }
 
   configs += [ ":inside_headless_component" ]

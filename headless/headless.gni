@@ -6,9 +6,6 @@ declare_args() {
   # Embed resource.pak file into the binary for easier distribution.
   headless_use_embedded_resources = false
 
-  # Provide bindings for font loading for headless embedders.
-  headless_fontconfig_utils = false
-
   # Use Prefs component to access Local State and other preferences.
   headless_use_prefs = true
 
