@@ -59,6 +59,9 @@ base::TimeDelta PrefetchContainerLifetimeInPrefetchService();
 // If this is false, there is no MIME type restriction.
 bool PrefetchServiceHTMLOnly();
 
+// The maximum time a prefetched response is servable.
+CONTENT_EXPORT base::TimeDelta PrefetchCacheableDuration();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_SPECULATION_RULES_PREFETCH_PREFETCH_PARAMS_H_

@@ -115,4 +115,9 @@ bool PrefetchServiceHTMLOnly() {
       features::kPrefetchUseContentRefactor, "html_only", false);
 }
 
+base::TimeDelta PrefetchCacheableDuration() {
+  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
+      features::kPrefetchUseContentRefactor, "cacheable_duration", 300));
+}
+
 }  // namespace content

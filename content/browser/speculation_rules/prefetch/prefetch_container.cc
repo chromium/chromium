@@ -6,6 +6,9 @@
 
 #include <memory>
 
+#include "base/callback.h"
+#include "base/time/time.h"
+#include "content/browser/speculation_rules/prefetch/prefetch_cookie_listener.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_document_manager.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_network_context.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_service.h"
@@ -14,6 +17,7 @@
 #include "content/browser/speculation_rules/prefetch/prefetched_mainframe_response_container.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -48,6 +52,58 @@ PrefetchDocumentManager* PrefetchContainer::GetPrefetchDocumentManager() const {
   return prefetch_document_manager_.get();
 }
 
+void PrefetchContainer::RegisterCookieListener(
+    network::mojom::CookieManager* cookie_manager) {
+  cookie_listener_ =
+      PrefetchCookieListener::MakeAndRegister(url_, cookie_manager);
+}
+
+void PrefetchContainer::StopCookieListener() {
+  if (cookie_listener_)
+    cookie_listener_->StopListening();
+}
+
+bool PrefetchContainer::HaveDefaultContextCookiesChanged() const {
+  if (cookie_listener_)
+    return cookie_listener_->HaveCookiesChanged();
+  return false;
+}
+
+bool PrefetchContainer::IsIsolatedCookieCopyInProgress() const {
+  switch (cookie_copy_status_) {
+    case CookieCopyStatus::kNotStarted:
+    case CookieCopyStatus::kCompleted:
+      return false;
+    case CookieCopyStatus::kInProgress:
+      return true;
+  }
+}
+
+void PrefetchContainer::OnIsolatedCookieCopyStart() {
+  DCHECK(!IsIsolatedCookieCopyInProgress());
+
+  // We don't want the cookie listener for this URL to get the changes from the
+  // copy.
+  StopCookieListener();
+
+  cookie_copy_status_ = CookieCopyStatus::kInProgress;
+}
+
+void PrefetchContainer::OnIsolatedCookieCopyComplete() {
+  DCHECK(IsIsolatedCookieCopyInProgress());
+
+  cookie_copy_status_ = CookieCopyStatus::kCompleted;
+
+  if (on_cookie_copy_complete_callback_)
+    std::move(on_cookie_copy_complete_callback_).Run();
+}
+
+void PrefetchContainer::SetOnCookieCopyCompleteCallback(
+    base::OnceClosure callback) {
+  DCHECK(IsIsolatedCookieCopyInProgress());
+  on_cookie_copy_complete_callback_ = std::move(callback);
+}
+
 void PrefetchContainer::TakeURLLoader(
     std::unique_ptr<network::SimpleURLLoader> loader) {
   DCHECK(!loader_);
@@ -59,17 +115,25 @@ void PrefetchContainer::ResetURLLoader() {
   loader_.reset();
 }
 
-bool PrefetchContainer::HasPrefetchedResponse() const {
-  return prefetched_response_ != nullptr;
+bool PrefetchContainer::HasValidPrefetchedResponse(
+    base::TimeDelta cacheable_duration) const {
+  return prefetched_response_ != nullptr &&
+         prefetch_received_time_.has_value() &&
+         base::TimeTicks::Now() <
+             prefetch_received_time_.value() + cacheable_duration;
 }
 
 void PrefetchContainer::TakePrefetchedResponse(
     std::unique_ptr<PrefetchedMainframeResponseContainer> prefetched_response) {
+  DCHECK(!prefetched_response_);
+  DCHECK(!is_decoy_);
+  prefetch_received_time_ = base::TimeTicks::Now();
   prefetched_response_ = std::move(prefetched_response);
 }
 
 std::unique_ptr<PrefetchedMainframeResponseContainer>
 PrefetchContainer::ReleasePrefetchedResponse() {
+  prefetch_received_time_.reset();
   return std::move(prefetched_response_);
 }
 

@@ -59,6 +59,15 @@ class CONTENT_EXPORT PrefetchService {
 
   virtual void PrefetchUrl(base::WeakPtr<PrefetchContainer> prefetch_container);
 
+  // Called when a navigation to the URL associated with |prefetch_container| is
+  // likely to occur in the immediate future.
+  void PrepareToServe(base::WeakPtr<PrefetchContainer> prefetch_container);
+
+  // Returns the prefetch with |url| that is ready to serve. In order for a
+  // prefetch to be ready to serve, |PrepareToServe| must have been previously
+  // called with the prefetch.
+  base::WeakPtr<PrefetchContainer> GetPrefetchToServe(const GURL& url) const;
+
   // Returns the current prefetches associated with |this|. Used to check the
   // state of the prefetches.
   // TODO(https://crbug.com/1299059): Remove this once we can get metrics
@@ -158,6 +167,14 @@ class CONTENT_EXPORT PrefetchService {
       network::mojom::URLResponseHeadPtr head,
       std::unique_ptr<std::string> body);
 
+  // Copies any cookies in the isolated network context associated with
+  // |prefetch_container| to the default network context.
+  void CopyIsolatedCookies(base::WeakPtr<PrefetchContainer> prefetch_container);
+  void OnGotIsolatedCookiesForCopy(
+      base::WeakPtr<PrefetchContainer> prefetch_container,
+      const net::CookieAccessResultList& cookie_list,
+      const net::CookieAccessResultList& excluded_cookies);
+
   raw_ptr<BrowserContext> browser_context_;
 
   // The custom proxy configurator for Prefetch Proxy. Only used on prefetches
@@ -185,6 +202,13 @@ class CONTENT_EXPORT PrefetchService {
            std::pair<std::unique_ptr<PrefetchContainer>,
                      std::unique_ptr<base::OneShotTimer>>>
       owned_prefetches_;
+
+  // The set of prefetches that are ready to serve. In order to be in this map,
+  // the prefetch must also be in |owned_prefetches_|, have a valid prefetched
+  // response, and have started the cookie copy process. A prefetch is added to
+  // this map when |PrepareToServe| is called on it, and once in this map, it
+  // can be returned by |GetPrefetchToServe|.
+  std::map<GURL, base::WeakPtr<PrefetchContainer>> prefetches_ready_to_serve_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -38,6 +38,7 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
+#include "content/browser/speculation_rules/prefetch/prefetch_url_loader_interceptor.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
@@ -472,6 +473,14 @@ void NavigationURLLoaderImpl::CreateInterceptors(
         *request_info_, network_loader_factory_,
         std::move(signed_exchange_prefetch_metric_recorder),
         std::move(accept_langs)));
+  }
+
+  // Set up an interceptor for prefetch.
+  std::unique_ptr<PrefetchURLLoaderInterceptor> prefetch_interceptor =
+      content::PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
+          frame_tree_node_id_);
+  if (prefetch_interceptor) {
+    interceptors_.push_back(std::move(prefetch_interceptor));
   }
 
   // See if embedders want to add interceptors.
