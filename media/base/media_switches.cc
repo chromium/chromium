@@ -206,19 +206,12 @@ const char kOverrideHardwareSecureCodecsForTesting[] =
 const char kEnableLiveCaptionPrefForTesting[] =
     "enable-live-caption-pref-for-testing";
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-// Enables playback of clear (unencrypted) HEVC content for testing purposes.
-const char kEnableClearHevcForTesting[] = "enable-clear-hevc-for-testing";
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 // These are flags passed from ash-chrome to lacros-chrome that correspond to
 // buildflags for the platform we are running on. lacros-chrome only builds for
 // x86/arm differences, so we unconditionally build in the below features into
 // the relevant parts of lacros-chrome and then filter the functionality based
 // on these command line flags.
-MEDIA_EXPORT extern const char kLacrosEnablePlatformEncryptedHevc[] =
-    "lacros-enable-platform-encrypted-hevc";
 MEDIA_EXPORT extern const char kLacrosEnablePlatformHevc[] =
     "lacros-enable-platform-hevc";
 MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedMedia[] =
