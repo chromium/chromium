@@ -2356,7 +2356,7 @@ def CheckSpamLogging(input_api, output_api):
             r"^extensions[\\/]renderer[\\/]logging_native_handler\.cc$",
             r"^fuchsia[\\/]base[\\/]init_logging.cc$",
             r"^fuchsia[\\/]engine[\\/]browser[\\/]frame_impl.cc$",
-            r"^fuchsia[\\/]runners[\\/]common[\\/]web_component.cc$",
+            r"^fuchsia_web[\\/]runners[\\/]common[\\/]web_component.cc$",
             r"^headless[\\/]app[\\/]headless_shell\.cc$",
             r"^ipc[\\/]ipc_logging\.cc$",
             r"^native_client_sdk[\\/]",

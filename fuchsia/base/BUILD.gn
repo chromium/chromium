@@ -14,7 +14,7 @@ source_set("base") {
     "./test/*",
     "//chromecast/internal/*",
     "//fuchsia/engine/*",
-    "//fuchsia/runners/*",
+    "//fuchsia_web/runners/*",
   ]
   sources = [
     "fuchsia_dir_scheme.cc",
@@ -44,7 +44,7 @@ source_set("modular") {
     "./test/*",
     "//chromecast/internal/*",
     "//fuchsia/engine/*",
-    "//fuchsia/runners/*",
+    "//fuchsia_web/runners/*",
   ]
   sources = [
     "agent_impl.cc",
@@ -84,7 +84,7 @@ static_library("run_all_integration_tests") {
   testonly = true
   visibility = [
     "//fuchsia/engine/*",
-    "//fuchsia/runners/*",
+    "//fuchsia_web/runners/*",
   ]
   sources = [ "run_all_integration_tests.cc" ]
   deps = [ "//base/test:test_support" ]

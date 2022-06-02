@@ -8942,7 +8942,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cast_runner_browsertests",
-        "test_id_prefix": "ninja://fuchsia/runners:cast_runner_browsertests/"
+        "test_id_prefix": "ninja://fuchsia_web/runners:cast_runner_browsertests/"
       },
       {
         "merge": {
@@ -8960,7 +8960,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cast_runner_integration_tests",
-        "test_id_prefix": "ninja://fuchsia/runners:cast_runner_integration_tests/"
+        "test_id_prefix": "ninja://fuchsia_web/runners:cast_runner_integration_tests/"
       },
       {
         "merge": {
@@ -8978,7 +8978,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cast_runner_unittests",
-        "test_id_prefix": "ninja://fuchsia/runners:cast_runner_unittests/"
+        "test_id_prefix": "ninja://fuchsia_web/runners:cast_runner_unittests/"
       },
       {
         "merge": {
@@ -9908,7 +9908,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "web_runner_integration_tests",
-        "test_id_prefix": "ninja://fuchsia/runners:web_runner_integration_tests/"
+        "test_id_prefix": "ninja://fuchsia_web/runners:web_runner_integration_tests/"
       },
       {
         "merge": {
@@ -10490,7 +10490,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cast_runner_browsertests",
-        "test_id_prefix": "ninja://fuchsia/runners:cast_runner_browsertests/"
+        "test_id_prefix": "ninja://fuchsia_web/runners:cast_runner_browsertests/"
       },
       {
         "merge": {
@@ -10509,7 +10509,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cast_runner_integration_tests",
-        "test_id_prefix": "ninja://fuchsia/runners:cast_runner_integration_tests/"
+        "test_id_prefix": "ninja://fuchsia_web/runners:cast_runner_integration_tests/"
       },
       {
         "merge": {
@@ -10528,7 +10528,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cast_runner_unittests",
-        "test_id_prefix": "ninja://fuchsia/runners:cast_runner_unittests/"
+        "test_id_prefix": "ninja://fuchsia_web/runners:cast_runner_unittests/"
       },
       {
         "merge": {
@@ -11308,7 +11308,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "web_runner_integration_tests",
-        "test_id_prefix": "ninja://fuchsia/runners:web_runner_integration_tests/"
+        "test_id_prefix": "ninja://fuchsia_web/runners:web_runner_integration_tests/"
       },
       {
         "merge": {

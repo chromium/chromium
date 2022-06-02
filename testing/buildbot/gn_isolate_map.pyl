@@ -327,19 +327,19 @@
     "type": "console_test_launcher",
   },
   "cast_runner_browsertests": {
-    "label": "//fuchsia/runners:cast_runner_browsertests",
+    "label": "//fuchsia_web/runners:cast_runner_browsertests",
     "type": "console_test_launcher",
   },
   "cast_runner_integration_tests": {
-    "label": "//fuchsia/runners:cast_runner_integration_tests",
+    "label": "//fuchsia_web/runners:cast_runner_integration_tests",
     "type": "console_test_launcher",
   },
   "cast_runner_pkg":{
-    "label": "//fuchsia/runners:cast_runner_pkg",
+    "label": "//fuchsia_web/runners:cast_runner_pkg",
     "type": "additonal_compile_target",
   },
   "cast_runner_unittests": {
-    "label": "//fuchsia/runners:cast_runner_unittests",
+    "label": "//fuchsia_web/runners:cast_runner_unittests",
     "type": "console_test_launcher",
   },
   "cast_audio_backend_unittests": {
@@ -2015,11 +2015,11 @@
     "type": "console_test_launcher",
   },
   "web_runner_integration_tests": {
-    "label": "//fuchsia/runners:web_runner_integration_tests",
+    "label": "//fuchsia_web/runners:web_runner_integration_tests",
     "type": "console_test_launcher",
   },
   "web_runner_pkg": {
-    "label": "//fuchsia/runners:web_runner_pkg",
+    "label": "//fuchsia_web/runners:web_runner_pkg",
     "type": "additonal_compile_target",
   },
   "webapk_client_junit_tests": {

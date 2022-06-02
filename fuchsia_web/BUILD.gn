@@ -12,8 +12,8 @@ visibility = [ "//:gn_all" ]
 # they are moved.
 group("gn_all") {
   deps = [
+    "runners:cast_runner",
+    "runners:web_runner",
     "//fuchsia/engine:web_engine",
-    "//fuchsia/runners:cast_runner",
-    "//fuchsia/runners:web_runner",
   ]
 }
