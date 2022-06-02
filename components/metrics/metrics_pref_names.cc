@@ -12,6 +12,18 @@ namespace prefs {
 // Note: the 'uninstall_metrics' name is a legacy name and doesn't mean much.
 const char kInstallDate[] = "uninstall_metrics.installation_date2";
 
+// A provisional metrics client GUID used for field trial group assignments
+// before metrics reporting consent is known (i.e., during first run). This GUID
+// is never reported directly. However, if the user enables UMA, this
+// provisional client GUID becomes the metrics client GUID (see
+// |kMetricsClientID|), and this pref is cleared. In that case, the GUID may
+// be reported.
+// Note: This GUID is stored in prefs because it is possible that the user
+// closes Chrome during the FRE. We re-use this GUID in subsequent FRE runs
+// until metrics reporting consent is truly known.
+const char kMetricsProvisionalClientID[] =
+    "user_experience_metrics.provisional_client_id";
+
 // The metrics client GUID.
 // Note: The name client_id2 is a result of creating
 // new prefs to do a one-time reset of the previous values.

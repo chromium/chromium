@@ -324,6 +324,7 @@ void AndroidMetricsServiceClient::MaybeStartMetrics() {
         pref_service_, /* metrics_reporting_enabled */ false));
     OnMetricsNotStarted();
     pref_service_->ClearPref(prefs::kMetricsClientID);
+    pref_service_->ClearPref(prefs::kMetricsProvisionalClientID);
   }
 }
 

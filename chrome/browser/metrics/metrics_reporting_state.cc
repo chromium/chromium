@@ -169,6 +169,7 @@ void UpdateMetricsPrefsOnPermissionChange(
   // Clear the client id and low entropy sources pref when opting out.
   // Note: This will not affect the running state (e.g. field trial
   // randomization), as the pref is only read on startup.
+
   UMA_HISTOGRAM_BOOLEAN("UMA.ClientIdCleared", true);
 
   PrefService* local_state = g_browser_process->local_state();
@@ -180,6 +181,7 @@ void UpdateMetricsPrefsOnPermissionChange(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   local_state->ClearPref(metrics::prefs::kMetricsClientID);
+  local_state->ClearPref(metrics::prefs::kMetricsProvisionalClientID);
   metrics::EntropyState::ClearPrefs(local_state);
   metrics::ClonedInstallDetector::ClearClonedInstallInfo(local_state);
   local_state->ClearPref(metrics::prefs::kMetricsReportingEnabledTimestamp);
