@@ -1973,16 +1973,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.TailoredSecurity.SyncPromptSkippedAlreadyEnabled"
-    enum="BooleanSkipped" expires_after="2022-10-04">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Records whether a sync prompt was skipped because the user had already
-    consented to Enhanced Safe Browsing.
-  </summary>
-</histogram>
-
 <histogram
     name="SafeBrowsing.TailoredSecurityConsented{Status}{PromptType}Outcome"
     enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2022-11-22">

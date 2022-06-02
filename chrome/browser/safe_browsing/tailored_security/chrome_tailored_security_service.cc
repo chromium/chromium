@@ -86,14 +86,6 @@ void ChromeTailoredSecurityService::MaybeNotifySyncUser(
     return;
   }
 
-  if (is_enabled) {
-    // TODO(crbug.com/1330723): Remove this metric. This case is being replaced
-    // by `kEnhancedProtectionAlreadyEnabled`.
-    base::UmaHistogramBoolean(
-        "SafeBrowsing.TailoredSecurity.SyncPromptSkippedAlreadyEnabled",
-        IsEnhancedProtectionEnabled(*prefs()));
-  }
-
   if (is_enabled && IsEnhancedProtectionEnabled(*prefs())) {
     RecordEnabledNotificationResult(
         TailoredSecurityNotificationResult::kEnhancedProtectionAlreadyEnabled);
