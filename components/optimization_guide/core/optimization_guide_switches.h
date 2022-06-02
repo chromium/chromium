@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/page_content_annotation_type.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -41,6 +42,7 @@ extern const char kPageContentAnnotationsValidationBatchSizeOverride[];
 extern const char kPageContentAnnotationsValidationPageTopics[];
 extern const char kPageContentAnnotationsValidationPageEntities[];
 extern const char kPageContentAnnotationsValidationContentVisibility[];
+extern const char kPageContentAnnotationsValidationWriteToFile[];
 
 // Returns whether the hint component should be processed.
 // Available hint components are only processed if a proto override isn't being
@@ -115,6 +117,9 @@ bool LogPageContentAnnotationsValidationToConsole();
 // using comma separated input from the command line.
 absl::optional<std::vector<std::string>>
 PageContentAnnotationsValidationInputForType(AnnotationType type);
+
+// Returns the file path to write page content annotation validation results to.
+absl::optional<base::FilePath> PageContentAnnotationsValidationWriteToFile();
 
 }  // namespace switches
 }  // namespace optimization_guide

@@ -101,6 +101,10 @@ const char kPageContentAnnotationsValidationPageEntities[] =
 const char kPageContentAnnotationsValidationContentVisibility[] =
     "page-content-annotations-validation-content-visibility";
 
+// Writes the output of page content annotation validations to the given file.
+const char kPageContentAnnotationsValidationWriteToFile[] =
+    "page-content-annotations-validation-write-to-file";
+
 bool IsHintComponentProcessingDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kHintsProtoOverride);
 }
@@ -281,6 +285,15 @@ PageContentAnnotationsValidationInputForType(AnnotationType type) {
 
   return base::SplitString(value, ",", base::KEEP_WHITESPACE,
                            base::SPLIT_WANT_ALL);
+}
+
+absl::optional<base::FilePath> PageContentAnnotationsValidationWriteToFile() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(kPageContentAnnotationsValidationWriteToFile)) {
+    return absl::nullopt;
+  }
+  return command_line->GetSwitchValuePath(
+      kPageContentAnnotationsValidationWriteToFile);
 }
 
 }  // namespace switches
