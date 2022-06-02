@@ -13,14 +13,20 @@
 
   cr-radio-button {
     /* Override the padding to align the buttons to the text start.*/
+    padding: 8px;
     padding-inline-start: 0;
   }
 
   #detected-pii-container {
     margin-inline-start: 36px;
-    margin-top: 20px;
     max-height: 256px;
     width: 520px;
+  }
+
+  #detected-pii-item {
+    max-width: 520px;
+    padding-bottom: 8px;
+    padding-top: 8px;
   }
 
   cr-expand-button {
@@ -70,14 +76,17 @@
 <iron-collapse id="detected-pii-container" opened="[[showPIISelection_]]">
   <div>
     <template is="dom-repeat" items="[[detectedPIIItems_]]">
-      <cr-expand-button expanded="{{item.expandDetails}}">
-        <cr-checkbox checked="{{item.keep}}">
-          [[item.piiTypeDescription]]: [[item.count]]
-        </cr-checkbox>
-      </cr-expand-button>
-      <iron-collapse class="pii-item-collapse" opened="[[item.expandDetails]]">
-        <div class="pii-details">[[item.detectedData]]</div>
-      </iron-collapse>
+      <div id="detected-pii-item">
+        <cr-expand-button expanded="{{item.expandDetails}}">
+          <cr-checkbox checked="{{item.keep}}">
+            [[item.piiTypeDescription]]: [[item.count]]
+          </cr-checkbox>
+        </cr-expand-button>
+        <iron-collapse class="pii-item-collapse"
+            opened="[[item.expandDetails]]">
+          <div class="pii-details">[[item.detectedData]]</div>
+        </iron-collapse>
+      </div>
     </template>
   </div>
 </iron-collapse>
