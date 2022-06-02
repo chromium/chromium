@@ -71,12 +71,6 @@
 // |fakeOmniboxConstraints|.
 @property(nonatomic, strong) NSLayoutConstraint* headerTopAnchor;
 
-// Array of constraints used to lay out the fake Omnibox header above the
-// Content Suggestions, as opposed to pinning it to the top of the view in
-// |fakeOmniboxConstraints|.
-@property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* defaultFakeOmniboxConstraints;
-
 // Array of constraints used to pin the feed header to the top of the NTP. Only
 // applicable with Web Channels enabled.
 // TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
@@ -370,15 +364,6 @@
 
     DCHECK([self.headerController.view isDescendantOfView:self.containerView]);
     self.headerController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    self.defaultFakeOmniboxConstraints = @[
-      [[self containerView].safeAreaLayoutGuide.leadingAnchor
-          constraintEqualToAnchor:self.headerController.view.leadingAnchor],
-      [[self containerView].safeAreaLayoutGuide.trailingAnchor
-          constraintEqualToAnchor:self.headerController.view.trailingAnchor],
-      [[self contentSuggestionsViewController].view.topAnchor
-          constraintEqualToAnchor:self.headerController.view.bottomAnchor],
-    ];
-    [NSLayoutConstraint activateConstraints:self.defaultFakeOmniboxConstraints];
   }
 
   // TODO(crbug.com/1170995): The contentCollectionView width might be narrower
@@ -425,7 +410,7 @@
 
 - (void)setContentOffsetToTop {
   [self setContentOffset:-[self heightAboveFeed]];
-  [self resetFakeOmnibox];
+  [self setInitialFakeOmniboxConstraints];
 }
 
 - (BOOL)isNTPScrolledToTop {
@@ -674,25 +659,25 @@
 // Resets the fake omnibox to its original position.
 - (void)resetFakeOmniboxConstraints {
   self.fakeOmniboxPinnedToTop = NO;
-  [self resetFakeOmnibox];
+  [self setInitialFakeOmniboxConstraints];
 }
 
 // Lets this view own the fake omnibox and sticks it to the top of the NTP.
 - (void)stickFakeOmniboxToTop {
-  [self.headerController removeFromParentViewController];
-  [self.headerController.view removeFromSuperview];
-  if (IsContentSuggestionsHeaderMigrationEnabled()) {
-    [NSLayoutConstraint
-        deactivateConstraints:self.defaultFakeOmniboxConstraints];
-  }
-
   // If |self.headerController| is nil after removing it from the view hierarchy
   // it means its no longer owned by anyone (e.g. The coordinator might have
   // been stopped.) and we shouldn't try to add it again.
-  if (!self.headerController)
+  if (!self.headerController) {
     return;
+  }
 
-  [self.view addSubview:self.headerController.view];
+  if (IsContentSuggestionsHeaderMigrationEnabled()) {
+    [NSLayoutConstraint deactivateConstraints:self.fakeOmniboxConstraints];
+  } else {
+    [self.headerController removeFromParentViewController];
+    [self.headerController.view removeFromSuperview];
+    [self.view addSubview:self.headerController.view];
+  }
 
   if (IsContentSuggestionsHeaderMigrationEnabled()) {
     self.headerTopAnchor = [self.headerController.view.topAnchor
@@ -739,39 +724,28 @@
 
 // Gives content suggestions collection view ownership of the fake omnibox for
 // the width animation.
-- (void)resetFakeOmnibox {
-  [self.headerController removeFromParentViewController];
-  [self.headerController.view removeFromSuperview];
-
-  if (IsContentSuggestionsHeaderMigrationEnabled()) {
-    // If |self.headerController| is nil after removing it from the view
-    // hierarchy it means its no longer owned by anyone (e.g. The coordinator
-    // might have been stopped.) and it should not be added in that case.
-    // TODO(crbug.com/1321820): Remove once owner of |headerController| is the
-    // primary driver of its lifecycle.
-    if (!self.headerController)
-      return;
-
-    UIViewController* parentViewController =
-        self.isFeedVisible ? self.discoverFeedWrapperViewController.discoverFeed
-                           : self.discoverFeedWrapperViewController;
-    // Add header back into the Discover Feed ScrollView.
-    [self addViewController:self.headerController
-        toParentViewController:parentViewController];
-  }
-
+- (void)setInitialFakeOmniboxConstraints {
   if (!IsContentSuggestionsHeaderMigrationEnabled()) {
+    [self.headerController removeFromParentViewController];
+    [self.headerController.view removeFromSuperview];
     self.contentSuggestionsHeightConstraint.active = YES;
   }
+
   [NSLayoutConstraint deactivateConstraints:self.fakeOmniboxConstraints];
   if (IsContentSuggestionsHeaderMigrationEnabled()) {
-    [NSLayoutConstraint activateConstraints:self.defaultFakeOmniboxConstraints];
+    self.fakeOmniboxConstraints = @[
+      [[self contentSuggestionsViewController].view.topAnchor
+          constraintEqualToAnchor:self.headerController.view.bottomAnchor],
+    ];
+    [NSLayoutConstraint activateConstraints:self.fakeOmniboxConstraints];
   }
 
   // Reload the content suggestions so that the fake omnibox goes back where it
   // belongs. This can probably be optimized by just reloading the header, if
   // that doesn't mess up any collection/header interactions.
-  [self.ntpContentDelegate reloadContentSuggestions];
+  if (!IsContentSuggestionsHeaderMigrationEnabled()) {
+    [self.ntpContentDelegate reloadContentSuggestions];
+  }
 }
 
 // Pins feed header to top of the NTP when scrolled into the feed, below the
@@ -926,7 +900,7 @@
   // inside the feed to the top of the NTP. This check safeguards this action to
   // make sure the header is properly positioned. (crbug.com/1261458)
   if ([self isNTPScrolledToTop]) {
-    [self resetFakeOmnibox];
+    [self setInitialFakeOmniboxConstraints];
   }
 }
 
@@ -984,6 +958,16 @@
       [self.collectionView.topAnchor
           constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
     ]];
+  }
+
+  if (IsContentSuggestionsHeaderMigrationEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [[self containerView].safeAreaLayoutGuide.leadingAnchor
+          constraintEqualToAnchor:self.headerController.view.leadingAnchor],
+      [[self containerView].safeAreaLayoutGuide.trailingAnchor
+          constraintEqualToAnchor:self.headerController.view.trailingAnchor],
+    ]];
+    [self setInitialFakeOmniboxConstraints];
   }
 
   [NSLayoutConstraint activateConstraints:@[
