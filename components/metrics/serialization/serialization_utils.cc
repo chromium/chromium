@@ -109,15 +109,15 @@ std::unique_ptr<MetricSample> SerializationUtils::ParseSample(
   const std::string& name = parts[0];
   const std::string& value = parts[1];
 
-  if (base::LowerCaseEqualsASCII(name, "crash"))
+  if (base::EqualsCaseInsensitiveASCII(name, "crash"))
     return MetricSample::CrashSample(value);
-  if (base::LowerCaseEqualsASCII(name, "histogram"))
+  if (base::EqualsCaseInsensitiveASCII(name, "histogram"))
     return MetricSample::ParseHistogram(value);
-  if (base::LowerCaseEqualsASCII(name, "linearhistogram"))
+  if (base::EqualsCaseInsensitiveASCII(name, "linearhistogram"))
     return MetricSample::ParseLinearHistogram(value);
-  if (base::LowerCaseEqualsASCII(name, "sparsehistogram"))
+  if (base::EqualsCaseInsensitiveASCII(name, "sparsehistogram"))
     return MetricSample::ParseSparseHistogram(value);
-  if (base::LowerCaseEqualsASCII(name, "useraction"))
+  if (base::EqualsCaseInsensitiveASCII(name, "useraction"))
     return MetricSample::UserActionSample(value);
   DLOG(ERROR) << "invalid event type: " << name << ", value: " << value;
   return nullptr;
