@@ -173,7 +173,7 @@ public class ToolbarSnapshotStateTest {
                 DEFAULT_SECURITY_ICON, mDefaultColorStateList,
                 DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE, DEFAULT_IS_PAINT_PREVIEW, 0.2f,
                 DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH);
-        Assert.assertEquals(ToolbarSnapshotDifference.PROGRESS,
+        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
                 otherToolbarSnapshotState.getAnyDifference(mDefaultToolbarSnapshotState));
     }
     @Test

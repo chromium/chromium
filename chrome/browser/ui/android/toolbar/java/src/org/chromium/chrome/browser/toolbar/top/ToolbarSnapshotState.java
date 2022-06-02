@@ -61,7 +61,6 @@ class ToolbarSnapshotState {
     private final ColorStateList mColorStateList;
     private final boolean mIsShowingUpdateBadgeDuringLastCapture;
     private final boolean mIsPaintPreview;
-    private final float mProgress;
     private final int mUnfocusedLocationBarLayoutWidth;
 
     public ToolbarSnapshotState(@ColorInt int tint, int tabCount, ButtonData optionalButtonData,
@@ -77,7 +76,8 @@ class ToolbarSnapshotState {
         mColorStateList = colorStateList;
         mIsShowingUpdateBadgeDuringLastCapture = isShowingUpdateBadgeDuringLastCapture;
         mIsPaintPreview = isPaintPreview;
-        mProgress = progress;
+        // Progress is not currently used for comparing snapshot states. It isn't part of the bitmap
+        // capture anyway.
         mUnfocusedLocationBarLayoutWidth = unfocusedLocationBarLayoutWidth;
     }
 
@@ -105,8 +105,6 @@ class ToolbarSnapshotState {
             return ToolbarSnapshotDifference.SHOWING_UPDATE_BADGE;
         } else if (mIsPaintPreview != that.mIsPaintPreview) {
             return ToolbarSnapshotDifference.PAINT_PREVIEW;
-        } else if (Float.compare(mProgress, that.mProgress) != 0) {
-            return ToolbarSnapshotDifference.PROGRESS;
         } else if (mUnfocusedLocationBarLayoutWidth != that.mUnfocusedLocationBarLayoutWidth) {
             return ToolbarSnapshotDifference.LOCATION_BAR_WIDTH;
         } else if (!Objects.equals(mUrlText, that.mUrlText)) {
