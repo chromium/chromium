@@ -37,7 +37,7 @@ namespace web_app {
 namespace {
 
 // With Lacros, only system web apps are exposed using the Ash browser.
-bool WebAppExposed(const WebApp& web_app) {
+bool WebAppSourceSupported(const WebApp& web_app) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsWebAppsCrosapiEnabled() && !web_app.IsSystemApp()) {
     return false;
@@ -429,7 +429,7 @@ const WebApp* WebAppRegistrar::GetAppById(const AppId& app_id) const {
     return nullptr;
 
   auto it = registry_.find(app_id);
-  if (it != registry_.end() && WebAppExposed(*it->second))
+  if (it != registry_.end() && WebAppSourceSupported(*it->second))
     return it->second.get();
 
   return nullptr;
@@ -440,7 +440,8 @@ const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
     return nullptr;
 
   for (auto const& it : registry_) {
-    if (WebAppExposed(*it.second) && it.second->start_url() == start_url)
+    if (WebAppSourceSupported(*it.second) &&
+        it.second->start_url() == start_url)
       return it.second.get();
   }
   return nullptr;
@@ -605,9 +606,8 @@ base::flat_set<std::string> WebAppRegistrar::GetAllDisallowedLaunchProtocols()
 
 int WebAppRegistrar::CountUserInstalledApps() const {
   int num_user_installed = 0;
-  for (const WebApp& app : GetAppsIncludingStubs()) {
-    if (!app.is_uninstalling() && app.is_locally_installed() &&
-        app.WasInstalledByUser())
+  for (const WebApp& app : GetApps()) {
+    if (app.is_locally_installed() && app.WasInstalledByUser())
       ++num_user_installed;
   }
   return num_user_installed;
@@ -962,7 +962,7 @@ WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
   return AppSet(
       this,
       [](const WebApp& web_app) {
-        return WebAppExposed(web_app) &&
+        return WebAppSourceSupported(web_app) &&
                !web_app.is_from_sync_and_pending_installation() &&
                !web_app.is_uninstalling();
       },
@@ -1006,7 +1006,7 @@ WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsMutable() {
   return AppSet(
       this,
       [](const WebApp& web_app) {
-        return WebAppExposed(web_app) &&
+        return WebAppSourceSupported(web_app) &&
                !web_app.is_from_sync_and_pending_installation() &&
                !web_app.is_uninstalling();
       },
