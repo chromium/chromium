@@ -2746,6 +2746,11 @@ TEST_F(WebStateObserverTest, NewPageLoadDestroysForwardItems) {
 // Tests callbacks for restoring session and subsequently going back to
 // about:blank.
 TEST_F(WebStateObserverTest, RestoreSessionOnline) {
+  if (@available(iOS 15, *)) {
+    // The bulk of this test is for managing the various client side redirects
+    // in legacy session restore, which is now deprecated in iOS15.
+    return;
+  }
   // Create a session of 3 items. Current item is at index 1.
   const GURL url0("about:blank");
   auto item0 = std::make_unique<NavigationItemImpl>();
