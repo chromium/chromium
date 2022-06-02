@@ -90,6 +90,24 @@ TEST_F(CompletionSuggestionLabelViewTest,
             ResolveSemanticColor(cros_styles::ColorName::kTextColorSecondary));
 }
 
+TEST_F(CompletionSuggestionLabelViewTest, PrefixWidthIsZeroWhenPrefixIsEmpty) {
+  CompletionSuggestionLabelView label;
+
+  label.SetPrefixAndPrediction(u"", u"good");
+
+  EXPECT_EQ(label.GetPrefixWidthPx(), 0);
+}
+
+TEST_F(CompletionSuggestionLabelViewTest,
+       PrefixWidthIsWidthOfFirstChildWhenPrefixIsNotEmpty) {
+  CompletionSuggestionLabelView label;
+
+  label.SetPrefixAndPrediction(u"how a", u"re you");
+
+  ASSERT_FALSE(label.children().empty());
+  EXPECT_EQ(label.GetPrefixWidthPx(), LabelAt(label, 0)->width());
+}
+
 }  // namespace
 }  // namespace ime
 }  // namespace ui

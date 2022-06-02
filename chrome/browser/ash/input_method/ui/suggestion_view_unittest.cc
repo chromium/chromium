@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "chrome/browser/ash/input_method/ui/completion_suggestion_label_view.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/views_test_base.h"
@@ -21,13 +22,31 @@ class SuggestionViewTest : public views::ViewsTestBase {
   SuggestionViewTest() = default;
 };
 
-TEST_F(SuggestionViewTest, AnchorOriginIsPadding) {
+TEST_F(SuggestionViewTest, AnchorOriginIsPaddingWhenConfirmedLengthIsZero) {
   SuggestionView suggestion({});
   suggestion.SetView({
       .text = u"good",
+      .confirmed_length = 0,
   });
 
   EXPECT_EQ(suggestion.GetAnchorOrigin(), gfx::Point(kPadding, 0));
+}
+
+TEST_F(SuggestionViewTest,
+       AnchorOriginIsPaddingAndPrefixWidthWhenConfirmedLengthIsNonZero) {
+  SuggestionView suggestion({});
+  // "how a" is confirmed
+  suggestion.SetView({
+      .text = u"how are you",
+      .confirmed_length = 5,
+  });
+
+  EXPECT_EQ(
+      suggestion.GetAnchorOrigin(),
+      gfx::Point(
+          kPadding +
+              suggestion.suggestion_label_for_testing()->GetPrefixWidthPx(),
+          0));
 }
 
 }  // namespace

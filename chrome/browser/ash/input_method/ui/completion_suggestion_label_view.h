@@ -32,11 +32,19 @@ class UI_CHROMEOS_EXPORT CompletionSuggestionLabelView
  public:
   METADATA_HEADER(CompletionSuggestionLabelView);
 
+  // TODO(b/233264555): Allow users of this class to set the font instead of
+  // hardcoding it.
+  static const char kFontName[];
+  static const int kFontSize = 13;
+
   CompletionSuggestionLabelView();
 
   // Set the prefix and prediction parts of the label.
   void SetPrefixAndPrediction(const std::u16string& prefix,
                               const std::u16string& prediction);
+
+  // Get the width in pixels of the prefix part of the label.
+  int GetPrefixWidthPx() const;
 };
 
 BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT,

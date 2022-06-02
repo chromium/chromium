@@ -257,11 +257,16 @@ void SuggestionView::SetMinWidth(int min_width) {
 }
 
 gfx::Point SuggestionView::GetAnchorOrigin() const {
-  return gfx::Point(kPadding, 0);
+  return gfx::Point(suggestion_label_->GetPrefixWidthPx() + kPadding, 0);
 }
 
 std::u16string SuggestionView::GetSuggestionForTesting() {
   return suggestion_label_->GetText();
+}
+
+CompletionSuggestionLabelView* SuggestionView::suggestion_label_for_testing()
+    const {
+  return suggestion_label_;
 }
 
 BEGIN_METADATA(SuggestionView, views::Button)

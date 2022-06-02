@@ -9,11 +9,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
+#include "chrome/browser/ash/input_method/ui/completion_suggestion_label_view.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/text_utils.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
@@ -313,14 +315,35 @@ TEST_P(SuggestionWindowViewTest, DisplaysCorrectOrientationLayout) {
   EXPECT_EQ(layout_orientation, expected_orientation);
 }
 
-TEST_P(SuggestionWindowViewTest, LeftBoundIsCloseToAnchor) {
+TEST_P(SuggestionWindowViewTest,
+       LeftBoundIsCloseToAnchorWithNoConfirmedLength) {
   suggestion_window_view_->Show({
       .text = u"good",
+      .confirmed_length = 0,
   });
 
   suggestion_window_view_->SetAnchorRect(gfx::Rect(100, 0, 10, 10));
 
   EXPECT_EQ(suggestion_window_view_->GetBoundsInScreen().x(), 100 - kPadding);
+}
+
+TEST_P(SuggestionWindowViewTest,
+       LeftBoundIsOffsetFromAnchorWithConfirmedLength) {
+  // "how a" is confirmed
+  suggestion_window_view_->Show({
+      .text = u"how are you",
+      .confirmed_length = 5,
+  });
+
+  suggestion_window_view_->SetAnchorRect(gfx::Rect(100, 0, 10, 10));
+
+  // The right border of the confirmed part "how a" must align with the left
+  // border of the anchor rect.
+  const gfx::FontList font_list(
+      {CompletionSuggestionLabelView::kFontName}, gfx::Font::NORMAL,
+      CompletionSuggestionLabelView::kFontSize, gfx::Font::Weight::NORMAL);
+  EXPECT_EQ(suggestion_window_view_->GetBoundsInScreen().x(),
+            100 - kPadding - gfx::GetStringWidth(u"how a", font_list));
 }
 
 }  // namespace ime

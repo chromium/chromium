@@ -161,14 +161,8 @@ void AssistiveWindowController::SetBounds(const Bounds& bounds) {
   // position before showing.
   // TODO(crbug/1112982): Investigate getting bounds to suggester before sending
   // show suggestion request.
-  if (suggestion_window_view_ && !tracking_last_suggestion_) {
-    // TODO(crbug/1146266): When running the multi word feature with lacros,
-    //     composition mode is unavailable, thus we need to use the caret
-    //     bounds instead. Investigate how we can position the window correctly
-    //     without composition bounds.
-    suggestion_window_view_->SetAnchorRect(
-        (confirmed_length_ != 0 && !IsLacrosEnabled()) ? bounds.composition_text
-                                                       : bounds.caret);
+  if (suggestion_window_view_) {
+    suggestion_window_view_->SetAnchorRect(bounds.caret);
   }
   if (grammar_suggestion_window_) {
     grammar_suggestion_window_->SetBounds(bounds_.caret);
