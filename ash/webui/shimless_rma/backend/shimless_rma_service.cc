@@ -122,9 +122,21 @@ void ShimlessRmaService::GetCurrentState(GetCurrentStateCallback callback) {
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), kGetCurrentState));
 }
 
-// TODO(gavindodd): Handle transition back from wifi connect and os update pages
 void ShimlessRmaService::TransitionPreviousState(
     TransitionPreviousStateCallback callback) {
+  // If current rmad state is rmad::RmadState::kWelcome and the mojom state
+  // is kConfigureNetwork or kUpdateOs, we don't call rmad service. Otherwise,
+  // it will respond with error.
+  if (state_proto_.state_case() == rmad::RmadState::kWelcome &&
+      (mojo_state_ == mojom::State::kConfigureNetwork ||
+       mojo_state_ == mojom::State::kUpdateOs)) {
+    mojo_state_ = mojom::State::kWelcomeScreen;
+    std::move(callback).Run(mojom::State::kWelcomeScreen,
+                            /*can_cancel=*/true, /*can_go_back=*/false,
+                            rmad::RmadErrorCode::RMAD_ERROR_OK);
+    return;
+  }
+
   RmadClient::Get()->TransitionPreviousState(base::BindOnce(
       &ShimlessRmaService::OnGetStateResponse<TransitionPreviousStateCallback>,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
