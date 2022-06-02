@@ -200,6 +200,9 @@ class ExtensionsTabbedMenuView
   std::vector<SiteAccessMenuItemView*> GetVisibleMenuItemsOf(
       SiteAccessSection section) const;
 
+  // Returns the current web contents in `browser_`.
+  content::WebContents* GetActiveWebContents();
+
   // Handles the selection of a site setting radio button.
   void OnSiteSettingSelected(
       extensions::PermissionsManager::UserSiteSetting site_setting);

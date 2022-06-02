@@ -464,7 +464,7 @@ void ExtensionsTabbedMenuView::Update() {
 }
 
 void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
-  auto* web_contents = browser_->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = GetActiveWebContents();
   if (!web_contents)
     return;
 
@@ -624,8 +624,8 @@ void ExtensionsTabbedMenuView::MaybeCreateAndInsertSiteAccessItem(
 
   // Extensions with no current site interaction don't belong to a site access
   // section and therefore do not need a site access item view.
-  auto site_interaction = controller->GetSiteInteraction(
-      browser_->tab_strip_model()->GetActiveWebContents());
+  auto site_interaction =
+      controller->GetSiteInteraction(GetActiveWebContents());
   auto* section = GetSectionForSiteInteraction(site_interaction);
   if (!section)
     return;
@@ -684,8 +684,8 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessMenuItems(
     }
 
     // Reorder item when it is in the same section.
-    auto site_interaction = item->view_controller()->GetSiteInteraction(
-        browser_->tab_strip_model()->GetActiveWebContents());
+    auto site_interaction =
+        item->view_controller()->GetSiteInteraction(GetActiveWebContents());
     if (site_interaction == section->site_interaction) {
       item->Update();
       int new_index =
@@ -713,7 +713,7 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessTab() {
   // when there are no active web contents (e.g tab strip update is closing its
   // tabs).
   // TODO(emiliapaz): Consider adding a message instead of hiding the views.
-  auto* web_contents = browser_->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = GetActiveWebContents();
   if (!web_contents) {
     has_access_.container->SetVisible(false);
     requests_access_.container->SetVisible(false);
@@ -735,7 +735,7 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessTab() {
     requests_access_.container->SetVisible(false);
     site_settings_button_->SetVisible(false);
   } else {
-    url::Origin origin = url::Origin::Create(url);
+    url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
     extensions::PermissionsManager::UserSiteSetting site_setting =
         extensions::PermissionsManager::Get(browser_->profile())
             ->GetUserSiteSetting(origin);
@@ -773,7 +773,7 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessTab() {
 
 void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility(
     bool show_combobox) {
-  auto* web_contents = browser_->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = GetActiveWebContents();
   DCHECK(web_contents);
 
   auto current_site = GetCurrentSite(web_contents);
@@ -837,6 +837,10 @@ ExtensionsTabbedMenuView::GetVisibleMenuItemsOf(
   return menu_items;
 }
 
+content::WebContents* ExtensionsTabbedMenuView::GetActiveWebContents() {
+  return browser_->tab_strip_model()->GetActiveWebContents();
+}
+
 void ExtensionsTabbedMenuView::OnSiteSettingsButtonPressed() {
   show_site_settings_ = !show_site_settings_;
 
@@ -849,9 +853,8 @@ void ExtensionsTabbedMenuView::OnSiteSettingsButtonPressed() {
 
 void ExtensionsTabbedMenuView::OnSiteSettingSelected(
     extensions::PermissionsManager::UserSiteSetting site_settings) {
-  auto current_origin = url::Origin::Create(browser_->tab_strip_model()
-                                                ->GetActiveWebContents()
-                                                ->GetLastCommittedURL());
+  auto current_origin =
+      GetActiveWebContents()->GetMainFrame()->GetLastCommittedOrigin();
   auto* permissions_manager =
       extensions::PermissionsManager::Get(browser_->profile());
   switch (site_settings) {
