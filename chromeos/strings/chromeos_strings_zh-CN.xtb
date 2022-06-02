@@ -495,7 +495,7 @@
 <translation id="6447630859861661624">打开帐号设置</translation>
 <translation id="6456394469623773452">良好</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{重新扫描页面？}=1{重新扫描第 {PAGE_NUMBER} 页？}other{重新扫描第 {PAGE_NUMBER} 页？}}</translation>
-<translation id="6472207088655375767">一次性密码</translation>
+<translation id="6472207088655375767">动态密码</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="649050271426829538">已停止 - 卡纸了</translation>
 <translation id="6500818810472529210">查看“Google 搜索”中的结果</translation>
