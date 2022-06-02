@@ -55595,6 +55595,7 @@ from previous Chrome versions.
       label="EnableBluetoothVerboseLogsForGooglers:disabled"/>
   <int value="-1491417046" label="enable-fullscreen-toolbar-reveal"/>
   <int value="-1491304576" label="ProgressBarThrottle:disabled"/>
+  <int value="-1490827023" label="EnableCbdSignOut:disabled"/>
   <int value="-1490298774" label="enable-captive-portal-bypass-proxy-option"/>
   <int value="-1490048536"
       label="PageVisibilityPageContentAnnotations:disabled"/>
@@ -57225,6 +57226,7 @@ from previous Chrome versions.
   <int value="-454362199" label="HelpAppV2:disabled"/>
   <int value="-450976085"
       label="AutofillSaveCreditCardUsesImprovedMessaging:disabled"/>
+  <int value="-450917820" label="EnableCbdSignOut:enabled"/>
   <int value="-450100254" label="OverviewButton:enabled"/>
   <int value="-449465495" label="disable-browser-task-scheduler"/>
   <int value="-448929520" label="TranslateMessageUI:enabled"/>

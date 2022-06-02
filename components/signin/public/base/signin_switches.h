@@ -36,6 +36,7 @@ extern const base::Feature kEnableFetchingAccountCapabilities;
 extern const base::Feature kForceDisableExtendedSyncPromos;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+extern const base::Feature kEnableCbdSignOut;
 extern const base::Feature kForceStartupSigninPromo;
 extern const base::Feature kTangibleSync;
 #endif

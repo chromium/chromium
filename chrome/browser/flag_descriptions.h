@@ -1769,6 +1769,9 @@ extern const char kChromeShareLongScreenshotDescription[];
 extern const char kChromeSharingHubLaunchAdjacentName[];
 extern const char kChromeSharingHubLaunchAdjacentDescription[];
 
+extern const char kEnableCbdSignOutName[];
+extern const char kEnableCbdSignOutDescription[];
+
 extern const char kCloseTabSuggestionsName[];
 extern const char kCloseTabSuggestionsDescription[];
 

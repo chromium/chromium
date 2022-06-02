@@ -1612,6 +1612,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "enable-cbd-sign-out",
+    "owners": [ "triploblastic", "chrome-signin-team" ],
+    "expiry_milestone":120
+  },
+  {
     "name": "enable-chrome-management-page-android",
     "owners": [ "ogastorga", "ftirelo" ],
     "expiry_milestone": 107

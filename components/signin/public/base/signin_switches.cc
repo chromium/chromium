@@ -45,6 +45,12 @@ const base::Feature kForceDisableExtendedSyncPromos{
     "ForceDisableExtendedSyncPromos", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// Decouples signing out from clearing browsing data on Android. Users are
+// no longer signed-out when they clear browsing data. Instead they may
+// choose to sign out separately by pressing another button.
+const base::Feature kEnableCbdSignOut{"EnableCbdSignOut",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Features to trigger the startup sign-in promo at boot.
 const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
                                              base::FEATURE_DISABLED_BY_DEFAULT};

@@ -370,6 +370,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &share::kPersistShareHubOnAppSwitch,
     &share::kUpcomingSharingFeatures,
     &switches::kAllowSyncOffForChildAccounts,
+    &switches::kEnableCbdSignOut,
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,
     &switches::kTangibleSync,

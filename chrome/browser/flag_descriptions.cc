@@ -3138,6 +3138,12 @@ const char kChromeSharingHubLaunchAdjacentDescription[] =
     "In multi-window mode, launches share hub actions in an adjacent window. "
     "For internal debugging.";
 
+const char kEnableCbdSignOutName[] =
+    "Decouple Sign out from clearing browsing data";
+const char kEnableCbdSignOutDescription[] =
+    "Enable additional affordance to sign out when clearing browsing data and "
+    "ensure consistent behavior for all signed-in users.";
+
 const char kCloseTabSuggestionsName[] = "Suggest to close Tabs";
 const char kCloseTabSuggestionsDescription[] =
     "Suggests to the user to close Tabs that haven't been used beyond a "
