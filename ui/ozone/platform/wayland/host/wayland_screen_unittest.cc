@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <wayland-server-protocol.h>
 #include <wayland-server.h>
 #include <memory>
 
@@ -312,6 +313,8 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
   const gfx::Rect expected_bounds{800, 600};
   EXPECT_EQ(observer.GetDisplay().bounds(), expected_bounds);
+  const gfx::Size expected_size_in_pixels{800, 600};
+  EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), expected_size_in_pixels);
   EXPECT_EQ(observer.GetDisplay().work_area(), expected_bounds);
 
   // Test work area.
@@ -327,6 +330,7 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
   // Bounds should be unchanged.
   EXPECT_EQ(observer.GetDisplay().bounds(), expected_bounds);
+  EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), expected_size_in_pixels);
   // Work area should have new value.
   EXPECT_EQ(observer.GetDisplay().work_area(), new_work_area);
 
@@ -346,6 +350,8 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
   // Logical bounds should shrink due to scaling.
   const gfx::Rect scaled_bounds{400, 300};
   EXPECT_EQ(observer.GetDisplay().bounds(), scaled_bounds);
+  // Size in pixel should stay unscaled.
+  EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), expected_size_in_pixels);
   gfx::Rect scaled_work_area(scaled_bounds);
   scaled_work_area.Inset(expected_inset);
   EXPECT_EQ(observer.GetDisplay().work_area(), scaled_work_area);
@@ -363,6 +369,9 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
   // Logical bounds should now be rotated to portrait.
   const gfx::Rect rotated_bounds{300, 400};
   EXPECT_EQ(observer.GetDisplay().bounds(), rotated_bounds);
+  // Size in pixel gets rotated too, but stays unscaled.
+  const gfx::Size rotated_size_in_pixels{600, 800};
+  EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), rotated_size_in_pixels);
   gfx::Rect rotated_work_area(rotated_bounds);
   rotated_work_area.Inset(expected_inset);
   EXPECT_EQ(observer.GetDisplay().work_area(), rotated_work_area);
@@ -379,15 +388,16 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
 // in landscape orientation. Thus their physical bounds are in portrait
 // orientation along with an offset transform, which differs from the usual
 // landscape oriented bounds.
-// TODO(crbug.com/1325487): Add origin offset.
 TEST_P(WaylandScreenTest, OutputPropertyChangesWithPortraitPanelRotation) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);
 
+  // wl_output.geometry origin is set in DIP screen coordinates.
+  const gfx::Point origin(50, 70);
   // wl_output.mode size is sent in physical coordinates, so it has portrait
   // dimensions for a display panel with portrait natural orientation.
-  const gfx::Rect physical_bounds{1200, 1600};
-  output_->SetRect(physical_bounds);
+  const gfx::Size physical_size(1200, 1600);
+  output_->SetRect({origin, physical_size});
 
   // Inset is sent in logical coordinates.
   const gfx::Insets insets = gfx::Insets::TLBR(10, 20, 30, 40);
@@ -397,7 +407,7 @@ TEST_P(WaylandScreenTest, OutputPropertyChangesWithPortraitPanelRotation) {
   // Display panel's natural orientation is in portrait, so it needs a transform
   // of 90 degrees to be in landscape.
   output_->SetTransform(WL_OUTPUT_TRANSFORM_90);
-  // Offset the transform so the logical rotation is 0.
+  // Begin with the logical transform at 0 degrees.
   output_->GetAuraOutput()->SetLogicalTransform(WL_OUTPUT_TRANSFORM_NORMAL);
 
   output_->SetScale(2);
@@ -413,8 +423,10 @@ TEST_P(WaylandScreenTest, OutputPropertyChangesWithPortraitPanelRotation) {
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
 
   // Logical bounds should be in landscape.
-  const gfx::Rect expected_bounds(800, 600);
+  const gfx::Rect expected_bounds(origin, gfx::Size(800, 600));
   EXPECT_EQ(observer.GetDisplay().bounds(), expected_bounds);
+  const gfx::Size expected_size_in_pixels(1600, 1200);
+  EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), expected_size_in_pixels);
 
   gfx::Rect expected_work_area(expected_bounds);
   expected_work_area.Inset(insets);
@@ -440,8 +452,10 @@ TEST_P(WaylandScreenTest, OutputPropertyChangesWithPortraitPanelRotation) {
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
 
   // Logical bounds should now be portrait.
-  const gfx::Rect portrait_bounds(600, 800);
+  const gfx::Rect portrait_bounds(origin, gfx::Size(600, 800));
   EXPECT_EQ(observer.GetDisplay().bounds(), portrait_bounds);
+  const gfx::Size portrait_size_in_pixels(1200, 1600);
+  EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), portrait_size_in_pixels);
 
   gfx::Rect portrait_work_area(portrait_bounds);
   portrait_work_area.Inset(insets);
@@ -452,6 +466,38 @@ TEST_P(WaylandScreenTest, OutputPropertyChangesWithPortraitPanelRotation) {
             display::Display::Rotation::ROTATE_180);
   EXPECT_EQ(observer.GetDisplay().rotation(),
             display::Display::Rotation::ROTATE_270);
+
+  platform_screen_->RemoveObserver(&observer);
+}
+
+TEST_P(WaylandScreenTest, OutputPropertyChangesMissingLogicalSize) {
+  TestDisplayObserver observer;
+  platform_screen_->AddObserver(&observer);
+
+  const uint32_t display_id = 7;
+  const gfx::Point origin(50, 70);
+  const gfx::Size physical_size(1200, 1600);
+  const wl_output_transform panel_transform = WL_OUTPUT_TRANSFORM_90;
+  const wl_output_transform logical_transform = WL_OUTPUT_TRANSFORM_NORMAL;
+  const gfx::Insets insets = gfx::Insets::TLBR(10, 20, 30, 40);
+  const float scale = 2;
+
+  // Test with missing logical size. Should fall back to calculating from
+  // physical size.
+  platform_screen_->OnOutputAddedOrUpdated(display_id, origin, gfx::Size(),
+                                           physical_size, insets, scale,
+                                           panel_transform, logical_transform);
+
+  const display::Display new_display(observer.GetDisplay());
+  EXPECT_EQ(new_display.id(), display_id);
+  EXPECT_EQ(new_display.bounds(), gfx::Rect(origin, gfx::Size(800, 600)));
+  EXPECT_EQ(new_display.GetSizeInPixel(), gfx::Size(1600, 1200));
+  gfx::Rect expected_work_area(new_display.bounds());
+  expected_work_area.Inset(insets);
+  EXPECT_EQ(new_display.work_area(), expected_work_area);
+  EXPECT_EQ(new_display.panel_rotation(), display::Display::ROTATE_270);
+  EXPECT_EQ(new_display.rotation(), display::Display::ROTATE_0);
+  EXPECT_EQ(new_display.device_scale_factor(), scale);
 
   platform_screen_->RemoveObserver(&observer);
 }

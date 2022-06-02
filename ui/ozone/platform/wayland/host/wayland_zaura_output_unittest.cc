@@ -79,7 +79,7 @@ TEST_F(WaylandZAuraOutputTest, HandleInsets) {
   WaylandOutput* wayland_output = output_manager_->GetPrimaryOutput();
   ASSERT_TRUE(wayland_output);
   EXPECT_TRUE(wayland_output->is_ready());
-  EXPECT_EQ(wayland_output->bounds(), gfx::Rect(800, 600));
+  EXPECT_EQ(wayland_output->physical_size(), gfx::Size(800, 600));
   EXPECT_TRUE(wayland_output->insets().IsEmpty());
   EXPECT_TRUE(wayland_output->get_zaura_output());
 
@@ -100,7 +100,7 @@ TEST_F(WaylandZAuraOutputTest, HandleInsets) {
 
   // Verify that insets is updated.
   EXPECT_TRUE(wayland_output->is_ready());
-  EXPECT_EQ(wayland_output->bounds(), gfx::Rect(800, 600));
+  EXPECT_EQ(wayland_output->physical_size(), gfx::Size(800, 600));
   EXPECT_EQ(wayland_output->insets(), sent_insets);
 }
 
