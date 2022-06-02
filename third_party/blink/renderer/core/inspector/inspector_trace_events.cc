@@ -916,7 +916,7 @@ void inspector_receive_response_event::Data(perfetto::TracedValue context,
   dict.Add("requestId", request_id);
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   dict.Add("statusCode", response.HttpStatusCode());
-  dict.Add("mimeType", response.MimeType().GetString().IsolatedCopy());
+  dict.Add("mimeType", response.MimeType().GetString());
   dict.Add("encodedDataLength", response.EncodedDataLength());
   dict.Add("fromCache", response.WasCached());
   dict.Add("fromServiceWorker", response.WasFetchedViaServiceWorker());

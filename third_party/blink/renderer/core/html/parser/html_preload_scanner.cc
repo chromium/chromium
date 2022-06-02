@@ -210,13 +210,7 @@ class TokenPreloadScanner::StartTagScanner {
   void HandlePictureSourceURL(PictureData& picture_data) {
     if (Match(tag_impl_, html_names::kSourceTag) && matched_ &&
         picture_data.source_url.IsEmpty()) {
-      // Must create an IsolatedCopy() since the srcset attribute value will get
-      // sent back to the main thread between when we set this, and when we
-      // process the closing tag which would clear picture_data_. Having any ref
-      // to a string we're going to send will fail
-      // IsSafeToSendToAnotherThread().
-      picture_data.source_url =
-          srcset_image_candidate_.ToString().IsolatedCopy();
+      picture_data.source_url = srcset_image_candidate_.ToString();
       picture_data.source_size_set = source_size_set_;
       picture_data.source_size = source_size_;
       picture_data.picked = true;

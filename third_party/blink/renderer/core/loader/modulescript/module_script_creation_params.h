@@ -60,9 +60,9 @@ class ModuleScriptCreationParams {
   ~ModuleScriptCreationParams() = default;
 
   ModuleScriptCreationParams IsolatedCopy() const {
-    String isolated_source_text =
-        isolated_source_text_ ? isolated_source_text_.IsolatedCopy()
-                              : GetSourceText().ToString().IsolatedCopy();
+    String isolated_source_text = isolated_source_text_
+                                      ? isolated_source_text_
+                                      : GetSourceText().ToString();
     return ModuleScriptCreationParams(SourceURL(), BaseURL(),
                                       source_location_type_, GetModuleType(),
                                       isolated_source_text);
