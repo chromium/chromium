@@ -231,10 +231,15 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     return;
   }
 
-  // Once colorSpaces other than sRGB are defined, we'll need to ensure they're
-  // supported here.
-  DCHECK_EQ(AsDawnEnum(descriptor->colorSpace()),
-            WGPUPredefinedColorSpace_Srgb);
+  // TODO(crbug.com/1241375): Support additional color spaces for external
+  // textures.
+  if (descriptor->colorSpace().AsEnum() !=
+      V8PredefinedColorSpace::Enum::kSRGB) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kOperationError,
+        "colorSpace !== 'srgb' isn't supported yet.");
+    return;
+  }
 
   // Set the size while configuring.
   if (descriptor->hasSize()) {

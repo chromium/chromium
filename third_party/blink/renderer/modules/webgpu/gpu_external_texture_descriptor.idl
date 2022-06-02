@@ -6,5 +6,5 @@
 
 dictionary GPUExternalTextureDescriptor : GPUObjectDescriptorBase {
     required (HTMLVideoElement or VideoFrame) source;
-    GPUPredefinedColorSpace colorSpace = "srgb";
+    PredefinedColorSpace colorSpace = "srgb";
 };

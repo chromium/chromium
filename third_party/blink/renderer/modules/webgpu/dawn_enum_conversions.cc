@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_load_op.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_pipeline_statistic_name.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_predefined_color_space.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_primitive_topology.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_query_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_sampler_binding_type.h"
@@ -32,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_dimension.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_step_mode.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 namespace blink {
 
@@ -433,11 +433,12 @@ WGPUIndexFormat AsDawnEnum(const V8GPUIndexFormat& webgpu_enum) {
   }
 }
 
-WGPUPredefinedColorSpace AsDawnEnum(
-    const V8GPUPredefinedColorSpace& webgpu_enum) {
-  switch (webgpu_enum.AsEnum()) {
-    case V8GPUPredefinedColorSpace::Enum::kSRGB:
+WGPUPredefinedColorSpace AsDawnEnum(PredefinedColorSpace color_space) {
+  switch (color_space) {
+    case PredefinedColorSpace::kSRGB:
       return WGPUPredefinedColorSpace_Srgb;
+    default:
+      return WGPUPredefinedColorSpace_Undefined;
   }
 }
 

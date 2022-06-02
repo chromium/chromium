@@ -14,7 +14,7 @@ dictionary GPUCanvasConfiguration {
     required GPUTextureFormat format;
     GPUTextureUsageFlags usage = 16;  // GPUTextureUsage.RENDER_ATTACHMENT
     sequence<GPUTextureFormat> viewFormats = [];
-    GPUPredefinedColorSpace colorSpace = "srgb";
+    PredefinedColorSpace colorSpace = "srgb";
     GPUCanvasAlphaMode alphaMode;
 
     // TODO(crbug.com/1069302): Remove the following after a deprecation period.

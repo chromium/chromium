@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlvideoelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
+#include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_view.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
@@ -183,12 +185,26 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
     ExceptionState& exception_state) {
   DCHECK(media_video_frame);
 
-  gfx::ColorSpace srcColorSpace = media_video_frame->ColorSpace();
-  gfx::ColorSpace dstColorSpace;
-  switch (webgpu_desc->colorSpace().AsEnum()) {
-    case V8GPUPredefinedColorSpace::Enum::kSRGB:
-      dstColorSpace = gfx::ColorSpace::CreateSRGB();
+  // TODO(crbug.com/1330250): Support additional color spaces for external
+  // textures.
+  if (webgpu_desc->colorSpace().AsEnum() !=
+      V8PredefinedColorSpace::Enum::kSRGB) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kOperationError,
+        "colorSpace !== 'srgb' isn't supported yet.");
+    return nullptr;
   }
+
+  PredefinedColorSpace dst_predefined_color_space;
+  if (!ValidateAndConvertColorSpace(webgpu_desc->colorSpace(),
+                                    dst_predefined_color_space,
+                                    exception_state)) {
+    return nullptr;
+  }
+
+  gfx::ColorSpace srcColorSpace = media_video_frame->ColorSpace();
+  gfx::ColorSpace dstColorSpace =
+      PredefinedColorSpaceToGfxColorSpace(dst_predefined_color_space);
 
   // TODO(crbug.com/1306753): Use SharedImageProducer and CompositeSharedImage
   // rather than check 'is_webgpu_compatible'.
@@ -221,7 +237,7 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
     WGPUExternalTextureDescriptor external_texture_desc = {};
     external_texture_desc.plane0 = plane0;
     external_texture_desc.plane1 = plane1;
-    external_texture_desc.colorSpace = AsDawnEnum(webgpu_desc->colorSpace());
+    external_texture_desc.colorSpace = AsDawnEnum(dst_predefined_color_space);
 
     std::array<float, 12> yuvToRgbMatrix =
         GetYUVToRGBMatrix(srcColorSpace, media_video_frame->BitDepth());
@@ -310,7 +326,7 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
 
   WGPUExternalTextureDescriptor dawn_desc = {};
   dawn_desc.plane0 = plane0;
-  dawn_desc.colorSpace = AsDawnEnum(webgpu_desc->colorSpace());
+  dawn_desc.colorSpace = AsDawnEnum(dst_predefined_color_space);
 
   ColorSpaceConversionConstants colorSpaceConversionConstants =
       GetColorSpaceConversionConstants(srcColorSpace, dstColorSpace);

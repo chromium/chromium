@@ -21,7 +21,6 @@ class V8GPUStoreOp;
 class V8GPULoadOp;
 class V8GPUFeatureName;
 class V8GPUIndexFormat;
-class V8GPUPredefinedColorSpace;
 class V8GPUPrimitiveTopology;
 class V8GPUBlendFactor;
 class V8GPUBlendOperation;
@@ -33,6 +32,7 @@ class V8GPUCullMode;
 class V8GPUFrontFace;
 class V8GPUTextureAspect;
 class V8GPUErrorFilter;
+enum class PredefinedColorSpace;
 
 // Convert WebGPU bitfield values to Dawn enums. These have the same value.
 template <typename DawnFlags>
@@ -60,8 +60,6 @@ WGPUStencilOperation AsDawnEnum(const V8GPUStencilOperation& webgpu_enum);
 WGPUStoreOp AsDawnEnum(const V8GPUStoreOp& webgpu_enum);
 WGPULoadOp AsDawnEnum(const V8GPULoadOp& webgpu_enum);
 WGPUIndexFormat AsDawnEnum(const V8GPUIndexFormat& webgpu_enum);
-WGPUPredefinedColorSpace AsDawnEnum(
-    const V8GPUPredefinedColorSpace& webgpu_enum);
 WGPUFeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum);
 WGPUPrimitiveTopology AsDawnEnum(const V8GPUPrimitiveTopology& webgpu_enum);
 WGPUBlendFactor AsDawnEnum(const V8GPUBlendFactor& webgpu_enum);
@@ -74,7 +72,7 @@ WGPUCullMode AsDawnEnum(const V8GPUCullMode& webgpu_enum);
 WGPUFrontFace AsDawnEnum(const V8GPUFrontFace& webgpu_enum);
 WGPUTextureAspect AsDawnEnum(const V8GPUTextureAspect& webgpu_enum);
 WGPUErrorFilter AsDawnEnum(const V8GPUErrorFilter& webgpu_enum);
-
+WGPUPredefinedColorSpace AsDawnEnum(PredefinedColorSpace color_space);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_DAWN_ENUM_CONVERSIONS_H_
