@@ -336,7 +336,7 @@ void MissiveClient::Initialize(dbus::Bus* bus) {
 
 // static
 void MissiveClient::InitializeFake() {
-  (new FakeMissiveClient())->Init();
+  MissiveClient::InitializeFake<FakeMissiveClient>();
 }
 
 // static

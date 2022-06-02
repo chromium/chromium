@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_DBUS_MISSIVE_MISSIVE_CLIENT_H_
 #define CHROMEOS_DBUS_MISSIVE_MISSIVE_CLIENT_H_
 
+#include <type_traits>
+
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
@@ -29,6 +31,9 @@ class COMPONENT_EXPORT(MISSIVE) MissiveClient {
   // Interface with testing functionality. Accessed through GetTestInterface(),
   // only implemented in the fake implementation.
   class TestInterface {
+   public:
+    virtual void Init() = 0;
+
    protected:
     virtual ~TestInterface() = default;
   };
@@ -40,7 +45,22 @@ class COMPONENT_EXPORT(MISSIVE) MissiveClient {
   static void Initialize(dbus::Bus* bus);
 
   // Creates and initializes a fake global instance if not already created.
+  // This is a non-template overload of the template method "InitializeFake".
+  // Absence of this overload, all usage of "InitializeFake" would require
+  // including |fake_missive_client.h| even though none of the method there is
+  // used.
   static void InitializeFake();
+
+  // Creates and initializes a fake global instance for the specified type if
+  // one is not already created.
+  template <class T>
+  static void InitializeFake() {
+    static_assert(std::is_base_of<MissiveClient, T>::value,
+                  "T must extend MissiveClient");
+    static_assert(std::is_base_of<MissiveClient::TestInterface, T>::value,
+                  "T must extend MissiveClient::TestInterface");
+    (new T())->Init();
+  }
 
   // Destroys the global instance.
   static void Shutdown();
