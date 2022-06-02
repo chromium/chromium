@@ -188,7 +188,7 @@ LayoutUnit LayoutSVGRoot::ComputeReplacedLogicalHeight(
 
 double LayoutSVGRoot::LogicalSizeScaleFactorForPercentageLengths() const {
   NOT_DESTROYED();
-  if (!IsDocumentElement() || !GetDocument().IsInMainFrame())
+  if (!IsDocumentElement() || !GetDocument().IsInOutermostMainFrame())
     return 1;
   if (GetDocument().GetLayoutView()->ShouldUsePrintingLayout())
     return 1;
