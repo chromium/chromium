@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/limits.h"
@@ -153,7 +154,7 @@ AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
     return;
   }
 
-  auto sample_rate = static_cast<int>(init->sampleRate());
+  int sample_rate = base::saturated_cast<int>(init->sampleRate());
   if (sample_rate < media::limits::kMinSampleRate ||
       sample_rate > media::limits::kMaxSampleRate) {
     exception_state.ThrowDOMException(
