@@ -94,7 +94,7 @@ class CORE_EXPORT TextDecorationInfo {
   // These methods do not depend on SetDecorationIndex
   LayoutUnit Width() const { return width_; }
   float Baseline() const { return baseline_; }
-  const ComputedStyle& Style() const { return target_style_; }
+  const ComputedStyle& TargetStyle() const { return target_style_; }
   float ComputedFontSize() const { return computed_font_size_; }
   const SimpleFontData* FontData() const { return font_data_; }
   // Returns the scaling factor for the decoration.

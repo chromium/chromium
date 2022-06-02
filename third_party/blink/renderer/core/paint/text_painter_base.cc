@@ -301,7 +301,7 @@ void TextPainterBase::PaintDecorationUnderOrOverLine(
     TextDecorationLine line,
     const cc::PaintFlags* flags) {
   AppliedDecorationPainter decoration_painter(context, decoration_info);
-  if (decoration_info.Style().TextDecorationSkipInk() ==
+  if (decoration_info.TargetStyle().TextDecorationSkipInk() ==
       ETextDecorationSkipInk::kAuto) {
     // In order to ignore intersects less than 0.5px, inflate by -0.5.
     gfx::RectF decoration_bounds = decoration_info.Bounds();

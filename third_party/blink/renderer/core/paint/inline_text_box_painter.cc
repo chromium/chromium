@@ -432,7 +432,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
           /* inline_context */ nullptr, selection_text_decoration,
           /* font_override */ nullptr, MinimumThickness1(true), 1.0f,
           inline_text_box_.Root().BaselineType(), decorating_box_style);
-      TextDecorationOffset decoration_offset(decoration_info->Style(),
+      TextDecorationOffset decoration_offset(decoration_info->TargetStyle(),
                                              &inline_text_box_, decorating_box);
       text_painter.PaintDecorationsExceptLineThrough(
           decoration_offset, decoration_info.value(), paint_info,

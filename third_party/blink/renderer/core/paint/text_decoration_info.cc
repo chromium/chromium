@@ -284,7 +284,7 @@ void TextDecorationInfo::SetOverlineLineData(
           : FontVerticalPositionType::TextTop;
   const int paint_overline_offset =
       decoration_offset.ComputeUnderlineOffsetForUnder(
-          line_offset, Style().ComputedFontSize(), FontData(),
+          line_offset, TargetStyle().ComputedFontSize(), FontData(),
           ResolvedThickness(), position);
   SetLineData(TextDecorationLine::kOverline, paint_overline_offset);
 }
@@ -307,7 +307,7 @@ void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
   DCHECK(!HasLineThrough());
   DCHECK(applied_text_decoration_);
   const int paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
-      FlippedUnderlinePosition(), Style().ComputedFontSize(), FontData(),
+      FlippedUnderlinePosition(), TargetStyle().ComputedFontSize(), FontData(),
       applied_text_decoration_->UnderlineOffset(), ResolvedThickness());
   SetLineData(HasSpellingError() ? TextDecorationLine::kSpellingError
                                  : TextDecorationLine::kGrammarError,

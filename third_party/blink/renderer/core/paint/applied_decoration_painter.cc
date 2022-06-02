@@ -14,8 +14,9 @@ void AppliedDecorationPainter::Paint(const cc::PaintFlags* flags) {
   context_.SetStrokeStyle(decoration_info_.StrokeStyle());
   context_.SetStrokeColor(decoration_info_.LineColor());
 
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      decoration_info_.Style(), DarkModeFilter::ElementRole::kForeground));
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(decoration_info_.TargetStyle(),
+                        DarkModeFilter::ElementRole::kForeground));
   switch (decoration_info_.DecorationStyle()) {
     case ETextDecorationStyle::kWavy:
       StrokeWavyTextDecoration(flags);
@@ -51,8 +52,9 @@ void AppliedDecorationPainter::StrokeWavyTextDecoration(
   context_.Clip(decoration_info_.Bounds());
 
   absl::optional<Path> path = decoration_info_.StrokePath();
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      decoration_info_.Style(), DarkModeFilter::ElementRole::kForeground));
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(decoration_info_.TargetStyle(),
+                        DarkModeFilter::ElementRole::kForeground));
   if (flags)
     context_.DrawPath(path->GetSkPath(), *flags, auto_dark_mode);
   else
