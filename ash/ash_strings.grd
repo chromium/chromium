@@ -1633,6 +1633,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STYLUS_TOOLS_METALAYER_TOAST_LOADING" desc="Message content on the toast that appears when the user presses the stylus button to activate the Assistant but it is still loading.">
         Assistant is loading...
       </message>
+      <message name="IDS_ASH_STYLUS_TOOLS_METALAYER_TOAST_DEPRECATE" desc="Message content on the toast that appears when the user presses the stylus button to activate the Assistant but the feature is deprecated.">
+        Searching what's on my screen with Google Assistant is no longer supported.
+      </message>
       <message name="IDS_ASH_STYLUS_TOOLS_TITLE" desc="The title of the stylus tools dialog in the ash shelf.">
         Stylus tools
       </message>

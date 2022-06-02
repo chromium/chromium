@@ -52,6 +52,8 @@ extern const char kAssistantConsentStatus[];
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const char kAssistantContextEnabled[];
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+extern const char kAssistantDeprecateStylusToast[];
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const char kAssistantDisabledByPolicy[];
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const char kAssistantEnabled[];

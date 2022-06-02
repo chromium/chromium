@@ -8,6 +8,7 @@
 #include "ash/public/cpp/system/toast_catalog.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -18,6 +19,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
+#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -32,9 +34,18 @@ namespace {
 
 const char kToastId[] = "palette_metalayer_mode";
 
+// Toast ID for toast that shows for long press stylus actions when metalayer
+// mode is deprecated.
+const char kDeprecateAssistantStylusToastId[] = "deprecate_assistant_stylus";
+
 // If the last stroke happened within this amount of time,
 // assume writing/sketching usage.
 const int kMaxStrokeGapWhenWritingMs = 1000;
+
+// Returns the last active user pref service.
+PrefService* GetPrefs() {
+  return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+}
 
 }  // namespace
 
@@ -93,6 +104,9 @@ const gfx::VectorIcon& MetalayerMode::GetPaletteIcon() const {
 }
 
 views::View* MetalayerMode::CreateView() {
+  if (ash::features::IsDeprecateAssistantStylusFeaturesEnabled())
+    return nullptr;
+
   views::View* view = CreateDefaultView(std::u16string());
   UpdateView();
   return view;
@@ -133,6 +147,30 @@ void MetalayerMode::OnTouchEvent(ui::TouchEvent* event) {
 
   if (palette_utils::PaletteContainsPointInScreen(event->root_location()))
     return;
+
+  // Assistant stylus features are in the process of being deprecated.
+  // After deprecation, which is currently gated by a feature flag, long
+  // press stylus events will not trigger the metalayer mode.
+  if (ash::features::IsDeprecateAssistantStylusFeaturesEnabled()) {
+    // Only show the toast once when the metalayer is triggered for the first
+    // time.
+    if (!GetPrefs()->GetBoolean(
+            chromeos::assistant::prefs::kAssistantDeprecateStylusToast)) {
+      // Set the deprecate stylus toast assistant pref so that the toast doesn't
+      // repeatedly show.
+      GetPrefs()->SetBoolean(
+          chromeos::assistant::prefs::kAssistantDeprecateStylusToast, true);
+      Shell::Get()->toast_manager()->Show(
+          ToastData(kDeprecateAssistantStylusToastId,
+                    ToastCatalogName::kDeprecateAssistantStylus,
+                    l10n_util::GetStringUTF16(
+                        IDS_ASH_STYLUS_TOOLS_METALAYER_TOAST_DEPRECATE),
+                    ToastData::kDefaultToastDuration,
+                    /*visible_on_lock_screen=*/false,
+                    /*has_dismiss_button=*/true));
+    }
+    return;
+  }
 
   if (loading()) {
     // Repetitive presses will create toasts with the same id which will be
