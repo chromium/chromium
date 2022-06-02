@@ -254,7 +254,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPostTaskFocusTab,
     &kProbabilisticCryptidRenderer,
     &kReachedCodeProfiler,
-    &kImproveReaderModePrompt,
     &kReaderModeInCCT,
     &kReengagementNotification,
     &kRelatedSearches,
@@ -652,9 +651,6 @@ const base::Feature kHandleMediaIntents{"HandleMediaIntents",
 
 const base::Feature kImmersiveUiMode{"ImmersiveUiMode",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kImproveReaderModePrompt{"ImproveReaderModePrompt",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kIncognitoReauthenticationForAndroid{
     "IncognitoReauthenticationForAndroid", base::FEATURE_DISABLED_BY_DEFAULT};

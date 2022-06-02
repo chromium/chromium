@@ -361,7 +361,6 @@ public abstract class ChromeFeatureList {
     public static final String HANDLE_MEDIA_INTENTS = "HandleMediaIntents";
     public static final String HTTPS_FIRST_MODE = "HttpsOnlyMode";
     public static final String IMMERSIVE_UI_MODE = "ImmersiveUiMode";
-    public static final String IMPROVE_READER_MODE_PROMPT = "ImproveReaderModePrompt";
     public static final String INCOGNITO_DOWNLOADS_WARNING = "IncognitoDownloadsWarning";
     public static final String INCOGNITO_NTP_REVAMP = "IncognitoNtpRevamp";
     public static final String INCOGNITO_REAUTHENTICATION_FOR_ANDROID =

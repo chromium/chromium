@@ -341,42 +341,6 @@
             ]
         }
     ],
-    "AndroidReaderModePromptThrottling": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledThrottling_Url_2022-03-22",
-                    "params": {
-                        "reader_mode_throttling_mode": "url"
-                    },
-                    "enable_features": [
-                        "ImproveReaderModePrompt"
-                    ]
-                },
-                {
-                    "name": "EnabledThrottling_Domain_2022-03-22",
-                    "params": {
-                        "reader_mode_throttling_mode": "domain"
-                    },
-                    "enable_features": [
-                        "ImproveReaderModePrompt"
-                    ]
-                },
-                {
-                    "name": "DisabledThrottling_2022-03-22",
-                    "params": {
-                        "reader_mode_throttling_mode": "disabled"
-                    },
-                    "enable_features": [
-                        "ImproveReaderModePrompt"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidSystemTracing": [
         {
             "platforms": [
