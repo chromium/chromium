@@ -19,7 +19,6 @@
 #include "base/bits.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
@@ -1825,6 +1824,15 @@ TEST(ValuesTest, SpecializedEquals) {
   }
 }
 
+// Test that a literal string comparison does not end up using the bool (!!)
+// overload.
+TEST(ValuesTest, LiteralStringEquals) {
+  EXPECT_EQ("hello world", base::Value("hello world"));
+  EXPECT_EQ(base::Value("hello world"), "hello world");
+  EXPECT_NE("hello world", base::Value(true));
+  EXPECT_NE(base::Value(true), "hello world");
+}
+
 TEST(ValuesTest, Equals) {
   auto null1 = std::make_unique<Value>();
   auto null2 = std::make_unique<Value>();
@@ -2460,5 +2468,90 @@ TEST(ValuesTest, TracingSupport) {
   }
 }
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
+TEST(ValueViewTest, BasicConstruction) {
+  {
+    ValueView v = true;
+    EXPECT_EQ(true, absl::get<bool>(v.data_view_for_test()));
+  }
+  {
+    ValueView v = 25;
+    EXPECT_EQ(25, absl::get<int>(v.data_view_for_test()));
+  }
+  {
+    ValueView v = 3.14;
+    EXPECT_DOUBLE_EQ(3.14, absl::get<ValueView::DoubleStorageForTest>(
+                               v.data_view_for_test()));
+  }
+  {
+    ValueView v = StringPiece("hello world");
+    EXPECT_EQ("hello world", absl::get<StringPiece>(v.data_view_for_test()));
+  }
+  {
+    ValueView v = "hello world";
+    EXPECT_EQ("hello world", absl::get<StringPiece>(v.data_view_for_test()));
+  }
+  {
+    std::string str = "hello world";
+    ValueView v = str;
+    EXPECT_EQ("hello world", absl::get<StringPiece>(v.data_view_for_test()));
+  }
+  {
+    Value::Dict dict;
+    dict.Set("hello", "world");
+    ValueView v = dict;
+    EXPECT_EQ(dict, absl::get<std::reference_wrapper<const Value::Dict>>(
+                        v.data_view_for_test()));
+  }
+  {
+    Value::List list;
+    list.Append("hello");
+    list.Append("world");
+    ValueView v = list;
+    EXPECT_EQ(list, absl::get<std::reference_wrapper<const Value::List>>(
+                        v.data_view_for_test()));
+  }
+}
+
+TEST(ValueViewTest, ValueConstruction) {
+  {
+    Value val(true);
+    ValueView v = val;
+    EXPECT_EQ(true, absl::get<bool>(v.data_view_for_test()));
+  }
+  {
+    Value val(25);
+    ValueView v = val;
+    EXPECT_EQ(25, absl::get<int>(v.data_view_for_test()));
+  }
+  {
+    Value val(3.14);
+    ValueView v = val;
+    EXPECT_DOUBLE_EQ(3.14, absl::get<ValueView::DoubleStorageForTest>(
+                               v.data_view_for_test()));
+  }
+  {
+    Value val("hello world");
+    ValueView v = val;
+    EXPECT_EQ("hello world", absl::get<StringPiece>(v.data_view_for_test()));
+  }
+  {
+    Value::Dict dict;
+    dict.Set("hello", "world");
+    Value val(dict.Clone());
+    ValueView v = val;
+    EXPECT_EQ(dict, absl::get<std::reference_wrapper<const Value::Dict>>(
+                        v.data_view_for_test()));
+  }
+  {
+    Value::List list;
+    list.Append("hello");
+    list.Append("world");
+    Value val(list.Clone());
+    ValueView v = val;
+    EXPECT_EQ(list, absl::get<std::reference_wrapper<const Value::List>>(
+                        v.data_view_for_test()));
+  }
+}
 
 }  // namespace base
