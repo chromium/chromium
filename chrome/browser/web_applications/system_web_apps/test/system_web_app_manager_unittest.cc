@@ -214,9 +214,9 @@ class SystemWebAppManagerTest : public WebAppTest {
 
     web_app_policy_manager().SetSubsystems(
         &externally_managed_app_manager(), &controller().registrar(),
-        &controller().sync_bridge(),
-        &system_web_app_manager().system_app_delegates(),
-        &controller().os_integration_manager());
+        &controller().sync_bridge(), &controller().os_integration_manager());
+    web_app_policy_manager().SetSystemWebAppDelegateMap(
+        &system_web_app_manager().system_app_delegates());
 
     system_web_app_manager().SetSubsystems(
         &externally_managed_app_manager(), &controller().registrar(),

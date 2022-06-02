@@ -48,15 +48,16 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   ManifestUpdateManager();
   ~ManifestUpdateManager() override;
 
-  void SetSubsystems(
-      WebAppInstallManager* install_manager,
-      WebAppRegistrar* registrar,
-      WebAppIconManager* icon_manager,
-      WebAppUiManager* ui_manager,
-      WebAppInstallFinalizer* install_finalizer,
-      const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map,
-      OsIntegrationManager* os_integration_manager,
-      WebAppSyncBridge* sync_bridge);
+  void SetSubsystems(WebAppInstallManager* install_manager,
+                     WebAppRegistrar* registrar,
+                     WebAppIconManager* icon_manager,
+                     WebAppUiManager* ui_manager,
+                     WebAppInstallFinalizer* install_finalizer,
+                     OsIntegrationManager* os_integration_manager,
+                     WebAppSyncBridge* sync_bridge);
+  void SetSystemWebAppDelegateMap(
+      const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map);
+
   void Start();
   void Shutdown();
 

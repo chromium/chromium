@@ -78,7 +78,6 @@ void WebAppPolicyManager::SetSubsystems(
     ExternallyManagedAppManager* externally_managed_app_manager,
     WebAppRegistrar* app_registrar,
     WebAppSyncBridge* sync_bridge,
-    const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map,
     OsIntegrationManager* os_integration_manager) {
   DCHECK(externally_managed_app_manager);
   DCHECK(app_registrar);
@@ -88,8 +87,12 @@ void WebAppPolicyManager::SetSubsystems(
   externally_managed_app_manager_ = externally_managed_app_manager;
   app_registrar_ = app_registrar;
   sync_bridge_ = sync_bridge;
-  system_web_apps_delegate_map_ = system_web_apps_delegate_map;
   os_integration_manager_ = os_integration_manager;
+}
+
+void WebAppPolicyManager::SetSystemWebAppDelegateMap(
+    const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map) {
+  system_web_apps_delegate_map_ = system_web_apps_delegate_map;
 }
 
 void WebAppPolicyManager::Start() {
@@ -651,6 +654,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
     }
   }
 
+  DCHECK(system_web_apps_delegate_map_);
   for (const ash::SystemWebAppType& app_type : disabled_system_apps_) {
     absl::optional<AppId> app_id = GetAppIdForSystemApp(
         *app_registrar_, *system_web_apps_delegate_map_, app_type);

@@ -53,7 +53,7 @@ KeyedService* WebAppProviderFactory::BuildServiceInstanceFor(
   WebAppProvider* provider = new WebAppProvider(profile);
   provider->Start();
 
-  // TODO(crbug.com/1321984): Make SWAM a KeyedServce and move this scheduling
+  // TODO(crbug.com/1321984): Make SWAM a KeyedService and move this scheduling
   // to that new service factory.
   provider->on_registry_ready().Post(
       FROM_HERE,

@@ -57,8 +57,9 @@ class WebAppPolicyManager {
       ExternallyManagedAppManager* externally_managed_app_manager,
       WebAppRegistrar* app_registrar,
       WebAppSyncBridge* sync_bridge,
-      const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map,
       OsIntegrationManager* os_integration_manager);
+  void SetSystemWebAppDelegateMap(
+      const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map);
 
   void Start();
 

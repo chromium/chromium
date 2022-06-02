@@ -31,7 +31,6 @@ void ManifestUpdateManager::SetSubsystems(
     WebAppIconManager* icon_manager,
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* install_finalizer,
-    const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map,
     OsIntegrationManager* os_integration_manager,
     WebAppSyncBridge* sync_bridge) {
   install_manager_ = install_manager;
@@ -39,9 +38,13 @@ void ManifestUpdateManager::SetSubsystems(
   icon_manager_ = icon_manager;
   ui_manager_ = ui_manager;
   install_finalizer_ = install_finalizer;
-  system_web_apps_delegate_map_ = system_web_apps_delegate_map;
   os_integration_manager_ = os_integration_manager;
   sync_bridge_ = sync_bridge;
+}
+
+void ManifestUpdateManager::SetSystemWebAppDelegateMap(
+    const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map) {
+  system_web_apps_delegate_map_ = system_web_apps_delegate_map;
 }
 
 void ManifestUpdateManager::Start() {
@@ -70,6 +73,7 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
     return;
   }
 
+  DCHECK(system_web_apps_delegate_map_);
   if (IsSystemWebApp(*registrar_, *system_web_apps_delegate_map_, *app_id)) {
     NotifyResult(url, *app_id, ManifestUpdateResult::kAppIsSystemWebApp);
     return;
