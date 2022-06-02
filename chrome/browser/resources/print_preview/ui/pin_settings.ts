@@ -164,6 +164,14 @@ class PrintPreviewPinSettingsElement extends
     if (this.settings === undefined) {
       return;
     }
+
+    // Return early if pinValue is not available; unavailable settings should
+    // not be set, but this function observes |state| which may change
+    // regardless of pin availability.
+    if (!this.settings.pinValue || !this.settings.pinValue.available) {
+      return;
+    }
+
     // If the state is not READY and current pinValue is valid (so it's not the
     // cause of the error) we need to wait until the state will be READY again.
     // It's done because we don't permit multiple simultaneous validation errors
