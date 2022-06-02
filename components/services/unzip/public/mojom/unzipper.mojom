@@ -13,13 +13,17 @@ struct UnzipOptions {
   // Explicit encoding or set to "auto" to auto-detect from the ZIP file.
   // Default unpack encoding uses UTF-8.
   string encoding;
+  // Password used to unpack encrypted ZIP file.
+  string password;
 };
 
-struct Size {
+struct Info {
   // Boolean set to false if broken sizes are stored in the ZIP archive.
-  bool is_valid;
+  bool size_is_valid;
   // Predicted size as read from the ZIP archive (not trustable).
-  uint64 value;
+  uint64 size;
+  // Boolean set to true if the ZIP contains encrypted content.
+  bool is_encrypted;
 };
 
 // UnzipFilter is used to call back into the caller to check if
@@ -60,6 +64,6 @@ interface Unzipper {
   // or UNKNOWN_ENCODING in case of error.
   DetectEncoding(mojo_base.mojom.ReadOnlyFile zip_file) => (int32 encoding);
 
-  // Returns the size of the extracted archive in bytes.
-  GetExtractedSize(mojo_base.mojom.ReadOnlyFile zip_file) => (Size size);
+  // Returns the size in bytes and metadata for the extracted archive.
+  GetExtractedInfo(mojo_base.mojom.ReadOnlyFile zip_file) => (Info info);
 };

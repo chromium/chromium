@@ -188,6 +188,7 @@ void UnzipperImpl::Listener(const mojo::Remote<mojom::UnzipListener>& listener,
 bool DoUnzip(base::File zip_file,
              mojo::Remote<filesystem::mojom::Directory> output_dir,
              std::string encoding_name,
+             std::string password,
              zip::FilterCallback filter_cb,
              zip::UnzipProgressCallback progress_cb) {
   return zip::Unzip(
@@ -196,7 +197,8 @@ bool DoUnzip(base::File zip_file,
       base::BindRepeating(&CreateDirectory, output_dir.get()),
       {.encoding = std::move(encoding_name),
        .filter = std::move(filter_cb),
-       .progress = std::move(progress_cb)});
+       .progress = std::move(progress_cb),
+       .password = std::move(password)});
 }
 
 void UnzipperImpl::Unzip(
@@ -237,8 +239,8 @@ void UnzipperImpl::Unzip(
   base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&DoUnzip, std::move(zip_file), std::move(output_dir),
-                     std::move(encoding_name), std::move(filter_cb),
-                     std::move(progress_cb)),
+                     std::move(encoding_name), std::move(set_options->password),
+                     std::move(filter_cb), std::move(progress_cb)),
       base::BindOnce(std::move(callback)));
 }
 
@@ -250,8 +252,8 @@ void UnzipperImpl::DetectEncoding(base::File zip_file,
   std::move(callback).Run(encoding);
 }
 
-void UnzipperImpl::GetExtractedSize(base::File zip_file,
-                                    GetExtractedSizeCallback callback) {
+void UnzipperImpl::GetExtractedInfo(base::File zip_file,
+                                    GetExtractedInfoCallback callback) {
   DCHECK(zip_file.IsValid());
 
   // Open ZIP archive for reading.
@@ -259,13 +261,14 @@ void UnzipperImpl::GetExtractedSize(base::File zip_file,
   if (!reader.OpenFromPlatformFile(zip_file.GetPlatformFile())) {
     LOG(ERROR) << "Cannot decode ZIP archive from file handle "
                << zip_file.GetPlatformFile();
-    unzip::mojom::SizePtr size_info = unzip::mojom::Size::New(false, 0);
-    std::move(callback).Run(std::move(size_info));
+    unzip::mojom::InfoPtr info = unzip::mojom::Info::New(false, 0, false);
+    std::move(callback).Run(std::move(info));
     return;
   }
 
   int64_t size = 0;
   bool valid = true;
+  bool has_encrypted_content = false;
 
   // Iterate over file entries of the ZIP archive.
   while (const zip::ZipReader::Entry* const entry = reader.Next()) {
@@ -281,9 +284,13 @@ void UnzipperImpl::GetExtractedSize(base::File zip_file,
     if (entry->original_size > 0) {
       size += entry->original_size;
     }
+    if (entry->is_encrypted) {
+      has_encrypted_content = true;
+    }
   }
-  unzip::mojom::SizePtr size_info = unzip::mojom::Size::New(valid, size);
-  std::move(callback).Run(std::move(size_info));
+  unzip::mojom::InfoPtr info =
+      unzip::mojom::Info::New(valid, size, has_encrypted_content);
+  std::move(callback).Run(std::move(info));
 }
 
 }  // namespace unzip

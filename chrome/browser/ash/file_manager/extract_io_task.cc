@@ -111,7 +111,7 @@ void ExtractIOTask::ExtractIntoNewDirectory(
     bool created_ok) {
   if (created_ok) {
     unzip::mojom::UnzipOptionsPtr options =
-        unzip::mojom::UnzipOptions::New("auto");
+        unzip::mojom::UnzipOptions::New("auto", "");
     unzip::Unzip(
         unzip::LaunchUnzipper(), source_file, destination_directory,
         std::move(options),
@@ -193,10 +193,10 @@ void ExtractIOTask::GotFreeDiskSpace(int64_t free_space) {
   ExtractAllSources();
 }
 
-void ExtractIOTask::ZipSizeCallback(unzip::mojom::SizePtr size_info) {
+void ExtractIOTask::ZipInfoCallback(unzip::mojom::InfoPtr info) {
   DCHECK_GT(extractCount_, 0);
-  if (size_info->is_valid) {
-    progress_.total_bytes += size_info->value;
+  if (info->size_is_valid) {
+    progress_.total_bytes += info->size;
   }
   if (--sizingCount_ == 0) {
     // After getting the size of all the ZIPs, check if we have
@@ -216,8 +216,8 @@ void ExtractIOTask::ZipSizeCallback(unzip::mojom::SizePtr size_info) {
 }
 
 void ExtractIOTask::GetExtractedSize(base::FilePath source_file) {
-  unzip::GetExtractedSize(unzip::LaunchUnzipper(), source_file,
-                          base::BindOnce(&ExtractIOTask::ZipSizeCallback,
+  unzip::GetExtractedInfo(unzip::LaunchUnzipper(), source_file,
+                          base::BindOnce(&ExtractIOTask::ZipInfoCallback,
                                          weak_ptr_factory_.GetWeakPtr()));
 }
 

@@ -73,7 +73,7 @@ class ExtractIOTask : public IOTask {
 
   void ExtractAllSources();
 
-  void ZipSizeCallback(unzip::mojom::SizePtr size_info);
+  void ZipInfoCallback(unzip::mojom::InfoPtr info);
 
   void GetExtractedSize(base::FilePath source_file);
 

@@ -41,8 +41,8 @@ class UnzipperImpl : public mojom::Unzipper {
   void DetectEncoding(base::File zip_file,
                       DetectEncodingCallback callback) override;
 
-  void GetExtractedSize(base::File zip_file,
-                        GetExtractedSizeCallback callback) override;
+  void GetExtractedInfo(base::File zip_file,
+                        GetExtractedInfoCallback callback) override;
 
   static void Listener(const mojo::Remote<mojom::UnzipListener>& listener,
                        uint64_t bytes);
