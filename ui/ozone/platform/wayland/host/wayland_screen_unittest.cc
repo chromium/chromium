@@ -21,6 +21,7 @@
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_wayland_platform_window_delegate.h"
+#include "ui/ozone/platform/wayland/test/mock_zaura_shell.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
@@ -90,6 +91,9 @@ class WaylandScreenTest : public WaylandTest {
 
     WaylandTest::SetUp();
 
+    mock_zaura_shell_ = std::make_unique<wl::MockZAuraShell>();
+    mock_zaura_shell_->Initialize(server_.display());
+
     output_->SetRect({kOutputWidth, kOutputHeight});
     output_->SetScale(1);
     output_->Flush();
@@ -123,6 +127,8 @@ class WaylandScreenTest : public WaylandTest {
         platform_screen_->GetDisplayForAcceleratedWidget(widget);
     EXPECT_EQ(display_for_widget.id(), expected_display_id);
   }
+
+  std::unique_ptr<wl::MockZAuraShell> mock_zaura_shell_;
 
   wl::TestOutput* output_ = nullptr;
   WaylandOutputManager* output_manager_ = nullptr;
@@ -295,7 +301,7 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);
 
-  gfx::Rect new_rect{100, 100};
+  const gfx::Rect new_rect{100, 100};
   output_->SetRect(new_rect);
   output_->Flush();
 
@@ -305,7 +311,24 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
                             display::DisplayObserver::DISPLAY_METRIC_WORK_AREA;
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
   EXPECT_EQ(observer.GetDisplay().bounds(), new_rect);
+  EXPECT_EQ(observer.GetDisplay().work_area(), new_rect);
 
+  // Test work area.
+  const gfx::Rect new_work_area{80, 80};
+  ASSERT_TRUE(output_->GetAuraOutput());
+  output_->GetAuraOutput()->SetInsets(new_rect.InsetsFrom(new_work_area));
+  output_->Flush();
+
+  Sync();
+
+  changed_values = display::DisplayObserver::DISPLAY_METRIC_WORK_AREA;
+  EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
+  // Bounds should be unchanged.
+  EXPECT_EQ(observer.GetDisplay().bounds(), new_rect);
+  // Work area should have new value.
+  EXPECT_EQ(observer.GetDisplay().work_area(), new_work_area);
+
+  // Test scaling.
   const int32_t new_scale_value = 2;
   output_->SetScale(new_scale_value);
   output_->Flush();
@@ -319,6 +342,7 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
   EXPECT_EQ(observer.GetDisplay().device_scale_factor(), new_scale_value);
   EXPECT_EQ(observer.GetDisplay().bounds(), gfx::Rect(50, 50));
+  EXPECT_EQ(observer.GetDisplay().work_area(), gfx::Rect(30, 30));
 
   platform_screen_->RemoveObserver(&observer);
 }

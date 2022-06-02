@@ -34,7 +34,7 @@ int g_has_forced_device_scale_factor = -1;
 // -1.0, we read the forced device scale factor again.
 float g_forced_device_scale_factor = -1.0;
 
-// An alloance error epsilon cauesd by fractional scale factor to produce
+// An allowance error epsilon caused by fractional scale factor to produce
 // expected DP display size.
 constexpr float kDisplaySizeAllowanceEpsilon = 0.01f;
 

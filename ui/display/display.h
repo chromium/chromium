@@ -172,7 +172,7 @@ class DISPLAY_EXPORT Display final {
   gfx::Insets GetWorkAreaInsets() const;
 
   // Sets the device scale factor and display bounds in pixel. This
-  // updates the work are using the same insets between old bounds and
+  // updates the work area using the same insets between old bounds and
   // work area.
   void SetScaleAndBounds(float device_scale_factor,
                          const gfx::Rect& bounds_in_pixel);

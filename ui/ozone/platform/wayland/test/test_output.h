@@ -11,6 +11,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
+#include "ui/ozone/platform/wayland/test/test_zaura_output.h"
 
 namespace wl {
 
@@ -32,6 +33,9 @@ class TestOutput : public GlobalObject {
 
   void Flush();
 
+  void SetAuraOutput(TestZAuraOutput* aura_output);
+  TestZAuraOutput* GetAuraOutput();
+
  protected:
   void OnBind() override;
 
@@ -43,6 +47,8 @@ class TestOutput : public GlobalObject {
   absl::optional<gfx::Rect> pending_rect_ = absl::nullopt;
   absl::optional<int32_t> pending_scale_ = absl::nullopt;
   absl::optional<wl_output_transform> pending_transform_ = absl::nullopt;
+
+  TestZAuraOutput* aura_output_ = nullptr;
 };
 
 }  // namespace wl

@@ -56,6 +56,10 @@ void TestOutput::Flush() {
     scale_ = std::move(pending_scale_.value());
     wl_output_send_scale(resource(), scale_);
   }
+
+  if (aura_output_)
+    aura_output_->Flush();
+
   wl_output_send_done(resource());
 }
 
@@ -69,6 +73,14 @@ void TestOutput::Flush() {
 // so clients get notified about such changes when Flush() is called.
 void TestOutput::OnBind() {
   Flush();
+}
+
+void TestOutput::SetAuraOutput(TestZAuraOutput* aura_output) {
+  aura_output_ = aura_output;
+}
+
+TestZAuraOutput* TestOutput::GetAuraOutput() {
+  return aura_output_;
 }
 
 }  // namespace wl

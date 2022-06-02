@@ -43,6 +43,9 @@ struct Info {
   };
   // |next_scales| are swapped with |scales| after receiving output done event.
   std::vector<Scale> scales, next_scales;
+  struct {
+    int32_t top, left, bottom, right;
+  } insets;
   std::unique_ptr<wl_output> output;
   std::unique_ptr<zaura_output> aura_output;
 };
@@ -153,6 +156,17 @@ void AuraOutputDeviceScaleFactor(void* data,
   Info* info = static_cast<Info*>(data);
 
   info->device_scale_factor = device_scale_factor;
+}
+
+void AuraOutputInsets(void* data,
+                      zaura_output* output,
+                      int32_t top,
+                      int32_t left,
+                      int32_t bottom,
+                      int32_t right) {
+  Info* info = static_cast<Info*>(data);
+
+  info->insets = {top, left, bottom, right};
 }
 
 std::string OutputSubpixelToString(int32_t subpixel) {
@@ -293,7 +307,8 @@ int main(int argc, char* argv[]) {
                                         OutputScale};
 
   zaura_output_listener aura_output_listener = {
-      AuraOutputScale, AuraOutputConnection, AuraOutputDeviceScaleFactor};
+      AuraOutputScale, AuraOutputConnection, AuraOutputDeviceScaleFactor,
+      AuraOutputInsets};
   for (auto& info : globals.outputs) {
     wl_output_add_listener(info.output.get(), &output_listener, &info);
     if (globals.aura_shell) {
@@ -349,6 +364,12 @@ int main(int argc, char* argv[]) {
                   << AuraOutputScaleFlagsToString(scale.flags) << std::endl;
       }
     }
+    std::cout << "  insets:" << std::endl
+              << "    top:     " << info.insets.top << std::endl
+              << "    left:    " << info.insets.left << std::endl
+              << "    bottom:  " << info.insets.bottom << std::endl
+              << "    right:   " << info.insets.right << std::endl
+              << std::endl;
   }
 
   return 0;
