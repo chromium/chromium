@@ -821,7 +821,14 @@ export class CommandHandler extends CommandHandlerInterface {
         }
         return false;
       case 'contextMenu':
-        EventGenerator.sendKeyPress(KeyCode.APPS);
+        if (ChromeVoxState.instance.currentRange) {
+          let actionNode = ChromeVoxState.instance.currentRange.start.node;
+          if (actionNode.role === RoleType.INLINE_TEXT_BOX) {
+            actionNode = actionNode.parent;
+          }
+          actionNode.showContextMenu();
+          return false;
+        }
         break;
       case 'showHeadingsList':
         (new PanelCommand(PanelCommandType.OPEN_MENUS, 'role_heading')).send();
