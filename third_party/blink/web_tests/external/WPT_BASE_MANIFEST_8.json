@@ -152043,6 +152043,19 @@
        {}
       ]
      ],
+     "intra-base-white-space-001.html": [
+      "86468376c3211db6dbe6e8fa53b6186b4214af34",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/reference/intra-base-white-space-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "nested-ruby-pairing-001.html": [
       "d502dbca9b2d4c8a6e47668a2158a3f4d0995105",
       [
@@ -229561,6 +229574,19 @@
       ],
       {}
      ]
+    ],
+    "forced-colors-mode-53.html": [
+     "4726c4bb0a5524f3c8319863511939cb9fd26b88",
+     [
+      null,
+      [
+       [
+        "/forced-colors-mode/forced-colors-mode-53-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
     ]
    },
    "html": {
@@ -280663,6 +280689,10 @@
        "72a55541bcba241cdced59588e46118a40c8528c",
        []
       ],
+      "intra-base-white-space-001-ref.html": [
+       "4615b53ea745212373844aa82ad84eb14dd747a5",
+       []
+      ],
       "rb-display-001-ref.html": [
        "f8ed4022bcca8be6dc4b0de2a5cc4d7897e16c86",
        []
@@ -295079,14 +295109,6 @@
       []
      ]
     },
-    "tools": {
-     "_virtualenv": {
-      ".gitignore": [
-       "ede80b85f0f30f7d19ce1a46d6b421fac3c1f82f",
-       []
-      ]
-     }
-    },
     "vendor-imports": {
      "mozilla": {
       "mozilla-central-reftests": {
@@ -300961,6 +300983,10 @@
     ],
     "forced-colors-mode-52-ref.html": [
      "5d684be9d0b0ab1f573fae70f7a8105bbfd47fe1",
+     []
+    ],
+    "forced-colors-mode-53-ref.html": [
+     "443bc21680bcfae65c70fc3bbd2bf2b0a0282f41",
      []
     ],
     "resources": {
@@ -324220,7 +324246,7 @@
      []
     ],
     "idlharness.js": [
-     "b5eed06ce3e1380bc6bc1e8b75e2c545249fdc18",
+     "b3fe8034e2323e0ddf4c00816f457e4b60c106d0",
      []
     ],
     "idlharness.js.headers": [
