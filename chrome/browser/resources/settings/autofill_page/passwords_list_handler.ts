@@ -207,6 +207,9 @@ export class PasswordsListHandlerElement extends
     this.displayRemovalNotification_(
         params.get(PasswordRemovalUrlParams.REMOVED_FROM_ACCOUNT) === 'true',
         params.get(PasswordRemovalUrlParams.REMOVED_FROM_DEVICE) === 'true');
+    params.delete(PasswordRemovalUrlParams.REMOVED_FROM_ACCOUNT);
+    params.delete(PasswordRemovalUrlParams.REMOVED_FROM_DEVICE);
+    Router.getInstance().updateRouteParams(params);
   }
 
   override disconnectedCallback() {
