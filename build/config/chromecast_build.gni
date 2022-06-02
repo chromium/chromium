@@ -51,6 +51,10 @@ declare_args() {
   #
   # TODO(crbug.com/1314528): Change default to false and require is_linux.
   is_castos = is_chromecast
+
+  # Set this to true to build for Android-based Cast devices.
+  # Set this to false to use the defaults for the target OS/platform.
+  is_cast_android = is_chromecast && is_android
 }
 
 declare_args() {
@@ -128,3 +132,8 @@ assert(enable_cast_receiver == is_chromecast,
 
 assert(enable_cast_receiver || !is_castos,
        "is_castos = true requires enable_cast_receiver = true.")
+
+assert(enable_cast_receiver || !is_cast_android,
+       "is_cast_android = true requires enable_cast_receiver = true.")
+assert(is_android || !is_cast_android,
+       "is_cast_android = true requires is_android = true.")
