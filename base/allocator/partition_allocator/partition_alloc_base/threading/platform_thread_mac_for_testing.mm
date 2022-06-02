@@ -17,7 +17,6 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mac_util.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal::base {

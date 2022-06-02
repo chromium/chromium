@@ -39,8 +39,6 @@ T CFCast(const CFTypeRef& cf_val);
 template <typename T>
 T CFCastStrict(const CFTypeRef& cf_val);
 
-bool IsAtLeastOS10_14();
-
 }  // namespace mac
 
 #endif  // BUILDFLAG(IS_MAC)
@@ -59,7 +57,6 @@ using ::base::LazyInstanceTraitsBase;
 namespace mac {
 
 using ::base::mac::CFCast;
-using ::base::mac::IsAtLeastOS10_14;
 
 }  // namespace mac
 #endif  // BUILDFLAG(IS_MAC)

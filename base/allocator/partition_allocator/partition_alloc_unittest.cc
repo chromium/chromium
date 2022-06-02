@@ -60,8 +60,6 @@
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_MAC)
 #include <OpenCL/opencl.h>
-
-#include <base/mac/mac_util.h>
 #endif
 
 // In the MTE world, the upper bits of a pointer can be decorated with a tag,
