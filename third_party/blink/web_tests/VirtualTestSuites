@@ -427,7 +427,9 @@
               "http/tests/inspector-protocol",
               "http/tests/origin_trials",
               "http/tests/workers",
-              "inspector-protocol/worker"],
+              "inspector-protocol/worker",
+              "wpt_internal/fenced_frame/serviceWorker-dedicated-worker.https.html"
+            ],
     "args": ["--enable-features=PlzDedicatedWorker"]
   },
   {
