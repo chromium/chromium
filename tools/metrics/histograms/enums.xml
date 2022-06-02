@@ -40238,6 +40238,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4254" label="CrossOriginOpenerPolicyRestrictProperties"/>
   <int value="4255"
       label="CrossOriginOpenerPolicyRestrictPropertiesReportOnly"/>
+  <int value="4256" label="EventTimingInteractionId"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
