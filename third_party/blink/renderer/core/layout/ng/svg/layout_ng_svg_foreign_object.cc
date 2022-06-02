@@ -24,4 +24,44 @@ bool LayoutNGSVGForeignObject::IsOfType(LayoutObjectType type) const {
          LayoutNGBlockFlowMixin<LayoutSVGBlock>::IsOfType(type);
 }
 
+bool LayoutNGSVGForeignObject::IsChildAllowed(
+    LayoutObject* child,
+    const ComputedStyle& style) const {
+  NOT_DESTROYED();
+  // Disallow arbitrary SVG content. Only allow proper <svg xmlns="svgNS">
+  // subdocuments.
+  return !child->IsSVGChild();
+}
+
+bool LayoutNGSVGForeignObject::IsObjectBoundingBoxValid() const {
+  NOT_DESTROYED();
+  return !viewport_.IsEmpty();
+}
+
+gfx::RectF LayoutNGSVGForeignObject::ObjectBoundingBox() const {
+  NOT_DESTROYED();
+  return viewport_;
+}
+
+gfx::RectF LayoutNGSVGForeignObject::StrokeBoundingBox() const {
+  NOT_DESTROYED();
+  return VisualRectInLocalSVGCoordinates();
+}
+
+gfx::RectF LayoutNGSVGForeignObject::VisualRectInLocalSVGCoordinates() const {
+  NOT_DESTROYED();
+  return gfx::RectF(FrameRect());
+}
+
+AffineTransform LayoutNGSVGForeignObject::LocalToSVGParentTransform() const {
+  NOT_DESTROYED();
+  // Include a zoom inverse in the local-to-parent transform since descendants
+  // of the <foreignObject> will have regular zoom applied, and thus need to
+  // have that removed when moving into the <fO> ancestors chain (the SVG root
+  // will then reapply the zoom again if that boundary is crossed).
+  AffineTransform transform = local_transform_;
+  transform.Scale(1 / StyleRef().EffectiveZoom());
+  return transform;
+}
+
 }  // namespace blink

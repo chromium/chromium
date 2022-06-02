@@ -21,10 +21,22 @@ class LayoutNGSVGForeignObject final
  public:
   explicit LayoutNGSVGForeignObject(Element* element);
 
+  bool IsObjectBoundingBoxValid() const;
+
  private:
   // LayoutObject override:
   const char* GetName() const override;
   bool IsOfType(LayoutObjectType type) const override;
+  bool IsChildAllowed(LayoutObject* child,
+                      const ComputedStyle& style) const override;
+  gfx::RectF ObjectBoundingBox() const override;
+  gfx::RectF StrokeBoundingBox() const override;
+  gfx::RectF VisualRectInLocalSVGCoordinates() const override;
+  AffineTransform LocalToSVGParentTransform() const override;
+
+  // The resolved viewport in the regular SVG coordinate space (after any
+  // 'transform' has been applied but without zoom-adjustment).
+  gfx::RectF viewport_;
 };
 
 template <>
