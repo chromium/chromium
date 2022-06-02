@@ -70,11 +70,11 @@ content::WebUIDataSource* CreateNetExportHTMLSource() {
   return source;
 }
 
-void SetIfNotNull(base::DictionaryValue* dict,
+void SetIfNotNull(base::Value::Dict& dict,
                   const base::StringPiece& path,
                   std::unique_ptr<base::Value> in_value) {
   if (in_value) {
-    dict->Set(path, std::move(in_value));
+    dict.Set(path, base::Value::FromUniquePtrValue(std::move(in_value)));
   }
 }
 
@@ -173,7 +173,7 @@ NetExportMessageHandler::~NetExportMessageHandler() {
   if (select_file_dialog_)
     select_file_dialog_->ListenerDestroyed();
 
-  file_writer_->StopNetLog(nullptr);
+  file_writer_->StopNetLog();
 }
 
 void NetExportMessageHandler::RegisterMessages() {
@@ -248,16 +248,15 @@ void NetExportMessageHandler::OnStartNetLog(const base::ListValue* list) {
 void NetExportMessageHandler::OnStopNetLog(const base::ListValue* list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::unique_ptr<base::DictionaryValue> ui_thread_polled_data(
-      new base::DictionaryValue());
+  base::Value::Dict ui_thread_polled_data;
 
   Profile* profile = Profile::FromWebUI(web_ui());
-  SetIfNotNull(ui_thread_polled_data.get(), "prerenderInfo",
+  SetIfNotNull(ui_thread_polled_data, "prerenderInfo",
                chrome_browser_net::GetPrerenderInfo(profile));
-  SetIfNotNull(ui_thread_polled_data.get(), "extensionInfo",
+  SetIfNotNull(ui_thread_polled_data, "extensionInfo",
                chrome_browser_net::GetExtensionInfo(profile));
 #if BUILDFLAG(IS_WIN)
-  SetIfNotNull(ui_thread_polled_data.get(), "serviceProviders",
+  SetIfNotNull(ui_thread_polled_data, "serviceProviders",
                chrome_browser_net::GetWindowsServiceProviders());
 #endif
 

@@ -99,7 +99,7 @@ NetExportMessageHandler::NetExportMessageHandler()
 }
 
 NetExportMessageHandler::~NetExportMessageHandler() {
-  file_writer_->StopNetLog(nullptr);
+  file_writer_->StopNetLog();
 }
 
 void NetExportMessageHandler::RegisterMessages() {
@@ -162,7 +162,7 @@ void NetExportMessageHandler::OnStartNetLog(const base::ListValue* list) {
 
 void NetExportMessageHandler::OnStopNetLog(const base::ListValue* list) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  file_writer_->StopNetLog(nullptr);
+  file_writer_->StopNetLog();
 }
 
 void NetExportMessageHandler::OnSendNetLog(const base::ListValue* list) {

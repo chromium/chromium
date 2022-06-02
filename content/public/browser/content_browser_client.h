@@ -87,7 +87,6 @@ using LoginAuthRequiredCallback =
 
 namespace base {
 class CommandLine;
-class DictionaryValue;
 class FilePath;
 class Location;
 class SequencedTaskRunner;
@@ -1697,7 +1696,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // |GetNetConstants()| and passed to FileNetLogObserver - see documentation
   // of |FileNetLogObserver::CreateBounded()| for more information.  The
   // convention is to put new constants under a subdict at the key "clientInfo".
-  virtual base::DictionaryValue GetNetLogConstants();
+  virtual base::Value::Dict GetNetLogConstants();
 
 #if BUILDFLAG(IS_ANDROID)
   // Only used by Android WebView.

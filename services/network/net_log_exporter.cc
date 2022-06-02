@@ -39,7 +39,7 @@ NetLogExporter::~NetLogExporter() {
 }
 
 void NetLogExporter::Start(base::File destination,
-                           base::Value extra_constants,
+                           base::Value::Dict extra_constants,
                            net::NetLogCaptureMode capture_mode,
                            uint64_t max_file_size,
                            StartCallback callback) {
@@ -77,11 +77,9 @@ void NetLogExporter::Start(base::File destination,
   }
 }
 
-void NetLogExporter::Stop(base::Value polled_data_value,
+void NetLogExporter::Stop(base::Value::Dict polled_data,
                           StopCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::Value::Dict* polled_data = polled_data_value.GetIfDict();
-  DCHECK(polled_data);
 
   if (state_ != STATE_RUNNING) {
     std::move(callback).Run(net::ERR_UNEXPECTED);
@@ -90,8 +88,7 @@ void NetLogExporter::Stop(base::Value polled_data_value,
 
   base::Value::Dict net_info =
       net::GetNetInfo(network_context_->url_request_context());
-  if (polled_data)
-    net_info.Merge(*polled_data);
+  net_info.Merge(polled_data);
 
   file_net_observer_->StopObserving(
       std::make_unique<base::Value>(std::move(net_info)),
@@ -132,7 +129,7 @@ base::FilePath NetLogExporter::CreateScratchDir(
 
 void NetLogExporter::StartWithScratchDirOrCleanup(
     base::WeakPtr<NetLogExporter> object,
-    base::Value extra_constants,
+    base::Value::Dict extra_constants,
     net::NetLogCaptureMode capture_mode,
     uint64_t max_file_size,
     StartCallback callback,
@@ -155,15 +152,12 @@ void NetLogExporter::StartWithScratchDirOrCleanup(
 }
 
 void NetLogExporter::StartWithScratchDir(
-    base::Value extra_constants_value,
+    base::Value::Dict extra_constants,
     net::NetLogCaptureMode capture_mode,
     uint64_t max_file_size,
     StartCallback callback,
     const base::FilePath& scratch_dir_path) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::Value::Dict* extra_constants = extra_constants_value.GetIfDict();
-  DCHECK(extra_constants);  // mojo is supposed to enforce that before Start()
-                            // is invoked.
 
   if (scratch_dir_path.empty() && max_file_size != kUnlimitedFileSize) {
     state_ = STATE_IDLE;
@@ -175,9 +169,7 @@ void NetLogExporter::StartWithScratchDir(
   state_ = STATE_RUNNING;
 
   base::Value::Dict constants = net::GetNetConstants();
-
-  if (extra_constants)
-    constants.Merge(*extra_constants);
+  constants.Merge(extra_constants);
   std::unique_ptr<base::Value> constants_value =
       std::make_unique<base::Value>(std::move(constants));
 

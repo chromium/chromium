@@ -41,7 +41,7 @@ class NetExportMessageHandler
   NetExportMessageHandler(const NetExportMessageHandler&) = delete;
   NetExportMessageHandler& operator=(const NetExportMessageHandler&) = delete;
 
-  ~NetExportMessageHandler() override { file_writer_->StopNetLog(nullptr); }
+  ~NetExportMessageHandler() override { file_writer_->StopNetLog(); }
 
   // content::WebUIMessageHandler implementation.
   void RegisterMessages() override {
@@ -88,9 +88,7 @@ class NetExportMessageHandler
     StartNetLog(base::FilePath());
   }
 
-  void OnStopNetLog(const base::ListValue* list) {
-    file_writer_->StopNetLog(nullptr);
-  }
+  void OnStopNetLog(const base::ListValue* list) { file_writer_->StopNetLog(); }
 
   void OnSendNetLog(const base::ListValue* list) {
     file_writer_->GetFilePathToCompletedLog(

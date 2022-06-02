@@ -3168,10 +3168,10 @@ TEST_F(NetworkContextTest, CreateNetLogExporter) {
                       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   ASSERT_TRUE(out_file.IsValid());
 
-  base::Value dict_start(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict_start;
   const char kKeyEarly[] = "early";
   const char kValEarly[] = "morning";
-  dict_start.SetKey(kKeyEarly, base::Value(kValEarly));
+  dict_start.Set(kKeyEarly, kValEarly);
 
   net::TestCompletionCallback start_callback;
   net_log_exporter->Start(std::move(out_file), std::move(dict_start),
@@ -3179,10 +3179,10 @@ TEST_F(NetworkContextTest, CreateNetLogExporter) {
                           start_callback.callback());
   EXPECT_EQ(net::OK, start_callback.WaitForResult());
 
-  base::Value dict_late(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict_late;
   const char kKeyLate[] = "late";
   const char kValLate[] = "snowval";
-  dict_late.SetKey(kKeyLate, base::Value(kValLate));
+  dict_late.Set(kKeyLate, kValLate);
 
   net::TestCompletionCallback stop_callback;
   net_log_exporter->Stop(std::move(dict_late), stop_callback.callback());
@@ -3219,15 +3219,14 @@ TEST_F(NetworkContextTest, CreateNetLogExporterUnbounded) {
   ASSERT_TRUE(out_file.IsValid());
 
   net::TestCompletionCallback start_callback;
-  net_log_exporter->Start(
-      std::move(out_file), base::Value(base::Value::Type::DICTIONARY),
-      net::NetLogCaptureMode::kDefault,
-      mojom::NetLogExporter::kUnlimitedFileSize, start_callback.callback());
+  net_log_exporter->Start(std::move(out_file), base::Value::Dict(),
+                          net::NetLogCaptureMode::kDefault,
+                          mojom::NetLogExporter::kUnlimitedFileSize,
+                          start_callback.callback());
   EXPECT_EQ(net::OK, start_callback.WaitForResult());
 
   net::TestCompletionCallback stop_callback;
-  net_log_exporter->Stop(base::Value(base::Value::Type::DICTIONARY),
-                         stop_callback.callback());
+  net_log_exporter->Stop(base::Value::Dict(), stop_callback.callback());
   EXPECT_EQ(net::OK, stop_callback.WaitForResult());
 
   // Check that file got written.
@@ -3251,8 +3250,7 @@ TEST_F(NetworkContextTest, CreateNetLogExporterErrors) {
       net_log_exporter.BindNewPipeAndPassReceiver());
 
   net::TestCompletionCallback stop_callback;
-  net_log_exporter->Stop(base::Value(base::Value::Type::DICTIONARY),
-                         stop_callback.callback());
+  net_log_exporter->Stop(base::Value::Dict(), stop_callback.callback());
   EXPECT_EQ(net::ERR_UNEXPECTED, stop_callback.WaitForResult());
 
   base::FilePath temp_path;
@@ -3262,9 +3260,9 @@ TEST_F(NetworkContextTest, CreateNetLogExporterErrors) {
   ASSERT_TRUE(temp_file.IsValid());
 
   net::TestCompletionCallback start_callback;
-  net_log_exporter->Start(
-      std::move(temp_file), base::Value(base::Value::Type::DICTIONARY),
-      net::NetLogCaptureMode::kDefault, 100 * 1024, start_callback.callback());
+  net_log_exporter->Start(std::move(temp_file), base::Value::Dict(),
+                          net::NetLogCaptureMode::kDefault, 100 * 1024,
+                          start_callback.callback());
   EXPECT_EQ(net::OK, start_callback.WaitForResult());
 
   // Can't start twice.
@@ -3275,9 +3273,9 @@ TEST_F(NetworkContextTest, CreateNetLogExporterErrors) {
   ASSERT_TRUE(temp_file2.IsValid());
 
   net::TestCompletionCallback start_callback2;
-  net_log_exporter->Start(
-      std::move(temp_file2), base::Value(base::Value::Type::DICTIONARY),
-      net::NetLogCaptureMode::kDefault, 100 * 1024, start_callback2.callback());
+  net_log_exporter->Start(std::move(temp_file2), base::Value::Dict(),
+                          net::NetLogCaptureMode::kDefault, 100 * 1024,
+                          start_callback2.callback());
   EXPECT_EQ(net::ERR_UNEXPECTED, start_callback2.WaitForResult());
 
   base::DeleteFile(temp_path);
@@ -3319,9 +3317,9 @@ TEST_F(NetworkContextTest, DestroyNetLogExporterWhileCreatingScratchDir) {
                        base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   ASSERT_TRUE(temp_file.IsValid());
 
-  net_log_exporter->Start(
-      std::move(temp_file), base::Value(base::Value::Type::DICTIONARY),
-      net::NetLogCaptureMode::kDefault, 100, base::BindOnce([](int) {}));
+  net_log_exporter->Start(std::move(temp_file), base::Value::Dict(),
+                          net::NetLogCaptureMode::kDefault, 100,
+                          base::BindOnce([](int) {}));
   net_log_exporter = nullptr;
   block_mktemp.Signal();
 
@@ -5078,11 +5076,11 @@ TEST_F(NetworkContextTest, ForceReloadProxyConfig) {
       start_param = result;
       run_loop.Quit();
     });
-    net_log_exporter->Start(
-        std::move(net_log_file),
-        /*extra_constants=*/base::Value(base::Value::Type::DICTIONARY),
-        net::NetLogCaptureMode::kDefault,
-        network::mojom::NetLogExporter::kUnlimitedFileSize, start_callback);
+    net_log_exporter->Start(std::move(net_log_file),
+                            /*extra_constants=*/base::Value::Dict(),
+                            net::NetLogCaptureMode::kDefault,
+                            network::mojom::NetLogExporter::kUnlimitedFileSize,
+                            start_callback);
     run_loop.Run();
     EXPECT_EQ(net::OK, start_param);
   }
@@ -5101,8 +5099,7 @@ TEST_F(NetworkContextTest, ForceReloadProxyConfig) {
       run_loop.Quit();
     });
     net_log_exporter->Stop(
-        /*polled_data=*/base::Value(base::Value::Type::DICTIONARY),
-        stop_callback);
+        /*polled_data=*/base::Value::Dict(), stop_callback);
     run_loop.Run();
     EXPECT_EQ(net::OK, stop_param);
   }

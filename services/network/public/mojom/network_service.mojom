@@ -186,7 +186,7 @@ interface NetworkService {
   // the key "clientInfo".
   StartNetLog(mojo_base.mojom.File file,
               NetLogCaptureMode capture_mode,
-              mojo_base.mojom.DeprecatedDictionaryValue constants);
+              mojo_base.mojom.DictionaryValue constants);
 
   // Attaches an external source of NetLog events. Control events will be sent
   // to the |proxy_source| pipe indicating when netlogging is active, the

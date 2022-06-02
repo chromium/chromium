@@ -1081,8 +1081,8 @@ TEST_F(NetworkServiceTestWithService, StartsNetLog) {
   base::FilePath log_dir = temp_dir.GetPath();
   base::FilePath log_path = log_dir.Append(FILE_PATH_LITERAL("test_log.json"));
 
-  base::DictionaryValue dict;
-  dict.SetString("amiatest", "iamatest");
+  base::Value::Dict dict;
+  dict.Set("amiatest", "iamatest");
 
   base::File log_file(log_path,
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
@@ -1102,7 +1102,8 @@ TEST_F(NetworkServiceTestWithService, StartsNetLog) {
   std::unique_ptr<base::Value> log_dict =
       deserializer.Deserialize(nullptr, nullptr);
   ASSERT_TRUE(log_dict);
-  ASSERT_EQ(log_dict->FindKey("constants")->FindKey("amiatest")->GetString(),
+  ASSERT_TRUE(log_dict->is_dict());
+  ASSERT_EQ(*log_dict->GetDict().FindStringByDottedPath("constants.amiatest"),
             "iamatest");
 }
 

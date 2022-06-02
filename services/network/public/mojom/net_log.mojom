@@ -40,7 +40,7 @@ interface NetLogExporter {
   // Returns network error code.
   Start(
     mojo_base.mojom.File destination,
-    mojo_base.mojom.DeprecatedDictionaryValue extra_constants,
+    mojo_base.mojom.DictionaryValue extra_constants,
     NetLogCaptureMode capture_mode,
     uint64 max_file_size) => (int32 net_error);
 
@@ -50,7 +50,7 @@ interface NetLogExporter {
   //
   // Returns network error code; if successful this will occur only after
   // the file has been fully written.
-  Stop(mojo_base.mojom.DeprecatedDictionaryValue polled_values)
+  Stop(mojo_base.mojom.DictionaryValue polled_values)
       => (int32 net_error);
 };
 
