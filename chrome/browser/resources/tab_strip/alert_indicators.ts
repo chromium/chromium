@@ -5,14 +5,14 @@
 import './alert_indicator.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 
 import {AlertIndicatorElement} from './alert_indicator.js';
+import {getTemplate} from './alert_indicators.html.js';
 import {TabAlertState} from './tabs.mojom-webui.js';
 
 export class AlertIndicatorsElement extends CustomElement {
   static override get template() {
-    return getTrustedHTML`{__html_template__}`;
+    return getTemplate();
   }
 
   private containerEl_: HTMLElement;

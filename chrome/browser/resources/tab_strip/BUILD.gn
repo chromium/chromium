@@ -5,10 +5,11 @@
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
+import("./tab_strip.gni")
 
 assert(enable_webui_tab_strip)
 
@@ -36,41 +37,29 @@ generate_grd("build_grd") {
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 }
 
-preprocess_if_expr("preprocess_mojo") {
-  deps = [ "//chrome/browser/ui/webui/tab_strip:mojo_bindings_webui_js" ]
-  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_strip/"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "tab_strip.mojom-webui.js" ]
-}
-
-preprocess_if_expr("preprocess_tabs") {
-  deps = [ "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js" ]
-  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs/"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "tabs.mojom-webui.js" ]
-}
-
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "drag_manager.ts",
-    "tabs_api_proxy.ts",
-    "tab_swiper.ts",
+copy("copy_mojo") {
+  deps = [
+    "//chrome/browser/ui/webui/tab_strip:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js",
   ]
+  sources = [
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_strip/tab_strip.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs/tabs.mojom-webui.js",
+  ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
 
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
+preprocess_if_expr("preprocess_src") {
+  in_folder = "."
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = ts_files
+}
+
+preprocess_if_expr("preprocess_gen") {
+  deps = [ ":html_wrapper_files" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "alert_indicator.ts",
-    "alert_indicators.ts",
-    "tab_group.ts",
-    "tab_list.ts",
-    "tab.ts",
-  ]
+  in_files = html_wrapper_files
 }
 
 grit("resources") {
@@ -90,14 +79,9 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "alert_indicator.ts",
-    "alert_indicators.ts",
-    "tab_group.ts",
-    "tab_list.ts",
-    "tab.ts",
-  ]
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
+  template = "native"
 }
 
 ts_library("build_ts") {
@@ -105,27 +89,18 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "alert_indicator.ts",
-    "alert_indicators.ts",
-    "drag_manager.ts",
-    "tab_group.ts",
-    "tab.ts",
-    "tab_list.ts",
-    "tabs_api_proxy.ts",
-    "tabs.mojom-webui.js",
-    "tab_strip.mojom-webui.js",
-    "tab_swiper.ts",
-  ]
+  in_files = ts_files + html_wrapper_files + [
+               "tabs.mojom-webui.js",
+               "tab_strip.mojom-webui.js",
+             ]
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
   ]
   definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   extra_deps = [
-    ":preprocess",
-    ":preprocess_generated",
-    ":preprocess_mojo",
-    ":preprocess_tabs",
+    ":copy_mojo",
+    ":preprocess_gen",
+    ":preprocess_src",
   ]
 }
