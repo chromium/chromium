@@ -40,9 +40,7 @@ class WaylandScreen : public PlatformScreen {
   ~WaylandScreen() override;
 
   void OnOutputAddedOrUpdated(uint32_t output_id,
-                              const gfx::Point& origin,
-                              const gfx::Size& logical_size,
-                              const gfx::Size& physical_size,
+                              const gfx::Rect& bounds,
                               const gfx::Insets& insets,
                               float scale,
                               int32_t panel_transform,
@@ -77,12 +75,10 @@ class WaylandScreen : public PlatformScreen {
       const gfx::GpuExtraInfo& gpu_extra_info) override;
 
  private:
-  // All parameters are in DIP screen coordinates/units except |physical_size|,
-  // which is in physical pixels.
+  // |bounds| is given in physical pixel coordinates.
+  // |insets| is given in DIP screen coordinates.
   void AddOrUpdateDisplay(uint32_t output_id,
-                          const gfx::Point& origin,
-                          const gfx::Size& logical_size,
-                          const gfx::Size& physical_size,
+                          const gfx::Rect& bounds,
                           const gfx::Insets& insets,
                           float scale,
                           int32_t panel_transform,

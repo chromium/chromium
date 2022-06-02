@@ -99,17 +99,6 @@ int32_t WaylandOutput::logical_transform() const {
   return panel_transform();
 }
 
-gfx::Point WaylandOutput::origin() const {
-  if (xdg_output_ && xdg_output_->logical_position()) {
-    return *xdg_output_->logical_position();
-  }
-  return origin_;
-}
-
-gfx::Size WaylandOutput::logical_size() const {
-  return xdg_output_ ? xdg_output_->logical_size() : gfx::Size();
-}
-
 gfx::Insets WaylandOutput::insets() const {
   return aura_output_ ? aura_output_->insets() : gfx::Insets();
 }
@@ -120,21 +109,21 @@ zaura_output* WaylandOutput::get_zaura_output() const {
 
 void WaylandOutput::TriggerDelegateNotifications() {
   if (xdg_output_ && connection_->surface_submission_in_pixel_coordinates()) {
-    DCHECK(!physical_size_.IsEmpty());
+    DCHECK(!rect_in_physical_pixels_.IsEmpty());
     const gfx::Size logical_size = xdg_output_->logical_size();
     if (!logical_size.IsEmpty()) {
-      // We calculate the fractional scale factor from the long sides of the
-      // physical and logical sizes, since their orientations may be different.
-      const float max_physical_side =
-          std::max(physical_size_.width(), physical_size_.height());
-      const float max_logical_side =
-          std::max(logical_size.width(), logical_size.height());
-      scale_factor_ = max_physical_side / max_logical_side;
+      if (logical_size.width() >= logical_size.height()) {
+        scale_factor_ = rect_in_physical_pixels_.width() /
+                        static_cast<float>(logical_size.width());
+      } else {
+        scale_factor_ = rect_in_physical_pixels_.height() /
+                        static_cast<float>(logical_size.height());
+      }
     }
   }
-  delegate_->OnOutputHandleMetrics(output_id_, origin(), logical_size(),
-                                   physical_size_, insets(), scale_factor_,
-                                   panel_transform_, logical_transform());
+  delegate_->OnOutputHandleMetrics(output_id_, rect_in_physical_pixels_,
+                                   insets(), scale_factor_, panel_transform_,
+                                   logical_transform());
 }
 
 // static
@@ -150,7 +139,10 @@ void WaylandOutput::OutputHandleGeometry(void* data,
                                          int32_t output_transform) {
   WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data);
   if (wayland_output) {
-    wayland_output->origin_ = gfx::Point(x, y);
+    // TODO(crbug.com/1325487): This should be in DIP, not physical pixels.
+    // Also, this should only be a fallback, since we should be using
+    // xdg_output.logical_position.
+    wayland_output->rect_in_physical_pixels_.set_origin(gfx::Point(x, y));
     wayland_output->panel_transform_ = output_transform;
   }
 }
@@ -164,7 +156,7 @@ void WaylandOutput::OutputHandleMode(void* data,
                                      int32_t refresh) {
   WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data);
   if (wayland_output && (flags & WL_OUTPUT_MODE_CURRENT))
-    wayland_output->physical_size_ = gfx::Size(width, height);
+    wayland_output->rect_in_physical_pixels_.set_size(gfx::Size(width, height));
 }
 
 // static

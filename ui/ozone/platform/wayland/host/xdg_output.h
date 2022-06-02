@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
@@ -21,9 +19,6 @@ class XDGOutput {
   XDGOutput& operator=(const XDGOutput&) = delete;
   ~XDGOutput();
 
-  absl::optional<gfx::Point> logical_position() const {
-    return logical_position_;
-  }
   gfx::Size logical_size() const { return logical_size_; }
 
  private:
@@ -45,7 +40,6 @@ class XDGOutput {
                                       const char* description);
 
   wl::Object<zxdg_output_v1> xdg_output_;
-  absl::optional<gfx::Point> logical_position_;
   gfx::Size logical_size_;
 };
 

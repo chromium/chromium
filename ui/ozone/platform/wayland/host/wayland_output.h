@@ -33,9 +33,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   class Delegate {
    public:
     virtual void OnOutputHandleMetrics(uint32_t output_id,
-                                       const gfx::Point& origin,
-                                       const gfx::Size& logical_size,
-                                       const gfx::Size& physical_size,
+                                       const gfx::Rect& new_bounds,
                                        const gfx::Insets& insets,
                                        float scale_factor,
                                        int32_t panel_transform,
@@ -64,14 +62,12 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   float scale_factor() const { return scale_factor_; }
   int32_t panel_transform() const { return panel_transform_; }
   int32_t logical_transform() const;
-  gfx::Point origin() const;
-  gfx::Size logical_size() const;
-  gfx::Size physical_size() const { return physical_size_; }
+  gfx::Rect bounds() const { return rect_in_physical_pixels_; }
   gfx::Insets insets() const;
 
   // Tells if the output has already received physical screen dimensions in the
   // global compositor space.
-  bool is_ready() const { return !physical_size_.IsEmpty(); }
+  bool is_ready() const { return !rect_in_physical_pixels_.IsEmpty(); }
 
   wl_output* get_output() const { return output_.get(); }
   zaura_output* get_zaura_output() const;
@@ -111,10 +107,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   std::unique_ptr<WaylandZAuraOutput> aura_output_;
   float scale_factor_ = kDefaultScaleFactor;
   int32_t panel_transform_ = WL_OUTPUT_TRANSFORM_NORMAL;
-  // Origin of the output in DIP screen coordinate.
-  gfx::Point origin_;
-  // Size of the output in physical pixels.
-  gfx::Size physical_size_;
+  gfx::Rect rect_in_physical_pixels_;
 
   Delegate* delegate_ = nullptr;
   WaylandConnection* connection_ = nullptr;

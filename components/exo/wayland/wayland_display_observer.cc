@@ -140,17 +140,6 @@ void WaylandDisplayHandler::UnsetColorManagementOutputResource() {
   color_management_output_resource_ = nullptr;
 }
 
-void WaylandDisplayHandler::XdgOutputSendLogicalPosition(
-    const gfx::Point& position) {
-  zxdg_output_v1_send_logical_position(xdg_output_resource_, position.x(),
-                                       position.y());
-}
-
-void WaylandDisplayHandler::XdgOutputSendLogicalSize(const gfx::Size& size) {
-  zxdg_output_v1_send_logical_size(xdg_output_resource_, size.width(),
-                                   size.height());
-}
-
 bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
                                                uint32_t changed_metrics) {
   if (!output_resource_)
@@ -217,8 +206,10 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
                       static_cast<int>(60000));
 
   if (xdg_output_resource_) {
-    XdgOutputSendLogicalPosition(origin);
-    XdgOutputSendLogicalSize(display.bounds().size());
+    const gfx::Size logical_size = ScaleToRoundedSize(
+        physical_size_px, 1.0f / display.device_scale_factor());
+    zxdg_output_v1_send_logical_size(xdg_output_resource_, logical_size.width(),
+                                     logical_size.height());
   } else {
     if (wl_resource_get_version(output_resource_) >=
         WL_OUTPUT_SCALE_SINCE_VERSION) {

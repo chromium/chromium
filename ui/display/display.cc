@@ -252,16 +252,6 @@ gfx::Insets Display::GetWorkAreaInsets() const {
 void Display::SetScaleAndBounds(float device_scale_factor,
                                 const gfx::Rect& bounds_in_pixel) {
   gfx::Insets insets = bounds_.InsetsFrom(work_area_);
-  SetScale(device_scale_factor);
-
-  gfx::RectF f(bounds_in_pixel);
-  f.Scale(1.f / device_scale_factor_);
-  bounds_ = gfx::ToEnclosedRectIgnoringError(f, kDisplaySizeAllowanceEpsilon);
-  size_in_pixels_ = bounds_in_pixel.size();
-  UpdateWorkAreaFromInsets(insets);
-}
-
-void Display::SetScale(float device_scale_factor) {
   if (!HasForceDeviceScaleFactor()) {
 #if BUILDFLAG(IS_APPLE)
     // Unless an explicit scale factor was provided for testing, ensure the
@@ -271,6 +261,12 @@ void Display::SetScale(float device_scale_factor) {
     device_scale_factor_ = device_scale_factor;
   }
   device_scale_factor_ = std::max(0.5f, device_scale_factor_);
+
+  gfx::RectF f(bounds_in_pixel);
+  f.Scale(1.f / device_scale_factor_);
+  bounds_ = gfx::ToEnclosedRectIgnoringError(f, kDisplaySizeAllowanceEpsilon);
+  size_in_pixels_ = bounds_in_pixel.size();
+  UpdateWorkAreaFromInsets(insets);
 }
 
 void Display::SetSize(const gfx::Size& size_in_pixel) {
