@@ -428,16 +428,19 @@ void OnContentUrlResolved(const base::FilePath& file_path,
                           apps::mojom::IntentPtr intent,
                           arc::mojom::ActivityNamePtr activity,
                           apps::mojom::WindowInfoPtr window_info,
+                          apps::ArcApps::LaunchAppWithIntentCallback callback,
                           const std::vector<GURL>& content_urls) {
   for (const auto& content_url : content_urls) {
     if (!content_url.is_valid()) {
       LOG(ERROR) << "Share files failed, file urls are not valid";
+      std::move(callback).Run(/*success=*/false);
       return;
     }
   }
 
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -450,6 +453,7 @@ void OnContentUrlResolved(const base::FilePath& file_path,
       OpenUrlsWithPermissionAndWindowInfo);
   if (!arc_file_system) {
     LOG(ERROR) << "Failed to open urls, ARC File System not found";
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   arc_file_system->OpenUrlsWithPermissionAndWindowInfo(
@@ -460,6 +464,8 @@ void OnContentUrlResolved(const base::FilePath& file_path,
       file_path,
       std::make_unique<app_restore::AppLaunchInfo>(
           app_id, event_flags, std::move(intent), session_id, display_id));
+
+  std::move(callback).Run(/*success=*/true);
 }
 
 // Sets the session id for |window_info|. If the full restore feature is
@@ -871,8 +877,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
           profile_, apps::GetFileSystemURL(profile_, file_urls),
           base::BindOnce(&OnContentUrlResolved, profile_->GetPath(), app_id,
                          event_flags, std::move(intent), std::move(activity),
-                         std::move(new_window_info)));
-      std::move(callback).Run(/*success=*/true);
+                         std::move(new_window_info), std::move(callback)));
       return;
     }
 
