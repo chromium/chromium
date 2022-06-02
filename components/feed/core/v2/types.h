@@ -59,7 +59,6 @@ struct RequestMetadata {
   bool notice_card_acknowledged = false;
   bool autoplay_enabled = false;
   int followed_from_web_page_menu_count = 0;
-  std::vector<std::string> acknowledged_notice_keys;
   std::vector<feedwire::InfoCardTrackingState> info_card_tracking_states;
 };
 

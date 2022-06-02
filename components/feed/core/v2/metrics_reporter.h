@@ -134,16 +134,6 @@ class MetricsReporter {
                                           WebFeedRefreshStatus status,
                                           int subscribed_web_feed_count);
 
-  // Notice events.
-  void OnNoticeCreated(const StreamType& stream_type, const std::string& key);
-  void OnNoticeViewed(const StreamType& stream_type, const std::string& key);
-  void OnNoticeOpenAction(const StreamType& stream_type,
-                          const std::string& key);
-  void OnNoticeDismissed(const StreamType& stream_type, const std::string& key);
-  void OnNoticeAcknowledged(const StreamType& stream_type,
-                            const std::string& key,
-                            NoticeAcknowledgementPath acknowledgement_path);
-
   // Info card events.
   void OnInfoCardTrackViewStarted(const StreamType& stream_type,
                                   int info_card_type);

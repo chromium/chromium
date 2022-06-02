@@ -40586,6 +40586,9 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="FeedNoticeAcknowledgementPath">
+  <obsolete>
+    Deprecated in 05/2022 since we removed feed notice card related codes.
+  </obsolete>
   <int value="0"
       label="The acknowledgment is reached after the user views the notice
              for a required number of times."/>

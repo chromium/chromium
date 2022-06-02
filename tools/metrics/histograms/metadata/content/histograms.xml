@@ -1565,6 +1565,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ContentSuggestions.{FeedType}.InvalidNoticeKey" enum="Boolean"
     expires_after="2023-03-01">
+  <obsolete>
+    Deprecated in 05/2022 since we removed feed notice card related codes.
+  </obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1691,6 +1694,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="ContentSuggestions.{FeedType}.NoticeAcknowledgementPath.{NoticeType}"
     enum="FeedNoticeAcknowledgementPath" expires_after="2023-03-01">
+  <obsolete>
+    Deprecated in 05/2022 since we removed feed notice card related codes.
+  </obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1709,6 +1715,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ContentSuggestions.{FeedType}.Notice{Action}.{NoticeType}"
     enum="Boolean" expires_after="2023-03-01">
+  <obsolete>
+    Deprecated in 05/2022 since we removed feed notice card related codes.
+  </obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>

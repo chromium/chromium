@@ -232,17 +232,6 @@ void SetNoticeCardAcknowledged(feedwire::Request* request,
   }
 }
 
-void SetCardSpecificNoticeAcknowledged(
-    feedwire::Request* request,
-    const RequestMetadata& request_metadata) {
-  for (const auto& key : request_metadata.acknowledged_notice_keys) {
-    request->mutable_feed_request()
-        ->mutable_feed_query()
-        ->mutable_chrome_fulfillment_info()
-        ->add_acknowledged_notice_key(key);
-  }
-}
-
 void SetInfoCardTrackingStates(feedwire::Request* request,
                                const RequestMetadata& request_metadata) {
   for (const auto& state : request_metadata.info_card_tracking_states) {
@@ -349,7 +338,6 @@ feedwire::Request CreateFeedQueryRefreshRequest(
         ->set_web_feed_token(kChromeFollowToken);
   }
   SetNoticeCardAcknowledged(&request, request_metadata);
-  SetCardSpecificNoticeAcknowledged(&request, request_metadata);
   SetInfoCardTrackingStates(&request, request_metadata);
   return request;
 }

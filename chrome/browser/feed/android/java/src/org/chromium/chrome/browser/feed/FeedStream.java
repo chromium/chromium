@@ -386,30 +386,6 @@ public class FeedStream implements Stream {
         }
 
         @Override
-        public void reportNoticeCreated(String key) {
-            assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportNoticeCreated(mNativeFeedStream, FeedStream.this, key);
-        }
-
-        @Override
-        public void reportNoticeViewed(String key) {
-            assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportNoticeViewed(mNativeFeedStream, FeedStream.this, key);
-        }
-
-        @Override
-        public void reportNoticeOpenAction(String key) {
-            assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportNoticeOpenAction(mNativeFeedStream, FeedStream.this, key);
-        }
-
-        @Override
-        public void reportNoticeDismissed(String key) {
-            assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportNoticeDismissed(mNativeFeedStream, FeedStream.this, key);
-        }
-
-        @Override
         public void reportInfoCardTrackViewStarted(int type) {
             assert ThreadUtils.runningOnUiThread();
             FeedStreamJni.get().reportInfoCardTrackViewStarted(
@@ -1279,10 +1255,6 @@ public class FeedStream implements Stream {
         void surfaceClosed(long nativeFeedStream, FeedStream caller);
         int getSurfaceId(long nativeFeedStream, FeedStream caller);
         long getLastFetchTimeMs(long nativeFeedStream, FeedStream caller);
-        void reportNoticeCreated(long nativeFeedStream, FeedStream caller, String key);
-        void reportNoticeViewed(long nativeFeedStream, FeedStream caller, String key);
-        void reportNoticeOpenAction(long nativeFeedStream, FeedStream caller, String key);
-        void reportNoticeDismissed(long nativeFeedStream, FeedStream caller, String key);
         void reportInfoCardTrackViewStarted(long nativeFeedStream, FeedStream caller, int type);
         void reportInfoCardViewed(
                 long nativeFeedStream, FeedStream caller, int type, int minimumViewIntervalSeconds);

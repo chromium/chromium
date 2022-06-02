@@ -60,9 +60,6 @@ struct Config {
   base::TimeDelta session_id_max_age = base::Days(30);
   // Maximum number of images prefetched per refresh.
   int max_prefetch_image_requests_per_refresh = 50;
-  // The minimum interval from the last time the notice is viewed in order for
-  // it to be considered viewed again.
-  base::TimeDelta minimum_notice_view_interval = base::Minutes(5);
 
   // Configuration for Web Feeds.
 

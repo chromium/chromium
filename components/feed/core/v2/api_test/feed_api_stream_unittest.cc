@@ -25,7 +25,6 @@
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/scheduling.h"
-#include "components/feed/core/v2/stream/notice_card_tracker.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/test/stream_builder.h"
 #include "components/feed/feed_feature_list.h"
@@ -39,7 +38,6 @@ namespace feed {
 namespace test {
 namespace {
 
-const char kTestKey[] = "Youtube";
 const int kTestInfoCardType1 = 101;
 const int kTestInfoCardType2 = 8888;
 const int kMinimumViewIntervalSeconds = 5 * 60;
@@ -3040,67 +3038,6 @@ TEST_F(FeedApiTest, SignOutWhileSurfaceIsOpen) {
   EXPECT_EQ(
       "loading -> [user@foo] 2 slices -> loading -> [NO Logging] 3 slices",
       surface.DescribeUpdates());
-}
-
-// TODO(crbug.com/1266030): Fix flakes.
-TEST_F(FeedApiTest, DISABLED_NoticeViewed) {
-  base::HistogramTester histograms;
-
-  for (int i = 1; i <= NoticeCardTracker::kViewCountThreshold; ++i) {
-    if (i > 1)
-      task_environment_.AdvanceClock(
-          GetFeedConfig().minimum_notice_view_interval);
-    stream_->ReportNoticeViewed(kForYouStream, kTestKey);
-    histograms.ExpectUniqueSample(
-        "ContentSuggestions.Feed.NoticeViewed.Youtube", true, i);
-    bool should_acknowledge = (i == NoticeCardTracker::kViewCountThreshold);
-    histograms.ExpectUniqueSample(
-        "ContentSuggestions.Feed.NoticeAcknowledged.Youtube", true,
-        should_acknowledge ? 1 : 0);
-    if (should_acknowledge) {
-      histograms.ExpectUniqueSample(
-          "ContentSuggestions.Feed.NoticeAcknowledgementPath.Youtube",
-          NoticeAcknowledgementPath::kViaViewing, 1);
-    }
-  }
-
-  // One more viewed report should only increase the NoticeViewed UMA count.
-  stream_->ReportNoticeViewed(kForYouStream, kTestKey);
-  histograms.ExpectUniqueSample("ContentSuggestions.Feed.NoticeViewed.Youtube",
-                                true,
-                                NoticeCardTracker::kViewCountThreshold + 1);
-  // NoticeAcknowledged UMA is only reported once.
-  histograms.ExpectUniqueSample(
-      "ContentSuggestions.Feed.NoticeAcknowledged.Youtube", true, 1);
-}
-
-TEST_F(FeedApiTest, NoticeOpenAndDismissActions) {
-  base::HistogramTester histograms;
-
-  for (int i = 1; i <= NoticeCardTracker::kClickCountThreshold; ++i) {
-    stream_->ReportNoticeOpenAction(kForYouStream, kTestKey);
-    histograms.ExpectUniqueSample(
-        "ContentSuggestions.Feed.NoticeOpenAction.Youtube", true, i);
-    bool should_acknowledge = (i == NoticeCardTracker::kClickCountThreshold);
-    histograms.ExpectUniqueSample(
-        "ContentSuggestions.Feed.NoticeAcknowledged.Youtube", true,
-        should_acknowledge ? 1 : 0);
-    if (should_acknowledge) {
-      histograms.ExpectUniqueSample(
-          "ContentSuggestions.Feed.NoticeAcknowledgementPath.Youtube",
-          NoticeAcknowledgementPath::kViaOpenAction, 1);
-    }
-  }
-
-  stream_->ReportNoticeDismissed(kForYouStream, kTestKey);
-  histograms.ExpectUniqueSample(
-      "ContentSuggestions.Feed.NoticeOpenAction.Youtube", true,
-      NoticeCardTracker::kClickCountThreshold);
-  histograms.ExpectUniqueSample(
-      "ContentSuggestions.Feed.NoticeDismissed.Youtube", true, 1);
-  // NoticeAcknowledged UMA is only reported once.
-  histograms.ExpectUniqueSample(
-      "ContentSuggestions.Feed.NoticeAcknowledged.Youtube", true, 1);
 }
 
 TEST_F(FeedApiTest, FollowedFromWebPageMenuCount) {
