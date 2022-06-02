@@ -35,9 +35,6 @@
 
     [CEReactions, ImplementedAs=textContent] attribute DOMString text;
 
-    // Attribution Reporting
-    [RuntimeEnabled=AttributionReporting, CEReactions,Reflect] attribute USVString attributionSrc;
-
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLAnchorElement-partial
     [CEReactions, Reflect] attribute DOMString coords;
@@ -47,4 +44,5 @@
     [CEReactions, Reflect] attribute DOMString shape;
 };
 
+HTMLAnchorElement includes HTMLAttributionSrcElementUtils;
 HTMLAnchorElement includes HTMLHyperlinkElementUtils;
