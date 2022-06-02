@@ -91,7 +91,7 @@ extern const char kViewedReadingList[];
 // The user has triggered the translate infobar manually.
 extern const char kTriggeredTranslateInfobar[];
 
-// The user has viewed the the BottomToolbar tip.
+// The user has viewed the BottomToolbar tip.
 extern const char kBottomToolbarOpened[];
 
 // The Discover feed has loaded content in the NTP.

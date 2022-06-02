@@ -229,7 +229,7 @@ if (trigger_help_ui) {
 }
 ```
 
-If `feature_engagement::Tracker::ShouldTriggerHelpUI` return `true` you must
+If `feature_engagement::Tracker::ShouldTriggerHelpUI` returns `true`, you must
 display the In-Product Help, as it will be tracked as if you showed it. In
 addition you are required to inform when the feature has been dismissed:
 
@@ -292,8 +292,8 @@ shown.
 To ensure that your in-product help triggers at the right time, you need to
 configure what the constraints are for showing. There are two ways of doing
 this: (1) Using a [client side configuration](#client-side-configuration), or
-(2) [field trial configuration](#field-trial-configuration). It is also possible
-to use a mix of both (1) and (2).
+(2) using a [field trial configuration](#field-trial-configuration). It is also
+possible to use a mix of both (1) and (2).
 
 Please read both sections below to figure out what fits your use-case best.
 
@@ -340,8 +340,8 @@ As an example for when leaving an IPH disabled by default could be helpful,
 imagine that your feature uses one main feature flag in addition to multiple IPH
 feature flags. You can still check in all the configuration locally, but leave
 the main feature flag and the IPHs off by default. This enables you to use a
-field trial to turn the IPHs on at the same time as your your main feature flag.
-This could potentially help some features in two ways:
+field trial to turn the IPHs on at the same time as your main feature flag. This
+could potentially help some features in two ways:
 
 1.  They do not need to guard invocations of `ShouldTriggerHelpUI(...)` for each
     IPH with their main feature flag, possibly leading to simpler code if the
