@@ -443,4 +443,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 05/2022
   prefs->ClearPref(kAccountIdMigrationState);
+
+  // Added 06/2022.
+  syncer::MigrateSyncRequestedPrefPostMice(prefs);
 }
