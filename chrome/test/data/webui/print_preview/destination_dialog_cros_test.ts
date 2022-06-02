@@ -96,12 +96,6 @@ suite(destination_dialog_cros_test.suiteName, function() {
     assertEquals(
         GooglePromotedDestinationId.SAVE_AS_PDF,
         getDisplayedName(printerItems[0]!));
-    assertEquals(
-        'rgb(32, 33, 36)',
-        window
-            .getComputedStyle(
-                printerItems[0]!.shadowRoot!.querySelector('.name')!)
-            .color);
     Array.from(printerItems).slice(1, 5).forEach((item, index) => {
       assertEquals(destinations[index]!.displayName, getDisplayedName(item));
     });
