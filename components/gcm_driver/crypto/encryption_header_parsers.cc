@@ -83,16 +83,16 @@ bool EncryptionHeaderIterator::GetNext() {
     const base::StringPiece name = name_value_pairs.name_piece();
     const base::StringPiece value = name_value_pairs.value_piece();
 
-    if (base::LowerCaseEqualsASCII(name, "keyid")) {
+    if (base::EqualsCaseInsensitiveASCII(name, "keyid")) {
       if (found_keyid)
         return false;
       keyid_.assign(value.data(), value.size());
       found_keyid = true;
-    } else if (base::LowerCaseEqualsASCII(name, "salt")) {
+    } else if (base::EqualsCaseInsensitiveASCII(name, "salt")) {
       if (found_salt || !ValueToDecodedString(value, &salt_))
         return false;
       found_salt = true;
-    } else if (base::LowerCaseEqualsASCII(name, "rs")) {
+    } else if (base::EqualsCaseInsensitiveASCII(name, "rs")) {
       if (found_rs || !RecordSizeToInt(value, &rs_))
         return false;
       found_rs = true;
@@ -132,16 +132,16 @@ bool CryptoKeyHeaderIterator::GetNext() {
     const base::StringPiece name = name_value_pairs.name_piece();
     const base::StringPiece value = name_value_pairs.value_piece();
 
-    if (base::LowerCaseEqualsASCII(name, "keyid")) {
+    if (base::EqualsCaseInsensitiveASCII(name, "keyid")) {
       if (found_keyid)
         return false;
       keyid_.assign(value.data(), value.size());
       found_keyid = true;
-    } else if (base::LowerCaseEqualsASCII(name, "aesgcm128")) {
+    } else if (base::EqualsCaseInsensitiveASCII(name, "aesgcm128")) {
       if (found_aesgcm128 || !ValueToDecodedString(value, &aesgcm128_))
         return false;
       found_aesgcm128 = true;
-    } else if (base::LowerCaseEqualsASCII(name, "dh")) {
+    } else if (base::EqualsCaseInsensitiveASCII(name, "dh")) {
       if (found_dh || !ValueToDecodedString(value, &dh_))
         return false;
       found_dh = true;
