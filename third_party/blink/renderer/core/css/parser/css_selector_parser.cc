@@ -841,7 +841,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       disallow_pseudo_elements_)
     return nullptr;
 
-  if (UNLIKELY(is_inside_has_argument_)) {
+  if (is_inside_has_argument_) {
     DCHECK(disallow_pseudo_elements_);
     if (!IsPseudoClassValidWithinHasArgument(*selector))
       return nullptr;
@@ -934,7 +934,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
         return nullptr;
 
       selector->SetSelectorList(std::move(selector_list));
-      if (UNLIKELY(found_pseudo_in_has_argument_))
+      if (found_pseudo_in_has_argument_)
         selector->SetContainsPseudoInsideHasPseudoClass();
       return selector;
     }
