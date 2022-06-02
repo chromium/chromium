@@ -50,6 +50,33 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
     virtual void AdapterEnabledChanged(int adapter, bool enabled) {}
   };
 
+  class PoweredCallback {
+   public:
+    explicit PoweredCallback(ResponseCallback<Void> cb, int timeout_ms);
+    ~PoweredCallback();
+
+    static std::unique_ptr<FlossManagerClient::PoweredCallback>
+    CreateWithTimeout(ResponseCallback<Void> cb, int timeout_ms);
+    void RunError() {
+      if (cb_) {
+        std::move(cb_).Run(
+            /*ret=*/absl::nullopt, Error(kErrorNoResponse, std::string()));
+      }
+    };
+    void RunNoError() {
+      if (cb_) {
+        std::move(cb_).Run(/*ret=*/absl::nullopt, /*err=*/absl::nullopt);
+      }
+    };
+
+   private:
+    void PostDelayedError();
+
+    ResponseCallback<Void> cb_;
+    int timeout_ms_;
+    base::WeakPtrFactory<PoweredCallback> weak_ptr_factory_{this};
+  };
+
   // Convert adapter number to object path.
   static dbus::ObjectPath GenerateAdapterPath(int adapter);
 
@@ -155,11 +182,18 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   base::ObserverList<Observer> observers_;
 
  private:
+  // Handle response to SetAdapterEnabled
+  void OnSetAdapterEnabled(dbus::Response* response,
+                           dbus::ErrorResponse* error_response);
+
   // Object path for exported callbacks registered against manager interface.
   static const char kExportedCallbacksPath[];
 
   // Floss Manager registers ObjectManager at this path.
   static const char kObjectManagerPath[];
+
+  // Powered callback called only when adapter actually powers on
+  std::unique_ptr<PoweredCallback> powered_callback_;
 
   base::WeakPtrFactory<FlossManagerClient> weak_ptr_factory_{this};
 };
