@@ -8,8 +8,6 @@
 
 namespace password_manager {
 
-CredentialUIEntry::CredentialUIEntry() = default;
-
 CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
     : signon_realm(form.signon_realm),
       url(form.url),

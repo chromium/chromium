@@ -285,30 +285,22 @@ bool InsecureCredentialsManager::MuteCredential(
   if (it == credentials_to_forms_.end())
     return false;
 
-  // Mute all matching compromised credentials from the store.
-  // For a match, all insecureity types saved in the store are muted.
-  // Return whether any credentials were muted.
   const auto& saved_passwords = it->second.forms;
-  bool muted = false;
-  for (const PasswordForm& saved_password : saved_passwords) {
-    PasswordForm form_to_update = saved_password;
-    bool form_changed = false;
-    for (const auto& password_issue : saved_password.password_issues) {
-      if (!password_issue.second.is_muted.value() &&
-          SupportsMuteOperation(password_issue.first)) {
-        form_to_update.password_issues.insert_or_assign(
-            password_issue.first,
-            InsecurityMetadata(password_issue.second.create_time,
-                               IsMuted(true)));
-        form_changed = true;
-      }
-    }
-    if (form_changed) {
-      GetStoreFor(saved_password).UpdateLogin(form_to_update);
-      muted = true;
+  DCHECK(!saved_passwords.empty());
+
+  return MuteCredential(CredentialUIEntry(saved_passwords[0]));
+}
+
+bool InsecureCredentialsManager::MuteCredential(
+    const CredentialUIEntry& credential) {
+  CredentialUIEntry updated_credential = credential;
+  for (auto& password_issue : updated_credential.password_issues) {
+    if (!password_issue.second.is_muted.value() &&
+        SupportsMuteOperation(password_issue.first)) {
+      password_issue.second.is_muted = IsMuted(true);
     }
   }
-  return muted;
+  return presenter_->EditSavedCredentials(updated_credential);
 }
 
 bool InsecureCredentialsManager::UnmuteCredential(
@@ -317,31 +309,22 @@ bool InsecureCredentialsManager::UnmuteCredential(
   if (it == credentials_to_forms_.end())
     return false;
 
-  // Unmute all matching compromised credentials from the store.
-  // For a match, all insecureity types saved in the store are unmuted.
-  // Return whether any credentials were unmuted.
   const auto& saved_passwords = it->second.forms;
-  bool unmuted = false;
+  DCHECK(!saved_passwords.empty());
 
-  for (const PasswordForm& saved_password : saved_passwords) {
-    PasswordForm form_to_update = saved_password;
-    bool form_changed = false;
-    for (const auto& password_issue : saved_password.password_issues) {
-      if (password_issue.second.is_muted.value() &&
-          SupportsMuteOperation(password_issue.first)) {
-        form_to_update.password_issues.insert_or_assign(
-            password_issue.first,
-            InsecurityMetadata(password_issue.second.create_time,
-                               IsMuted(false)));
-        form_changed = true;
-      }
-    }
-    if (form_changed) {
-      GetStoreFor(saved_password).UpdateLogin(form_to_update);
-      unmuted = true;
+  return UnmuteCredential(CredentialUIEntry(saved_passwords[0]));
+}
+
+bool InsecureCredentialsManager::UnmuteCredential(
+    const CredentialUIEntry& credential) {
+  CredentialUIEntry updated_credential = credential;
+  for (auto& password_issue : updated_credential.password_issues) {
+    if (password_issue.second.is_muted.value() &&
+        SupportsMuteOperation(password_issue.first)) {
+      password_issue.second.is_muted = IsMuted(false);
     }
   }
-  return unmuted;
+  return presenter_->EditSavedCredentials(updated_credential);
 }
 
 bool InsecureCredentialsManager::UpdateCredential(

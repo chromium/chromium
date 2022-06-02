@@ -193,10 +193,26 @@ bool SavedPasswordsPresenter::EditSavedCredentials(
   base::ranges::transform(range.first, range.second,
                           std::back_inserter(forms_to_change),
                           [](const auto& pair) { return pair.second; });
+  if (forms_to_change.empty())
+    return false;
+
   std::u16string new_note =
       credential.notes.empty() ? u"" : credential.notes[0].value;
-  return EditSavedPasswords(forms_to_change, credential.username,
-                            credential.password, new_note);
+
+  // TODO(crbug.com/1184691): Merge into a single method.
+  if (credential.username != forms_to_change[0].username_value ||
+      credential.password != forms_to_change[0].password_value ||
+      credential.notes != forms_to_change[0].notes) {
+    return EditSavedPasswords(forms_to_change, credential.username,
+                              credential.password, new_note);
+  } else if (credential.password_issues != forms_to_change[0].password_issues) {
+    for (auto& old_form : forms_to_change) {
+      old_form.password_issues = credential.password_issues;
+      GetStoreFor(old_form).UpdateLogin(old_form);
+    }
+    return true;
+  }
+  return false;
 }
 
 bool SavedPasswordsPresenter::EditSavedPasswords(
