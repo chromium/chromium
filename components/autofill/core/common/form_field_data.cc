@@ -268,12 +268,6 @@ bool FormFieldData::DynamicallySameFieldAs(const FormFieldData& field) const {
   return DynamicIdentityTuple(*this) == DynamicIdentityTuple(field);
 }
 
-bool FormFieldData::IdentityComparator::operator()(
-    const FormFieldData& a,
-    const FormFieldData& b) const {
-  return IdentityTuple(a) < IdentityTuple(b);
-}
-
 bool FormFieldData::IsTextInputElement() const {
   return form_control_type == "text" || form_control_type == "password" ||
          form_control_type == "search" || form_control_type == "tel" ||

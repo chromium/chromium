@@ -70,13 +70,6 @@ struct FormFieldData {
   using RoleAttribute = mojom::FormFieldData_RoleAttribute;
   using LabelSource = mojom::FormFieldData_LabelSource;
 
-  // TODO(crbug/1211834): This comparator is deprecated.
-  // Less-than relation for STL containers. Compares only members needed to
-  // uniquely identify a field.
-  struct IdentityComparator {
-    bool operator()(const FormFieldData& a, const FormFieldData& b) const;
-  };
-
   // Returns true if all members of fields |a| and |b| are identical.
   static bool DeepEqual(const FormFieldData& a, const FormFieldData& b);
 
@@ -149,7 +142,6 @@ struct FormFieldData {
 #define EXPECT_EQ_UNIQUE_ID(expected, actual)
 #endif
 
-  // NOTE: update IdentityComparator                 when adding new a member.
   // NOTE: update SameFieldAs()            if needed when adding new a member.
   // NOTE: update SimilarFieldAs()         if needed when adding new a member.
   // NOTE: update DynamicallySameFieldAs() if needed when adding new a member.

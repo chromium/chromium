@@ -173,7 +173,6 @@ struct FormData {
   // The name attribute of the form.
   std::u16string name_attribute;
 
-  // NOTE: update IdentityComparator                when adding new a member.
   // NOTE: update SameFormAs()            if needed when adding new a member.
   // NOTE: update SimilarFormAs()         if needed when adding new a member.
   // NOTE: update DynamicallySameFormAs() if needed when adding new a member.
