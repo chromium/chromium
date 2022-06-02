@@ -74,7 +74,7 @@ const SkColor kRedImageColor = SkColorSetARGB(255, 199, 6, 7);
 const SkColor kGreenImageColor = SkColorSetARGB(255, 38, 196, 15);
 
 policy::CloudPolicyStore* GetStoreForUser(const user_manager::User* user) {
-  Profile* profile = ProfileHelper::Get()->GetProfileByUserUnsafe(user);
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile) {
     ADD_FAILURE();
     return NULL;

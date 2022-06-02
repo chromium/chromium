@@ -118,10 +118,9 @@ IN_PROC_BROWSER_TEST_F(ProfileInvalidationProviderFactoryGuestBrowserTest,
                        NoInvalidationService) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
-  Profile* guest_profile =
-      ash::ProfileHelper::Get()
-          ->GetProfileByUserUnsafe(user_manager->GetActiveUser())
-          ->GetOriginalProfile();
+  Profile* guest_profile = ash::ProfileHelper::Get()
+                               ->GetProfileByUser(user_manager->GetActiveUser())
+                               ->GetOriginalProfile();
   Profile* login_profile =
       ash::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
   EXPECT_FALSE(CanConstructProfileInvalidationProvider(guest_profile));

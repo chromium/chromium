@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, PRE_FlagHandlingTest) {
   LogIn();
 
   if (!GetParam().user_flag_internal_names.empty()) {
-    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUserUnsafe(
+    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(
         user_manager::UserManager::Get()->GetActiveUser());
     ASSERT_TRUE(profile);
     flags_ui::PrefServiceFlagsStorage flags_storage(profile->GetPrefs());
