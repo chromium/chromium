@@ -88,7 +88,7 @@ TEST(TelemetryApiConverters, LogicalCpuInfo) {
   ASSERT_TRUE(result.idle_time_ms);
   EXPECT_EQ(kIdleTime, *result.idle_time_ms);
 
-  EXPECT_EQ(1u, result.c_states.size());
+  ASSERT_EQ(1u, result.c_states.size());
 
   ASSERT_TRUE(result.c_states[0].name);
   EXPECT_EQ(kCpuCStateName, *result.c_states[0].name);
@@ -128,7 +128,7 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
   ASSERT_TRUE(result.model_name);
   EXPECT_EQ(kModelName, *result.model_name);
 
-  EXPECT_EQ(1u, result.logical_cpus.size());
+  ASSERT_EQ(1u, result.logical_cpus.size());
 
   ASSERT_TRUE(result.logical_cpus[0].max_clock_speed_khz);
   EXPECT_EQ(kMaxClockSpeedKhz,
@@ -147,7 +147,7 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
   ASSERT_TRUE(result.logical_cpus[0].idle_time_ms);
   EXPECT_EQ(kIdleTime, *result.logical_cpus[0].idle_time_ms);
 
-  EXPECT_EQ(1u, result.logical_cpus[0].c_states.size());
+  ASSERT_EQ(1u, result.logical_cpus[0].c_states.size());
 
   ASSERT_TRUE(result.logical_cpus[0].c_states[0].name);
   EXPECT_EQ(kCpuCStateName, *result.logical_cpus[0].c_states[0].name);
