@@ -717,8 +717,7 @@ void NotificationViewBase::CreateOrUpdateIconView(
 
   bool apply_rounded_corners = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  apply_rounded_corners =
-      ash::features::IsNotificationsRefreshEnabled() && use_image_for_icon;
+  apply_rounded_corners = for_ash_notification_;
 #endif  // IS_CHROMEOS_ASH
   icon_view_->SetImage(icon, icon.Size(), apply_rounded_corners);
 
