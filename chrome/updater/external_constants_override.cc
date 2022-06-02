@@ -38,7 +38,7 @@
 namespace {
 
 std::vector<GURL> GURLVectorFromStringList(
-    base::Value::ConstListView update_url_list) {
+    const base::Value::List& update_url_list) {
   std::vector<GURL> ret;
   ret.reserve(update_url_list.size());
   for (const base::Value& url : update_url_list) {
@@ -53,7 +53,7 @@ std::vector<GURL> GURLVectorFromStringList(
 namespace updater {
 
 ExternalConstantsOverrider::ExternalConstantsOverrider(
-    base::flat_map<std::string, base::Value> override_values,
+    base::Value::Dict override_values,
     scoped_refptr<ExternalConstants> next_provider)
     : ExternalConstants(std::move(next_provider)),
       override_values_(std::move(override_values)) {}
@@ -64,15 +64,16 @@ std::vector<GURL> ExternalConstantsOverrider::UpdateURL() const {
   if (!override_values_.contains(kDevOverrideKeyUrl)) {
     return next_provider_->UpdateURL();
   }
-  const base::Value& update_url_value = override_values_.at(kDevOverrideKeyUrl);
-  switch (update_url_value.type()) {
+  const base::Value* update_url_value =
+      override_values_.Find(kDevOverrideKeyUrl);
+  switch (update_url_value->type()) {
     case base::Value::Type::STRING:
-      return {GURL(update_url_value.GetString())};
+      return {GURL(update_url_value->GetString())};
     case base::Value::Type::LIST:
-      return GURLVectorFromStringList(update_url_value.GetListDeprecated());
+      return GURLVectorFromStringList(update_url_value->GetList());
     default:
       LOG(FATAL) << "Unexpected type of override[" << kDevOverrideKeyUrl
-                 << "]: " << base::Value::GetTypeName(update_url_value.type());
+                 << "]: " << base::Value::GetTypeName(update_url_value->type());
       NOTREACHED();
   }
   NOTREACHED();
@@ -83,12 +84,13 @@ bool ExternalConstantsOverrider::UseCUP() const {
   if (!override_values_.contains(kDevOverrideKeyUseCUP)) {
     return next_provider_->UseCUP();
   }
-  const base::Value& use_cup_value = override_values_.at(kDevOverrideKeyUseCUP);
-  CHECK(use_cup_value.is_bool())
+  const base::Value* use_cup_value =
+      override_values_.Find(kDevOverrideKeyUseCUP);
+  CHECK(use_cup_value->is_bool())
       << "Unexpected type of override[" << kDevOverrideKeyUseCUP
-      << "]: " << base::Value::GetTypeName(use_cup_value.type());
+      << "]: " << base::Value::GetTypeName(use_cup_value->type());
 
-  return use_cup_value.GetBool();
+  return use_cup_value->GetBool();
 }
 
 double ExternalConstantsOverrider::InitialDelay() const {
@@ -96,12 +98,12 @@ double ExternalConstantsOverrider::InitialDelay() const {
     return next_provider_->InitialDelay();
   }
 
-  const base::Value& initial_delay_value =
-      override_values_.at(kDevOverrideKeyInitialDelay);
-  CHECK(initial_delay_value.is_double())
+  const base::Value* initial_delay_value =
+      override_values_.Find(kDevOverrideKeyInitialDelay);
+  CHECK(initial_delay_value->is_double())
       << "Unexpected type of override[" << kDevOverrideKeyInitialDelay
-      << "]: " << base::Value::GetTypeName(initial_delay_value.type());
-  return initial_delay_value.GetDouble();
+      << "]: " << base::Value::GetTypeName(initial_delay_value->type());
+  return initial_delay_value->GetDouble();
 }
 
 int ExternalConstantsOverrider::ServerKeepAliveSeconds() const {
@@ -109,13 +111,13 @@ int ExternalConstantsOverrider::ServerKeepAliveSeconds() const {
     return next_provider_->ServerKeepAliveSeconds();
   }
 
-  const base::Value& server_keep_alive_seconds_value =
-      override_values_.at(kDevOverrideKeyServerKeepAliveSeconds);
-  CHECK(server_keep_alive_seconds_value.is_int())
+  const base::Value* server_keep_alive_seconds_value =
+      override_values_.Find(kDevOverrideKeyServerKeepAliveSeconds);
+  CHECK(server_keep_alive_seconds_value->is_int())
       << "Unexpected type of override[" << kDevOverrideKeyServerKeepAliveSeconds
       << "]: "
-      << base::Value::GetTypeName(server_keep_alive_seconds_value.type());
-  return server_keep_alive_seconds_value.GetInt();
+      << base::Value::GetTypeName(server_keep_alive_seconds_value->type());
+  return server_keep_alive_seconds_value->GetInt();
 }
 
 crx_file::VerifierFormat ExternalConstantsOverrider::CrxVerifierFormat() const {
@@ -123,26 +125,26 @@ crx_file::VerifierFormat ExternalConstantsOverrider::CrxVerifierFormat() const {
     return next_provider_->CrxVerifierFormat();
   }
 
-  const base::Value& crx_format_verifier_value =
-      override_values_.at(kDevOverrideKeyCrxVerifierFormat);
-  CHECK(crx_format_verifier_value.is_int())
+  const base::Value* crx_format_verifier_value =
+      override_values_.Find(kDevOverrideKeyCrxVerifierFormat);
+  CHECK(crx_format_verifier_value->is_int())
       << "Unexpected type of override[" << kDevOverrideKeyCrxVerifierFormat
-      << "]: " << base::Value::GetTypeName(crx_format_verifier_value.type());
+      << "]: " << base::Value::GetTypeName(crx_format_verifier_value->type());
   return static_cast<crx_file::VerifierFormat>(
-      crx_format_verifier_value.GetInt());
+      crx_format_verifier_value->GetInt());
 }
 
-base::Value::DictStorage ExternalConstantsOverrider::GroupPolicies() const {
+base::Value::Dict ExternalConstantsOverrider::GroupPolicies() const {
   if (!override_values_.contains(kDevOverrideKeyGroupPolicies)) {
     return next_provider_->GroupPolicies();
   }
 
-  const base::Value& group_policies_value =
-      override_values_.at(kDevOverrideKeyGroupPolicies);
-  CHECK(group_policies_value.is_dict())
+  const base::Value* group_policies_value =
+      override_values_.Find(kDevOverrideKeyGroupPolicies);
+  CHECK(group_policies_value->is_dict())
       << "Unexpected type of override[" << kDevOverrideKeyGroupPolicies
-      << "]: " << base::Value::GetTypeName(group_policies_value.type());
-  return group_policies_value.Clone().TakeDictDeprecated();
+      << "]: " << base::Value::GetTypeName(group_policies_value->type());
+  return group_policies_value->GetDict().Clone();
 }
 
 // static
@@ -176,7 +178,7 @@ ExternalConstantsOverrider::FromDefaultJSONFile(
   }
 
   return base::MakeRefCounted<ExternalConstantsOverrider>(
-      std::move(*parsed_value).TakeDictDeprecated(), next_provider);
+      std::move(parsed_value->GetDict()), next_provider);
 }
 
 // Declared in external_constants.h. This implementation of the function is

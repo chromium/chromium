@@ -147,30 +147,28 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
       }));
 }
 
-// Overload for base::Value::DictStorage switches.
+// Overload for base::Value::Dict switches.
 template <typename... Args>
 base::RepeatingCallback<bool(Args...)> WithSwitch(
     const std::string& flag,
-    base::RepeatingCallback<bool(const base::Value::DictStorage&, Args...)>
-        callback) {
+    base::RepeatingCallback<bool(const base::Value::Dict&, Args...)> callback) {
   return WithSwitch(
       flag,
       base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
-        return callback.Run(ValueFromString(flag).TakeDictDeprecated(),
+        return callback.Run(std::move(ValueFromString(flag).GetDict()),
                             std::move(args)...);
       }));
 }
 
-// Overload for base::Value::ListStorage switches.
+// Overload for base::Value::List switches.
 template <typename... Args>
 base::RepeatingCallback<bool(Args...)> WithSwitch(
     const std::string& flag,
-    base::RepeatingCallback<bool(const base::Value::ListStorage&, Args...)>
-        callback) {
+    base::RepeatingCallback<bool(const base::Value::List&, Args...)> callback) {
   return WithSwitch(
       flag,
       base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
-        return callback.Run(ValueFromString(flag).TakeListDeprecated(),
+        return callback.Run(std::move(ValueFromString(flag).GetList()),
                             std::move(args)...);
       }));
 }

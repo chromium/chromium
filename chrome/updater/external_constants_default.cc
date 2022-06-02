@@ -36,7 +36,9 @@ class DefaultExternalConstants : public ExternalConstants {
     return crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
   }
 
-  base::Value::DictStorage GroupPolicies() const override { return {}; }
+  base::Value::Dict GroupPolicies() const override {
+    return base::Value::Dict();
+  }
 
  private:
   ~DefaultExternalConstants() override = default;

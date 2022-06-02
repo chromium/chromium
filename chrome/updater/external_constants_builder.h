@@ -52,7 +52,7 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& ClearCrxVerifierFormat();
 
   ExternalConstantsBuilder& SetGroupPolicies(
-      const base::Value::DictStorage& group_policies);
+      const base::Value::Dict& group_policies);
   ExternalConstantsBuilder& ClearGroupPolicies();
 
   // Write the external constants overrides file in the default location
@@ -68,7 +68,7 @@ class ExternalConstantsBuilder {
   bool Modify();
 
  private:
-  base::Value overrides_{base::Value::Type::DICTIONARY};
+  base::Value::Dict overrides_;
   bool written_ = false;
 };
 

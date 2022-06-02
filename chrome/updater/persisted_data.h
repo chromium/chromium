@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -18,7 +19,6 @@ class PrefRegistrySimple;
 namespace base {
 class FilePath;
 class Time;
-class Value;
 class Version;
 }  // namespace base
 
@@ -103,7 +103,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   ~PersistedData();
 
   // Returns nullptr if the app key does not exist.
-  const base::Value* GetAppKey(const std::string& id) const;
+  const base::Value::Dict* GetAppKey(const std::string& id) const;
 
   // Returns an existing or newly created app key under a root pref.
   base::Value* GetOrCreateAppKey(const std::string& id, base::Value* root);

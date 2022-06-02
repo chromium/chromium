@@ -40,80 +40,80 @@ std::vector<std::string> StringVectorFromGURLVector(
 
 ExternalConstantsBuilder::~ExternalConstantsBuilder() {
   LOG_IF(WARNING, !written_) << "An ExternalConstantsBuilder with "
-                             << overrides_.DictSize() << " entries is being "
+                             << overrides_.size() << " entries is being "
                              << "discarded without being written to a file.";
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetUpdateURL(
     const std::vector<std::string>& urls) {
-  base::Value::ListStorage url_list;
+  base::Value::List url_list;
   url_list.reserve(urls.size());
   for (const std::string& url_string : urls) {
-    url_list.push_back(base::Value(url_string));
+    url_list.Append(url_string);
   }
-  overrides_.SetKey(kDevOverrideKeyUrl, base::Value(std::move(url_list)));
+  overrides_.Set(kDevOverrideKeyUrl, std::move(url_list));
   return *this;
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::ClearUpdateURL() {
-  overrides_.RemoveKey(kDevOverrideKeyUrl);
+  overrides_.Remove(kDevOverrideKeyUrl);
   return *this;
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetUseCUP(bool use_cup) {
-  overrides_.SetBoolKey(kDevOverrideKeyUseCUP, use_cup);
+  overrides_.Set(kDevOverrideKeyUseCUP, use_cup);
   return *this;
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::ClearUseCUP() {
-  overrides_.RemoveKey(kDevOverrideKeyUseCUP);
+  overrides_.Remove(kDevOverrideKeyUseCUP);
   return *this;
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetInitialDelay(
     double initial_delay) {
-  overrides_.SetDoubleKey(kDevOverrideKeyInitialDelay, initial_delay);
+  overrides_.Set(kDevOverrideKeyInitialDelay, initial_delay);
   return *this;
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::ClearInitialDelay() {
-  overrides_.RemoveKey(kDevOverrideKeyInitialDelay);
+  overrides_.Remove(kDevOverrideKeyInitialDelay);
   return *this;
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetServerKeepAliveSeconds(
     int server_keep_alive_seconds) {
-  overrides_.SetIntKey(kDevOverrideKeyServerKeepAliveSeconds,
-                       server_keep_alive_seconds);
+  overrides_.Set(kDevOverrideKeyServerKeepAliveSeconds,
+                 server_keep_alive_seconds);
   return *this;
 }
 
 ExternalConstantsBuilder&
 ExternalConstantsBuilder::ClearServerKeepAliveSeconds() {
-  overrides_.RemoveKey(kDevOverrideKeyServerKeepAliveSeconds);
+  overrides_.Remove(kDevOverrideKeyServerKeepAliveSeconds);
   return *this;
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetCrxVerifierFormat(
     crx_file::VerifierFormat crx_verifier_format) {
-  overrides_.SetIntKey(kDevOverrideKeyCrxVerifierFormat,
-                       static_cast<int>(crx_verifier_format));
+  overrides_.Set(kDevOverrideKeyCrxVerifierFormat,
+                 static_cast<int>(crx_verifier_format));
   return *this;
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::ClearCrxVerifierFormat() {
-  overrides_.RemoveKey(kDevOverrideKeyCrxVerifierFormat);
+  overrides_.Remove(kDevOverrideKeyCrxVerifierFormat);
   return *this;
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetGroupPolicies(
-    const base::Value::DictStorage& group_policies) {
-  overrides_.SetKey(kDevOverrideKeyGroupPolicies, base::Value(group_policies));
+    const base::Value::Dict& group_policies) {
+  overrides_.Set(kDevOverrideKeyGroupPolicies, group_policies.Clone());
   return *this;
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::ClearGroupPolicies() {
-  overrides_.RemoveKey(kDevOverrideKeyGroupPolicies);
+  overrides_.Remove(kDevOverrideKeyGroupPolicies);
   return *this;
 }
 
@@ -139,17 +139,17 @@ bool ExternalConstantsBuilder::Modify() {
   if (!verifier)
     return Overwrite();
 
-  if (!overrides_.FindKey(kDevOverrideKeyUrl))
+  if (!overrides_.contains(kDevOverrideKeyUrl))
     SetUpdateURL(StringVectorFromGURLVector(verifier->UpdateURL()));
-  if (!overrides_.FindKey(kDevOverrideKeyUseCUP))
+  if (!overrides_.contains(kDevOverrideKeyUseCUP))
     SetUseCUP(verifier->UseCUP());
-  if (!overrides_.FindKey(kDevOverrideKeyInitialDelay))
+  if (!overrides_.contains(kDevOverrideKeyInitialDelay))
     SetInitialDelay(verifier->InitialDelay());
-  if (!overrides_.FindKey(kDevOverrideKeyServerKeepAliveSeconds))
+  if (!overrides_.contains(kDevOverrideKeyServerKeepAliveSeconds))
     SetServerKeepAliveSeconds(verifier->ServerKeepAliveSeconds());
-  if (!overrides_.FindKey(kDevOverrideKeyCrxVerifierFormat))
+  if (!overrides_.contains(kDevOverrideKeyCrxVerifierFormat))
     SetCrxVerifierFormat(verifier->CrxVerifierFormat());
-  if (!overrides_.FindKey(kDevOverrideKeyGroupPolicies))
+  if (!overrides_.contains(kDevOverrideKeyGroupPolicies))
     SetGroupPolicies(verifier->GroupPolicies());
 
   return Overwrite();

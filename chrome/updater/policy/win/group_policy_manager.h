@@ -57,8 +57,8 @@ class GroupPolicyManager : public PolicyManagerInterface {
   bool GetIntPolicy(const std::string& key, int* value) const;
   bool GetStringPolicy(const std::string& key, std::string* value) const;
 
-  base::Value policies_;
-  const base::Value external_constants_group_policies_;
+  base::Value::Dict policies_;
+  const base::Value::Dict external_constants_group_policies_;
 };
 
 }  // namespace updater

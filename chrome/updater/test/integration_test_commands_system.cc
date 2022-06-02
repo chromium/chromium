@@ -80,9 +80,9 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("enter_test_mode", {Param("url", url.spec())});
   }
 
-  void SetGroupPolicies(const base::Value::DictStorage& values) const override {
+  void SetGroupPolicies(const base::Value::Dict& values) const override {
     RunCommand("set_group_policies",
-               {Param("values", StringFromValue(base::Value(values)))});
+               {Param("values", StringFromValue(base::Value(values.Clone())))});
   }
 
   void ExpectSelfUpdateSequence(ScopedServer* test_server) const override {
@@ -209,13 +209,14 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void ExpectLegacyAppCommandWebSucceeds(
       const std::string& app_id,
       const std::string& command_id,
-      const base::Value::ListStorage& parameters,
+      const base::Value::List& parameters,
       int expected_exit_code) const override {
-    RunCommand("expect_legacy_app_command_web_succeeds",
-               {Param("app_id", app_id), Param("command_id", command_id),
-                Param("parameters", StringFromValue(base::Value(parameters))),
-                Param("expected_exit_code",
-                      base::NumberToString(expected_exit_code))});
+    RunCommand(
+        "expect_legacy_app_command_web_succeeds",
+        {Param("app_id", app_id), Param("command_id", command_id),
+         Param("parameters", StringFromValue(base::Value(parameters.Clone()))),
+         Param("expected_exit_code",
+               base::NumberToString(expected_exit_code))});
   }
 
   void RunUninstallCmdLine() const override {

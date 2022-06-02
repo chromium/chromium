@@ -65,7 +65,7 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectSelfUpdateSequence(updater_scope_, test_server);
   }
 
-  void SetGroupPolicies(const base::Value::DictStorage& values) const override {
+  void SetGroupPolicies(const base::Value::Dict& values) const override {
     updater::test::SetGroupPolicies(values);
   }
 
@@ -179,7 +179,7 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void ExpectLegacyAppCommandWebSucceeds(
       const std::string& app_id,
       const std::string& command_id,
-      const base::Value::ListStorage& parameters,
+      const base::Value::List& parameters,
       int expected_exit_code) const override {
     updater::test::ExpectLegacyAppCommandWebSucceeds(
         updater_scope_, app_id, command_id, parameters, expected_exit_code);

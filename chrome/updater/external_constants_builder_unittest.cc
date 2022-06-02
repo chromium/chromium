@@ -75,9 +75,9 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingNothing) {
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
-  base::Value::DictStorage group_policies;
-  group_policies["a"] = base::Value(1);
-  group_policies["b"] = base::Value(2);
+  base::Value::Dict group_policies;
+  group_policies.Set("a", 1);
+  group_policies.Set("b", 2);
 
   ExternalConstantsBuilder builder;
   builder.SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
@@ -154,8 +154,8 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
-  base::Value::DictStorage group_policies;
-  group_policies["a"] = base::Value(1);
+  base::Value::Dict group_policies;
+  group_policies.Set("a", 1);
 
   EXPECT_TRUE(
       ExternalConstantsBuilder()
@@ -188,9 +188,9 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
 TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   ExternalConstantsBuilder builder;
 
-  base::Value::DictStorage group_policies;
-  group_policies["a"] = base::Value(1);
-  group_policies["b"] = base::Value(2);
+  base::Value::Dict group_policies;
+  group_policies.Set("a", 1);
+  group_policies.Set("b", 2);
 
   EXPECT_TRUE(
       builder.SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
@@ -215,8 +215,8 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_EQ(verifier->ServerKeepAliveSeconds(), 3);
   EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
 
-  base::Value::DictStorage group_policies2;
-  group_policies2["b"] = base::Value(2);
+  base::Value::Dict group_policies2;
+  group_policies2.Set("b", 2);
 
   // But now we can use the builder again:
   EXPECT_TRUE(builder.SetInitialDelay(92.3)
@@ -245,9 +245,9 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
 TEST_F(ExternalConstantsBuilderTests, TestModify) {
   ExternalConstantsBuilder builder;
 
-  base::Value::DictStorage group_policies;
-  group_policies["a"] = base::Value(1);
-  group_policies["b"] = base::Value(2);
+  base::Value::Dict group_policies;
+  group_policies.Set("a", 1);
+  group_policies.Set("b", 2);
 
   EXPECT_TRUE(
       builder.SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
@@ -275,8 +275,8 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   // Now we use a new builder to modify just the group policies.
   ExternalConstantsBuilder builder2;
 
-  base::Value::DictStorage group_policies2;
-  group_policies2["b"] = base::Value(2);
+  base::Value::Dict group_policies2;
+  group_policies2.Set("b", 2);
 
   EXPECT_TRUE(builder2.SetGroupPolicies(group_policies2).Modify());
 

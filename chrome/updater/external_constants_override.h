@@ -28,9 +28,8 @@ namespace updater {
 
 class ExternalConstantsOverrider : public ExternalConstants {
  public:
-  ExternalConstantsOverrider(
-      base::flat_map<std::string, base::Value> override_values,
-      scoped_refptr<ExternalConstants> next_provider);
+  ExternalConstantsOverrider(base::Value::Dict override_values,
+                             scoped_refptr<ExternalConstants> next_provider);
 
   // Loads a dictionary from overrides.json in the local application data
   // directory to construct a ExternalConstantsOverrider.
@@ -46,10 +45,10 @@ class ExternalConstantsOverrider : public ExternalConstants {
   double InitialDelay() const override;
   int ServerKeepAliveSeconds() const override;
   crx_file::VerifierFormat CrxVerifierFormat() const override;
-  base::Value::DictStorage GroupPolicies() const override;
+  base::Value::Dict GroupPolicies() const override;
 
  private:
-  const base::flat_map<std::string, base::Value> override_values_;
+  const base::Value::Dict override_values_;
   ~ExternalConstantsOverrider() override;
 };
 

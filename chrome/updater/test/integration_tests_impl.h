@@ -53,7 +53,7 @@ void ExpectClean(UpdaterScope scope);
 void EnterTestMode(const GURL& url);
 
 // Sets the external constants for group policies.
-void SetGroupPolicies(const base::Value::DictStorage& values);
+void SetGroupPolicies(const base::Value::Dict& values);
 
 // Copies the logs to a location where they can be retrieved by ResultDB.
 void CopyLog(const base::FilePath& src_dir);
@@ -165,12 +165,11 @@ void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
                                     int expected_final_state,
                                     int expected_error_code);
 void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope);
-void ExpectLegacyAppCommandWebSucceeds(
-    UpdaterScope scope,
-    const std::string& app_id,
-    const std::string& command_id,
-    const base::Value::ListStorage& parameters,
-    int expected_exit_code);
+void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
+                                       const std::string& app_id,
+                                       const std::string& command_id,
+                                       const base::Value::List& parameters,
+                                       int expected_exit_code);
 void RunTestServiceCommand(const std::string& sub_command);
 
 // Calls a function defined in test/service/win/rpc_client.py.

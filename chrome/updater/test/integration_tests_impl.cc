@@ -143,17 +143,18 @@ base::RepeatingCallback<bool(const std::string&)> GetScopePredicate(
           base::JSONReader::Read(request_body);
       if (!doc || !doc->is_dict())
         return false;
-      const base::Value* object_request = doc->FindKey("request");
-      if (!object_request || !object_request->is_dict())
+      const base::Value::Dict* object_request =
+          doc->GetDict().FindDict("request");
+      if (!object_request)
         return false;
-      const base::Value* value_ismachine = object_request->FindKey("ismachine");
-      if (!value_ismachine || !value_ismachine->is_bool())
+      absl::optional<bool> ismachine = object_request->FindBool("ismachine");
+      if (!ismachine.has_value())
         return false;
       switch (scope) {
         case UpdaterScope::kSystem:
-          return value_ismachine->GetBool();
+          return *ismachine;
         case UpdaterScope::kUser:
-          return !value_ismachine->GetBool();
+          return !*ismachine;
       }
     }();
     if (!is_match) {
@@ -189,7 +190,7 @@ void RegisterApp(UpdaterScope scope, const std::string& app_id) {
   loop.Run();
 }
 
-void SetGroupPolicies(const base::Value::DictStorage& values) {
+void SetGroupPolicies(const base::Value::Dict& values) {
   ASSERT_TRUE(ExternalConstantsBuilder().SetGroupPolicies(values).Modify());
 }
 

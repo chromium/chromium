@@ -135,7 +135,7 @@ class IntegrationTest : public ::testing::Test {
 
   void EnterTestMode(const GURL& url) { test_commands_->EnterTestMode(url); }
 
-  void SetGroupPolicies(const base::Value::DictStorage& values) {
+  void SetGroupPolicies(const base::Value::Dict& values) {
     test_commands_->SetGroupPolicies(values);
   }
 
@@ -165,11 +165,10 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectLegacyProcessLauncherSucceeds();
   }
 
-  void ExpectLegacyAppCommandWebSucceeds(
-      const std::string& app_id,
-      const std::string& command_id,
-      const base::Value::ListStorage& parameters,
-      int expected_exit_code) {
+  void ExpectLegacyAppCommandWebSucceeds(const std::string& app_id,
+                                         const std::string& command_id,
+                                         const base::Value::List& parameters,
+                                         int expected_exit_code) {
     test_commands_->ExpectLegacyAppCommandWebSucceeds(
         app_id, command_id, parameters, expected_exit_code);
   }
@@ -500,13 +499,13 @@ TEST_F(IntegrationTest, LegacyUpdate3Web) {
   ExpectNoUpdateSequence(&test_server, kAppId);
   ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_NO_UPDATE, S_OK);
 
-  base::Value::DictStorage group_policies;
-  group_policies["Updatetest1"] = base::Value(kPolicyAutomaticUpdatesOnly);
+  base::Value::Dict group_policies;
+  group_policies.Set("Updatetest1", kPolicyAutomaticUpdatesOnly);
   SetGroupPolicies(group_policies);
   ExpectLegacyUpdate3WebSucceeds(
       kAppId, STATE_ERROR, GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL);
 
-  group_policies["Updatetest1"] = base::Value(kPolicyDisabled);
+  group_policies.Set("Updatetest1", kPolicyDisabled);
   SetGroupPolicies(group_policies);
   ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_ERROR,
                                  GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY);
@@ -532,8 +531,8 @@ TEST_F(IntegrationTest, LegacyAppCommandWeb) {
   const char kAppId[] = "test1";
   InstallApp(kAppId);
 
-  base::Value::ListStorage parameters;
-  parameters.push_back(base::Value("5432"));
+  base::Value::List parameters;
+  parameters.Append("5432");
   ExpectLegacyAppCommandWebSucceeds(kAppId, "command1", parameters, 5432);
 
   Uninstall();

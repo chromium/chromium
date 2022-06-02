@@ -86,12 +86,11 @@ GroupPolicyManager::GroupPolicyManager(
 GroupPolicyManager::~GroupPolicyManager() = default;
 
 bool GroupPolicyManager::IsManaged() const {
-  return !policies_.DictEmpty() && IsManagedInternal();
+  return !policies_.empty() && IsManagedInternal();
 }
 
 bool GroupPolicyManager::IsManagedInternal() const {
-  return !external_constants_group_policies_.DictEmpty() ||
-         base::IsManagedDevice();
+  return !external_constants_group_policies_.empty() || base::IsManagedDevice();
 }
 
 std::string GroupPolicyManager::source() const {
@@ -190,23 +189,21 @@ bool GroupPolicyManager::GetProxyServer(std::string* proxy_server) const {
 
 bool GroupPolicyManager::GetIntPolicy(const std::string& key,
                                       int* value) const {
-  const base::Value* policy =
-      policies_.FindKeyOfType(key, base::Value::Type::INTEGER);
-  if (policy == nullptr)
+  absl::optional<int> policy = policies_.FindInt(key);
+  if (!policy.has_value())
     return false;
 
-  *value = policy->GetInt();
+  *value = *policy;
   return true;
 }
 
 bool GroupPolicyManager::GetStringPolicy(const std::string& key,
                                          std::string* value) const {
-  const base::Value* policy =
-      policies_.FindKeyOfType(key, base::Value::Type::STRING);
+  const std::string* policy = policies_.FindString(key);
   if (policy == nullptr)
     return false;
 
-  *value = policy->GetString();
+  *value = *policy;
   return true;
 }
 
@@ -223,12 +220,12 @@ void GroupPolicyManager::LoadAllPolicies() {
     CHECK(policy_lock.is_valid()) << "Failed to get policy lock.";
   }
 
-  if (!external_constants_group_policies_.DictEmpty()) {
+  if (!external_constants_group_policies_.empty()) {
     policies_ = external_constants_group_policies_.Clone();
     return;
   }
 
-  base::Value::DictStorage policy_storage;
+  base::Value::Dict policies;
 
   for (base::win::RegistryValueIterator it(HKEY_LOCAL_MACHINE,
                                            UPDATER_POLICIES_KEY);
@@ -236,13 +233,11 @@ void GroupPolicyManager::LoadAllPolicies() {
     const std::string key_name = base::SysWideToUTF8(it.Name());
     switch (it.Type()) {
       case REG_SZ:
-        policy_storage.emplace(key_name,
-                               base::Value(base::SysWideToUTF8(it.Value())));
+        policies.Set(key_name, base::SysWideToUTF8(it.Value()));
         break;
 
       case REG_DWORD:
-        policy_storage.emplace(
-            key_name, base::Value(*(reinterpret_cast<const int*>(it.Value()))));
+        policies.Set(key_name, *(reinterpret_cast<const int*>(it.Value())));
         break;
 
       default:
@@ -251,7 +246,7 @@ void GroupPolicyManager::LoadAllPolicies() {
     }
   }
 
-  policies_ = base::Value(std::move(policy_storage));
+  policies_ = std::move(policies);
 }
 
 }  // namespace updater

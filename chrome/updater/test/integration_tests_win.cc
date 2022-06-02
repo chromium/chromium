@@ -903,12 +903,11 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
   EXPECT_EQ(static_cast<ULONG_PTR>(0), proc_handle);
 }
 
-void ExpectLegacyAppCommandWebSucceeds(
-    UpdaterScope scope,
-    const std::string& app_id,
-    const std::string& command_id,
-    const base::Value::ListStorage& parameters,
-    int expected_exit_code) {
+void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
+                                       const std::string& app_id,
+                                       const std::string& command_id,
+                                       const base::Value::List& parameters,
+                                       int expected_exit_code) {
   const size_t kMaxParameters = 9;
   ASSERT_LE(parameters.size(), kMaxParameters);
 
