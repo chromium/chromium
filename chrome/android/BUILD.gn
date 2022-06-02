@@ -3786,7 +3786,6 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     android_size_bot_config("resource_size_config_trichrome") {
       name = "Trichrome"
       mapping_files = [
-        "apks/TrichromeLibrary.apk.mapping",
         "apks/TrichromeChrome.aab.mapping",
         "apks/TrichromeWebView.aab.mapping",
       ]
