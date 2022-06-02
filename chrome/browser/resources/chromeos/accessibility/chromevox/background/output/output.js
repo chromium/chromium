@@ -6,41 +6,6 @@
  * @fileoverview Provides output services for ChromeVox.
  */
 
-goog.provide('Output');
-
-goog.require('AbstractEarcons');
-goog.require('AutomationTreeWalker');
-goog.require('ChromeVox');
-goog.require('EventSourceState');
-goog.require('FocusBounds');
-goog.require('LocaleOutputHelper');
-goog.require('LogStore');
-goog.require('NavBraille');
-goog.require('OutputAction');
-goog.require('OutputAncestryInfo');
-goog.require('OutputContextOrder');
-goog.require('OutputEarconAction');
-goog.require('OutputEventType');
-goog.require('OutputFormatParser');
-goog.require('OutputFormatTree');
-goog.require('OutputNodeSpan');
-goog.require('OutputRoleInfo');
-goog.require('OutputRulesStr');
-goog.require('OutputSelectionSpan');
-goog.require('OutputSpeechProperties');
-goog.require('PhoneticData');
-goog.require('Spannable');
-goog.require('TextLog');
-goog.require('TtsCategory');
-goog.require('ValueSelectionSpan');
-goog.require('ValueSpan');
-goog.require('constants');
-goog.require('cursors.Cursor');
-goog.require('cursors.Range');
-goog.require('cursors.Unit');
-goog.require('goog.i18n.MessageFormat');
-
-goog.scope(function() {
 const AriaCurrentState = chrome.automation.AriaCurrentState;
 const AutomationNode = chrome.automation.AutomationNode;
 const DescriptionFromType = chrome.automation.DescriptionFromType;
@@ -78,7 +43,7 @@ const StateType = chrome.automation.StateType;
  *     For example, $name= would insert the name attribute only if no name
  * attribute had been inserted previously.
  */
-Output = class {
+export class Output {
   constructor() {
     // TODO(dtseng): Include braille specific rules.
     /** @type {!Array<!Spannable>} @private */
@@ -2564,7 +2529,7 @@ Output = class {
       buff[buff.length - 1].setSpan(speechProps, 0, 0);
     }
   }
-};
+}
 
 /**
  * Delimiter to use between output values.
@@ -2932,4 +2897,3 @@ Output.RULES = {
  * @private
  */
 Output.forceModeForNextSpeechUtterance_;
-});  // goog.scope

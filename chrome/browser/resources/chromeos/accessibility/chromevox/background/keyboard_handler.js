@@ -7,6 +7,7 @@
  */
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {MathHandler} from '/chromevox/background/math_handler.js';
+import {Output} from '/chromevox/background/output/output.js';
 import {ChromeVoxKbHandler} from '/chromevox/common/keyboard_handler.js';
 
 /**

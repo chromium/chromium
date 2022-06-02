@@ -103,6 +103,12 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
     window.Dir = AutomationUtil.Dir;
     this.forceContextualLastOutput();
   }
+
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('Output', '/chromevox/background/output/output.js');
+  }
 };
 
 

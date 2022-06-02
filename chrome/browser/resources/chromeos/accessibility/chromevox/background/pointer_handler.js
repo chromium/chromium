@@ -9,6 +9,7 @@
 import {BaseAutomationHandler} from '/chromevox/background/base_automation_handler.js';
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
+import {Output} from '/chromevox/background/output/output.js';
 import {CustomAutomationEvent} from '/chromevox/common/custom_automation_event.js';
 import {EventGenerator} from '/common/event_generator.js';
 

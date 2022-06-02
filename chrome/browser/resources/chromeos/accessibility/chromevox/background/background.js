@@ -18,6 +18,7 @@ import {BackgroundKeyboardHandler} from '/chromevox/background/keyboard_handler.
 import {LiveRegions} from '/chromevox/background/live_regions.js';
 import {MathHandler} from '/chromevox/background/math_handler.js';
 import {MediaAutomationHandler} from '/chromevox/background/media_automation_handler.js';
+import {Output} from '/chromevox/background/output/output.js';
 import {PageLoadSoundHandler} from '/chromevox/background/page_load_sound_handler.js';
 import {PanelBackground} from '/chromevox/background/panel/panel_background.js';
 import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';

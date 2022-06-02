@@ -7,6 +7,7 @@
  * Braille is *not* handled in this module.
  */
 import {EditableLine} from '/chromevox/background/editing/editable_line.js';
+import {Output} from '/chromevox/background/output/output.js';
 
 const AutomationIntent = chrome.automation.AutomationIntent;
 const Cursor = cursors.Cursor;

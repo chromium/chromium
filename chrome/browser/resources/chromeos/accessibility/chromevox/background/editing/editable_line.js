@@ -8,6 +8,7 @@
  * (e.g. start/end offsets) get saved. Line: nodes/offsets at the beginning/end
  * of a line get saved.
  */
+import {Output} from '/chromevox/background/output/output.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;

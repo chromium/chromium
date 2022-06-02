@@ -44,6 +44,7 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'GestureCommandHandler',
         '/chromevox/background/gesture_command_handler.js');
+    await importModule('Output', '/chromevox/background/output/output.js');
     await importModule(
         'PageLoadSoundHandler',
         '/chromevox/background/page_load_sound_handler.js');

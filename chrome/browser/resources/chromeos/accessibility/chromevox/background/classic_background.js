@@ -11,6 +11,7 @@ import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {ConsoleTts} from '/chromevox/background/console_tts.js';
 import {ChromeVoxEditableTextBase, TypingEcho} from '/chromevox/background/editing/editable_text_base.js';
 import {InjectedScriptLoader} from '/chromevox/background/injected_script_loader.js';
+import {Output} from '/chromevox/background/output/output.js';
 import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';
 import {TtsBackground} from '/chromevox/background/tts_background.js';
 import {AbstractTts} from '/chromevox/common/abstract_tts.js';
