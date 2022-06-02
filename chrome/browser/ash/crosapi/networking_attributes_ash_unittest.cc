@@ -107,6 +107,7 @@ class NetworkingAttributesAshTest : public testing::Test {
         user_manager->AddUserWithAffiliation(account_id, is_affiliated);
     user_manager->UserLoggedIn(account_id, user->username_hash(),
                                /*browser_restart=*/false, /*is_child=*/false);
+    user_manager->SimulateUserProfileLoad(account_id);
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                                  &profile_);
   }

@@ -56,6 +56,7 @@ class DlpFilesPolicyServiceProviderTest
     user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                 /*browser_restart=*/false,
                                 /*is_child=*/false);
+    user_manager_->SimulateUserProfileLoad(account_id);
 
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
         profile_.get(),

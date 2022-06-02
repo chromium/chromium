@@ -137,16 +137,6 @@ class ProfileHelper
   // Otherwise, returns NULL.
   virtual Profile* GetProfileByUser(const user_manager::User* user) = 0;
 
-  // DEPRECATED
-  // Returns profile of the |user| if user's profile is created and fully
-  // initialized. Otherwise, if some user is active, returns their profile.
-  // Otherwise, returns signin profile.
-  // Behaviour of this function does not correspond to its name and can be
-  // very surprising, that's why it should not be used anymore.
-  // Use |GetProfileByUser| instead.
-  // TODO(dzhioev): remove this method. http://crbug.com/361528
-  virtual Profile* GetProfileByUserUnsafe(const user_manager::User* user) = 0;
-
   // Returns NULL if User is not created.
   virtual const user_manager::User* GetUserByProfile(
       const Profile* profile) const = 0;

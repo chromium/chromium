@@ -54,6 +54,7 @@ class DocumentScanAshTest : public testing::Test {
     fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                     /*browser_restart=*/false,
                                     /*is_child=*/false);
+    fake_user_manager->SimulateUserProfileLoad(account_id);
     return fake_user_manager;
   }
 

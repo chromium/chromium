@@ -118,8 +118,6 @@ class ProfileHelperImpl : public ProfileHelper {
   Profile* GetProfileByAccountId(const AccountId& account_id) override;
   Profile* GetProfileByUser(const user_manager::User* user) override;
 
-  Profile* GetProfileByUserUnsafe(const user_manager::User* user) override;
-
   const user_manager::User* GetUserByProfile(
       const Profile* profile) const override;
   user_manager::User* GetUserByProfile(Profile* profile) const override;
@@ -400,34 +398,6 @@ Profile* ProfileHelperImpl::GetProfileByUser(const user_manager::User* user) {
   if (user_manager::UserManager::Get()->IsLoggedInAsGuest())
     profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
-  return profile;
-}
-
-Profile* ProfileHelperImpl::GetProfileByUserUnsafe(
-    const user_manager::User* user) {
-  // This map is non-empty only in tests.
-  if (!user_to_profile_for_testing_.empty()) {
-    std::map<const user_manager::User*, Profile*>::const_iterator it =
-        user_to_profile_for_testing_.find(user);
-    if (it != user_to_profile_for_testing_.end())
-      return it->second;
-  }
-
-  Profile* profile = NULL;
-  if (user->is_profile_created()) {
-    profile = GetProfileByUserIdHash(user->username_hash());
-  } else {
-    LOG(ERROR) << "ProfileHelper::GetProfileByUserUnsafe is called when "
-                  "|user|'s profile is not created. It probably means that "
-                  "something is wrong with a calling code. Please report in "
-                  "http://crbug.com/361528 if you see this message.";
-    profile = ProfileManager::GetActiveUserProfile();
-  }
-
-  // GetActiveUserProfile() or GetProfileByUserIdHash() returns a new instance
-  // of ProfileImpl(), but actually its off-the-record profile should be used.
-  if (profile && user_manager::UserManager::Get()->IsLoggedInAsGuest())
-    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   return profile;
 }
 
