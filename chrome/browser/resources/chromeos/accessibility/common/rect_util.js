@@ -57,7 +57,7 @@ const RectUtil = {
    * @param {ScreenRect|undefined} rect
    * @return {number}
    */
-  area: (rect) => rect ? rect.width * rect.height : 0,
+  area: (rect) => (rect ? rect.width * rect.height : 0),
 
   /**
    * Finds the bottom of a rect.
