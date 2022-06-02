@@ -632,7 +632,16 @@ void GooglePhotosFetcher<T>::OnTokenReceived(
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "GET";
-  resource_request->url = service_url;
+
+  // By default, the server will not serialize repeated proto fields if they are
+  // empty. This makes it impossible for us to tell if the server has broken
+  // compatibility with the client or just has nothing to return. Append a
+  // special parameter to request that the server always serializes repeated
+  // proto fields and any other fields which might otherwise be omitted by
+  // default (https://cloud.google.com/apis/docs/system-parameters#definitions).
+  resource_request->url = net::AppendOrReplaceQueryParameter(
+      service_url, "$outputDefaults", "true");
+
   // Cookies should not be allowed.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
