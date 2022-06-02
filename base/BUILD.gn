@@ -78,7 +78,7 @@ declare_args() {
 # Chromecast builds have full control over the platform and ensure that
 # the kernel and glibc versions used have patched the vulnerabilities,
 # so it is safe to use mutex priority inheritance on Chromecast platform.
-assert(!enable_mutex_priority_inheritance || is_castos,
+assert(!enable_mutex_priority_inheritance || is_chromecast,
        "Do not enable PI mutexes without consulting the security team")
 
 assert(!is_nacl || is_nacl_saigo,
@@ -1495,7 +1495,7 @@ mixed_component("base") {
   # building inside the cros_sdk environment - use host_toolchain as a
   # more robust check for this.
   if (!use_sysroot &&
-      (is_android || ((is_linux || is_chromeos) && !is_castos)) &&
+      (is_android || ((is_linux || is_chromeos) && !is_chromecast)) &&
       host_toolchain != "//build/toolchain/cros:host") {
     libs += [ "atomic" ]
   }
@@ -1583,7 +1583,7 @@ mixed_component("base") {
 
   # Allow more direct string conversions on platforms with native utf8
   # strings
-  if (is_apple || is_chromeos || is_castos || is_fuchsia) {
+  if (is_apple || is_chromeos || is_chromecast || is_fuchsia) {
     defines += [ "SYSTEM_NATIVE_UTF8" ]
   }
 
@@ -2289,7 +2289,7 @@ mixed_component("base") {
 
     # TODO(b/167763382) Find an alternate solution for Chromecast devices, since
     # adding the icui18n and icuuc deps significantly increases the binary size.
-    if (!is_castos) {
+    if (!is_chromecast) {
       sources += [ "time/time_exploded_icu.cc" ]
 
       # The ICU dependency is only needed on systems with a 32-bit time_t.
@@ -3520,7 +3520,7 @@ test("base_unittests") {
 
   # Allow more direct string conversions on platforms with native utf8
   # strings
-  if (is_apple || is_chromeos || is_castos || is_fuchsia) {
+  if (is_apple || is_chromeos || is_chromecast || is_fuchsia) {
     defines += [ "SYSTEM_NATIVE_UTF8" ]
   }
 
