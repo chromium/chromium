@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/notifications/request_pin_view.h"
+#include "chrome/browser/ui/views/notifications/request_pin_view_chromeos.h"
 
 #include <stddef.h>
 
@@ -29,8 +29,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
-
 namespace {
 
 // Default width of the text field.
@@ -40,7 +38,7 @@ constexpr int kDefaultTextWidthChars = 36;
 
 RequestPinView::RequestPinView(
     const std::string& extension_name,
-    security_token_pin::CodeType code_type,
+    chromeos::security_token_pin::CodeType code_type,
     int attempts_left,
     const PinEnteredCallback& pin_entered_callback,
     ViewDestructionCallback view_destruction_callback)
@@ -49,7 +47,8 @@ RequestPinView::RequestPinView(
   Init();
   SetExtensionName(extension_name);
   const bool accept_input = (attempts_left != 0);
-  SetDialogParameters(code_type, security_token_pin::ErrorLabel::kNone,
+  SetDialogParameters(code_type,
+                      chromeos::security_token_pin::ErrorLabel::kNone,
                       attempts_left, accept_input);
 
   SetShowCloseButton(false);
@@ -118,8 +117,8 @@ std::u16string RequestPinView::GetWindowTitle() const {
 }
 
 void RequestPinView::SetDialogParameters(
-    security_token_pin::CodeType code_type,
-    security_token_pin::ErrorLabel error_label,
+    chromeos::security_token_pin::CodeType code_type,
+    chromeos::security_token_pin::ErrorLabel error_label,
     int attempts_left,
     bool accept_input) {
   locked_ = false;
@@ -127,10 +126,10 @@ void RequestPinView::SetDialogParameters(
   SetAcceptInput(accept_input);
 
   switch (code_type) {
-    case security_token_pin::CodeType::kPin:
+    case chromeos::security_token_pin::CodeType::kPin:
       code_type_ = l10n_util::GetStringUTF16(IDS_REQUEST_PIN_DIALOG_PIN);
       break;
-    case security_token_pin::CodeType::kPuk:
+    case chromeos::security_token_pin::CodeType::kPuk:
       code_type_ = l10n_util::GetStringUTF16(IDS_REQUEST_PIN_DIALOG_PUK);
       break;
   }
@@ -177,7 +176,7 @@ void RequestPinView::Init() {
                              views::LayoutAlignment::kStart);
 
   // Textfield to enter the PIN/PUK.
-  textfield_ = AddChildView(std::make_unique<PassphraseTextfield>());
+  textfield_ = AddChildView(std::make_unique<chromeos::PassphraseTextfield>());
   textfield_->set_controller(this);
   textfield_->SetEnabled(true);
   textfield_->SetAssociatedLabel(header_label_);
@@ -195,18 +194,20 @@ void RequestPinView::SetAcceptInput(bool accept_input) {
     textfield_->RequestFocus();
 }
 
-void RequestPinView::SetErrorMessage(security_token_pin::ErrorLabel error_label,
-                                     int attempts_left,
-                                     bool accept_input) {
-  if (error_label == security_token_pin::ErrorLabel::kNone &&
+void RequestPinView::SetErrorMessage(
+    chromeos::security_token_pin::ErrorLabel error_label,
+    int attempts_left,
+    bool accept_input) {
+  if (error_label == chromeos::security_token_pin::ErrorLabel::kNone &&
       attempts_left < 0) {
     error_label_->SetVisible(false);
     textfield_->SetInvalid(false);
     return;
   }
 
-  std::u16string error_message = security_token_pin::GenerateErrorMessage(
-      error_label, attempts_left, accept_input);
+  std::u16string error_message =
+      chromeos::security_token_pin::GenerateErrorMessage(
+          error_label, attempts_left, accept_input);
 
   error_label_->SetVisible(true);
   error_label_->SetText(error_message);
@@ -218,5 +219,3 @@ void RequestPinView::SetErrorMessage(security_token_pin::ErrorLabel error_label,
 
 BEGIN_METADATA(RequestPinView, views::DialogDelegateView)
 END_METADATA
-
-}  // namespace chromeos

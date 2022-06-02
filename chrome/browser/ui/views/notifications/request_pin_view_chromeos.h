@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_NOTIFICATIONS_REQUEST_PIN_VIEW_H_
-#define CHROME_BROWSER_ASH_NOTIFICATIONS_REQUEST_PIN_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_NOTIFICATIONS_REQUEST_PIN_VIEW_CHROMEOS_H_
+#define CHROME_BROWSER_UI_VIEWS_NOTIFICATIONS_REQUEST_PIN_VIEW_CHROMEOS_H_
 
 #include <memory>
 #include <string>
@@ -23,8 +23,6 @@
 namespace views {
 class Label;
 }  // namespace views
-
-namespace chromeos {
 
 // A dialog box for requesting PIN code. Instances of this class are managed by
 // SecurityTokenPinDialogHostPopupImpl.
@@ -48,7 +46,7 @@ class RequestPinView final : public views::DialogDelegateView,
   // |pin_entered_callback| - called every time the user submits the input.
   // |view_destruction_callback| - called by the destructor.
   RequestPinView(const std::string& extension_name,
-                 security_token_pin::CodeType code_type,
+                 chromeos::security_token_pin::CodeType code_type,
                  int attempts_left,
                  const PinEnteredCallback& pin_entered_callback,
                  ViewDestructionCallback view_destruction_callback);
@@ -73,8 +71,8 @@ class RequestPinView final : public views::DialogDelegateView,
   //     have to enter correct code.
   // |accept_input| - specifies whether the textfield is enabled. If disabled
   //     the user is unable to provide input.
-  void SetDialogParameters(security_token_pin::CodeType code_type,
-                           security_token_pin::ErrorLabel error_label,
+  void SetDialogParameters(chromeos::security_token_pin::CodeType code_type,
+                           chromeos::security_token_pin::ErrorLabel error_label,
                            int attempts_left,
                            bool accept_input);
 
@@ -91,7 +89,7 @@ class RequestPinView final : public views::DialogDelegateView,
   // This initializes the view, with all the UI components.
   void Init();
   void SetAcceptInput(bool accept_input);
-  void SetErrorMessage(security_token_pin::ErrorLabel error_label,
+  void SetErrorMessage(chromeos::security_token_pin::ErrorLabel error_label,
                        int attempts_left,
                        bool accept_input);
   // Updates the header text |header_label_| based on values from
@@ -114,6 +112,4 @@ class RequestPinView final : public views::DialogDelegateView,
   base::WeakPtrFactory<RequestPinView> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
-
-#endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_REQUEST_PIN_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_NOTIFICATIONS_REQUEST_PIN_VIEW_CHROMEOS_H_

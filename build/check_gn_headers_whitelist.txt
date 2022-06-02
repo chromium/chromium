@@ -31,7 +31,6 @@ chrome/browser/ash/certificate_provider/thread_safe_certificate_map.h
 chrome/browser/ash/login/signin/oauth2_login_manager.h
 chrome/browser/ash/login/signin/oauth2_login_verifier.h
 chrome/browser/ash/login/signin/oauth2_token_fetcher.h
-chrome/browser/ash/notifications/request_pin_view.h
 chrome/browser/ash/profiles/profile_helper.h
 chrome/browser/ash/settings/cros_settings.h
 chrome/browser/component_updater/component_installer_errors.h

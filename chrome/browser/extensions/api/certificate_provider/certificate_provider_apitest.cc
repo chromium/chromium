@@ -31,11 +31,11 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension.h"
-#include "chrome/browser/ash/notifications/request_pin_view.h"
 #include "chrome/browser/extensions/api/certificate_provider/certificate_provider_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/notifications/request_pin_view_chromeos.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -532,7 +532,7 @@ class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
         browser(), extension_->GetResourceURL(test_page_file_name)));
   }
 
-  chromeos::RequestPinView* GetActivePinDialogView() {
+  RequestPinView* GetActivePinDialogView() {
     return cert_provider_service_->pin_dialog_manager()
         ->default_dialog_host_for_testing()
         ->active_view_for_testing();

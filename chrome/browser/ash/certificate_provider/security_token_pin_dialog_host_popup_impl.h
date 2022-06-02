@@ -15,9 +15,9 @@ namespace views {
 class Widget;
 }  // namespace views
 
-namespace chromeos {
-
 class RequestPinView;
+
+namespace chromeos {
 
 // The default implementation of the PIN dialog host. It renders the PIN dialog
 // as a popup with the RequestPinView view.
