@@ -2365,7 +2365,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithURLInCommandLineTest,
   EXPECT_EQ(GetUrl3(), tab_strip_model->GetWebContentsAt(2)->GetURL());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // This test does not apply to ChromeOS as ChromeOS does not consider command
 // line urls while determining startup tabs.
 IN_PROC_BROWSER_TEST_F(SessionRestoreWithURLInCommandLineTest,
@@ -2391,7 +2391,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithURLInCommandLineTest,
   EXPECT_EQ(command_line_url_, tab_strip_model->GetWebContentsAt(1)->GetURL());
   EXPECT_EQ(1, tab_strip_model->active_index());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class MultiOriginSessionRestoreTest : public SessionRestoreTest {
  public:

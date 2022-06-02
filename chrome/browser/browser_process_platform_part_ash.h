@@ -8,12 +8,10 @@
 #include <memory>
 
 #include "base/sequence_checker.h"
-#include "chrome/browser/browser_process_platform_part_base.h"
+#include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 
-class Browser;
 class BrowserProcessPlatformPartTestApi;
 class Profile;
 
@@ -41,7 +39,7 @@ class BrowserPolicyConnectorAsh;
 
 class ScopedKeepAlive;
 
-class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
+class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
  public:
   BrowserProcessPlatformPart();
 
@@ -130,38 +128,12 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
     return in_session_password_change_manager_.get();
   }
 
+ protected:
+  // BrowserProcessPlatformPartChromeOS:
+  bool CanRestoreUrlsForProfile(const Profile* profile) const override;
+
  private:
   friend class BrowserProcessPlatformPartTestApi;
-
-  // An observer that restores urls based on the on startup setting after a new
-  // browser is added to the BrowserList.
-  class BrowserRestoreObserver : public BrowserListObserver {
-   public:
-    BrowserRestoreObserver();
-
-    ~BrowserRestoreObserver() override;
-
-   protected:
-    // BrowserListObserver:
-    void OnBrowserAdded(Browser* browser) override;
-
-   private:
-    // Returns true, if the url defined in the on startup setting should be
-    // opened. Otherwise, returns false.
-    bool ShouldRestoreUrls(Browser* browser) const;
-
-    // Returns true, if the url defined in the on startup setting should be
-    // opened in a new browser. Otherwise, returns false.
-    bool ShouldOpenUrlsInNewBrowser(Browser* browser) const;
-
-    // Restores urls based on the on startup setting.
-    void RestoreUrls(Browser* browser);
-
-    // Called when a session is restored.
-    void OnSessionRestoreDone(Profile* profile, int num_tabs_restored);
-
-    base::CallbackListSubscription on_session_restored_callback_subscription_;
-  };
 
   void CreateProfileHelper();
 
@@ -205,8 +177,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   std::unique_ptr<ash::SchedulerConfigurationManager>
       scheduler_configuration_manager_;
-
-  BrowserRestoreObserver browser_restore_observer;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

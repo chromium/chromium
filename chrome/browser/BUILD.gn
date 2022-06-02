@@ -5504,6 +5504,8 @@ static_library("browser") {
       "apps/intent_helper/supported_links_infobar_prefs_service.h",
       "apps/intent_helper/supported_links_infobar_prefs_service_factory.cc",
       "apps/intent_helper/supported_links_infobar_prefs_service_factory.h",
+      "browser_process_platform_part_chromeos.cc",
+      "browser_process_platform_part_chromeos.h",
       "certificate_provider/certificate_info.cc",
       "certificate_provider/certificate_info.h",
       "certificate_provider/certificate_provider.h",

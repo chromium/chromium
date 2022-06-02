@@ -2416,6 +2416,7 @@ if (!is_android) {
         "//components/account_manager_core:test_support",
       ]
       sources += [
+        "../browser/browser_process_platform_part_chromeos_browsertest.cc",
         "../browser/certificate_provider/test_certificate_provider_extension_mixin.cc",
         "../browser/certificate_provider/test_certificate_provider_extension_mixin.h",
         "../browser/download/notification/download_notification_browsertest.cc",

@@ -13,6 +13,9 @@
 #include "chrome/browser/browser_process_platform_part_android.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/browser_process_platform_part_chromeos.h"
+class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {};
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process_platform_part_mac.h"
 #elif BUILDFLAG(IS_WIN)
