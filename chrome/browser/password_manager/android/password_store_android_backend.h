@@ -64,11 +64,9 @@ class PasswordStoreAndroidBackend
 
     JobReturnHandler();
     JobReturnHandler(LoginsOrErrorReply callback,
-                     PasswordStoreBackendMetricsRecorder metrics_recorder,
-                     base::OnceClosure crash_dump_callback);
+                     PasswordStoreBackendMetricsRecorder metrics_recorder);
     JobReturnHandler(PasswordStoreChangeListReply callback,
-                     PasswordStoreBackendMetricsRecorder metrics_recorder,
-                     base::OnceClosure crash_dump_callback);
+                     PasswordStoreBackendMetricsRecorder metrics_recorder);
     JobReturnHandler(JobReturnHandler&&);
     JobReturnHandler& operator=(JobReturnHandler&&);
     ~JobReturnHandler();
@@ -85,14 +83,11 @@ class PasswordStoreAndroidBackend
 
     void RecordMetrics(absl::optional<AndroidBackendError> error) const;
     base::TimeDelta GetElapsedTimeSinceStart() const;
-    // TODO(crbug.com/1324588): Remove after disabling crash dumps.
-    void SendCrashDump();
 
    private:
     absl::variant<LoginsOrErrorReply, PasswordStoreChangeListReply>
         success_callback_;
     PasswordStoreBackendMetricsRecorder metrics_recorder_;
-    base::OnceClosure crash_dump_callback_;
   };
 
   using JobId = PasswordStoreAndroidBackendBridge::JobId;
@@ -153,14 +148,8 @@ class PasswordStoreAndroidBackend
   void OnError(PasswordStoreAndroidBackendBridge::JobId job_id,
                AndroidBackendError error) override;
 
-  // TODO(crbug.com/1324588): Remove signon_realm and origin after disabling
-  // crash dumps.
   template <typename Callback>
-  void QueueNewJob(JobId job_id,
-                   Callback callback,
-                   MetricInfix metric_infix,
-                   absl::optional<std::string> signon_realm,
-                   absl::optional<std::string> origin);
+  void QueueNewJob(JobId job_id, Callback callback, MetricInfix metric_infix);
   absl::optional<JobReturnHandler> GetAndEraseJob(JobId job_id);
 
   // Gets logins matching |form|.
