@@ -311,7 +311,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   if (!expected_file.empty()) {
     expected_lines = test_helper_.LoadExpectationFile(expected_file);
   }
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
   else {
     LOG(INFO) << "No expectation file present, ignoring test on this "
                  "platform.";
