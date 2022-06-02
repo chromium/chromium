@@ -63,6 +63,10 @@ viz::DirectRenderer::DrawingFrame::current_render_pass
 TabGroupViews::header_
 TabGroupViews::underline_
 TabGroupViews::highlight_
+views::LayoutManager::view_setting_visibility_on_
+FullscreenController::deactivated_contents_
+content::RenderWidgetHostInputEventRouter::touch_target_
+content::RenderWidgetHostInputEventRouter::touchpad_gesture_target_
 
 # Populated manually - incompatibilities with tracing in not-rewritten platform specific code
 TabStripModelChange::RemovedTab::contents
