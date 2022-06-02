@@ -73,9 +73,16 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_mp3) {
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_mp4) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  ExecuteTest("testMp4Variants(true)");  // has_proprietary_codecs=true
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+  ExecuteTest("testMp4Variants(true, true)");  // has_proprietary_codecs=true
+                                               // platform_guarantees_hevc=true
 #else
-  ExecuteTest("testMp4Variants(false)");  // has_proprietary_codecs=false
+  ExecuteTest(
+      "testMp4Variants(true, false)");  // has_proprietary_codecs=true
+                                        // platform_guarantees_hevc=false
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#else
+  ExecuteTest("testMp4Variants(false, false)");  // has_proprietary_codecs=false
 #endif
 }
 

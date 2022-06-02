@@ -6564,6 +6564,24 @@
             ]
         }
     ],
+    "PlatformHEVCDecoderSupport": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PlatformHEVCDecoderSupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "PostTaskFocusTab": [
         {
             "platforms": [
