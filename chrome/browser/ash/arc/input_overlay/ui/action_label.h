@@ -13,6 +13,9 @@
 
 namespace arc {
 namespace input_overlay {
+
+constexpr char kUnknownBind[] = "?";
+
 // TODO(cuicuiruan): Currently, it shows the dom_code.
 // Will replace it with showing the result of dom_key / keyboard key depending
 // on different keyboard layout.
@@ -65,6 +68,8 @@ class ActionLabel : public views::LabelButton {
   void SetToEditError();
   // In edit mode when the input is unbound.
   void SetToEditUnBind();
+
+  bool IsUnbound();
 
   MouseAction mouse_action_ = MouseAction::NONE;
 };

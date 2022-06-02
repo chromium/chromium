@@ -79,7 +79,7 @@ constexpr char kCap[] = "cap";
 std::string GetDisplayText(const ui::DomCode code) {
   switch (code) {
     case ui::DomCode::NONE:
-      return "?";
+      return kUnknownBind;
     case ui::DomCode::ARROW_LEFT:
       return kLeftArrow;
     case ui::DomCode::ARROW_RIGHT:
@@ -319,8 +319,13 @@ void ActionLabel::SetToEditDefault() {
   label()->SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL, kFontSize,
                                      gfx::Font::Weight::BOLD));
   views::FocusRing::Get(this)->SetColor(absl::nullopt);
-  SetBackground(
-      views::CreateRoundedRectBackground(kEditModeBgColor, kCornerRadiusView));
+  if (IsUnbound()) {
+    SetBackground(views::CreateRoundedRectBackground(kEditedUnboundBgColor,
+                                                     kCornerRadiusView));
+  } else {
+    SetBackground(views::CreateRoundedRectBackground(kEditModeBgColor,
+                                                     kCornerRadiusView));
+  }
 }
 
 void ActionLabel::SetToEditHover() {
@@ -328,12 +333,18 @@ void ActionLabel::SetToEditHover() {
 }
 
 void ActionLabel::SetToEditFocus() {
-  views::FocusRing::Get(this)->SetColor(kFocusRingBlueColor);
   label()->SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL, kFontSize,
                                      gfx::Font::Weight::BOLD));
   SetPreferredSize(CalculatePreferredSize());
-  SetBackground(
-      views::CreateRoundedRectBackground(kEditModeBgColor, kCornerRadiusView));
+  if (IsUnbound()) {
+    views::FocusRing::Get(this)->SetColor(kFocusRingRedColor);
+    SetBackground(views::CreateRoundedRectBackground(kEditedUnboundBgColor,
+                                                     kCornerRadiusView));
+  } else {
+    views::FocusRing::Get(this)->SetColor(kFocusRingBlueColor);
+    SetBackground(views::CreateRoundedRectBackground(kEditModeBgColor,
+                                                     kCornerRadiusView));
+  }
 }
 
 void ActionLabel::SetToEditError() {
@@ -344,6 +355,10 @@ void ActionLabel::SetToEditUnBind() {
   SetPreferredSize(CalculatePreferredSize());
   SetBackground(views::CreateRoundedRectBackground(kEditedUnboundBgColor,
                                                    kCornerRadiusView));
+}
+
+bool ActionLabel::IsUnbound() {
+  return base::UTF16ToUTF8(GetText()) == kUnknownBind;
 }
 
 }  // namespace input_overlay

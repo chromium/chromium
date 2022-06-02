@@ -33,7 +33,7 @@ std::unique_ptr<ActionLabel> CreateActionLabel(InputElement& input_element) {
   } else if (IsMouseBound(input_element)) {
     label = ActionLabel::CreateImageActionLabel(input_element.mouse_action());
   } else {
-    label = ActionLabel::CreateTextActionLabel("?");
+    label = ActionLabel::CreateTextActionLabel(kUnknownBind);
   }
   return label;
 }
