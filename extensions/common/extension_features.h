@@ -37,6 +37,8 @@ extern const base::Feature kExtensionDynamicURLRedirection;
 
 extern const base::Feature kExtensionsMenuAccessControl;
 
+extern const base::Feature kAvoidEarlyExtensionScriptContextCreation;
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

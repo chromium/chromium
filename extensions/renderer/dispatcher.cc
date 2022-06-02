@@ -450,7 +450,7 @@ void Dispatcher::DidCreateScriptContext(
   if (!frame_helper)
     return;  // The frame is invisible to extensions.
 
-  frame_helper->set_did_create_script_context();
+  frame_helper->NotifyDidCreateScriptContext(world_id);
 }
 
 void Dispatcher::DidInitializeServiceWorkerContextOnWorkerThread(
