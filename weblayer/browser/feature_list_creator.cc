@@ -56,6 +56,36 @@ void FeatureListCreator::SetSystemNetworkContextManager(
   system_network_context_manager_ = system_network_context_manager;
 }
 
+void FeatureListCreator::CreateFeatureListAndFieldTrials() {
+#if BUILDFLAG(IS_ANDROID)
+  WebLayerMetricsServiceClient::GetInstance()->Initialize(local_state_);
+#endif
+  SetUpFieldTrials();
+}
+
+void FeatureListCreator::PerformPreMainMessageLoopStartup() {
+#if BUILDFLAG(IS_ANDROID)
+  // It is expected this is called after SetUpFieldTrials().
+  DCHECK(variations_service_);
+  variations_service_->PerformPreMainMessageLoopStartup();
+#endif
+}
+
+void FeatureListCreator::OnBrowserFragmentStarted() {
+  if (has_browser_fragment_started_)
+    return;
+
+  has_browser_fragment_started_ = true;
+  // It is expected this is called after SetUpFieldTrials().
+  DCHECK(variations_service_);
+
+  // This function is called any time a BrowserFragment is started.
+  // OnAppEnterForeground() really need only be called once, and because our
+  // notion of a fragment doesn't really map to the Application as a whole,
+  // call this function once.
+  variations_service_->OnAppEnterForeground();
+}
+
 void FeatureListCreator::SetUpFieldTrials() {
 #if BUILDFLAG(IS_ANDROID)
   // The FieldTrialList should have been instantiated in
@@ -85,36 +115,6 @@ void FeatureListCreator::SetUpFieldTrials() {
 #else
   // TODO(weblayer-dev): Support variations on desktop.
 #endif
-}
-
-void FeatureListCreator::CreateFeatureListAndFieldTrials() {
-#if BUILDFLAG(IS_ANDROID)
-  WebLayerMetricsServiceClient::GetInstance()->Initialize(local_state_);
-#endif
-  SetUpFieldTrials();
-}
-
-void FeatureListCreator::PerformPreMainMessageLoopStartup() {
-#if BUILDFLAG(IS_ANDROID)
-  // It is expected this is called after SetUpFieldTrials().
-  DCHECK(variations_service_);
-  variations_service_->PerformPreMainMessageLoopStartup();
-#endif
-}
-
-void FeatureListCreator::OnBrowserFragmentStarted() {
-  if (has_browser_fragment_started_)
-    return;
-
-  has_browser_fragment_started_ = true;
-  // It is expected this is called after SetUpFieldTrials().
-  DCHECK(variations_service_);
-
-  // This function is called any time a BrowserFragment is started.
-  // OnAppEnterForeground() really need only be called once, and because our
-  // notion of a fragment doesn't really map to the Application as a whole,
-  // call this function once.
-  variations_service_->OnAppEnterForeground();
 }
 
 }  // namespace weblayer

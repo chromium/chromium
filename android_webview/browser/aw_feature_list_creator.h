@@ -11,10 +11,10 @@
 #include "android_webview/browser/aw_browser_policy_connector.h"
 #include "android_webview/browser/aw_field_trials.h"
 #include "android_webview/browser/variations/aw_variations_service_client.h"
-#include "base/metrics/field_trial.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
-#include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_field_trial_creator.h"
+
+class PrefService;
 
 namespace android_webview {
 
