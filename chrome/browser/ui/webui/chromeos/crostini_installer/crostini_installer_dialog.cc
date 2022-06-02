@@ -10,12 +10,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/devicetype_utils.h"
 
@@ -90,9 +92,16 @@ void CrostiniInstallerDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
   params->z_order = ui::ZOrderLevel::kNormal;
 
-  const ash::ShelfID shelf_id(crostini::kCrostiniInstallerShelfId);
+  const ash::ShelfID shelf_id(Id());
   params->init_properties_container.SetProperty(ash::kShelfIDKey,
                                                 shelf_id.Serialize());
+  params->init_properties_container.SetProperty<int>(ash::kShelfItemTypeKey,
+                                                     ash::TYPE_DIALOG);
+
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  params->init_properties_container.SetProperty(
+      aura::client::kAppIconKey,
+      rb.GetImageNamed(IDR_LOGO_CROSTINI_DEFAULT).AsImageSkia());
 }
 
 bool CrostiniInstallerDialog::OnDialogCloseRequested() {

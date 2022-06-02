@@ -8,15 +8,16 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace {
 // The dialog content area size. Note that the height is less than the design
@@ -96,9 +97,16 @@ void CrostiniUpgraderDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
   params->z_order = ui::ZOrderLevel::kNormal;
 
-  const ash::ShelfID shelf_id(crostini::kCrostiniUpgraderShelfId);
+  const ash::ShelfID shelf_id(Id());
   params->init_properties_container.SetProperty(ash::kShelfIDKey,
                                                 shelf_id.Serialize());
+  params->init_properties_container.SetProperty<int>(ash::kShelfItemTypeKey,
+                                                     ash::TYPE_DIALOG);
+
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  params->init_properties_container.SetProperty(
+      aura::client::kAppIconKey,
+      rb.GetImageNamed(IDR_LOGO_CROSTINI_DEFAULT).AsImageSkia());
 }
 
 void CrostiniUpgraderDialog::SetDeletionClosureForTesting(
