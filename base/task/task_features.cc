@@ -63,6 +63,6 @@ const BASE_EXPORT Feature kExplicitHighResolutionTimerWin = {
     "ExplicitHighResolutionTimerWin", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const BASE_EXPORT Feature kRunTasksByBatches = {
-    "RunThreadControllerTasksByBatches", base::FEATURE_DISABLED_BY_DEFAULT};
+    "RunTasksByBatches", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace base
