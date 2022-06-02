@@ -33,6 +33,7 @@ external/wpt/html/browsers/browsing-the-web/back-forward-cache/pushstate.https.h
 external/wpt/html/browsers/browsing-the-web/back-forward-cache/service-worker-clients-matchall.https.html [ Skip ]
 external/wpt/html/browsers/browsing-the-web/back-forward-cache/service-worker-controlled-after-restore.https.html [ Skip ]
 external/wpt/html/browsers/browsing-the-web/back-forward-cache/service-worker-unregister.https.html [ Skip ]
+external/wpt/html/browsers/browsing-the-web/back-forward-cache/storage-events.html [ Skip ]
 external/wpt/html/browsers/browsing-the-web/back-forward-cache/timers.html [ Skip ]
 external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html [ Skip ]
 external/wpt/inert/dynamic-inert-on-focused-element.html [ Skip ]
