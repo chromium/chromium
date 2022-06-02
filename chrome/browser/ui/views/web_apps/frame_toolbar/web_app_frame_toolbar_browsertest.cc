@@ -260,6 +260,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
   const SkColor original_ink_drop_color =
       views::InkDrop::Get(app_menu_button)->GetBaseColor();
 
+  // Change the theme-color.
   {
     content::ThemeChangeWaiter theme_change_waiter(web_contents);
     EXPECT_TRUE(content::ExecJs(web_contents,
@@ -271,10 +272,12 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
               original_ink_drop_color);
   }
 
+  // Change the theme-color back to its original one.
   {
     content::ThemeChangeWaiter theme_change_waiter(web_contents);
-    EXPECT_TRUE(content::ExecJs(
-        web_contents, "document.getElementById('theme-color').remove()"));
+    EXPECT_TRUE(content::ExecJs(web_contents,
+                                "document.getElementById('theme-color')."
+                                "setAttribute('content', '#ace')"));
     theme_change_waiter.Wait();
 
     EXPECT_EQ(views::InkDrop::Get(app_menu_button)->GetBaseColor(),
