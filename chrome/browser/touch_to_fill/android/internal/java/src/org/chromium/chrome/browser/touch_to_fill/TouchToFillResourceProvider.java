@@ -15,6 +15,19 @@ import androidx.annotation.DrawableRes;
 interface TouchToFillResourceProvider {
     /**
      * Returns the drawable id to be displayed as a bottom sheet header image.
+     *
+     * @return A {@link DrawableRes} that is never 0.
      */
     public @DrawableRes int getHeaderImageDrawableId();
+
+    /**
+     * Returns the drawable id to be displayed beside a WebAuthn credential.
+     *
+     * @return A {@link DrawableRes} that is never 0.
+     */
+    public default @DrawableRes int getWebAuthnIconId() {
+        /* TODO(https://crbug.com/1331066): Remove the default method
+         * implementation as soon as a downstream update is landed. */
+        return R.drawable.touch_to_fill_webauthn_icon;
+    }
 }

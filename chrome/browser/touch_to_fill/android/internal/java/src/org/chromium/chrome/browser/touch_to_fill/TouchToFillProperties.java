@@ -89,11 +89,14 @@ class TouchToFillProperties {
         static final PropertyModel
                 .ReadableObjectPropertyKey<WebAuthnCredential> WEBAUTHN_CREDENTIAL =
                 new PropertyModel.ReadableObjectPropertyKey<>("webauthn_credential");
+        static final PropertyModel.ReadableIntPropertyKey WEBAUTHN_ICON =
+                new PropertyModel.ReadableIntPropertyKey("webauthn_icon");
         static final PropertyModel.ReadableObjectPropertyKey<Callback<WebAuthnCredential>>
                 ON_WEBAUTHN_CLICK_LISTENER =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_webauthn_click_listener");
 
-        static final PropertyKey[] ALL_KEYS = {WEBAUTHN_CREDENTIAL, ON_WEBAUTHN_CLICK_LISTENER};
+        static final PropertyKey[] ALL_KEYS = {
+                WEBAUTHN_CREDENTIAL, WEBAUTHN_ICON, ON_WEBAUTHN_CLICK_LISTENER};
 
         private WebAuthnCredentialProperties() {}
     }

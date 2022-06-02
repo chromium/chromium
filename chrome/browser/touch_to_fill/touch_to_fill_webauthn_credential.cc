@@ -5,9 +5,12 @@
 #include "chrome/browser/touch_to_fill/touch_to_fill_webauthn_credential.h"
 
 TouchToFillWebAuthnCredential::TouchToFillWebAuthnCredential(
-    const std::u16string& username,
-    const std::string& backend_id)
-    : username_(username), backend_id_(backend_id) {}
+    const Username& username,
+    const DisplayName& display_name,
+    const BackendId& backend_id)
+    : username_(username),
+      display_name_(display_name),
+      backend_id_(backend_id) {}
 
 TouchToFillWebAuthnCredential::~TouchToFillWebAuthnCredential() = default;
 
@@ -24,7 +27,9 @@ TouchToFillWebAuthnCredential& TouchToFillWebAuthnCredential::operator=(
 bool operator==(const TouchToFillWebAuthnCredential& lhs,
                 const TouchToFillWebAuthnCredential& rhs) {
   auto tie = [](const TouchToFillWebAuthnCredential& cred) {
-    return std::make_tuple(std::cref(cred.username()), std::cref(cred.id()));
+    return std::make_tuple(std::cref(cred.username()),
+                           std::cref(cred.display_name()),
+                           std::cref(cred.id()));
   };
 
   return tie(lhs) == tie(rhs);
