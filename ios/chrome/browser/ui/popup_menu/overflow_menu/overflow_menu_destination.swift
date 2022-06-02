@@ -8,4 +8,7 @@ import SwiftUI
 @objcMembers public class OverflowMenuDestination: OverflowMenuItem {
   // Whether the destination should show a badge.
   public var showBadge: Bool = false
+
+  /// The uniquely-identifying name of the destination.
+  public var destinationName: String = ""
 }

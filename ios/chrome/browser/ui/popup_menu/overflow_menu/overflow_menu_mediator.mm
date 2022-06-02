@@ -807,12 +807,15 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     handler();
   };
 
-  return [[OverflowMenuDestination alloc]
+  OverflowMenuDestination* result = [[OverflowMenuDestination alloc]
                  initWithName:name
                       uiImage:[UIImage imageNamed:imageName]
       accessibilityIdentifier:accessibilityID
            enterpriseDisabled:NO
                       handler:handlerWithMetrics];
+  result.destinationName = base::SysUTF8ToNSString(
+      overflow_menu::StringNameForDestination(destination));
+  return result;
 }
 
 // Make sure the model to match the current page state.
@@ -832,6 +835,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     self.siteInfoDestination,
     self.settingsDestination,
   ];
+
+  if (IsSmartSortingNewOverflowMenuEnabled()) {
+    baseDestinations = [self.destinationUsageHistory
+        generateDestinationsList:baseDestinations];
+  }
 
   self.overflowMenuModel.destinations = [baseDestinations
       filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(

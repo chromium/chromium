@@ -7,7 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/values.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 
 class PrefService;
 
@@ -21,6 +23,17 @@ class PrefService;
 
 // Records a destination click from the overflow menu carousel.
 - (void)trackDestinationClick:(overflow_menu::Destination)destination;
+
+// Returns a frecency-sorted list of OverflowMenuDestination* given an unsorted
+// list |unrankedDestinations|.
+- (NSArray<OverflowMenuDestination*>*)generateDestinationsList:
+    (NSArray<OverflowMenuDestination*>*)unrankedDestinations;
+
+// [For testing only] Ingests given |ranking| and returns new ranking
+// by running frecency algorithm on internally-managed destination usage
+// history.
+- (std::vector<overflow_menu::Destination>)updatedRankWithCurrentRanking:
+    (std::vector<overflow_menu::Destination>&)previousRanking;
 
 // Designated initializer. Initializes with |prefService|.
 - (instancetype)initWithPrefService:(PrefService*)prefService
