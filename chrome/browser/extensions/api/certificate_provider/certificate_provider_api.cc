@@ -103,25 +103,23 @@ class RequestPinExceptFirstQuotaBucketMapper final
       const RequestPinExceptFirstQuotaBucketMapper&) = delete;
   ~RequestPinExceptFirstQuotaBucketMapper() override = default;
 
-  void GetBucketsForArgs(const base::Value* args,
+  void GetBucketsForArgs(const base::Value::List& args,
                          QuotaLimitHeuristic::BucketList* buckets) override {
-    DCHECK(args->is_list());
-    if (args->GetListDeprecated().empty())
+    if (args.empty())
       return;
-    const base::Value& details = args->GetListDeprecated()[0];
-    if (!details.is_dict())
+    const base::Value::Dict* details = args.front().GetIfDict();
+    if (!details)
       return;
-    const base::Value* sign_request_id =
-        details.FindKeyOfType("signRequestId", base::Value::Type::INTEGER);
-    if (!sign_request_id)
+    absl::optional<int> sign_request_id = details->FindInt("signRequestId");
+    if (!sign_request_id.has_value())
       return;
-    if (sign_request_id->GetInt() > biggest_request_id_) {
+    if (*sign_request_id > biggest_request_id_) {
       // Either it's the first request with the newly issued requestId, or it's
       // an invalid requestId (bigger than the real one). Return a new bucket in
       // order to apply no quota for the former case; for the latter case the
       // quota doesn't matter much, except that we're maybe making it stricter
       // for future requests (which is bearable).
-      biggest_request_id_ = sign_request_id->GetInt();
+      biggest_request_id_ = *sign_request_id;
       new_request_bucket_ = std::make_unique<QuotaLimitHeuristic::Bucket>();
       buckets->push_back(new_request_bucket_.get());
       return;

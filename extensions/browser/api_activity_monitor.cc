@@ -12,7 +12,7 @@ namespace activity_monitor {
 namespace {
 
 Monitor g_event_monitor = nullptr;
-MonitorListValue g_function_monitor = nullptr;
+Monitor g_function_monitor = nullptr;
 WebRequestMonitor g_web_request_monitor = nullptr;
 
 }  // namespace
@@ -21,7 +21,7 @@ Monitor GetApiEventMonitor() {
   return g_event_monitor;
 }
 
-MonitorListValue GetApiFunctionMonitor() {
+Monitor GetApiFunctionMonitor() {
   return g_function_monitor;
 }
 
@@ -33,7 +33,7 @@ void SetApiEventMonitor(Monitor event_monitor) {
   g_event_monitor = event_monitor;
 }
 
-void SetApiFunctionMonitor(MonitorListValue function_monitor) {
+void SetApiFunctionMonitor(Monitor function_monitor) {
   g_function_monitor = function_monitor;
 }
 
@@ -53,7 +53,7 @@ void OnApiEventDispatched(content::BrowserContext* browser_context,
 void OnApiFunctionCalled(content::BrowserContext* browser_context,
                          const std::string& extension_id,
                          const std::string& api_name,
-                         const base::ListValue& args) {
+                         const base::Value::List& args) {
   if (g_function_monitor)
     g_function_monitor(browser_context, extension_id, api_name, args);
 }

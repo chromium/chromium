@@ -842,7 +842,7 @@ void NativeExtensionBindingsSystem::SendRequest(
 
   auto params = mojom::RequestParams::New();
   params->name = request->method_name;
-  base::Value args(std::move(*request->arguments_list).TakeListDeprecated());
+  base::Value::List args = std::move(request->arguments_list->GetList());
   params->arguments = std::move(args);
   params->extension_id = script_context->GetExtensionID();
   params->source_url = url;

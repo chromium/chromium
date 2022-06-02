@@ -114,7 +114,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Basic) {
   EXPECT_EQ("idle.queryState", last_params().name);
   EXPECT_EQ(extension->url(), last_params().source_url);
   EXPECT_TRUE(last_params().has_callback);
-  EXPECT_EQ(last_params().arguments, *DeprecatedListValueFromString("[30]"));
+  EXPECT_EQ(last_params().arguments, ListValueFromString("[30]"));
 
   // Respond and validate.
   bindings_system()->HandleResponse(last_params().request_id, true,
@@ -352,7 +352,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestBridgingToJSCustomBindings) {
   EXPECT_EQ("idle.setDetectionInterval", last_params().name);
   EXPECT_EQ(extension->url(), last_params().source_url);
   EXPECT_FALSE(last_params().has_callback);
-  EXPECT_EQ(last_params().arguments, *DeprecatedListValueFromString("[50]"));
+  EXPECT_EQ(last_params().arguments, ListValueFromString("[50]"));
 }
 
 TEST_F(NativeExtensionBindingsSystemUnittest, TestSendRequestHook) {
@@ -395,7 +395,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestSendRequestHook) {
   EXPECT_EQ("idle.queryState", last_params().name);
   EXPECT_EQ(extension->url(), last_params().source_url);
   EXPECT_TRUE(last_params().has_callback);
-  EXPECT_EQ(last_params().arguments, *DeprecatedListValueFromString("[30]"));
+  EXPECT_EQ(last_params().arguments, ListValueFromString("[30]"));
 }
 
 // Tests that we can notify the browser as event listeners are added or removed.

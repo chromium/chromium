@@ -55,7 +55,7 @@ namespace {
 // called. May be called from any thread.
 void NotifyApiFunctionCalled(const std::string& extension_id,
                              const std::string& api_name,
-                             const base::ListValue& args,
+                             const base::Value::List& args,
                              content::BrowserContext* browser_context) {
   activity_monitor::OnApiFunctionCalled(browser_context, extension_id, api_name,
                                         args);
@@ -373,15 +373,14 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
 
   ExtensionSystem* extension_system = ExtensionSystem::Get(browser_context_);
   QuotaService* quota = extension_system->quota_service();
-  std::string violation_error = quota->Assess(
-      extension->id(), function.get(),
-      &base::Value::AsListValue(params.arguments), base::TimeTicks::Now());
+  std::string violation_error =
+      quota->Assess(extension->id(), function.get(), params.arguments,
+                    base::TimeTicks::Now());
 
   if (violation_error.empty()) {
     // See crbug.com/39178.
     ExtensionsBrowserClient::Get()->PermitExternalProtocolHandler();
-    NotifyApiFunctionCalled(extension->id(), params.name,
-                            base::Value::AsListValue(params.arguments),
+    NotifyApiFunctionCalled(extension->id(), params.name, params.arguments,
                             browser_context_);
 
     // Note: Deliberately don't include external component extensions here -
@@ -523,7 +522,7 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
     return nullptr;
   }
 
-  function->SetArgs(params.arguments.Clone());
+  function->SetArgs(base::Value(params.arguments.Clone()));
 
   const Feature::Context context_type = process_map.GetMostLikelyContextType(
       extension, requesting_process_id, rfh_url);
