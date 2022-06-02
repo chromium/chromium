@@ -30,8 +30,6 @@ mojom("compositing") {
     "//ui/latency/mojom",
   ]
 
-  parser_deps = [ "//components/viz/common" ]
-
   traits_public_deps = [
     "//components/viz/common",
     "//ui/base:features",
