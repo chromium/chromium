@@ -98,6 +98,10 @@ const CGFloat kFontSize = 14.0;
       [self resizeableBackgroundImageForStateSelected:YES];
 }
 
+- (BOOL)hasIdentifier:(NSString*)identifier {
+  return [self.itemIdentifier isEqualToString:identifier];
+}
+
 #pragma mark - UIView
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {

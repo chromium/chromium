@@ -120,7 +120,7 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
                                 forIndexPath:indexPath]);
 
   [self configureCell:cell withItem:item];
-  cell.selected = (self.selectedItemID == cell.itemIdentifier) ? YES : NO;
+  cell.selected = [cell hasIdentifier:self.selectedItemID];
   return cell;
 }
 
@@ -185,7 +185,7 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
 }
 
 - (void)selectItemWithID:(NSString*)selectedItemID {
-  if (self.selectedItemID == selectedItemID)
+  if ([self.selectedItemID isEqualToString:selectedItemID])
     return;
 
   [self.collectionView
@@ -223,10 +223,10 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
                   completion:^(UIImage* icon) {
                     // Only update the icon if the cell is not
                     // already reused for another item.
-                    if (cell.itemIdentifier == itemIdentifier)
+                    if ([cell hasIdentifier:itemIdentifier])
                       cell.faviconView.image = icon;
                   }];
-    cell.selected = (cell.itemIdentifier == self.selectedItemID) ? YES : NO;
+    cell.selected = [cell hasIdentifier:self.selectedItemID];
   }
 }
 

@@ -47,6 +47,9 @@ typedef NS_ENUM(NSUInteger, GridCellState) {
 @property(nonatomic, assign) GridCellState state;
 @property(nonatomic, weak) PriceCardView* priceCardView;
 
+// Checks if cell has a specific identifier.
+- (BOOL)hasIdentifier:(NSString*)identifier;
+
 // Sets the price drop and displays the PriceViewCard.
 - (void)setPriceDrop:(NSString*)price previousPrice:(NSString*)previousPrice;
 

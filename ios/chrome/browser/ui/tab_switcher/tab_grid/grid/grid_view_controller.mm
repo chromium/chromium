@@ -405,7 +405,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // change to the other properties such as center, bounds, etc.
     attributes.frame = [self.collectionView convertRect:attributes.frame
                                                  toView:nil];
-    if ([cell.itemIdentifier isEqualToString:self.selectedItemID]) {
+    if ([cell hasIdentifier:self.selectedItemID]) {
       GridTransitionCell* activeCell =
           [GridTransitionCell transitionCellFromCell:cell];
       activeItem = [GridTransitionActiveItem itemWithCell:activeCell
@@ -413,7 +413,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                                      size:attributes.size];
       // If the active item is the last inserted item, it needs to be animated
       // differently.
-      if ([cell.itemIdentifier isEqualToString:self.lastInsertedItemID])
+      if ([cell hasIdentifier:self.lastInsertedItemID])
         activeItem.isAppearing = YES;
       selectionItem = [GridTransitionItem
           itemWithCell:[GridTransitionSelectionCell transitionCellFromCell:cell]
@@ -1118,7 +1118,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)selectItemWithID:(NSString*)selectedItemID {
-  if (self.selectedItemID == selectedItemID)
+  if ([self.selectedItemID isEqualToString:selectedItemID])
     return;
 
   [self.collectionView
@@ -1395,16 +1395,17 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                   completion:^(UIImage* icon) {
                                     // Only update the icon if the cell is not
                                     // already reused for another item.
-                                    if (cell.itemIdentifier == itemIdentifier)
+                                    if ([cell hasIdentifier:itemIdentifier])
                                       cell.icon = icon;
                                   }];
+
+  __weak __typeof(self) weakSelf = self;
   [self.imageDataSource snapshotForIdentifier:itemIdentifier
                                    completion:^(UIImage* snapshot) {
                                      // Only update the icon if the cell is not
                                      // already reused for another item.
-                                     if (cell.itemIdentifier ==
-                                         itemIdentifier) {
-                                       if (self.thumbStripEnabled) {
+                                     if ([cell hasIdentifier:itemIdentifier]) {
+                                       if (weakSelf.thumbStripEnabled) {
                                          [cell fadeInSnapshot:snapshot];
                                        } else {
                                          cell.snapshot = snapshot;
@@ -1415,13 +1416,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self.priceCardDataSource
         priceCardForIdentifier:itemIdentifier
                     completion:^(PriceCardItem* priceCardItem) {
-                      if (priceCardItem &&
-                          cell.itemIdentifier == itemIdentifier)
+                      if (priceCardItem && [cell hasIdentifier:itemIdentifier])
                         [cell setPriceDrop:priceCardItem.price
                              previousPrice:priceCardItem.previousPrice];
                     }];
   }
-  if (self.thumbStripEnabled && item.identifier != self.selectedItemID) {
+  if (self.thumbStripEnabled &&
+      ![itemIdentifier isEqualToString:self.selectedItemID]) {
     cell.opacity = self.notSelectedTabCellOpacity;
   } else {
     cell.opacity = 1.0f;
@@ -1570,7 +1571,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     if (![cell isKindOfClass:[GridCell class]])
       continue;
     GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(cell);
-    if (gridCell.itemIdentifier != self.selectedItemID) {
+    if (![gridCell hasIdentifier:self.selectedItemID]) {
       gridCell.opacity = self.notSelectedTabCellOpacity;
     } else {
       gridCell.opacity = 1.0f;
