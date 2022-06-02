@@ -37,6 +37,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.tableView.separatorInset =
+      UIEdgeInsetsMake(0, kTableViewSeparatorInset, 0, 0);
   self.title = l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_TITLE);
   self.navigationController.navigationBar.prefersLargeTitles = YES;
 
