@@ -7,10 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-// Presentation delegate for |PasswordsTableViewController|.
+// Presentation delegate for `PasswordsTableViewController`.
 @protocol PasswordsTableViewControllerPresentationDelegate
 
-// Called when |PasswordsTableViewController| is dismissed.
+// Called when `PasswordsTableViewController` is dismissed.
 - (void)passwordsTableViewControllerDismissed;
 
 @end

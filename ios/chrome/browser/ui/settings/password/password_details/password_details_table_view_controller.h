@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, CredentialType) {
                                        PasswordDetailsConsumer>
 
 // The designated initializer.
-// |syncingUserEmail| stores the user email if the user is authenticated amd
+// `syncingUserEmail` stores the user email if the user is authenticated amd
 // syncing passwords.
 - (instancetype)initWithCredentialType:(CredentialType)credentialType
                       syncingUserEmail:(NSString*)syncingUserEmail

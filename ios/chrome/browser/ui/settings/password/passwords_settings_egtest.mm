@@ -68,7 +68,7 @@ NSString* GetTextFieldForID(int category_id) {
 }
 
 // Returns the GREYElementInteraction* for the item on the password list with
-// the given |matcher|. It scrolls in |direction| if necessary to ensure that
+// the given `matcher`. It scrolls in `direction` if necessary to ensure that
 // the matched item is sufficiently visible, thus interactable.
 GREYElementInteraction* GetInteractionForListItem(id<GREYMatcher> matcher,
                                                   GREYDirection direction) {
@@ -80,7 +80,7 @@ GREYElementInteraction* GetInteractionForListItem(id<GREYMatcher> matcher,
 }
 
 // Returns the GREYElementInteraction* for the item on the password issues list
-// with the given |matcher|. It scrolls in |direction| if necessary to ensure
+// with the given `matcher`. It scrolls in `direction` if necessary to ensure
 // that the matched item is interactable.
 GREYElementInteraction* GetInteractionForIssuesListItem(
     id<GREYMatcher> matcher,
@@ -92,7 +92,7 @@ GREYElementInteraction* GetInteractionForIssuesListItem(
 }
 
 // Returns the GREYElementInteraction* for the cell on the password list with
-// the given |username|. It scrolls down if necessary to ensure that the matched
+// the given `username`. It scrolls down if necessary to ensure that the matched
 // cell is interactable.
 GREYElementInteraction* GetInteractionForPasswordEntry(NSString* username) {
   return GetInteractionForListItem(ButtonWithAccessibilityLabel(username),
@@ -100,7 +100,7 @@ GREYElementInteraction* GetInteractionForPasswordEntry(NSString* username) {
 }
 
 // Returns the GREYElementInteraction* for the cell on the password list with
-// the given |username|. It scrolls down if necessary to ensure that the matched
+// the given `username`. It scrolls down if necessary to ensure that the matched
 // cell is interactable.
 GREYElementInteraction* GetInteractionForPasswordIssueEntry(
     NSString* username) {
@@ -109,7 +109,7 @@ GREYElementInteraction* GetInteractionForPasswordIssueEntry(
 }
 
 // Returns the GREYElementInteraction* for the item on the detail view
-// identified with the given |matcher|. It scrolls down if necessary to ensure
+// identified with the given `matcher`. It scrolls down if necessary to ensure
 // that the matched cell is interactable.
 GREYElementInteraction* GetInteractionForPasswordDetailItem(
     id<GREYMatcher> matcher) {
@@ -120,7 +120,7 @@ GREYElementInteraction* GetInteractionForPasswordDetailItem(
 }
 
 // Returns the GREYElementInteraction* for the item on the deletion alert
-// identified with the given |matcher|.
+// identified with the given `matcher`.
 GREYElementInteraction* GetInteractionForPasswordsExportConfirmAlert(
     id<GREYMatcher> matcher) {
   return [[EarlGrey
@@ -284,7 +284,7 @@ GREYElementInteraction* OptInTrustedVaultLink() {
 }
 
 // Matches the pop-up (call-out) menu item with accessibility label equal to the
-// translated string identified by |label|.
+// translated string identified by `label`.
 id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
   // iOS13 reworked menu button subviews to no longer be accessibility
   // elements.  Multiple menu button subviews no longer show up as potential
@@ -1262,7 +1262,7 @@ id<GREYMatcher> EditDoneButton() {
   // The scrolling in GetInteractionForPasswordEntry has too fine steps to
   // reach the desired part of the list quickly. The following gives it a head
   // start of the desired position, counting 30 points per entry and
-  // aiming at |kRemoteIndex|.
+  // aiming at `kRemoteIndex`.
   constexpr int kJump = kRemoteIndex * 30 + 150;
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]

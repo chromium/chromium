@@ -13,7 +13,7 @@ namespace password_manager {
 struct PasswordForm;
 }  // namespace password_manager
 
-// Object which is used by |PasswordDetailsViewController| to show
+// Object which is used by `PasswordDetailsViewController` to show
 // information about password.
 @interface PasswordDetails : NSObject
 

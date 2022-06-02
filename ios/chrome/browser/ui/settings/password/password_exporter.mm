@@ -325,7 +325,7 @@ enum class ReauthenticationStatus {
   NSData* serializedPasswordsData =
       [self.serializedPasswords dataUsingEncoding:NSUTF8StringEncoding];
 
-  // Drop |serializedPasswords| as it is no longer needed.
+  // Drop `serializedPasswords` as it is no longer needed.
   self.serializedPasswords = nil;
 
   [_passwordFileWriter writeData:serializedPasswordsData

@@ -31,8 +31,8 @@ enum class ExportState {
 
 @protocol FileWriterProtocol <NSObject>
 
-// Posts a task to write the data in |data| to the file at |fileURL| and
-// executes |handler| when the writing is finished.
+// Posts a task to write the data in `data` to the file at `fileURL` and
+// executes `handler` when the writing is finished.
 - (void)writeData:(NSData*)data
             toURL:(NSURL*)fileURL
           handler:(void (^)(WriteToURLStatus))handler;
@@ -41,7 +41,7 @@ enum class ExportState {
 
 @protocol PasswordSerializerBridge <NSObject>
 
-// Posts task to serialize passwords and calls |serializedPasswordsHandler|
+// Posts task to serialize passwords and calls `serializedPasswordsHandler`
 // when serialization is finished.
 - (void)serializePasswords:
             (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
@@ -83,7 +83,7 @@ enum class ExportState {
  * a temporary file in tmp/passwords/<UUID>/, in the sandbox.
  *
  * The temporary file is removed from:
- * - the UIActivityViewController's |completionWithItemsHandler| when the
+ * - the UIActivityViewController's `completionWithItemsHandler` when the
  *   selected app/extension signals completion
  * - at browser startup
  * - whenever a password is deleted from local storage.
@@ -95,7 +95,7 @@ enum class ExportState {
  */
 @interface PasswordExporter : NSObject
 
-// The designated initializer. |reauthenticationModule| and |delegate| must
+// The designated initializer. `reauthenticationModule` and `delegate` must
 // not be nil.
 - (instancetype)initWithReauthenticationModule:
                     (id<ReauthenticationProtocol>)reuthenticationModule

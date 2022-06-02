@@ -778,7 +778,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordFail) {
 }
 
 // Tests that there is multiple sections in the edit view when
-// |kSupportForAddPasswordsInSettings| is enabled.
+// `kSupportForAddPasswordsInSettings` is enabled.
 TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInEdit) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(

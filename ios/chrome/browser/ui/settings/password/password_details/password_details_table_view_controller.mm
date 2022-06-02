@@ -99,7 +99,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 @property(nonatomic, strong) TableViewTextEditItem* passwordTextItem;
 
 // The view used to anchor error alert which is shown for the username. This is
-// image icon in the |usernameTextItem| cell.
+// image icon in the `usernameTextItem` cell.
 @property(nonatomic, weak) UIView* usernameErrorAnchorView;
 
 // Denotes the type of the credential passed to this coordinator. Could be
@@ -982,7 +982,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       break;
     }
     case ReauthenticationReasonEdit:
-      // Called super because we want to update only |tableView.editing|.
+      // Called super because we want to update only `tableView.editing`.
       [super editButtonPressed];
       [self reloadData];
       break;
@@ -1005,8 +1005,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   }
 }
 
-// Shows a snack bar with |message| and provides haptic feedback. The haptic
-// feedback is either for success or for error, depending on |success|. Deselect
+// Shows a snack bar with `message` and provides haptic feedback. The haptic
+// feedback is either for success or for error, depending on `success`. Deselect
 // cell if there was one selected.
 - (void)showToast:(NSString*)message forSuccess:(BOOL)success {
   TriggerHapticFeedbackForNotification(success
@@ -1297,7 +1297,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 #pragma mark - Metrics
 
-// Logs metrics for the given reauthentication |result| (success, failure or
+// Logs metrics for the given reauthentication `result` (success, failure or
 // skipped).
 - (void)logPasswordSettingsReauthResult:(ReauthenticationResult)result {
   switch (result) {

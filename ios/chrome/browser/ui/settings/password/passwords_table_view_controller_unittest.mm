@@ -293,7 +293,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
                 [cell detailText]);
   }
 
-  // Enables/Disables the edit mode based on |editing|.
+  // Enables/Disables the edit mode based on `editing`.
   void SetEditing(bool editing) {
     PasswordsTableViewController* passwords_controller =
         static_cast<PasswordsTableViewController*>(controller());
@@ -577,7 +577,7 @@ TEST_F(PasswordsTableViewControllerTest, TestOnDeviceEncryptionWhileSearching) {
   [passwords_controller updateOnDeviceEncryptionSessionAndUpdateTableView];
 
   passwords_controller.navigationItem.searchController.active = NO;
-  // Dismiss |view_controller_| and waits for the dismissal to finish.
+  // Dismiss `view_controller_` and waits for the dismissal to finish.
   __block bool dismissal_finished = NO;
   [root_view_controller_ dismissViewControllerAnimated:NO
                                             completion:^{

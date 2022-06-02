@@ -9,7 +9,7 @@
 
 @class CrURL;
 
-// Protocol used by |PasswordIssueTableViewController| to display items.
+// Protocol used by `PasswordIssueTableViewController` to display items.
 @protocol PasswordIssue
 
 // Associated URL to retrieve a favicon.

@@ -81,7 +81,7 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
 @property(nonatomic, strong) UINavigationBarAppearance* defaultAppearance;
 
 // Whether the image is currently being calculated; used to prevent infinite
-// recursions caused by |viewDidLayoutSubviews|.
+// recursions caused by `viewDidLayoutSubviews`.
 @property(nonatomic, assign) BOOL calculatingImageSize;
 @end
 
@@ -324,7 +324,7 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
 
-  // Prevents potential recursive calls to |viewDidLayoutSubviews|.
+  // Prevents potential recursive calls to `viewDidLayoutSubviews`.
   if (self.calculatingImageSize) {
     return;
   }
@@ -720,8 +720,8 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
   return captionTextView;
 }
 
-// Returns a new UIImage which is |sourceImage| resized to |newSize|.
-// Returns |currentImage| if it is already at the correct size.
+// Returns a new UIImage which is `sourceImage` resized to `newSize`.
+// Returns `currentImage` if it is already at the correct size.
 // Returns nil when the view should not show an image (iPhone landscape mode).
 - (UIImage*)createOrUpdateImage:(UIImage*)currentImage {
   if (IsCompactHeight(self)) {

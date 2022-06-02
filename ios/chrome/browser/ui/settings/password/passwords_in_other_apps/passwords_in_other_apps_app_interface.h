@@ -22,11 +22,11 @@
 
 // Mocks the scenario that the app has retrieved the current state of device
 // auto-fill status.
-// |isEnabled|: whether auto-fill with Chrome is enabled or not.
+// `isEnabled`: whether auto-fill with Chrome is enabled or not.
 + (void)startFakeManagerWithAutoFillStatus:(BOOL)autoFillEnabled;
 
 // Explicitly sets auto-fill status.
-// |autoFillEnabled|: whether auto-fill with Chrome should be.
+// `autoFillEnabled`: whether auto-fill with Chrome should be.
 + (void)setAutoFillStatus:(BOOL)autoFillEnabled;
 
 // Resets the manager.

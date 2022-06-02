@@ -26,7 +26,7 @@
 }
 
 // Object storing the time of the previous successful re-authentication.
-// This is meant to be used by the |ReauthenticationModule| for keeping
+// This is meant to be used by the `ReauthenticationModule` for keeping
 // re-authentications valid for a certain time interval within the scope
 // of the Password Issues Screen.
 @property(nonatomic, strong, readonly) NSDate* successfulReauthTime;

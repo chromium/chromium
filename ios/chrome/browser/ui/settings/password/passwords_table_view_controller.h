@@ -22,7 +22,7 @@ class Browser;
     : SettingsRootTableViewController <PasswordsConsumer,
                                        SettingsControllerProtocol>
 
-// The designated initializer. |browser| must not be nil.
+// The designated initializer. `browser` must not be nil.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

@@ -299,11 +299,11 @@ bool IsFaviconEnabled() {
     mostRecentlyUpdatedPassword;
 
 // Stores the PasswordFormContentItem which has form attribute's username and
-// site equivalent to that of |mostRecentlyUpdatedPassword|.
+// site equivalent to that of `mostRecentlyUpdatedPassword`.
 @property(nonatomic, weak) PasswordFormContentItem* mostRecentlyUpdatedItem;
 
 // Stores the PasswordFormContentItem which has form attribute's username and
-// site equivalent to that of |legacyMostRecentlyUpdatedItem|.
+// site equivalent to that of `legacyMostRecentlyUpdatedItem`.
 // TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
 // removed.
 @property(nonatomic, weak)
@@ -623,8 +623,8 @@ bool IsFaviconEnabled() {
 }
 
 // Updates "on-device encryption" related UI.
-// |updateTableView| whether the Table View should be updated.
-// |rowAnimation| the direction in which the row appears.
+// `updateTableView` whether the Table View should be updated.
+// `rowAnimation` the direction in which the row appears.
 - (void)updateOnDeviceEncryptionSessionWithUpdateTableView:(BOOL)updateTableView
                                           withRowAnimation:
                                               (UITableViewRowAnimation)
@@ -1485,7 +1485,7 @@ bool IsFaviconEnabled() {
 }
 
 // Builds the filtered list of passwords/blocked based on given
-// |searchTerm|.
+// `searchTerm`.
 - (void)filterItems:(NSString*)searchTerm {
   TableViewModel* model = self.tableViewModel;
 
@@ -2246,7 +2246,7 @@ bool IsFaviconEnabled() {
   }
 }
 
-// Sets the save passwords switch item's enabled status to |enabled| and
+// Sets the save passwords switch item's enabled status to `enabled` and
 // reconfigures the corresponding cell.
 - (void)setSavePasswordsSwitchItemEnabled:(BOOL)enabled {
   if (_savePasswordsItem) {

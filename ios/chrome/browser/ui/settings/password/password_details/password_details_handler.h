@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_HANDLER_H_
 
-// Presenter which handles commands from |PasswordDetailsViewController|.
+// Presenter which handles commands from `PasswordDetailsViewController`.
 @protocol PasswordDetailsHandler
 
 // Called when the view controller was dismissed.
@@ -15,9 +15,9 @@
 // password.
 - (void)showPasscodeDialog;
 
-// Called when the user wants to delete password. |origin| is a short website
-// version. It is displayed inside dialog. If |origin| is nil dialog is
-// displayed without message. |compromisedPassword| indicates whether password
+// Called when the user wants to delete password. `origin` is a short website
+// version. It is displayed inside dialog. If `origin` is nil dialog is
+// displayed without message. `compromisedPassword` indicates whether password
 // is compromised.
 - (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin
                        compromisedPassword:(BOOL)compromisedPassword;

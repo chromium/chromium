@@ -32,7 +32,7 @@ namespace password_manager {
 struct PasswordForm;
 }
 
-// Delegate for |PasswordsTableViewController|.
+// Delegate for `PasswordsTableViewController`.
 @protocol PasswordsTableViewControllerDelegate
 
 // Deletes form with its duplicates.
