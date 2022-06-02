@@ -104,6 +104,17 @@ class VIEWS_EXPORT ViewAccessibility {
   void OverrideDescription(const std::string& description);
   void OverrideDescription(const std::u16string& description);
 
+  // Sets the platform-specific accessible name/title property of the
+  // NativeViewAccessible window. This is needed on platforms where the name
+  // of the NativeViewAccessible window is automatically calculated by the
+  // platform's accessibility API. For instance on the Mac, the label of the
+  // NativeWidgetMacNSWindow of a JavaScript alert is taken from the name of
+  // the child RootView. Note: the first function does the string conversion
+  // and calls the second, thus only the latter needs to be implemented by
+  // interested platforms.
+  void OverrideNativeWindowTitle(const std::u16string& title);
+  virtual void OverrideNativeWindowTitle(const std::string& title);
+
   // Sets whether this View hides all its descendants from the accessibility
   // tree that is exposed to platform APIs. This is similar, but not exactly
   // identical to aria-hidden="true".

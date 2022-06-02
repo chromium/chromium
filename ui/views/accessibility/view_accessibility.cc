@@ -362,6 +362,14 @@ void ViewAccessibility::OverrideDescription(const std::u16string& description) {
   custom_data_.SetDescription(description);
 }
 
+void ViewAccessibility::OverrideNativeWindowTitle(const std::string& title) {
+  NOTIMPLEMENTED() << "Only implemented on Mac for now.";
+}
+
+void ViewAccessibility::OverrideNativeWindowTitle(const std::u16string& title) {
+  OverrideNativeWindowTitle(base::UTF16ToUTF8(title));
+}
+
 void ViewAccessibility::OverrideIsLeaf(bool value) {
   is_leaf_ = value;
 }
