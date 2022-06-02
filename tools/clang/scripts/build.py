@@ -1000,7 +1000,6 @@ def main():
     if args.build_mac_arm:
       assert platform.machine() != 'arm64', 'build_mac_arm for cross build only'
       cmake_args += ['-DCMAKE_OSX_ARCHITECTURES=arm64',
-                     '-DLLVM_USE_HOST_TOOLS=ON',
                      '-DCMAKE_SYSTEM_NAME=Darwin']
 
   # The default LLVM_DEFAULT_TARGET_TRIPLE depends on the host machine.
