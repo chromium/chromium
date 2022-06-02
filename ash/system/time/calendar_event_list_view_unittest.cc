@@ -4,17 +4,20 @@
 
 #include "ash/system/time/calendar_event_list_view.h"
 
+#include "ash/components/settings/timezone_settings.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_event_list_item_view.h"
 #include "ash/system/time/calendar_unittest_utils.h"
+#include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/metrics/histogram.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/label_button.h"
@@ -76,6 +79,12 @@ class CalendarViewEventListViewTest : public AshTestBase {
     controller_->selected_date_ = date;
     event_list_view_ =
         std::make_unique<CalendarEventListView>(controller_.get());
+  }
+
+  void RefetchEvents(base::Time start_of_month,
+                     const google_apis::calendar::EventList* events) {
+    Shell::Get()->system_tray_model()->calendar_model()->OnEventsFetched(
+        start_of_month, google_apis::HTTP_SUCCESS, events);
   }
 
   void SetSelectedDate(base::Time date) {
@@ -226,6 +235,44 @@ TEST_F(CalendarViewEventListViewTest, CheckTimeFormat) {
 
   SetSelectedDate(date_2);
   EXPECT_EQ(u"00:00 – 00:30", GetTimeRange(0)->GetText());
+}
+
+TEST_F(CalendarViewEventListViewTest, RefreshEvents) {
+  // Sets the timezone to "America/Los_Angeles".
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
+      u"America/Los_Angeles");
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
+  CreateEventListView(date);
+
+  SetSelectedDate(date);
+
+  // With the initial event list there should be 3 events on the 18th.
+  EXPECT_EQ(3u, content_view()->children().size());
+
+  base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(
+      controller()->selected_date_midnight());
+  auto event_list = std::make_unique<google_apis::calendar::EventList>();
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_4", "summary_4", "21 Nov 2021 8:30 GMT", "21 Nov 2021 9:30 GMT"));
+
+  // Calls the `OnEventsFetched` method to update the events in the model.
+  // The event list view should be re-rendered automatically with the new event
+  // list.
+  RefetchEvents(start_of_month, event_list.get());
+
+  // Shows 0 events and shows open in google calendar button after the refresh.
+  EXPECT_EQ(1u, content_view()->children().size());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS),
+            GetEmptyLabel());
+
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_0", "summary_0", "18 Nov 2021 8:30 GMT", "18 Nov 2021 9:30 GMT"));
+  RefetchEvents(start_of_month, event_list.get());
+
+  // Shows 1 event after the refresh.
+  EXPECT_EQ(1u, content_view()->children().size());
+  EXPECT_EQ(u"summary_0", GetSummary(0)->GetText());
 }
 
 }  // namespace ash

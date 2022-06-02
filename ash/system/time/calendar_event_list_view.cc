@@ -162,12 +162,25 @@ CalendarEventListView::CalendarEventListView(
   UpdateListItems();
 
   scoped_calendar_view_controller_observer_.Observe(calendar_view_controller_);
+  scoped_calendar_model_observer_.Observe(
+      Shell::Get()->system_tray_model()->calendar_model());
 }
 
 CalendarEventListView::~CalendarEventListView() = default;
 
 void CalendarEventListView::OnSelectedDateUpdated() {
   UpdateListItems();
+}
+
+void CalendarEventListView::OnEventsFetched(
+    const CalendarModel::FetchingStatus status,
+    const base::Time start_time,
+    const google_apis::calendar::EventList* events) {
+  if (status == CalendarModel::kSuccess &&
+      start_time == calendar_utils::GetStartOfMonthUTC(
+                        calendar_view_controller_->selected_date_midnight())) {
+    UpdateListItems();
+  }
 }
 
 void CalendarEventListView::UpdateListItems() {
