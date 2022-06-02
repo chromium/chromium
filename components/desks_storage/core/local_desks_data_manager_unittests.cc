@@ -43,6 +43,7 @@ constexpr char kDuplicatePatternMatchingNamedDeskExpectedNameOne[] =
     "(1) desk_template (1)";
 constexpr char kDuplicatePatternMatchingNamedDeskExpectedNameTwo[] =
     "(1) desk_template (2)";
+constexpr uint32_t kThreadSafeIterations = 1000;
 
 const base::FilePath kInvalidFilePath = base::FilePath("?");
 const std::string kTestUuid1 = base::StringPrintf(kUuidFormat, 1);
@@ -110,6 +111,11 @@ const ash::DeskTemplate* FindEntryInEntryList(
 // Verifies that the status passed into it is kOk
 void VerifyEntryAddedCorrectly(DeskModel::AddOrUpdateEntryStatus status) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
+}
+
+// Verifies that the status passed into it is kOk
+void VerifyEntryDeletedCorrectly(DeskModel::DeleteEntryStatus status) {
+  EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
 }
 
 // Verifies that the status passed into it is kFailure
@@ -970,6 +976,25 @@ TEST_F(LocalDeskDataManagerTest,
                                 base::FILE_PERMISSION_READ_BY_USER |
                                     base::FILE_PERMISSION_WRITE_BY_USER |
                                     base::FILE_PERMISSION_EXECUTE_BY_USER);
+}
+
+// Note: To fully utilize this test build and run it in a tsan build.
+// Instructions to do so can be found at:
+// //docs/website/site/developers/testing/threadsanitizer-tsan-v2/index.md
+// Otherwise the tsan tryjob should catch this test failing in CQ.
+TEST_F(LocalDeskDataManagerTest, StressTestModifyingEntriesForThreadSafety) {
+  for (uint32_t iteration = 0; iteration < kThreadSafeIterations; ++iteration) {
+    data_manager_->AddOrUpdateEntry(
+        MakeTestDeskTemplate(iteration % 10, ash::DeskTemplateType::kTemplate),
+        base::BindOnce(&VerifyEntryAddedCorrectly));
+
+    if (iteration % data_manager_->GetDeskTemplateEntryCount() == 0) {
+      data_manager_->DeleteAllEntries(
+          base::BindOnce(&VerifyEntryDeletedCorrectly));
+    }
+  }
+
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace desks_storage
