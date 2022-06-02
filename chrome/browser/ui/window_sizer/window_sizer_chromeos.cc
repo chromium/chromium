@@ -6,12 +6,14 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -142,6 +144,7 @@ void WindowSizerChromeOS::GetTabbedBrowserBounds(
   display::Display display = GetDisplayForNewWindow(*bounds_in_screen);
   if (!is_saved_bounds)
     *bounds_in_screen = GetDefaultWindowBounds(display);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   if (browser()->is_session_restore()) {
     // Respect display for saved bounds during session restore.
@@ -149,7 +152,9 @@ void WindowSizerChromeOS::GetTabbedBrowserBounds(
         display::Screen::GetScreen()->GetDisplayMatching(*bounds_in_screen);
   } else if (BrowserList::GetInstance()->empty() && !is_saved_bounds &&
              (ShouldForceMaximizeOnFirstRun(browser()->profile()) ||
-              display.work_area().width() <= kForceMaximizeWidthLimit)) {
+              (display.work_area().width() <= kForceMaximizeWidthLimit &&
+               !command_line->HasSwitch(
+                   switches::kDisableAutoMaximizeForTests)))) {
     // No browsers, no saved bounds: assume first run. Maximize if set by policy
     // or if the screen is narrower than a predetermined size.
     *show_state = ui::SHOW_STATE_MAXIMIZED;
