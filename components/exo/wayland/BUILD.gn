@@ -28,6 +28,8 @@ source_set("wayland") {
     "wayland_display_observer.h",
     "wayland_display_output.cc",
     "wayland_display_output.h",
+    "wayland_display_util.cc",
+    "wayland_display_util.h",
     "wayland_input_delegate.cc",
     "wayland_input_delegate.h",
     "wayland_pointer_delegate.cc",
@@ -285,6 +287,7 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     sources += [
+      "wayland_display_util_unittest.cc",
       "wayland_keyboard_delegate_unittest.cc",
       "wayland_positioner_unittest.cc",
       "zaura_shell_unittest.cc",

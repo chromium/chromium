@@ -15,7 +15,8 @@ WaylandZAuraOutput::WaylandZAuraOutput(zaura_output* aura_output)
   DCHECK(obj_);
 
   static constexpr zaura_output_listener kZAuraOutputListener = {
-      &OnScale, &OnConnection, &OnDeviceScaleFactor, &OnInsets};
+      &OnScale, &OnConnection, &OnDeviceScaleFactor, &OnInsets,
+      &OnLogicalTransform};
   zaura_output_add_listener(obj_.get(), &kZAuraOutputListener, this);
 }
 
@@ -42,6 +43,13 @@ void WaylandZAuraOutput::OnInsets(void* data,
                                   int32_t right) {
   if (auto* aura_output = static_cast<WaylandZAuraOutput*>(data))
     aura_output->insets_ = gfx::Insets::TLBR(top, left, bottom, right);
+}
+
+void WaylandZAuraOutput::OnLogicalTransform(void* data,
+                                            struct zaura_output* zaura_output,
+                                            int32_t transform) {
+  if (auto* aura_output = static_cast<WaylandZAuraOutput*>(data))
+    aura_output->logical_transform_ = transform;
 }
 
 }  // namespace ui

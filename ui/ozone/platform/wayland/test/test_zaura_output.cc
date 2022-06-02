@@ -20,6 +20,11 @@ void TestZAuraOutput::Flush() {
     zaura_output_send_insets(resource(), insets_.top(), insets_.left(),
                              insets_.bottom(), insets_.right());
   }
+  if (pending_logical_transform_) {
+    logical_transform_ = std::move(*pending_logical_transform_);
+    pending_logical_transform_.reset();
+    zaura_output_send_logical_transform(resource(), logical_transform_);
+  }
 }
 
 }  // namespace wl

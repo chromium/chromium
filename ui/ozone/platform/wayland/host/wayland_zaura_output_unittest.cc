@@ -4,8 +4,9 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_zaura_output.h"
 
-#include <components/exo/wayland/protocol/aura-shell-client-protocol.h>
-#include <components/exo/wayland/protocol/aura-shell-server-protocol.h>
+#include <aura-shell-client-protocol.h>
+#include <aura-shell-server-protocol.h>
+#include <wayland-server-protocol.h>
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -101,6 +102,28 @@ TEST_F(WaylandZAuraOutputTest, HandleInsets) {
   EXPECT_TRUE(wayland_output->is_ready());
   EXPECT_EQ(wayland_output->bounds(), gfx::Rect(800, 600));
   EXPECT_EQ(wayland_output->insets(), sent_insets);
+}
+
+TEST_F(WaylandZAuraOutputTest, HandleLogicalTransform) {
+  WaylandOutput* wayland_output = output_manager_->GetPrimaryOutput();
+  ASSERT_TRUE(wayland_output);
+  EXPECT_TRUE(wayland_output->is_ready());
+  EXPECT_FALSE(wayland_output->logical_transform());
+  EXPECT_TRUE(wayland_output->get_zaura_output());
+
+  // Simulate server sending updated transform offset to the client.
+  wl_resource* zaura_output_resource =
+      server_.output()->GetAuraOutput()->resource();
+  ASSERT_TRUE(zaura_output_resource);
+  zaura_output_send_logical_transform(zaura_output_resource,
+                                      WL_OUTPUT_TRANSFORM_270);
+
+  server_.Resume();
+  base::RunLoop().RunUntilIdle();
+  server_.Pause();
+
+  EXPECT_TRUE(wayland_output->is_ready());
+  EXPECT_EQ(wayland_output->logical_transform(), WL_OUTPUT_TRANSFORM_270);
 }
 
 }  // namespace

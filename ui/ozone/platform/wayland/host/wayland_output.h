@@ -36,7 +36,8 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
                                        const gfx::Rect& new_bounds,
                                        const gfx::Insets& insets,
                                        float scale_factor,
-                                       int32_t transform) = 0;
+                                       int32_t panel_transform,
+                                       int32_t logical_transform) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -59,7 +60,8 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   uint32_t output_id() const { return output_id_; }
   bool has_output(wl_output* output) const { return output_.get() == output; }
   float scale_factor() const { return scale_factor_; }
-  int32_t transform() const { return transform_; }
+  int32_t panel_transform() const { return panel_transform_; }
+  int32_t logical_transform() const;
   gfx::Rect bounds() const { return rect_in_physical_pixels_; }
   gfx::Insets insets() const;
 
@@ -104,7 +106,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   std::unique_ptr<XDGOutput> xdg_output_;
   std::unique_ptr<WaylandZAuraOutput> aura_output_;
   float scale_factor_ = kDefaultScaleFactor;
-  int32_t transform_ = WL_OUTPUT_TRANSFORM_NORMAL;
+  int32_t panel_transform_ = WL_OUTPUT_TRANSFORM_NORMAL;
   gfx::Rect rect_in_physical_pixels_;
 
   Delegate* delegate_ = nullptr;

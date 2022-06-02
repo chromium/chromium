@@ -108,7 +108,7 @@ void WaylandOutputManager::InitWaylandScreen(WaylandScreen* screen) {
       screen->OnOutputAddedOrUpdated(
           output.second->output_id(), output.second->bounds(),
           output.second->insets(), output.second->scale_factor(),
-          output.second->transform());
+          output.second->panel_transform(), output.second->logical_transform());
     }
   }
 }
@@ -131,10 +131,12 @@ void WaylandOutputManager::OnOutputHandleMetrics(uint32_t output_id,
                                                  const gfx::Rect& new_bounds,
                                                  const gfx::Insets& insets,
                                                  float scale_factor,
-                                                 int32_t transform) {
+                                                 int32_t panel_transform,
+                                                 int32_t logical_transform) {
   if (wayland_screen_) {
     wayland_screen_->OnOutputAddedOrUpdated(output_id, new_bounds, insets,
-                                            scale_factor, transform);
+                                            scale_factor, panel_transform,
+                                            logical_transform);
   }
   auto* wayland_window_manager = connection_->wayland_window_manager();
   for (auto* window : wayland_window_manager->GetWindowsOnOutput(output_id))

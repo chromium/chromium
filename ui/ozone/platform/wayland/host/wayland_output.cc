@@ -92,6 +92,13 @@ float WaylandOutput::GetUIScaleFactor() const {
              : scale_factor();
 }
 
+int32_t WaylandOutput::logical_transform() const {
+  if (aura_output_ && aura_output_->logical_transform()) {
+    return *aura_output_->logical_transform();
+  }
+  return panel_transform();
+}
+
 gfx::Insets WaylandOutput::insets() const {
   return aura_output_ ? aura_output_->insets() : gfx::Insets();
 }
@@ -115,7 +122,8 @@ void WaylandOutput::TriggerDelegateNotifications() {
     }
   }
   delegate_->OnOutputHandleMetrics(output_id_, rect_in_physical_pixels_,
-                                   insets(), scale_factor_, transform_);
+                                   insets(), scale_factor_, panel_transform_,
+                                   logical_transform());
 }
 
 // static
@@ -131,8 +139,11 @@ void WaylandOutput::OutputHandleGeometry(void* data,
                                          int32_t output_transform) {
   WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data);
   if (wayland_output) {
+    // TODO(crbug.com/1325487): This should be in DIP, not physical pixels.
+    // Also, this should only be a fallback, since we should be using
+    // xdg_output.logical_position.
     wayland_output->rect_in_physical_pixels_.set_origin(gfx::Point(x, y));
-    wayland_output->transform_ = output_transform;
+    wayland_output->panel_transform_ = output_transform;
   }
 }
 

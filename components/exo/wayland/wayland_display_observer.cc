@@ -12,6 +12,7 @@
 #include "chrome-color-management-server-protocol.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_output.h"
+#include "components/exo/wayland/wayland_display_util.h"
 #include "components/exo/wayland/zcr_color_manager.h"
 #include "components/exo/wm_helper.h"
 #include "ui/display/display_observer.h"
@@ -220,25 +221,6 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
   }
 
   return true;
-}
-
-wl_output_transform WaylandDisplayHandler::OutputTransform(
-    display::Display::Rotation rotation) {
-  // Note: |rotation| describes the counter clockwise rotation that a
-  // display's output is currently adjusted for, which is the inverse
-  // of what we need to return.
-  switch (rotation) {
-    case display::Display::ROTATE_0:
-      return WL_OUTPUT_TRANSFORM_NORMAL;
-    case display::Display::ROTATE_90:
-      return WL_OUTPUT_TRANSFORM_270;
-    case display::Display::ROTATE_180:
-      return WL_OUTPUT_TRANSFORM_180;
-    case display::Display::ROTATE_270:
-      return WL_OUTPUT_TRANSFORM_90;
-  }
-  NOTREACHED();
-  return WL_OUTPUT_TRANSFORM_NORMAL;
 }
 
 }  // namespace wayland

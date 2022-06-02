@@ -155,7 +155,7 @@ void RegistryHandler(void* data,
         wl_registry_bind(registry, id, &wp_presentation_interface, 1)));
   } else if (strcmp(interface, "zaura_shell") == 0) {
     globals->aura_shell.reset(static_cast<zaura_shell*>(
-        wl_registry_bind(registry, id, &zaura_shell_interface, 33)));
+        wl_registry_bind(registry, id, &zaura_shell_interface, 34)));
   } else if (strcmp(interface, "zwp_linux_dmabuf_v1") == 0) {
     globals->linux_dmabuf.reset(static_cast<zwp_linux_dmabuf_v1*>(
         wl_registry_bind(registry, id, &zwp_linux_dmabuf_v1_interface, 2)));
@@ -928,6 +928,8 @@ void ClientBase::HandleDmabufModifier(
 
 void ClientBase::HandleInsets(const gfx::Insets& insets) {}
 
+void ClientBase::HandleLogicalTransform(int32_t transform) {}
+
 ////////////////////////////////////////////////////////////////////////////////
 // helper functions
 
@@ -1290,6 +1292,9 @@ void ClientBase::SetupAuraShellIfAvailable() {
          int32_t left, int32_t bottom, int32_t right) {
         CastToClientBase(data)->HandleInsets(
             gfx::Insets::TLBR(top, left, bottom, right));
+      },
+      [](void* data, struct zaura_output* zaura_output, int32_t transform) {
+        CastToClientBase(data)->HandleLogicalTransform(transform);
       },
   };
 

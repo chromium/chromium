@@ -208,6 +208,7 @@ class ClientBase {
 
   // zaura_output_listener
   virtual void HandleInsets(const gfx::Insets& insets);
+  virtual void HandleLogicalTransform(int32_t transform);
 
   gfx::Size size_ = gfx::Size(256, 256);
   int scale_ = 1;

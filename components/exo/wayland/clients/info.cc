@@ -46,6 +46,7 @@ struct Info {
   struct {
     int32_t top, left, bottom, right;
   } insets;
+  int32_t logical_transform;
   std::unique_ptr<wl_output> output;
   std::unique_ptr<zaura_output> aura_output;
 };
@@ -167,6 +168,14 @@ void AuraOutputInsets(void* data,
   Info* info = static_cast<Info*>(data);
 
   info->insets = {top, left, bottom, right};
+}
+
+void AuraOutputLogicalTransform(void* data,
+                                zaura_output* output,
+                                int32_t transform) {
+  Info* info = static_cast<Info*>(data);
+
+  info->logical_transform = transform;
 }
 
 std::string OutputSubpixelToString(int32_t subpixel) {
@@ -308,7 +317,7 @@ int main(int argc, char* argv[]) {
 
   zaura_output_listener aura_output_listener = {
       AuraOutputScale, AuraOutputConnection, AuraOutputDeviceScaleFactor,
-      AuraOutputInsets};
+      AuraOutputInsets, AuraOutputLogicalTransform};
   for (auto& info : globals.outputs) {
     wl_output_add_listener(info.output.get(), &output_listener, &info);
     if (globals.aura_shell) {
@@ -370,6 +379,8 @@ int main(int argc, char* argv[]) {
               << "    bottom:  " << info.insets.bottom << std::endl
               << "    right:   " << info.insets.right << std::endl
               << std::endl;
+    std::cout << "  logical_transform: "
+              << OutputTransformToString(info.logical_transform) << std::endl;
   }
 
   return 0;

@@ -57,7 +57,8 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
                              const gfx::Rect& new_bounds,
                              const gfx::Insets& insets,
                              float scale_factor,
-                             int32_t transform) override;
+                             int32_t panel_transform,
+                             int32_t logical_transform) override;
 
   using OutputList = base::flat_map<uint32_t, std::unique_ptr<WaylandOutput>>;
 

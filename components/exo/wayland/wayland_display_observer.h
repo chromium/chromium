@@ -73,10 +73,6 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   bool SendDisplayMetrics(const display::Display& display,
                           uint32_t changed_metrics) override;
 
-  // Returns the transform that a compositor will apply to a surface to
-  // compensate for the rotation of an output device.
-  wl_output_transform OutputTransform(display::Display::Rotation rotation);
-
   // Output.
   WaylandDisplayOutput* output_;
 

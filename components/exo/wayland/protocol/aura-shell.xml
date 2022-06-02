@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="33">
+  <interface name="zaura_shell" version="34">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -512,7 +512,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_output" version="33">
+  <interface name="zaura_output" version="34">
     <description summary="aura shell interface to a wl_output">
       An additional interface to a wl_output object, which allows the
       client to access aura shell specific functionality for output.
@@ -629,6 +629,21 @@
       <arg name="left" type="int"/>
       <arg name="bottom" type="int"/>
       <arg name="right" type="int"/>
+    </event>
+
+    <!-- Version 34 additions -->
+
+    <event name="logical_transform" since="34">
+      <description summary="advertise the output's logical transform">
+        This event describes the logical transform for the output. Whereas
+        wl_output.geometry's transform corresponds to the display's panel
+        rotation, the logical transform corresponds to the display's logical
+        rotation.
+
+        This event is sent before wl_output.done, after which the client would
+        apply the change.
+      </description>
+      <arg name="transform" type="int" enum="wl_output.transform"/>
     </event>
   </interface>
 

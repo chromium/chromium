@@ -111,8 +111,10 @@ void WaylandScreen::OnOutputAddedOrUpdated(uint32_t output_id,
                                            const gfx::Rect& bounds,
                                            const gfx::Insets& insets,
                                            float scale,
-                                           int32_t transform) {
-  AddOrUpdateDisplay(output_id, bounds, insets, scale, transform);
+                                           int32_t panel_transform,
+                                           int32_t logical_transform) {
+  AddOrUpdateDisplay(output_id, bounds, insets, scale, panel_transform,
+                     logical_transform);
 }
 
 void WaylandScreen::OnOutputRemoved(uint32_t output_id) {
@@ -145,16 +147,31 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
                                        const gfx::Rect& new_bounds,
                                        const gfx::Insets& insets,
                                        float scale_factor,
-                                       int32_t transform) {
+                                       int32_t panel_transform,
+                                       int32_t logical_transform) {
   display::Display changed_display(output_id);
-  changed_display.SetScaleAndBounds(scale_factor, new_bounds);
-  changed_display.UpdateWorkAreaFromInsets(insets);
 
-  DCHECK_GE(transform, WL_OUTPUT_TRANSFORM_NORMAL);
-  DCHECK_LE(transform, WL_OUTPUT_TRANSFORM_FLIPPED_270);
-  display::Display::Rotation rotation = WaylandTransformToRotation(transform);
+  DCHECK_GE(panel_transform, WL_OUTPUT_TRANSFORM_NORMAL);
+  DCHECK_LE(panel_transform, WL_OUTPUT_TRANSFORM_FLIPPED_270);
+  display::Display::Rotation panel_rotation =
+      WaylandTransformToRotation(panel_transform);
+  changed_display.set_panel_rotation(panel_rotation);
+
+  DCHECK_GE(logical_transform, WL_OUTPUT_TRANSFORM_NORMAL);
+  DCHECK_LE(logical_transform, WL_OUTPUT_TRANSFORM_FLIPPED_270);
+  display::Display::Rotation rotation =
+      WaylandTransformToRotation(logical_transform);
   changed_display.set_rotation(rotation);
-  changed_display.set_panel_rotation(rotation);
+
+  gfx::Rect updated_bounds(new_bounds);
+  if (panel_rotation == display::Display::Rotation::ROTATE_90 ||
+      panel_rotation == display::Display::Rotation::ROTATE_270) {
+    updated_bounds.set_width(new_bounds.height());
+    updated_bounds.set_height(new_bounds.width());
+  }
+
+  changed_display.SetScaleAndBounds(scale_factor, updated_bounds);
+  changed_display.UpdateWorkAreaFromInsets(insets);
 
   gfx::DisplayColorSpaces color_spaces;
   color_spaces.SetOutputBufferFormats(image_format_no_alpha_.value(),

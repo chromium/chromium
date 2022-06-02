@@ -29,6 +29,7 @@
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_observer.h"
+#include "components/exo/wayland/wayland_display_util.h"
 #include "components/exo/wayland/wl_output.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/env.h"
@@ -854,12 +855,21 @@ bool AuraOutput::SendDisplayMetrics(const display::Display& display,
   if (wl_resource_get_version(resource_) >= ZAURA_OUTPUT_INSETS_SINCE_VERSION)
     SendInsets(display.bounds().InsetsFrom(display.work_area()));
 
+  if (wl_resource_get_version(resource_) >=
+      ZAURA_OUTPUT_LOGICAL_TRANSFORM_SINCE_VERSION) {
+    SendLogicalTransform(OutputTransform(display.rotation()));
+  }
+
   return true;
 }
 
 void AuraOutput::SendInsets(const gfx::Insets& insets) {
   zaura_output_send_insets(resource_, insets.top(), insets.left(),
                            insets.bottom(), insets.right());
+}
+
+void AuraOutput::SendLogicalTransform(int32_t transform) {
+  zaura_output_send_logical_transform(resource_, transform);
 }
 
 namespace {

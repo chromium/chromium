@@ -301,8 +301,8 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);
 
-  const gfx::Rect new_rect{100, 100};
-  output_->SetRect(new_rect);
+  const gfx::Rect physical_bounds{800, 600};
+  output_->SetRect(physical_bounds);
   output_->Flush();
 
   Sync();
@@ -310,13 +310,15 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
   uint32_t changed_values = display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
                             display::DisplayObserver::DISPLAY_METRIC_WORK_AREA;
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
-  EXPECT_EQ(observer.GetDisplay().bounds(), new_rect);
-  EXPECT_EQ(observer.GetDisplay().work_area(), new_rect);
+  const gfx::Rect expected_bounds{800, 600};
+  EXPECT_EQ(observer.GetDisplay().bounds(), expected_bounds);
+  EXPECT_EQ(observer.GetDisplay().work_area(), expected_bounds);
 
   // Test work area.
-  const gfx::Rect new_work_area{80, 80};
+  const gfx::Rect new_work_area{10, 20, 700, 500};
+  const gfx::Insets expected_inset = expected_bounds.InsetsFrom(new_work_area);
   ASSERT_TRUE(output_->GetAuraOutput());
-  output_->GetAuraOutput()->SetInsets(new_rect.InsetsFrom(new_work_area));
+  output_->GetAuraOutput()->SetInsets(expected_inset);
   output_->Flush();
 
   Sync();
@@ -324,7 +326,7 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
   changed_values = display::DisplayObserver::DISPLAY_METRIC_WORK_AREA;
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
   // Bounds should be unchanged.
-  EXPECT_EQ(observer.GetDisplay().bounds(), new_rect);
+  EXPECT_EQ(observer.GetDisplay().bounds(), expected_bounds);
   // Work area should have new value.
   EXPECT_EQ(observer.GetDisplay().work_area(), new_work_area);
 
@@ -341,8 +343,115 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
       display::DisplayObserver::DISPLAY_METRIC_BOUNDS;
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
   EXPECT_EQ(observer.GetDisplay().device_scale_factor(), new_scale_value);
-  EXPECT_EQ(observer.GetDisplay().bounds(), gfx::Rect(50, 50));
-  EXPECT_EQ(observer.GetDisplay().work_area(), gfx::Rect(30, 30));
+  // Logical bounds should shrink due to scaling.
+  const gfx::Rect scaled_bounds{400, 300};
+  EXPECT_EQ(observer.GetDisplay().bounds(), scaled_bounds);
+  gfx::Rect scaled_work_area(scaled_bounds);
+  scaled_work_area.Inset(expected_inset);
+  EXPECT_EQ(observer.GetDisplay().work_area(), scaled_work_area);
+
+  // Test rotation.
+  output_->SetTransform(WL_OUTPUT_TRANSFORM_90);
+  output_->Flush();
+
+  Sync();
+
+  changed_values = display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
+                   display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+                   display::DisplayObserver::DISPLAY_METRIC_ROTATION;
+  EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
+  // Logical bounds should now be rotated to portrait.
+  const gfx::Rect rotated_bounds{300, 400};
+  EXPECT_EQ(observer.GetDisplay().bounds(), rotated_bounds);
+  gfx::Rect rotated_work_area(rotated_bounds);
+  rotated_work_area.Inset(expected_inset);
+  EXPECT_EQ(observer.GetDisplay().work_area(), rotated_work_area);
+  EXPECT_EQ(observer.GetDisplay().panel_rotation(),
+            display::Display::Rotation::ROTATE_270);
+  EXPECT_EQ(observer.GetDisplay().rotation(),
+            display::Display::Rotation::ROTATE_270);
+
+  platform_screen_->RemoveObserver(&observer);
+}
+
+// Regression test for crbug.com/1310981.
+// Some devices use display panels built in portrait orientation, but are used
+// in landscape orientation. Thus their physical bounds are in portrait
+// orientation along with an offset transform, which differs from the usual
+// landscape oriented bounds.
+// TODO(crbug.com/1325487): Add origin offset.
+TEST_P(WaylandScreenTest, OutputPropertyChangesWithPortraitPanelRotation) {
+  TestDisplayObserver observer;
+  platform_screen_->AddObserver(&observer);
+
+  // wl_output.mode size is sent in physical coordinates, so it has portrait
+  // dimensions for a display panel with portrait natural orientation.
+  const gfx::Rect physical_bounds{1200, 1600};
+  output_->SetRect(physical_bounds);
+
+  // Inset is sent in logical coordinates.
+  const gfx::Insets insets = gfx::Insets::TLBR(10, 20, 30, 40);
+  ASSERT_TRUE(output_->GetAuraOutput());
+  output_->GetAuraOutput()->SetInsets(insets);
+
+  // Display panel's natural orientation is in portrait, so it needs a transform
+  // of 90 degrees to be in landscape.
+  output_->SetTransform(WL_OUTPUT_TRANSFORM_90);
+  // Offset the transform so the logical rotation is 0.
+  output_->GetAuraOutput()->SetLogicalTransform(WL_OUTPUT_TRANSFORM_NORMAL);
+
+  output_->SetScale(2);
+  output_->Flush();
+
+  Sync();
+
+  uint32_t changed_values =
+      display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+      display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
+      display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR |
+      display::DisplayObserver::DISPLAY_METRIC_ROTATION;
+  EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
+
+  // Logical bounds should be in landscape.
+  const gfx::Rect expected_bounds(800, 600);
+  EXPECT_EQ(observer.GetDisplay().bounds(), expected_bounds);
+
+  gfx::Rect expected_work_area(expected_bounds);
+  expected_work_area.Inset(insets);
+  EXPECT_EQ(observer.GetDisplay().work_area(), expected_work_area);
+
+  // Panel rotation and display rotation should have an offset.
+  EXPECT_EQ(observer.GetDisplay().panel_rotation(),
+            display::Display::Rotation::ROTATE_270);
+  EXPECT_EQ(observer.GetDisplay().rotation(),
+            display::Display::Rotation::ROTATE_0);
+
+  // Further rotate the display to logical portrait orientation, which is 180
+  // with the natural orientation offset.
+  output_->SetTransform(WL_OUTPUT_TRANSFORM_180);
+  output_->GetAuraOutput()->SetLogicalTransform(WL_OUTPUT_TRANSFORM_90);
+  output_->Flush();
+
+  Sync();
+
+  changed_values = display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+                   display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
+                   display::DisplayObserver::DISPLAY_METRIC_ROTATION;
+  EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
+
+  // Logical bounds should now be portrait.
+  const gfx::Rect portrait_bounds(600, 800);
+  EXPECT_EQ(observer.GetDisplay().bounds(), portrait_bounds);
+
+  gfx::Rect portrait_work_area(portrait_bounds);
+  portrait_work_area.Inset(insets);
+  EXPECT_EQ(observer.GetDisplay().work_area(), portrait_work_area);
+
+  // Panel rotation and display rotation should still have an offset.
+  EXPECT_EQ(observer.GetDisplay().panel_rotation(),
+            display::Display::Rotation::ROTATE_180);
+  EXPECT_EQ(observer.GetDisplay().rotation(),
+            display::Display::Rotation::ROTATE_270);
 
   platform_screen_->RemoveObserver(&observer);
 }

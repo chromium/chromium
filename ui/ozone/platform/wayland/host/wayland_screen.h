@@ -42,8 +42,9 @@ class WaylandScreen : public PlatformScreen {
   void OnOutputAddedOrUpdated(uint32_t output_id,
                               const gfx::Rect& bounds,
                               const gfx::Insets& insets,
-                              float output_scale,
-                              int32_t output_transform);
+                              float scale,
+                              int32_t panel_transform,
+                              int32_t logical_transform);
   void OnOutputRemoved(uint32_t output_id);
 
   void OnTabletStateChanged(display::TabletState tablet_state);
@@ -80,7 +81,8 @@ class WaylandScreen : public PlatformScreen {
                           const gfx::Rect& bounds,
                           const gfx::Insets& insets,
                           float scale,
-                          int32_t transform);
+                          int32_t panel_transform,
+                          int32_t logical_transform);
 
   WaylandConnection* connection_ = nullptr;
 
