@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/webui/signin/inline_login_handler_chromeos.h"
 #include "chrome/grit/arc_account_picker_resources.h"
 #include "chrome/grit/arc_account_picker_resources_map.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -209,6 +210,10 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   source->AddLocalizedStrings(kLocalizedStrings);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  source->AddBoolean(
+      "secondaryGoogleAccountSigninAllowed",
+      profile->GetPrefs()->GetBoolean(
+          ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed));
   source->AddBoolean(
       "isArcAccountRestrictionsEnabled",
       ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());

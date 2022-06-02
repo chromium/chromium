@@ -137,6 +137,18 @@ Polymer({
      * @private {string}
      */
     hostedDomain_: {type: String, value: ''},
+
+    /**
+     * @return {boolean} True if secondary account sign-ins are allowed, false
+     *    otherwise.
+     * @private
+     */
+    isSecondaryGoogleAccountSigninAllowed_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('secondaryGoogleAccountSigninAllowed');
+      },
+    },
     // </if>
 
     /**
@@ -171,6 +183,17 @@ Polymer({
 
   /** @override */
   ready() {
+    // <if expr="chromeos_ash">
+    if (!this.isSecondaryGoogleAccountSigninAllowed_) {
+      // This can happen only if the user opened chrome://chrome-signin manually
+      // in the browser. Normally (in the account addition dialog) this will be
+      // handled earlier and a special error screen will be shown.
+      console.error(
+          'SecondaryGoogleAccountSigninAllowed is set to false - aborting.');
+      return;
+    }
+    // </if>
+
     this.authExtHost_ = new Authenticator(
         /** @type {!WebView} */ (this.$.signinFrame));
     this.addAuthExtHostListeners_();
