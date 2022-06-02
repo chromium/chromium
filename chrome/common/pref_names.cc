@@ -1150,11 +1150,6 @@ const char kSystemProxyUserTrafficHostAndPort[] =
 const char kEduCoexistenceArcMigrationCompleted[] =
     "account_manager.edu_coexistence_arc_migration_completed";
 
-// List pref containing extension IDs that are exempt from the restricted
-// managed guest session clean-up procedure.
-const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[] =
-    "restricted_managed_guest_session_extension_cleanup_exempt_list";
-
 // Dictionary pref for shared extension storage for device pin.
 const char kSharedStorage[] = "shared_storage";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1171,6 +1166,11 @@ const char kOOMKillsDailyCount[] = "oom_kills.daily_count";
 // Integer pref used by the metrics::DailyEvent owned by
 // memory::OOMKillsMonitor.
 const char kOOMKillsDailySample[] = "oomkills.daily_sample";
+
+// List pref containing extension IDs that are exempt from the restricted
+// managed guest session clean-up procedure.
+const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[] =
+    "restricted_managed_guest_session_extension_cleanup_exempt_list";
 
 // Boolean user profile pref that determines whether to show a banner in browser
 // settings that links to OS settings.

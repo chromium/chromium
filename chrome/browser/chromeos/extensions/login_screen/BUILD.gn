@@ -57,12 +57,18 @@ source_set("login_screen") {
       "login/cleanup/cleanup_manager_lacros.h",
       "login/cleanup/cleanup_manager_lacros_factory.cc",
       "login/cleanup/cleanup_manager_lacros_factory.h",
+      "login/cleanup/extension_cleanup_handler.cc",
+      "login/cleanup/extension_cleanup_handler.h",
     ]
     deps += [
+      "//chrome/browser:browser_process",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/profiles:profile",
+      "//chrome/common:constants",
       "//chromeos/lacros",
+      "//components/app_constants:app_constants",
       "//components/keyed_service/content",
+      "//components/prefs:prefs",
     ]
   }
 }

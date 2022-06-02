@@ -517,9 +517,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kLauncherSearchNormalizerParameters);
 
   registry->RegisterListPref(
-      ::prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList);
-
-  registry->RegisterListPref(
       prefs::kFilesAppFolderShortcuts,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 

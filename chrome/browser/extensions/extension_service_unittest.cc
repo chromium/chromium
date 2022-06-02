@@ -432,7 +432,7 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
 
   bool OnExternalExtensionUpdateUrlFound(
       const ExternalInstallInfoUpdateUrl& info,
-      bool is_initial_load) override {
+      bool force_update) override {
     ++ids_found_;
     base::DictionaryValue* pref;
     // This tests is to make sure that the provider only notifies us of the
@@ -8027,7 +8027,7 @@ TEST_P(ExternalExtensionPriorityTest, PolicyForegroundFetch) {
                                    GetParam() /* download_location */,
                                    Extension::NO_FLAGS /* creation_flag */,
                                    true /* mark_acknowledged */),
-      true /* is_initial_load */);
+      true /* force_update */);
 
   MockExternalProvider provider(nullptr,
                                 ManifestLocation::kExternalPolicyDownload);

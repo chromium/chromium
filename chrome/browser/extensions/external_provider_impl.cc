@@ -174,8 +174,7 @@ void ExternalProviderImpl::SetPrefs(
       std::move(*prefs).TakeDictDeprecated());
   ready_ = true;  // Queries for extensions are allowed from this point.
 
-  NotifyServiceOnExternalExtensionsFound(/*is_initial_load=*/true);
-  service_->OnExternalProviderReady(this);
+  NotifyServiceOnExternalExtensionsFound();
 }
 
 void ExternalProviderImpl::TriggerOnExternalExtensionFound() {
@@ -187,21 +186,23 @@ void ExternalProviderImpl::TriggerOnExternalExtensionFound() {
   if (!service_ || !prefs_)
     return;
 
-  NotifyServiceOnExternalExtensionsFound(/*is_initial_load=*/false);
+  NotifyServiceOnExternalExtensionsFound();
 }
 
-void ExternalProviderImpl::NotifyServiceOnExternalExtensionsFound(
-    bool is_initial_load) {
+void ExternalProviderImpl::NotifyServiceOnExternalExtensionsFound() {
   std::vector<ExternalInstallInfoUpdateUrl> external_update_url_extensions;
   std::vector<ExternalInstallInfoFile> external_file_extensions;
 
   RetrieveExtensionsFromPrefs(&external_update_url_extensions,
                               &external_file_extensions);
   for (const auto& extension : external_update_url_extensions)
-    service_->OnExternalExtensionUpdateUrlFound(extension, is_initial_load);
+    service_->OnExternalExtensionUpdateUrlFound(extension,
+                                                /*force_update=*/true);
 
   for (const auto& extension : external_file_extensions)
     service_->OnExternalExtensionFileFound(extension);
+
+  service_->OnExternalProviderReady(this);
 }
 
 void ExternalProviderImpl::UpdatePrefs(

@@ -1376,9 +1376,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDeviceI18nShortcutsEnabled,
     ash::prefs::kDeviceI18nShortcutsEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
-    prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
-    base::Value::Type::LIST },
   { key::kArcAppToWebAppSharingEnabled,
     apps::webapk_prefs::kGeneratedWebApksEnabled,
     base::Value::Type::BOOLEAN},
@@ -1555,6 +1552,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kEnableSyncConsent,
     prefs::kEnableSyncConsent,
     base::Value::Type::BOOLEAN },
+  { key::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
+    prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
+    base::Value::Type::LIST },
 #endif // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)

@@ -290,7 +290,7 @@ class TestKioskLoaderVisitor
   }
   bool OnExternalExtensionUpdateUrlFound(
       const ExternalInstallInfoUpdateUrl& info,
-      bool is_initial_load) override {
+      bool force_update) override {
     if (extension_registry_->GetExtensionById(
             info.extension_id, extensions::ExtensionRegistry::EVERYTHING))
       return false;

@@ -5453,7 +5453,6 @@ static_library("browser") {
     ]
     deps += [
       ":dlp_policy_event_proto",
-      "//chrome/browser/chromeos/extensions/login_screen",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/common/chromeos/extensions",
       "//chromeos/crosapi/cpp",
@@ -5470,9 +5469,6 @@ static_library("browser") {
       "//ui/chromeos/styles:cros_styles_views",
       "//ui/platform_window",
     ]
-
-    allow_circular_includes_from +=
-        [ "//chrome/browser/chromeos/extensions/login_screen" ]
 
     # component builds are not compatible on device.
     assert(!is_chromeos_device || !is_component_build)
@@ -5518,6 +5514,8 @@ static_library("browser") {
       "chromeos/arc/start_smart_selection_action_menu.h",
       "chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager.cc",
       "chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager.h",
+      "chromeos/extensions/login_screen/login/login_api_prefs.cc",
+      "chromeos/extensions/login_screen/login/login_api_prefs.h",
       "chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.cc",
       "chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h",
       "chromeos/tablet_mode/tablet_mode_page_behavior.cc",
@@ -5558,6 +5556,7 @@ static_library("browser") {
     ]
     deps += [
       "//ash/webui/projector_app/public/cpp",
+      "//chrome/browser/chromeos/extensions/login_screen",
       "//chrome/browser/metrics/structured",
       "//chrome/browser/policy:onc",
       "//chrome/browser/ui/quick_answers",
@@ -5580,12 +5579,15 @@ static_library("browser") {
       "//components/app_constants",
       "//components/arc/common",
       "//components/arc/common:arc_intent_helper_constants",
+      "//components/pref_registry:pref_registry",
+      "//components/prefs:prefs",
       "//ui/wm/public",
     ]
 
-    allow_circular_includes_from += [ "//chrome/browser/policy:onc" ]
-
     allow_circular_includes_from += [
+      "//chrome/browser/chromeos/extensions/login_screen",
+      "//chrome/browser/policy:onc",
+
       # TODO(b/215757706): Find a way to avoid the circular include.
       "//chrome/browser/ui/quick_answers",
     ]

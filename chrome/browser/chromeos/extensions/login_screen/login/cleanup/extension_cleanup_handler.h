@@ -40,9 +40,9 @@ class ExtensionCleanupHandler : public CleanupHandler {
 
   std::unordered_set<std::string> GetCleanupExemptExtensions();
 
-  Profile* profile_;
+  Profile* profile_ = nullptr;
   std::vector<std::string> errors_;
-  extensions::ExtensionService* extension_service_;
+  extensions::ExtensionService* extension_service_ = nullptr;
   CleanupHandlerCallback callback_;
   std::unordered_set<std::string> extensions_to_be_uninstalled_;
 };

@@ -118,7 +118,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
 
   // Retrieves the extensions from prefs and notifies the extension service for
   // each extension file/update URL found.
-  void NotifyServiceOnExternalExtensionsFound(bool is_initial_load);
+  void NotifyServiceOnExternalExtensionsFound();
 
   // Location for external extensions that are provided by this provider from
   // local crx files.

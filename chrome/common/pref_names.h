@@ -360,7 +360,6 @@ extern const char kUpdateRequiredTimerStartTime[];
 extern const char kUpdateRequiredWarningPeriod[];
 extern const char kSystemProxyUserTrafficHostAndPort[];
 extern const char kEduCoexistenceArcMigrationCompleted[];
-extern const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[];
 extern const char kSharedStorage[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS)
@@ -368,6 +367,7 @@ extern const char kForceMaximizeOnFirstRun[];
 extern const char kInsightsExtensionEnabled[];
 extern const char kOOMKillsDailyCount[];
 extern const char kOOMKillsDailySample[];
+extern const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[];
 extern const char kSettingsShowOSBanner[];
 extern const char kUsedPolicyCertificates[];
 #endif  // BUILDFLAG(IS_CHROMEOS)

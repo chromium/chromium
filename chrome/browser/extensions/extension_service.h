@@ -219,7 +219,7 @@ class ExtensionService : public ExtensionServiceInterface,
       const ExternalInstallInfoFile& info) override;
   bool OnExternalExtensionUpdateUrlFound(
       const ExternalInstallInfoUpdateUrl& info,
-      bool is_initial_load) override;
+      bool force_update) override;
   void OnExternalProviderReady(
       const ExternalProviderInterface* provider) override;
   void OnExternalProviderUpdateComplete(

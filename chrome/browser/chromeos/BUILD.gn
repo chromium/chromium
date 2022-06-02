@@ -2862,8 +2862,6 @@ source_set("chromeos") {
     "extensions/login_screen/login/errors.h",
     "extensions/login_screen/login/login_api_lock_handler.cc",
     "extensions/login_screen/login/login_api_lock_handler.h",
-    "extensions/login_screen/login/prefs.cc",
-    "extensions/login_screen/login/prefs.h",
     "extensions/login_screen/login/shared_session_handler.cc",
     "extensions/login_screen/login/shared_session_handler.h",
     "extensions/login_screen/login_screen_ui/login_screen_ui_api.cc",

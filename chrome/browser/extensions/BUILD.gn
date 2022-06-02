@@ -1207,6 +1207,8 @@ static_library("extensions") {
       "//components/enterprise/common/proto:connectors_proto",
       "//components/keep_alive_registry",
     ]
+    allow_circular_includes_from +=
+        [ "//chrome/browser/chromeos/extensions/login_screen" ]
   }
 
   if (use_ozone) {

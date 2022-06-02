@@ -214,7 +214,7 @@ void ExtensionService::BlocklistExtensionForTest(
 
 bool ExtensionService::OnExternalExtensionUpdateUrlFound(
     const ExternalInstallInfoUpdateUrl& info,
-    bool is_initial_load) {
+    bool force_update) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(crx_file::id_util::IdIsValid(info.extension_id));
 
@@ -319,7 +319,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
     return false;
   }
 
-  if (is_initial_load)
+  if (force_update)
     update_once_all_providers_are_ready_ = true;
   return true;
 }

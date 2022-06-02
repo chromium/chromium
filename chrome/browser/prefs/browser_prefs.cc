@@ -275,6 +275,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/supported_links_infobar_prefs_service.h"
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/login_api_prefs.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 #include "chrome/browser/memory/oom_kills_monitor.h"
@@ -380,7 +381,6 @@
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_notification_controller.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login/prefs.h"
 #include "chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.h"
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
 #include "chrome/browser/media/protected_media_identifier_permission_context.h"
@@ -1436,6 +1436,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if BUILDFLAG(IS_CHROMEOS)
   apps::SupportedLinksInfoBarPrefsService::RegisterProfilePrefs(registry);
+  extensions::login_api::RegisterProfilePrefs(registry);
   extensions::platform_keys::RegisterProfilePrefs(registry);
   certificate_manager::CertificatesHandler::RegisterProfilePrefs(registry);
   policy::PolicyCertService::RegisterProfilePrefs(registry);
