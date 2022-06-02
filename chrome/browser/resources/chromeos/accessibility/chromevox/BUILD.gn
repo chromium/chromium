@@ -60,6 +60,7 @@ chromevox_modules = [
   "common/locale_output_helper.js",
   "common/log_types.js",
   "common/msgs.js",
+  "common/panel_bridge.js",
   "common/panel_command.js",
   "common/panel_menu_data.js",
   "common/spannable.js",
