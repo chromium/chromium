@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -234,6 +235,25 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
 
   request.SetKeepalive(true);
   request.SetRequestContext(mojom::blink::RequestContextType::ATTRIBUTION_SRC);
+
+  const char* eligible = [src_type,
+                          associated_with_navigation]() -> const char* {
+    switch (src_type) {
+      case SrcType::kSource:
+        return associated_with_navigation ? "navigation-source"
+                                          : "event-source";
+      case SrcType::kTrigger:
+        NOTREACHED();
+        return nullptr;
+      case SrcType::kUndetermined:
+        DCHECK(!associated_with_navigation);
+        return "event-source, trigger";
+    }
+  }();
+
+  request.SetHttpHeaderField(http_names::kAttributionReportingEligible,
+                             eligible);
+
   FetchParameters params(std::move(request),
                          local_frame_->DomWindow()->GetCurrentWorld());
   params.MutableOptions().initiator_info.name =

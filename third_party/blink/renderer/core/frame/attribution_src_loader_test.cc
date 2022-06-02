@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "net/http/structured_headers.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -138,6 +139,45 @@ TEST_F(AttributionSrcLoaderTest, Referrer) {
   EXPECT_EQ(client_->request_head().GetReferrerPolicy(),
             network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin);
   EXPECT_EQ(client_->request_head().ReferrerString(), String());
+}
+
+TEST_F(AttributionSrcLoaderTest, EligibleHeader_Register) {
+  KURL url = ToKURL("https://example1.com/foo.html");
+  RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
+
+  attribution_src_loader_->Register(url, /*element=*/nullptr);
+
+  url_test_helpers::ServeAsynchronousRequests();
+
+  const AtomicString& eligible = client_->request_head().HttpHeaderField(
+      http_names::kAttributionReportingEligible);
+  EXPECT_EQ(eligible, "event-source, trigger");
+
+  absl::optional<net::structured_headers::Dictionary> dict =
+      net::structured_headers::ParseDictionary(eligible.Utf8());
+  ASSERT_TRUE(dict);
+  ASSERT_EQ(dict->size(), 2u);
+  EXPECT_TRUE(dict->contains("event-source"));
+  EXPECT_TRUE(dict->contains("trigger"));
+}
+
+TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
+  KURL url = ToKURL("https://example1.com/foo.html");
+  RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
+
+  attribution_src_loader_->RegisterNavigation(url, /*element=*/nullptr);
+
+  url_test_helpers::ServeAsynchronousRequests();
+
+  const AtomicString& eligible = client_->request_head().HttpHeaderField(
+      http_names::kAttributionReportingEligible);
+  EXPECT_EQ(eligible, "navigation-source");
+
+  absl::optional<net::structured_headers::Dictionary> dict =
+      net::structured_headers::ParseDictionary(eligible.Utf8());
+  ASSERT_TRUE(dict);
+  ASSERT_EQ(dict->size(), 1u);
+  EXPECT_TRUE(dict->contains("navigation-source"));
 }
 
 }  // namespace

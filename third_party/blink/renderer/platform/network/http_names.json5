@@ -23,6 +23,7 @@
     "Access-Control-Request-Headers",
     "Access-Control-Request-Method",
     "Allow-CSP-From",
+    "Attribution-Reporting-Eligible",
     "Attribution-Reporting-Filters",
     "Attribution-Reporting-Register-Aggregatable-Trigger-Data",
     "Attribution-Reporting-Register-Aggregatable-Values",
