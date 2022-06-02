@@ -171,11 +171,17 @@ void CookieManager::OnGotFirstPartySetPartitionKeyForSet(
     SetCanonicalCookieCallback callback,
     absl::optional<net::CookiePartitionKey> cookie_partition_key,
     absl::optional<net::CookiePartitionKey> fps_cookie_partition_key) {
-  if (cookie_partition_key.has_value() &&
-      fps_cookie_partition_key != cookie_partition_key) {
+  DCHECK_EQ(cookie_partition_key.has_value(),
+            fps_cookie_partition_key.has_value());
+  base::Time adjusted_expiry_date =
+      net::CanonicalCookie::ValidateAndAdjustExpiryDate(cookie->ExpiryDate(),
+                                                        cookie->CreationDate());
+  bool adjust_partition = cookie_partition_key.has_value() &&
+                          fps_cookie_partition_key != cookie_partition_key;
+  if (adjusted_expiry_date != cookie->ExpiryDate() || adjust_partition) {
     cookie = net::CanonicalCookie::FromStorage(
         cookie->Name(), cookie->Value(), cookie->Domain(), cookie->Path(),
-        cookie->CreationDate(), cookie->ExpiryDate(), cookie->LastAccessDate(),
+        cookie->CreationDate(), adjusted_expiry_date, cookie->LastAccessDate(),
         cookie->LastUpdateDate(), cookie->IsSecure(), cookie->IsHttpOnly(),
         cookie->SameSite(), cookie->Priority(), cookie->IsSameParty(),
         fps_cookie_partition_key, cookie->SourceScheme(), cookie->SourcePort());
@@ -187,6 +193,7 @@ void CookieManager::OnGotFirstPartySetPartitionKeyForSet(
       return;
     }
   }
+  DCHECK(cookie->IsCanonical());
   cookie_store_->SetCanonicalCookieAsync(std::move(cookie), source_url,
                                          cookie_options, std::move(callback));
 }

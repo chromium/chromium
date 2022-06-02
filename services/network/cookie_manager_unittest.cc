@@ -3025,6 +3025,7 @@ TEST_F(FPSPartitionedCookiesCookieManagerTest, GetCookieList) {
 }
 
 TEST_F(FPSPartitionedCookiesCookieManagerTest, SetCanonicalCookie) {
+  const auto now = base::Time::Now();
   // Add unpartitioned cookie.
   ASSERT_TRUE(service_wrapper()->SetCanonicalCookie(
       *net::CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -3034,9 +3035,19 @@ TEST_F(FPSPartitionedCookiesCookieManagerTest, SetCanonicalCookie) {
           net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
           /*partition_key=*/absl::nullopt),
       "https", true));
-  // Add partitioned cookies. One is in the First-Party Set's partition, and is
-  // first set with a member site as the partition key. SetCanonicalCookie
-  // should change the partition key to the First-Party Set's owner site.
+  // Add an unpartitioned cookie with an expiration date over the 400 day cap.
+  ASSERT_TRUE(service_wrapper()->SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "__Host-unpartitioned-bad-expiration", "1", kCookieDomain, "/", now,
+          now + base::Days(500), base::Time(), base::Time(),
+          /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
+          /*partition_key=*/absl::nullopt),
+      "https", true));
+  // Add partitioned cookies. The first is in the First-Party Set's partition,
+  // and is first set with a member site as the partition key.
+  // SetCanonicalCookie should change the partition key to the First-Party Set's
+  // owner site.
   ASSERT_TRUE(service_wrapper()->SetCanonicalCookie(
       *net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "__Host-intheset", "2", kCookieDomain, "/", base::Time(),
@@ -3045,10 +3056,30 @@ TEST_F(FPSPartitionedCookiesCookieManagerTest, SetCanonicalCookie) {
           net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
           absl::make_optional<net::CookiePartitionKey>(member_partition_key_)),
       "https", true));
+  // Add member cookie with an expiration date over the 400 day cap.
+  ASSERT_TRUE(service_wrapper()->SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "__Host-intheset-bad-expiration", "2", kCookieDomain, "/", now,
+          now + base::Days(500), base::Time(), base::Time(),
+          /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
+          absl::make_optional<net::CookiePartitionKey>(member_partition_key_)),
+      "https", true));
+  // Add non-member cookie.
   ASSERT_TRUE(service_wrapper()->SetCanonicalCookie(
       *net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "__Host-nonmember", "4", kCookieDomain, "/", base::Time(),
           base::Time(), base::Time(), base::Time(),
+          /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
+          absl::make_optional<net::CookiePartitionKey>(
+              non_member_partition_key_)),
+      "https", true));
+  // Add non-member cookie with an expiration date over the 400 day cap.
+  ASSERT_TRUE(service_wrapper()->SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "__Host-nonmember-bad-expiration", "4", kCookieDomain, "/", now,
+          now + base::Days(500), base::Time(), base::Time(),
           /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
           net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
           absl::make_optional<net::CookiePartitionKey>(
@@ -3059,10 +3090,19 @@ TEST_F(FPSPartitionedCookiesCookieManagerTest, SetCanonicalCookie) {
       GURL("https://foo_host.com/with/path"),
       net::CookieOptions::MakeAllInclusive(),
       net::CookiePartitionKeyCollection(owner_partition_key_));
-  EXPECT_EQ(2u, cookies.size());
+  EXPECT_EQ(4u, cookies.size());
   EXPECT_EQ("__Host-unpartitioned", cookies[0].Name());
-  EXPECT_EQ("__Host-intheset", cookies[1].Name());
-  EXPECT_EQ(owner_partition_key_, cookies[1].PartitionKey().value());
+  EXPECT_EQ(base::Time(), cookies[0].ExpiryDate());
+  EXPECT_EQ(absl::nullopt, cookies[0].PartitionKey());
+  EXPECT_EQ("__Host-unpartitioned-bad-expiration", cookies[1].Name());
+  EXPECT_EQ(now + base::Days(400), cookies[1].ExpiryDate());
+  EXPECT_EQ(absl::nullopt, cookies[1].PartitionKey());
+  EXPECT_EQ("__Host-intheset", cookies[2].Name());
+  EXPECT_EQ(base::Time(), cookies[2].ExpiryDate());
+  EXPECT_EQ(owner_partition_key_, cookies[2].PartitionKey().value());
+  EXPECT_EQ("__Host-intheset-bad-expiration", cookies[3].Name());
+  EXPECT_EQ(now + base::Days(400), cookies[3].ExpiryDate());
+  EXPECT_EQ(owner_partition_key_, cookies[3].PartitionKey().value());
 }
 
 // TODO(crbug.com/1296161): Delete this when the partitioned cookies Origin
