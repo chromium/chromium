@@ -2537,7 +2537,7 @@
   {
     "name": "enable-pixel-canvas-recording",
     "owners": [ "malaykeshav", "oshima" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 116
   },
   {
     "name": "enable-pointer-lock-options",
