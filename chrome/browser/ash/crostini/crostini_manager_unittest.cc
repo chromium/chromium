@@ -571,6 +571,26 @@ TEST_F(CrostiniManagerTest, OnStartTremplinRecordsRunningVm) {
   EXPECT_TRUE(crostini_manager()->IsVmRunning(kVmName));
 }
 
+TEST_F(CrostiniManagerTest, OnStartTremplinHappensEarlier) {
+  fake_concierge_client_->set_send_tremplin_started_signal_delay(
+      base::Milliseconds(1));
+  fake_concierge_client_->set_send_start_vm_response_delay(
+      base::Milliseconds(10));
+  const base::FilePath& disk_path = base::FilePath("unused");
+  const std::string owner_id = CryptohomeIdForProfile(profile());
+
+  // Start the Vm.
+  EnsureTerminaInstalled();
+  crostini_manager()->StartTerminaVm(
+      kVmName, disk_path, {}, 0,
+      base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
+
+  // Check that the Vm start is not recorded until tremplin starts.
+  EXPECT_FALSE(crostini_manager()->IsVmRunning(kVmName));
+  run_loop()->Run();
+  EXPECT_TRUE(crostini_manager()->IsVmRunning(kVmName));
+}
+
 TEST_F(CrostiniManagerTest, StopVmNameError) {
   crostini_manager()->StopVm(
       "", base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),

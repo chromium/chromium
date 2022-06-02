@@ -2558,21 +2558,27 @@ void CrostiniManager::OnStartTerminaVm(
     return;
   }
 
-  // Otherwise, record the container start and run the callback after the VM
+  // Otherwise, record the vm start and run the callback after the VM
   // starts.
   DCHECK_EQ(response->status(), vm_tools::concierge::VM_STATUS_STARTING);
-  VLOG(1) << "Awaiting TremplinStartedSignal for " << owner_id_ << ", "
-          << vm_name;
+  bool wait_for_tremplin = running_vms_.find(vm_name) == running_vms_.end();
+
   running_vms_[vm_name] =
       VmInfo{VmState::STARTING, std::move(response->vm_info())};
   // If we thought a container was running for this VM, we're wrong. This can
   // happen if the vm was formerly running, then stopped via crosh.
   running_containers_.erase(vm_name);
 
-  tremplin_started_callbacks_.emplace(
-      vm_name, base::BindOnce(&CrostiniManager::OnStartTremplin,
-                              weak_ptr_factory_.GetWeakPtr(), vm_name,
-                              std::move(callback)));
+  if (wait_for_tremplin) {
+    VLOG(1) << "Awaiting TremplinStartedSignal for " << owner_id_ << ", "
+            << vm_name;
+    tremplin_started_callbacks_.emplace(
+        vm_name, base::BindOnce(&CrostiniManager::OnStartTremplin,
+                                weak_ptr_factory_.GetWeakPtr(), vm_name,
+                                std::move(callback)));
+  } else {
+    OnStartTremplin(vm_name, std::move(callback));
+  }
 }
 
 void CrostiniManager::OnStartTremplin(std::string vm_name,
@@ -3222,6 +3228,14 @@ void CrostiniManager::OnTremplinStarted(
     const vm_tools::cicerone::TremplinStartedSignal& signal) {
   if (signal.owner_id() != owner_id_)
     return;
+
+  // If this VM is not yet known in running_vms_, put it there in state
+  // STARTING. This can happen if tremplin starts up faster than concierge can
+  // finish its other startup work.
+  if (running_vms_.find(signal.vm_name()) == running_vms_.end()) {
+    running_vms_[signal.vm_name()] =
+        VmInfo{VmState::STARTING, vm_tools::concierge::VmInfo{}};
+  }
   // Find the callbacks to call, then erase them from the map.
   auto range = tremplin_started_callbacks_.equal_range(signal.vm_name());
   for (auto it = range.first; it != range.second; ++it) {
