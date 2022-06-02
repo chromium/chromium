@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/follow/first_follow_favicon_data_source.h"
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
-#import "ios/chrome/browser/ui/follow/follow_block_types.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_follow_delegate.h"
@@ -186,22 +185,6 @@ NSInteger kFaviconSymbolPointSize = 17;
   channel.available = YES;
   channel.faviconURL =
       [[CrURL alloc] initWithNSURL:[NSURL URLWithString:kExampleFaviconURL]];
-
-  __weak FollowedWebChannel* weakChannel = channel;
-  channel.unfollowRequestBlock = ^(RequestCompletionBlock completion) {
-    // This mimics a successful unfollow on the server.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC),
-                   dispatch_get_main_queue(), ^{
-                     [self.followManagementUIUpdater
-                         removeFollowedWebChannel:weakChannel];
-                   });
-    // This mimics refollowing after a few seconds.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 13 * NSEC_PER_SEC),
-                   dispatch_get_main_queue(), ^{
-                     [self.followManagementUIUpdater
-                         addFollowedWebChannel:weakChannel];
-                   });
-  };
   return channel;
 }
 
