@@ -85,7 +85,7 @@
   },
   "certificateProvider": [{
     "channel": "stable",
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "extension_types": ["extension", "platform_app"]
   }, {
     // https://crbug.com/1194693

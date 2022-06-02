@@ -68,6 +68,9 @@
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #endif
@@ -77,9 +80,6 @@
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/certificate_provider/certificate_provider.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -567,6 +567,16 @@ ProfileNetworkContextService::CreateClientCertStore() {
   if (!client_cert_store_factory_.is_null())
     return client_cert_store_factory_.Run();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  chromeos::CertificateProviderService* cert_provider_service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
+          profile_);
+  std::unique_ptr<chromeos::CertificateProvider> certificate_provider;
+  if (cert_provider_service) {
+    certificate_provider = cert_provider_service->CreateCertificateProvider();
+  }
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool use_system_key_slot = false;
   // Enable client certificates for the Chrome OS sign-in frame, if this feature
@@ -591,14 +601,6 @@ ProfileNetworkContextService::CreateClientCertStore() {
     if (user->IsAffiliated()) {
       use_system_key_slot = true;
     }
-  }
-
-  chromeos::CertificateProviderService* cert_provider_service =
-      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
-          profile_);
-  std::unique_ptr<chromeos::CertificateProvider> certificate_provider;
-  if (cert_provider_service) {
-    certificate_provider = cert_provider_service->CreateCertificateProvider();
   }
 
   // `ClientCertStoreAsh` internally depends on NSS initialization that happens
@@ -629,8 +631,8 @@ ProfileNetworkContextService::CreateClientCertStore() {
 
   CertDbInitializer* cert_db_initializer =
       CertDbInitializerFactory::GetForBrowserContext(profile_);
-  store = std::make_unique<ClientCertStoreLacros>(cert_db_initializer,
-                                                  std::move(store));
+  store = std::make_unique<ClientCertStoreLacros>(
+      std::move(certificate_provider), cert_db_initializer, std::move(store));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   return store;

@@ -19,11 +19,11 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chromeos/components/onc/certificate_scope.h"
 #include "chromeos/network/policy_certificate_provider.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -202,7 +202,7 @@ TEST_F(CertificateManagerModelTest, ListsClientCertsFromPlatform) {
   EXPECT_FALSE(platform_cert_info->hardware_backed());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 class FakePolicyCertificateProvider
@@ -665,4 +665,4 @@ TEST_F(CertificateManagerModelChromeOSTest,
   }
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
