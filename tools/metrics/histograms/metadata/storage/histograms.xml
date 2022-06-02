@@ -224,18 +224,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.Blob.CleanupSuccess" enum="Boolean"
-    expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Recorded when the old blob storage directories are cleared. This occurs on
-    storage partition initialization, and is not recorded if there are no
-    directories to clear. The value indicates if the file operations were a
-    success.
-  </summary>
-</histogram>
-
 <histogram name="Storage.Blob.DataURLWorkerRegister" enum="Boolean"
     expires_after="M106">
   <owner>awillia@chromium.org</owner>

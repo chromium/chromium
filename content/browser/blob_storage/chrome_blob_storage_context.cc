@@ -13,7 +13,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
@@ -54,16 +53,12 @@ void RemoveOldBlobStorageDirectories(FilePath blob_storage_parent,
   }
   base::FileEnumerator enumerator(blob_storage_parent, false /* recursive */,
                                   base::FileEnumerator::DIRECTORIES);
-  bool success = true;
-  bool cleanup_needed = false;
+
   for (FilePath name = enumerator.Next(); !name.empty();
        name = enumerator.Next()) {
-    cleanup_needed = true;
     if (current_run_dir.empty() || name != current_run_dir)
-      success &= base::DeletePathRecursively(name);
+      base::DeletePathRecursively(name);
   }
-  if (cleanup_needed)
-    UMA_HISTOGRAM_BOOLEAN("Storage.Blob.CleanupSuccess", success);
 }
 
 class BlobHandleImpl : public BlobHandle {
