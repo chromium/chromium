@@ -25,6 +25,13 @@ class CONTENT_EXPORT AttributionAggregatableTriggerData {
   static absl::optional<AttributionAggregatableTriggerData> FromMojo(
       blink::mojom::AttributionAggregatableTriggerDataPtr mojo);
 
+  // Creates without validation.
+  static AttributionAggregatableTriggerData CreateForTesting(
+      absl::uint128 key,
+      base::flat_set<std::string> source_keys,
+      AttributionFilterData filters,
+      AttributionFilterData not_filters);
+
   AttributionAggregatableTriggerData();
   ~AttributionAggregatableTriggerData();
 
@@ -64,6 +71,11 @@ class CONTENT_EXPORT AttributionAggregatableTrigger {
 
   static absl::optional<AttributionAggregatableTrigger> FromMojo(
       blink::mojom::AttributionAggregatableTriggerPtr mojo);
+
+  // Creates without validation.
+  static AttributionAggregatableTrigger CreateForTesting(
+      std::vector<AttributionAggregatableTriggerData> trigger_data,
+      Values values);
 
   AttributionAggregatableTrigger();
   ~AttributionAggregatableTrigger();

@@ -288,6 +288,8 @@ class Trigger {
   eventTriggers: string;
   eventLevelStatus: string;
   aggregatableStatus: string;
+  aggregatableTriggers: string;
+  aggregatableValues: string;
 
   constructor(mojo: WebUITrigger) {
     this.triggerTime = new Date(mojo.triggerTime);
@@ -313,6 +315,23 @@ class Trigger {
         }),
         bigintReplacer, ' ');
 
+    this.aggregatableTriggers = JSON.stringify(
+        mojo.aggregatableTriggers.map((e) => {
+          // Omit the filters and not filters if they are empty for brevity.
+          return {
+            'key_piece': e.keyPiece,
+            'source_keys': e.sourceKeys,
+            'filters': Object.entries(e.filters).length > 0 ? e.filters :
+                                                              undefined,
+            'not_filters': Object.entries(e.notFilters).length > 0 ?
+                e.notFilters :
+                undefined,
+          };
+        }),
+        bigintReplacer, ' ');
+
+    this.aggregatableValues = JSON.stringify(mojo.aggregatableValues, null, ' ');
+
     this.eventLevelStatus = triggerStatusToText(mojo.eventLevelStatus);
     this.aggregatableStatus = triggerStatusToText(mojo.aggregatableStatus);
   }
@@ -336,6 +355,8 @@ class TriggerTableModel extends TableModel<Trigger> {
       new ValueColumn<Trigger, string>('Debug Key', (e) => e.debugKey),
       new CodeColumn<Trigger>('Filters', (e) => e.filters),
       new CodeColumn<Trigger>('Event Triggers', (e) => e.eventTriggers),
+      new CodeColumn<Trigger>('Aggregatable Triggers', (e) => e.aggregatableTriggers),
+      new CodeColumn<Trigger>('Aggregatable Values', (e) => e.aggregatableValues),
     ];
 
     this.emptyRowText = 'No triggers.';

@@ -887,10 +887,26 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               /*not_filters=*/
               AttributionFilterData::CreateForTesting({{"e", {"f"}}})),
       },
-      AttributionAggregatableTrigger());
+      AttributionAggregatableTrigger::CreateForTesting(
+          {AttributionAggregatableTriggerData::CreateForTesting(
+               /*key=*/345,
+               /*source_keys=*/{"a"},
+               /*filters=*/
+               AttributionFilterData::CreateForTesting({{"c", {"d"}}}),
+               /*not_filters=*/AttributionFilterData()),
+           AttributionAggregatableTriggerData::CreateForTesting(
+               /*key=*/678,
+               /*source_keys=*/{"b"},
+               /*filters=*/AttributionFilterData(),
+               /*not_filters=*/
+               AttributionFilterData::CreateForTesting({{"e", {"f"}}}))},
+          {{"a", 123}, {"b", 456}}));
 
   static constexpr char kWantEventTriggerJSON[] =
       R"json([ {  "data": "2",  "priority": "3",  "filters": {   "c": [    "d"   ]  } }, {  "data": "4",  "priority": "5",  "deduplication_key": "6",  "not_filters": {   "e": [    "f"   ]  } }])json";
+
+  static constexpr char kWantAggregatableTriggerJSON[] =
+      R"json([ {  "key_piece": "0x159",  "source_keys": [   "a"  ],  "filters": {   "c": [    "d"   ]  } }, {  "key_piece": "0x2a6",  "source_keys": [   "b"  ],  "not_filters": {   "e": [    "f"   ]  } }])json";
 
   static constexpr char wait_script[] = R"(
       let table = document.querySelector('#triggerTable')
@@ -903,14 +919,17 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[0].children[4].innerText === "https://r.test" &&
             table.children[0].children[5].innerText === "1" &&
             table.children[0].children[6].innerText === '{ "a": [  "b" ]}' &&
-            table.children[0].children[7].innerText === $2) {
+            table.children[0].children[7].innerText === $2 &&
+            table.children[0].children[8].innerText === $3 &&
+            table.children[0].children[9].innerText === '{ "a": 123, "b": 456}') {
           obs.disconnect();
           document.title = $1;
         }
       });
       obs.observe(table, {'childList': true});)";
-  EXPECT_TRUE(ExecJsInWebUI(
-      JsReplace(wait_script, kCompleteTitle, kWantEventTriggerJSON)));
+  EXPECT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle,
+                                      kWantEventTriggerJSON,
+                                      kWantAggregatableTriggerJSON)));
 
   auto notify_trigger_handled =
       [&](AttributionTrigger::EventLevelResult event_status,
