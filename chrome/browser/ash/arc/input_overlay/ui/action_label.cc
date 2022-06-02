@@ -195,9 +195,11 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
   switch (mode) {
     case DisplayMode::kView:
       SetToViewMode();
+      SetFocusBehavior(FocusBehavior::NEVER);
       break;
     case DisplayMode::kEdit:
       SetToEditMode();
+      SetFocusBehavior(FocusBehavior::ALWAYS);
       break;
     case DisplayMode::kEditedSuccess:
       SetToEditFocus();
@@ -246,12 +248,12 @@ bool ActionLabel::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 void ActionLabel::OnMouseEntered(const ui::MouseEvent& event) {
-  if (!HasFocus())
+  if (IsFocusable() && !HasFocus())
     SetToEditHover();
 }
 
 void ActionLabel::OnMouseExited(const ui::MouseEvent& event) {
-  if (!HasFocus())
+  if (IsFocusable() && !HasFocus())
     SetToEditDefault();
 }
 
