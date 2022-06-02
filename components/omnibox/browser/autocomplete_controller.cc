@@ -950,7 +950,9 @@ void AutocompleteController::UpdateKeywordDescriptions(
         if (template_url) {
           if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
               template_url->starter_pack_id() > 0) {
-            i->description = base::UTF8ToUTF16(template_url->url());
+            i->description =
+                TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(
+                    template_url->starter_pack_id());
           } else {
             // For extension keywords, just make the description the extension
             // name -- don't assume that the normal search keyword description

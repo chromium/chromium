@@ -6,6 +6,7 @@
 #define COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_STARTER_PACK_DATA_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "components/search_engines/search_engine_type.h"
@@ -32,6 +33,7 @@ struct StarterPackEngine {
   int keyword_message_id;
   const char* const favicon_url;
   const char* const search_url;
+  const char* const destination_url;
   const StarterPackID id;
   const SearchEngineType type;
 };
@@ -48,6 +50,10 @@ int GetDataVersion();
 
 // Returns a vector of all starter pack engines, in TemplateURLData format.
 std::vector<std::unique_ptr<TemplateURLData>> GetStarterPackEngines();
+
+// Returns the destination url for the starter pack engine associated with a
+// given starter pack id.
+std::u16string GetDestinationUrlForStarterPackID(int id);
 
 }  // namespace TemplateURLStarterPackData
 

@@ -344,8 +344,9 @@ TEST_F(BuiltinProviderTest, StarterPack) {
   feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
 
   const GURL kBookmarksUrl =
-      GURL(TemplateURLStarterPackData::bookmarks.search_url);
-  const GURL kHistoryUrl = GURL(TemplateURLStarterPackData::history.search_url);
+      GURL(TemplateURLStarterPackData::bookmarks.destination_url);
+  const GURL kHistoryUrl =
+      GURL(TemplateURLStarterPackData::history.destination_url);
 
   const std::u16string kBookmarksKeyword = u"@bookmarks";
   const std::u16string kHistoryKeyword = u"@history";

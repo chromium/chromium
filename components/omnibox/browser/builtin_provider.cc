@@ -21,6 +21,7 @@
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/url_formatter/url_fixer.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "ui/base/page_transition_types.h"
@@ -205,7 +206,9 @@ void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url) {
       false, AutocompleteMatchType::SEARCH_OTHER_ENGINE);
 
   match.fill_into_edit = template_url.keyword();
-  match.destination_url = GURL(template_url.url());
+  match.destination_url =
+      GURL(TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(
+          template_url.starter_pack_id()));
   match.contents = template_url.short_name();
   match.contents_class.emplace_back(0, ACMatchClassification::NONE);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
