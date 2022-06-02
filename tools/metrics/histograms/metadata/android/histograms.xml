@@ -3532,7 +3532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DarkMode.ForceDarkBehavior"
-    enum="WebViewForceDarkBehavior" expires_after="2022-07-24">
+    enum="WebViewForceDarkBehavior" expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3542,7 +3542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DarkMode.ForceDarkMode"
-    enum="WebViewForceDarkMode2" expires_after="2022-07-24">
+    enum="WebViewForceDarkMode2" expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3552,7 +3552,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DarkMode.InDarkMode" enum="Boolean"
-    expires_after="2022-07-24">
+    expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3562,7 +3562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DarkMode.InDarkModeVsLightTheme"
-    enum="WebViewInDarkModeVsLightTheme" expires_after="2022-07-24">
+    enum="WebViewInDarkModeVsLightTheme" expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3572,7 +3572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DarkMode.InDarkModeVsNightMode"
-    enum="WebViewInDarkModeVsNightMode" expires_after="2022-07-24">
+    enum="WebViewInDarkModeVsNightMode" expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3582,7 +3582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DarkMode.LightTheme" enum="LightTheme"
-    expires_after="2022-07-24">
+    expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3592,7 +3592,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DarkMode.NightMode" enum="NightMode"
-    expires_after="2022-07-24">
+    expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3603,7 +3603,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DarkMode.NightModeVsLightTheme"
-    enum="WebViewNightModeVsLightTheme" expires_after="2022-07-24">
+    enum="WebViewNightModeVsLightTheme" expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3613,7 +3613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DarkMode.PageDarkenedAccordingToAppTheme"
-    enum="Boolean" expires_after="2022-06-24">
+    enum="Boolean" expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3625,7 +3625,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DarkMode.PrefersDarkFromTheme"
-    enum="BooleanYesNo" expires_after="2022-07-24">
+    enum="BooleanYesNo" expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3636,7 +3636,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DarkMode.PrimaryTextLuminanceVsLightTheme"
-    enum="WebViewPrimaryTextLuminanceVsLightTheme" expires_after="2022-07-24">
+    enum="WebViewPrimaryTextLuminanceVsLightTheme" expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3647,7 +3647,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DarkMode.PrimaryTextLuminanceVsNightMode"
-    enum="WebViewPrimaryTextLuminanceVsNightMode" expires_after="2022-07-24">
+    enum="WebViewPrimaryTextLuminanceVsNightMode" expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3844,7 +3844,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.ForceDarkBehavior"
-    enum="WebViewForceDarkBehavior" expires_after="2022-06-03">
+    enum="WebViewForceDarkBehavior" expires_after="2023-06-01">
   <owner>peter@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3854,7 +3854,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.ForceDarkMode" enum="WebViewForceDarkMode"
-    expires_after="2022-06-03">
+    expires_after="2023-06-01">
   <owner>peter@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
