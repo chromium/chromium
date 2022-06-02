@@ -10,6 +10,10 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/message_center/public/cpp/notification.h"
 
+namespace message_center {
+class NotificationViewController;
+}
+
 namespace views {
 class View;
 }
@@ -36,6 +40,10 @@ std::vector<message_center::Notification*> GetSortedNotificationsWithOwnView();
 // indicator in status area since they already have a dedicated tray item, and
 // grouped notifications only need to be counted as one.
 size_t ASH_EXPORT GetNotificationCount();
+
+// Get the notification view controller associated to a certain display.
+message_center::NotificationViewController*
+GetActiveNotificationViewControllerForDisplay(int64_t display_id);
 
 // Utils for animation within a notification view.
 

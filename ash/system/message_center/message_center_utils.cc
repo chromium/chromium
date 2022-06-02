@@ -6,6 +6,11 @@
 
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
+#include "ash/system/message_center/notification_grouping_controller.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
@@ -71,6 +76,18 @@ size_t GetNotificationCount() {
     ++count;
   }
   return count;
+}
+
+message_center::NotificationViewController*
+GetActiveNotificationViewControllerForDisplay(int64_t display_id) {
+  RootWindowController* root_window_controller =
+      Shell::GetRootWindowControllerWithDisplayId(display_id);
+  if (!root_window_controller)
+    return nullptr;
+  return root_window_controller->GetStatusAreaWidget()
+      ->unified_system_tray()
+      ->GetNotificationGroupingController()
+      ->GetActiveNotificationViewController();
 }
 
 void InitLayerForAnimations(views::View* view) {

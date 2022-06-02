@@ -35,6 +35,7 @@ class CurrentLocaleView;
 class ImeModeView;
 class ManagedDeviceTrayItemView;
 class NetworkTrayView;
+class NotificationGroupingController;
 class NotificationIconsController;
 class PrivacyScreenToastController;
 class SnoopingProtectionView;
@@ -215,6 +216,8 @@ class ASH_EXPORT UnifiedSystemTray
   std::u16string GetAccessibleNameForQuickSettingsBubble();
 
   AshMessagePopupCollection* GetMessagePopupCollection();
+
+  NotificationGroupingController* GetNotificationGroupingController();
 
   scoped_refptr<UnifiedSystemTrayModel> model() { return model_; }
   UnifiedSystemTrayBubble* bubble() { return bubble_.get(); }

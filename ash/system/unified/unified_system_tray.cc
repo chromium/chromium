@@ -97,6 +97,10 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
     return message_popup_collection_.get();
   }
 
+  NotificationGroupingController* grouping_controller() {
+    return grouping_controller_.get();
+  }
+
  private:
   std::unique_ptr<MessageCenterUiController> const ui_controller_;
   std::unique_ptr<AshMessagePopupCollection> const message_popup_collection_;
@@ -666,6 +670,11 @@ UnifiedSystemTray::GetPopupViewForNotificationID(
 
 AshMessagePopupCollection* UnifiedSystemTray::GetMessagePopupCollection() {
   return ui_delegate_->message_popup_collection();
+}
+
+NotificationGroupingController*
+UnifiedSystemTray::GetNotificationGroupingController() {
+  return ui_delegate_->grouping_controller();
 }
 
 void UnifiedSystemTray::AddTrayItemToContainer(TrayItemView* tray_item) {

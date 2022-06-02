@@ -6,11 +6,14 @@
 
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/ash_notification_view.h"
+#include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/message_center/unified_message_list_view.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/message_center/message_center_types.h"
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -216,10 +219,20 @@ const std::string& NotificationGroupingController::SetupParentNotification(
   grouped_notification_list_->AddGroupedNotification(old_parent_id,
                                                      new_parent_id);
 
-  GetActiveNotificationViewController()
-      ->ConvertNotificationViewToGroupedNotificationView(
-          /*ungrouped_notification_id=*/old_parent_id,
-          /*new_grouped_notification_id=*/new_parent_id);
+  // Since MessagePopupCollection uses the global MessageCenter to update its
+  // animations, the update to MessageCenter in primary display will interfere
+  // the animation in the secondary display. Thus, calling this functions on all
+  // display is needed.
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+    auto* controller =
+        message_center_utils::GetActiveNotificationViewControllerForDisplay(
+            display.id());
+    if (!controller)
+      continue;
+    controller->ConvertNotificationViewToGroupedNotificationView(
+        /*ungrouped_notification_id=*/old_parent_id,
+        /*new_grouped_notification_id=*/new_parent_id);
+  }
 
   grouped_notification_list_->ReplaceParentId(
       /*new_parent_id=*/new_parent_id,
