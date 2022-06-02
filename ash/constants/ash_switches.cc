@@ -101,6 +101,9 @@ const char kArcDisableMediaStoreMaintenance[] =
 // apps silently. Used in autotests to resolve racy conditions.
 const char kArcDisablePlayAutoInstall[] = "arc-disable-play-auto-install";
 
+// Used in autotest to disable TTS cache which is on by default.
+const char kArcDisableTtsCache[] = "arc-disable-tts-cache";
+
 // Flag that disables ureadahead completely, including host and guest parts.
 // See also |kArcVmUreadaheadMode|.
 const char kArcDisableUreadahead[] = "arc-disable-ureadahead";
