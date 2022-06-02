@@ -29,6 +29,9 @@
 namespace discardable_memory {
 namespace {
 
+const base::Feature kShorterPeriodicPurge{"ShorterPeriodicPurge",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Global atomic to generate unique discardable shared memory IDs.
 base::AtomicSequenceNumber g_next_discardable_shared_memory_id;
 
@@ -420,8 +423,13 @@ void ClientDiscardableSharedMemoryManager::ScheduledPurge() {
   // recover the memory without adverse latency effects.
   // TODO(crbug.com/1123679): Determine if |kMinAgeForScheduledPurge| and the
   // constant from |ScheduledPurge| need to be tuned.
-  PurgeUnlockedMemory(
-      ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge);
+  if (base::FeatureList::IsEnabled(kShorterPeriodicPurge)) {
+    PurgeUnlockedMemory(
+        ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge / 2);
+  } else {
+    PurgeUnlockedMemory(
+        ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge);
+  }
 
   bool should_schedule = false;
   {
