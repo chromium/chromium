@@ -13,15 +13,34 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
+namespace {
+
+std::u16string GetTitle(
+    const std::vector<ToolbarActionViewController*>& actions,
+    std::u16string current_site) {
+  if (actions.size() == 1) {
+    return l10n_util::GetStringFUTF16(
+        IDS_EXTENSIONS_REQUEST_ACCESS_BUBBLE_SINGLE_EXTENSION_TITLE,
+        actions[0]->GetActionName(), current_site);
+  }
+  return l10n_util::GetStringFUTF16(
+      IDS_EXTENSIONS_REQUEST_ACCESS_BUBBLE_MULTIPLE_EXTENSIONS_TITLE,
+      current_site);
+}
+
+}  // namespace
+
 void ShowExtensionsRequestAccessDialogView(
     content::WebContents* web_contents,
     views::View* anchor_view,
     std::vector<ToolbarActionViewController*> actions) {
   DCHECK(!actions.empty());
+  DCHECK(web_contents);
 
   ui::DialogModel::Builder dialog_builder =
       ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>());
   dialog_builder
+      .SetTitle(GetTitle(actions, GetCurrentHost(web_contents)))
       // TODO(crbug.com/1239772): Grant access to all the extensions when dialog
       // is accepted
       .AddOkButton(base::DoNothing(),
@@ -32,15 +51,9 @@ void ShowExtensionsRequestAccessDialogView(
           l10n_util::GetStringUTF16(
               IDS_EXTENSIONS_REQUEST_ACCESS_BUBBLE_CANCEL_BUTTON_LABEL));
 
-  std::u16string current_site = GetCurrentHost(web_contents);
   if (actions.size() == 1) {
-    dialog_builder.SetTitle(l10n_util::GetStringFUTF16(
-        IDS_EXTENSIONS_REQUEST_ACCESS_BUBBLE_SINGLE_EXTENSION_TITLE,
-        actions[0]->GetActionName(), current_site));
+    dialog_builder.SetIcon(GetIcon(actions[0], web_contents));
   } else {
-    dialog_builder.SetTitle(l10n_util::GetStringFUTF16(
-        IDS_EXTENSIONS_REQUEST_ACCESS_BUBBLE_MULTIPLE_EXTENSIONS_TITLE,
-        current_site));
     for (auto* action : actions) {
       dialog_builder.AddCustomField(CreateExtensionItem(
           action->GetActionName(), GetIcon(action, web_contents)));
