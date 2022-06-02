@@ -54,7 +54,7 @@ const CGFloat kResizeFactor = 4;
 - (BOOL)isEdgeSwipe;
 // Initialize card based on model_'s webstatelist index.
 - (void)setupCard:(SwipeView*)card withIndex:(int)index;
-// Build a |kResizeFactor| sized greyscaled version of |image|.
+// Build a `kResizeFactor` sized greyscaled version of `image`.
 - (UIImage*)smallGreyImage:(UIImage*)image;
 
 @property(nonatomic, strong) NSLayoutConstraint* backgroundTopConstraint;
@@ -164,7 +164,7 @@ const CGFloat kResizeFactor = 4;
   return greyImage;
 }
 
-// Create card view based on |_webStateList|'s index.
+// Create card view based on `_webStateList`'s index.
 - (void)setupCard:(SwipeView*)card withIndex:(int)index {
   if (index < 0 || index >= _webStateList->count()) {
     [card setHidden:YES];
@@ -189,9 +189,9 @@ const CGFloat kResizeFactor = 4;
 }
 
 // Helper method that is invoked once the color snapshot has been fetched
-// for the WebState returned by |weakWebState|. As the fetching is done
+// for the WebState returned by `weakWebState`. As the fetching is done
 // asynchronously, it is possible for the WebState to have been destroyed
-// and thus for |webStateGetter| to return nullptr.
+// and thus for `webStateGetter` to return nullptr.
 - (void)colorSnapshotRetrieved:(UIImage*)image
                           card:(SwipeView*)card
                   weakWebState:(base::WeakPtr<web::WebState>)weakWebState {
@@ -227,14 +227,14 @@ const CGFloat kResizeFactor = 4;
                  });
 }
 
-// Move cards according to |currentPoint_.x|. Edge cards only drag
-// |kEdgeCardDragPercentage| of |bounds|.
+// Move cards according to `currentPoint_.x`. Edge cards only drag
+// `kEdgeCardDragPercentage` of `bounds`.
 - (void)updateCardPositions {
   CGFloat width = [self cardWidth];
 
   if ([self isEdgeSwipe]) {
     // If an edge card, don't allow the card to be dragged across the screen.
-    // Instead, drag across |kEdgeCardDragPercentage| of the screen.
+    // Instead, drag across `kEdgeCardDragPercentage` of the screen.
     _rightCard.transform = CGAffineTransformMakeTranslation(
         (_currentPoint.x) * kEdgeCardDragPercentage, 0);
     _leftCard.transform = CGAffineTransformMakeTranslation(
@@ -290,7 +290,7 @@ const CGFloat kResizeFactor = 4;
 }
 
 // Update the current WebState and animate the proper card view if the
-// |currentPoint_| is past the center of |bounds|.
+// `currentPoint_` is past the center of `bounds`.
 - (void)finishPan {
   int currentIndex = _webStateList->active_index();
   // Something happened and now there is not active WebState.  End card side let
@@ -304,7 +304,7 @@ const CGFloat kResizeFactor = 4;
   int destinationWebStateIndex = currentIndex;
   CGFloat offset = UseRTLLayout() ? -1 : 1;
   if (_direction == UISwipeGestureRecognizerDirectionRight) {
-    // If swipe is right and |currentPoint_.x| is over the first 1/3, move left.
+    // If swipe is right and `currentPoint_.x` is over the first 1/3, move left.
     if (_currentPoint.x > width / 3.0 && ![self isEdgeSwipe]) {
       rightTransform =
           CGAffineTransformMakeTranslation(width + kCardHorizontalSpacing, 0);
@@ -320,7 +320,7 @@ const CGFloat kResizeFactor = 4;
       base::RecordAction(UserMetricsAction("MobileStackSwipeCancelled"));
     }
   } else {
-    // If swipe is left and |currentPoint_.x| is over the first 1/3, move right.
+    // If swipe is left and `currentPoint_.x` is over the first 1/3, move right.
     if (_currentPoint.x < (width / 3.0) * 2.0 && ![self isEdgeSwipe]) {
       leftTransform =
           CGAffineTransformMakeTranslation(-width - kCardHorizontalSpacing, 0);

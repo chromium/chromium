@@ -17,7 +17,7 @@ BOOL IsSwipingBack(UISwipeGestureRecognizerDirection direction);
 // If swiping to the left (or right in RTL).
 BOOL IsSwipingForward(UISwipeGestureRecognizerDirection direction);
 
-// Returns |YES| if the item should use Chromium native swipe.  This is true for
+// Returns `YES` if the item should use Chromium native swipe.  This is true for
 // the NTP and chrome://crash.
 BOOL UseNativeSwipe(web::NavigationItem* item);
 
