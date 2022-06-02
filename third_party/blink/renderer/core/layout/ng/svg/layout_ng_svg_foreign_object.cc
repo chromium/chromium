@@ -64,4 +64,17 @@ AffineTransform LayoutNGSVGForeignObject::LocalToSVGParentTransform() const {
   return transform;
 }
 
+PaintLayerType LayoutNGSVGForeignObject::LayerTypeRequired() const {
+  NOT_DESTROYED();
+  // Skip LayoutSVGBlock's override.
+  return LayoutBlockFlow::LayerTypeRequired();
+}
+
+bool LayoutNGSVGForeignObject::CreatesNewFormattingContext() const {
+  NOT_DESTROYED();
+  // This is the root of a foreign object. Don't let anything inside it escape
+  // to our ancestors.
+  return true;
+}
+
 }  // namespace blink

@@ -34,6 +34,10 @@ class LayoutNGSVGForeignObject final
   gfx::RectF VisualRectInLocalSVGCoordinates() const override;
   AffineTransform LocalToSVGParentTransform() const override;
 
+  // LayoutBox override:
+  PaintLayerType LayerTypeRequired() const override;
+  bool CreatesNewFormattingContext() const override;
+
   // The resolved viewport in the regular SVG coordinate space (after any
   // 'transform' has been applied but without zoom-adjustment).
   gfx::RectF viewport_;
