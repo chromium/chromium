@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -130,10 +129,6 @@ void IDBRequestLoader::DidFail(FileErrorCode) {
   DCHECK(file_reader_loading_);
   file_reader_loading_ = false;
 #endif  // DCHECK_IS_ON()
-
-  base::UmaHistogramSparse("Storage.Blob.IDBRequestLoader.ReadError",
-                           std::max(0, -loader_->GetNetError()));
-
   ReportError();
 }
 

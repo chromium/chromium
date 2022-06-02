@@ -289,42 +289,7 @@ chromium-metrics-reviews@google.com.
   <owner>dmurph@chromium.org</owner>
   <summary>
     The error code reported by the blob system while trying to read a blob in
-    the FileReaderLoader. Compare with the
-    Storage.Blob.IDBRequestLoader.ReadError histogram to eliminate IndexedDB
-    large-value blobs.
-  </summary>
-</histogram>
-
-<histogram name="Storage.Blob.IDBRequestLoader.ReadError" enum="NetErrorCodes"
-    expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    The error code reported by the blob system while trying to read an IndexedDB
-    large-value blob in the IDBRequestLoader. These blobs are automatically
-    created in Blink when a website writes a large value to IndexedDB.
-  </summary>
-</histogram>
-
-<histogram name="Storage.Blob.InvalidReference" enum="RefcountOperation"
-    expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Counts the number of times we have an invalid refcount operation. An invalid
-    increment means the blob didn't exist, and an invalid decrement means we
-    don't have any record of the blob in our host.
-  </summary>
-</histogram>
-
-<histogram name="Storage.Blob.InvalidURLRegister" enum="RefcountOperation"
-    expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Counts the number of times we have an invalid url registration operation. An
-    invalid increment means the blob isn't in use by the host yet or the url is
-    already mapped. An invalid decrement means the url isn't registered.
+    the FileReaderLoader.
   </summary>
 </histogram>
 
