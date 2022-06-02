@@ -32,8 +32,8 @@ unsigned ContainerSelector::Type(WritingMode writing_mode) const {
 }
 
 ContainerQuery::ContainerQuery(ContainerSelector selector,
-                               std::unique_ptr<MediaQueryExpNode> query)
-    : selector_(std::move(selector)), query_(std::move(query)) {}
+                               const MediaQueryExpNode* query)
+    : selector_(std::move(selector)), query_(query) {}
 
 ContainerQuery::ContainerQuery(const ContainerQuery& other)
     : selector_(other.selector_), query_(other.query_->Copy()) {}

@@ -101,7 +101,7 @@ bool MediaAttributeMatches(const MediaValuesCached& media_values,
                            const String& attribute_value) {
   // Since this is for preload scanning only, ExecutionContext-based origin
   // trials for media queries are not needed.
-  scoped_refptr<MediaQuerySet> media_queries =
+  MediaQuerySet* media_queries =
       MediaQuerySet::Create(attribute_value, nullptr);
   MediaQueryEvaluator media_query_evaluator(&media_values);
   return media_query_evaluator.Eval(*media_queries);

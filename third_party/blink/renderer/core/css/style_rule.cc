@@ -595,7 +595,7 @@ StyleRuleCondition::StyleRuleCondition(
 StyleRuleCondition::StyleRuleCondition(
     const StyleRuleCondition& condition_rule) = default;
 
-StyleRuleMedia::StyleRuleMedia(scoped_refptr<MediaQuerySet> media,
+StyleRuleMedia::StyleRuleMedia(MediaQuerySet* media,
                                HeapVector<Member<StyleRuleBase>>& adopt_rules)
     : StyleRuleCondition(kMedia, adopt_rules), media_queries_(media) {}
 
@@ -607,6 +607,7 @@ StyleRuleMedia::StyleRuleMedia(const StyleRuleMedia& media_rule)
 
 void StyleRuleMedia::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleCondition::TraceAfterDispatch(visitor);
+  visitor->Trace(media_queries_);
 }
 
 StyleRuleSupports::StyleRuleSupports(
@@ -653,12 +654,12 @@ void StyleRuleContainer::SetConditionText(
   auto* context = MakeGarbageCollected<CSSParserContext>(*execution_context);
   ContainerQueryParser parser(*context);
 
-  if (std::unique_ptr<MediaQueryExpNode> exp_node = parser.ParseQuery(value)) {
+  if (const MediaQueryExpNode* exp_node = parser.ParseQuery(value)) {
     condition_text_ = exp_node->Serialize();
 
     ContainerSelector selector(container_query_->Selector().Name(), *exp_node);
-    container_query_ = MakeGarbageCollected<ContainerQuery>(
-        std::move(selector), std::move(exp_node));
+    container_query_ =
+        MakeGarbageCollected<ContainerQuery>(std::move(selector), exp_node);
   }
 }
 

@@ -33,7 +33,7 @@ CSSMediaRule::CSSMediaRule(StyleRuleMedia* media_rule, CSSStyleSheet* parent)
 
 CSSMediaRule::~CSSMediaRule() = default;
 
-scoped_refptr<MediaQuerySet> CSSMediaRule::MediaQueries() const {
+MediaQuerySet* CSSMediaRule::MediaQueries() const {
   return To<StyleRuleMedia>(group_rule_.Get())->MediaQueries();
 }
 

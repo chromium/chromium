@@ -17,7 +17,7 @@ class ContainerQueryParserTest : public PageTestBase {
  public:
   String ParseQuery(String string) {
     const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    std::unique_ptr<MediaQueryExpNode> node =
+    const MediaQueryExpNode* node =
         ContainerQueryParser(*context).ParseQuery(string);
     if (!node)
       return g_null_atom;
@@ -43,7 +43,7 @@ class ContainerQueryParserTest : public PageTestBase {
     Vector<CSSParserToken, 32> tokens =
         CSSTokenizer(feature_query).TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    std::unique_ptr<MediaQueryExpNode> node =
+    const MediaQueryExpNode* node =
         ContainerQueryParser(*context).ConsumeFeatureQuery(range,
                                                            TestFeatureSet());
     if (!node || !range.AtEnd())

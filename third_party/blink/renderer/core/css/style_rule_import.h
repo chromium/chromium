@@ -40,7 +40,7 @@ class StyleRuleImport : public StyleRuleBase {
  public:
   StyleRuleImport(const String& href,
                   LayerName&& layer,
-                  scoped_refptr<MediaQuerySet>,
+                  MediaQuerySet*,
                   OriginClean origin_clean);
   ~StyleRuleImport();
 
@@ -55,7 +55,7 @@ class StyleRuleImport : public StyleRuleBase {
   StyleSheetContents* GetStyleSheet() const { return style_sheet_.Get(); }
 
   bool IsLoading() const;
-  MediaQuerySet* MediaQueries() { return media_queries_.get(); }
+  MediaQuerySet* MediaQueries() { return media_queries_.Get(); }
 
   void RequestStyleSheet();
 
@@ -102,7 +102,7 @@ class StyleRuleImport : public StyleRuleBase {
   Member<ImportedStyleSheetClient> style_sheet_client_;
   String str_href_;
   LayerName layer_;
-  scoped_refptr<MediaQuerySet> media_queries_;
+  Member<MediaQuerySet> media_queries_;
   Member<StyleSheetContents> style_sheet_;
   bool loading_;
   // Whether the style sheet that has this import rule is origin-clean:

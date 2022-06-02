@@ -155,7 +155,7 @@ bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set) const {
 
 bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set,
                                Results results) const {
-  const Vector<std::unique_ptr<MediaQuery>>& queries = query_set.QueryVector();
+  const HeapVector<Member<MediaQuery>>& queries = query_set.QueryVector();
   if (!queries.size())
     return true;  // Empty query list evaluates to true.
 
@@ -240,7 +240,7 @@ KleeneValue MediaQueryEvaluator::EvalFeature(const MediaQueryExp& expr,
 }
 
 bool MediaQueryEvaluator::DidResultsChange(
-    const Vector<MediaQuerySetResult>& results) const {
+    const HeapVector<MediaQuerySetResult>& results) const {
   for (const auto& result : results) {
     if (result.Result() != Eval(result.MediaQueries()))
       return true;

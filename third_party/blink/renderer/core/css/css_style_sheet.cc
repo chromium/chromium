@@ -166,7 +166,7 @@ CSSStyleSheet::CSSStyleSheet(StyleSheetContents* contents,
   ClearOwnerNode();
   ClearOwnerRule();
   Contents()->RegisterClient(this);
-  scoped_refptr<MediaQuerySet> media_query_set;
+  MediaQuerySet* media_query_set = nullptr;
   switch (options->media()->GetContentType()) {
     case V8UnionMediaListOrString::ContentType::kMediaList:
       media_query_set = options->media()->GetAsMediaList()->Queries()->Copy();
@@ -292,11 +292,10 @@ void CSSStyleSheet::setDisabled(bool disabled) {
   DidMutate(Mutation::kSheet);
 }
 
-void CSSStyleSheet::SetMediaQueries(
-    scoped_refptr<MediaQuerySet> media_queries) {
-  media_queries_ = std::move(media_queries);
+void CSSStyleSheet::SetMediaQueries(MediaQuerySet* media_queries) {
+  media_queries_ = media_queries;
   if (media_cssom_wrapper_ && media_queries_)
-    media_cssom_wrapper_->Reattach(media_queries_.get());
+    media_cssom_wrapper_->Reattach(media_queries_);
 }
 
 bool CSSStyleSheet::MatchesMediaQueries(const MediaQueryEvaluator& evaluator) {
@@ -534,7 +533,7 @@ MediaList* CSSStyleSheet::media() {
 
   if (!media_cssom_wrapper_) {
     media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(
-        media_queries_.get(), const_cast<CSSStyleSheet*>(this));
+        media_queries_.Get(), const_cast<CSSStyleSheet*>(this));
   }
   return media_cssom_wrapper_.Get();
 }
@@ -640,6 +639,9 @@ bool CSSStyleSheet::CanBeActivated(
 
 void CSSStyleSheet::Trace(Visitor* visitor) const {
   visitor->Trace(contents_);
+  visitor->Trace(media_queries_);
+  visitor->Trace(viewport_dependent_media_query_results_);
+  visitor->Trace(device_dependent_media_query_results_);
   visitor->Trace(owner_node_);
   visitor->Trace(owner_rule_);
   visitor->Trace(media_cssom_wrapper_);

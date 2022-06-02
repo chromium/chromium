@@ -71,7 +71,7 @@ MediaQueryList* MediaQueryMatcher::MatchMedia(const String& query) {
   if (!document_)
     return nullptr;
 
-  scoped_refptr<MediaQuerySet> media =
+  MediaQuerySet* media =
       MediaQuerySet::Create(query, document_->GetExecutionContext());
   return MakeGarbageCollected<MediaQueryList>(document_->GetExecutionContext(),
                                               this, media);

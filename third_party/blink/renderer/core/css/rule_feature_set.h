@@ -53,6 +53,7 @@ class CORE_EXPORT RuleFeatureSet {
   RuleFeatureSet(const RuleFeatureSet&) = delete;
   RuleFeatureSet& operator=(const RuleFeatureSet&) = delete;
   ~RuleFeatureSet();
+  void Trace(Visitor*) const;
 
   bool operator==(const RuleFeatureSet&) const;
   bool operator!=(const RuleFeatureSet& o) const { return !(*this == o); }

@@ -3758,10 +3758,10 @@ TEST_F(StyleEngineTest, DynamicViewportUnitsInMediaQueryMatcher) {
   // See step 10.8 (call to CallMediaQueryListListeners) in
   // ScriptedAnimationController::ServiceScriptedAnimations.
 
-  auto mq_static = MediaQuerySet::Create("(min-width: 50vh)",
-                                         GetDocument().GetExecutionContext());
+  MediaQuerySet* mq_static = MediaQuerySet::Create(
+      "(min-width: 50vh)", GetDocument().GetExecutionContext());
   ASSERT_TRUE(mq_static);
-  matcher.Evaluate(mq_static.get());
+  matcher.Evaluate(mq_static);
   GetDocument().DynamicViewportUnitsChanged();
   SimulateFrame();
   EXPECT_FALSE(listener->notified);
@@ -3769,10 +3769,10 @@ TEST_F(StyleEngineTest, DynamicViewportUnitsInMediaQueryMatcher) {
   // Evaluating a media query with dv* units will mark the MediaQueryMatcher
   // as dependent on such units, hence we should see events when calling
   // DynamicViewportUnitsChanged after that.
-  auto mq_dynamic = MediaQuerySet::Create("(min-width: 50dvh)",
-                                          GetDocument().GetExecutionContext());
+  MediaQuerySet* mq_dynamic = MediaQuerySet::Create(
+      "(min-width: 50dvh)", GetDocument().GetExecutionContext());
   ASSERT_TRUE(mq_dynamic);
-  matcher.Evaluate(mq_dynamic.get());
+  matcher.Evaluate(mq_dynamic);
   GetDocument().DynamicViewportUnitsChanged();
   SimulateFrame();
   EXPECT_TRUE(listener->notified);

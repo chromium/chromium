@@ -26,19 +26,19 @@ namespace {
 //
 // https://drafts.csswg.org/css-contain-3/#typedef-container-condition
 template <typename Func>
-std::unique_ptr<MediaQueryExpNode> ConsumeNotAndOr(Func func,
-                                                   CSSParserTokenRange& range) {
+const MediaQueryExpNode* ConsumeNotAndOr(Func func,
+                                         CSSParserTokenRange& range) {
   if (ConsumeIfIdent(range, "not"))
     return MediaQueryExpNode::Not(func(range));
 
-  std::unique_ptr<MediaQueryExpNode> result = func(range);
+  const MediaQueryExpNode* result = func(range);
 
   if (AtIdent(range.Peek(), "and")) {
     while (result && ConsumeIfIdent(range, "and"))
-      result = MediaQueryExpNode::And(std::move(result), func(range));
+      result = MediaQueryExpNode::And(result, func(range));
   } else if (AtIdent(range.Peek(), "or")) {
     while (ConsumeIfIdent(range, "or"))
-      result = MediaQueryExpNode::Or(std::move(result), func(range));
+      result = MediaQueryExpNode::Or(result, func(range));
   }
 
   return result;
@@ -77,17 +77,16 @@ ContainerQueryParser::ContainerQueryParser(const CSSParserContext& context)
                           context.GetExecutionContext(),
                           MediaQueryParser::SyntaxLevel::kLevel4) {}
 
-std::unique_ptr<MediaQueryExpNode> ContainerQueryParser::ParseQuery(
-    String value) {
+const MediaQueryExpNode* ContainerQueryParser::ParseQuery(String value) {
   auto tokens = CSSTokenizer(value).TokenizeToEOF();
   CSSParserTokenRange range(tokens);
   return ParseQuery(range);
 }
 
-std::unique_ptr<MediaQueryExpNode> ContainerQueryParser::ParseQuery(
+const MediaQueryExpNode* ContainerQueryParser::ParseQuery(
     CSSParserTokenRange range) {
   range.ConsumeWhitespace();
-  auto node = ConsumeContainerQuery(range);
+  const MediaQueryExpNode* node = ConsumeContainerQuery(range);
   if (!range.AtEnd())
     return nullptr;
   return node;
@@ -97,7 +96,7 @@ std::unique_ptr<MediaQueryExpNode> ContainerQueryParser::ParseQuery(
 //                   | ( <size-feature> )
 //                   | style( <style-query> )
 //                   | <general-enclosed>
-std::unique_ptr<MediaQueryExpNode> ContainerQueryParser::ConsumeContainerQuery(
+const MediaQueryExpNode* ContainerQueryParser::ConsumeContainerQuery(
     CSSParserTokenRange& range) {
   CSSParserTokenRange original_range = range;
 
@@ -109,17 +108,15 @@ std::unique_ptr<MediaQueryExpNode> ContainerQueryParser::ConsumeContainerQuery(
 
     CSSParserTokenRange original_block = block;
     // <size-feature>
-    std::unique_ptr<MediaQueryExpNode> query =
-        ConsumeFeature(block, SizeFeatureSet());
+    const MediaQueryExpNode* query = ConsumeFeature(block, SizeFeatureSet());
     if (query && block.AtEnd())
-      return MediaQueryExpNode::Nested(std::move(query));
+      return MediaQueryExpNode::Nested(query);
     block = original_block;
 
     // <container-condition>
-    std::unique_ptr<MediaQueryExpNode> condition =
-        ConsumeContainerCondition(block);
+    const MediaQueryExpNode* condition = ConsumeContainerCondition(block);
     if (condition && block.AtEnd())
-      return MediaQueryExpNode::Nested(std::move(condition));
+      return MediaQueryExpNode::Nested(condition);
   }
   range = original_range;
 
@@ -129,8 +126,8 @@ std::unique_ptr<MediaQueryExpNode> ContainerQueryParser::ConsumeContainerQuery(
   return media_query_parser_.ConsumeGeneralEnclosed(range);
 }
 
-std::unique_ptr<MediaQueryExpNode>
-ContainerQueryParser::ConsumeContainerCondition(CSSParserTokenRange& range) {
+const MediaQueryExpNode* ContainerQueryParser::ConsumeContainerCondition(
+    CSSParserTokenRange& range) {
   return ConsumeNotAndOr(
       [this](CSSParserTokenRange& range) {
         return this->ConsumeContainerQuery(range);
@@ -138,23 +135,24 @@ ContainerQueryParser::ConsumeContainerCondition(CSSParserTokenRange& range) {
       range);
 }
 
-std::unique_ptr<MediaQueryExpNode> ContainerQueryParser::ConsumeFeatureQuery(
+const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQuery(
     CSSParserTokenRange& range,
     const FeatureSet& feature_set) {
   CSSParserTokenRange original_range = range;
 
-  if (auto feature = ConsumeFeature(range, feature_set))
+  if (const MediaQueryExpNode* feature = ConsumeFeature(range, feature_set))
     return feature;
   range = original_range;
 
-  if (auto node = ConsumeFeatureCondition(range, feature_set))
+  if (const MediaQueryExpNode* node =
+          ConsumeFeatureCondition(range, feature_set)) {
     return node;
+  }
 
   return nullptr;
 }
 
-std::unique_ptr<MediaQueryExpNode>
-ContainerQueryParser::ConsumeFeatureQueryInParens(
+const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQueryInParens(
     CSSParserTokenRange& range,
     const FeatureSet& feature_set) {
   CSSParserTokenRange original_range = range;
@@ -163,18 +161,18 @@ ContainerQueryParser::ConsumeFeatureQueryInParens(
     auto block = range.ConsumeBlock();
     block.ConsumeWhitespace();
     range.ConsumeWhitespace();
-    auto query = ConsumeFeatureQuery(block, feature_set);
+    const MediaQueryExpNode* query = ConsumeFeatureQuery(block, feature_set);
     if (query && block.AtEnd())
-      return MediaQueryExpNode::Nested(std::move(query));
+      return MediaQueryExpNode::Nested(query);
   }
   range = original_range;
 
   return media_query_parser_.ConsumeGeneralEnclosed(range);
 }
 
-std::unique_ptr<MediaQueryExpNode>
-ContainerQueryParser::ConsumeFeatureCondition(CSSParserTokenRange& range,
-                                              const FeatureSet& feature_set) {
+const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureCondition(
+    CSSParserTokenRange& range,
+    const FeatureSet& feature_set) {
   return ConsumeNotAndOr(
       [this, &feature_set](CSSParserTokenRange& range) {
         return this->ConsumeFeatureQueryInParens(range, feature_set);
@@ -182,7 +180,7 @@ ContainerQueryParser::ConsumeFeatureCondition(CSSParserTokenRange& range,
       range);
 }
 
-std::unique_ptr<MediaQueryExpNode> ContainerQueryParser::ConsumeFeature(
+const MediaQueryExpNode* ContainerQueryParser::ConsumeFeature(
     CSSParserTokenRange& range,
     const FeatureSet& feature_set) {
   return media_query_parser_.ConsumeFeature(range, feature_set);

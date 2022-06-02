@@ -52,7 +52,7 @@ class CORE_EXPORT CSSMediaRule final : public CSSConditionRule {
  private:
   CSSRule::Type GetType() const override { return kMediaRule; }
 
-  scoped_refptr<MediaQuerySet> MediaQueries() const;
+  MediaQuerySet* MediaQueries() const;
 
   mutable Member<MediaList> media_cssom_wrapper_;
 };

@@ -302,6 +302,8 @@ void ScopedStyleResolver::RebuildCascadeLayerMap(
 void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(scope_);
   visitor->Trace(style_sheets_);
+  visitor->Trace(viewport_dependent_media_query_results_);
+  visitor->Trace(device_dependent_media_query_results_);
   visitor->Trace(keyframes_rule_map_);
   visitor->Trace(counter_style_map_);
   visitor->Trace(cascade_layer_map_);

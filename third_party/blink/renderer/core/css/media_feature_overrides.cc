@@ -11,6 +11,10 @@
 
 namespace blink {
 
+void MediaFeatureOverrides::Trace(Visitor* visitor) const {
+  visitor->Trace(overrides_);
+}
+
 void MediaFeatureOverrides::SetOverride(const AtomicString& feature,
                                         const String& value_string) {
   CSSTokenizer tokenizer(value_string);
@@ -34,10 +38,12 @@ void MediaFeatureOverrides::SetOverride(const AtomicString& feature,
   auto value =
       MediaQueryExp::Create(feature, range, *fake_context, nullptr).ExpValue();
 
-  if (value.IsValid())
-    overrides_.Set(feature, value);
-  else
+  if (value.IsValid()) {
+    overrides_.Set(feature,
+                   MakeGarbageCollected<MediaQueryExpValueWrapper>(value));
+  } else {
     overrides_.erase(feature);
+  }
 }
 
 }  // namespace blink

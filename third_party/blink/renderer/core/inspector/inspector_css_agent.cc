@@ -1849,8 +1849,7 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
   }
 
   const MediaQuerySet* queries = media->Queries();
-  const Vector<std::unique_ptr<MediaQuery>>& query_vector =
-      queries->QueryVector();
+  const HeapVector<Member<MediaQuery>>& query_vector = queries->QueryVector();
   LocalFrame* frame = nullptr;
   if (parent_style_sheet) {
     if (Document* document = parent_style_sheet->OwnerDocument())
@@ -1873,7 +1872,7 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
   bool has_media_query_items = false;
   for (wtf_size_t i = 0; i < query_vector.size(); ++i) {
     MediaQuery& query = *query_vector.at(i);
-    Vector<MediaQueryExp> expressions;
+    HeapVector<MediaQueryExp> expressions;
     if (query.ExpNode())
       query.ExpNode()->CollectExpressions(expressions);
     auto expression_array = std::make_unique<

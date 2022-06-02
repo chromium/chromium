@@ -941,6 +941,7 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(plugins_changed_observers_);
   visitor->Trace(next_related_page_);
   visitor->Trace(prev_related_page_);
+  visitor->Trace(media_feature_overrides_);
   Supplementable<Page>::Trace(visitor);
 }
 
@@ -1102,7 +1103,7 @@ void Page::SetMediaFeatureOverride(const AtomicString& media_feature,
   if (!media_feature_overrides_) {
     if (value.IsEmpty())
       return;
-    media_feature_overrides_ = std::make_unique<MediaFeatureOverrides>();
+    media_feature_overrides_ = MakeGarbageCollected<MediaFeatureOverrides>();
   }
   media_feature_overrides_->SetOverride(media_feature, value);
   if (media_feature == "prefers-color-scheme" ||
@@ -1113,7 +1114,7 @@ void Page::SetMediaFeatureOverride(const AtomicString& media_feature,
 }
 
 void Page::ClearMediaFeatureOverrides() {
-  media_feature_overrides_.reset();
+  media_feature_overrides_ = nullptr;
   SettingsChanged(ChangeType::kMediaQuery);
   SettingsChanged(ChangeType::kColorScheme);
 }

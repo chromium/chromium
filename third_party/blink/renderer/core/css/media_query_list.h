@@ -49,9 +49,7 @@ class CORE_EXPORT MediaQueryList final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  MediaQueryList(ExecutionContext*,
-                 MediaQueryMatcher*,
-                 scoped_refptr<MediaQuerySet>);
+  MediaQueryList(ExecutionContext*, MediaQueryMatcher*, MediaQuerySet*);
   MediaQueryList(const MediaQueryList&) = delete;
   MediaQueryList& operator=(const MediaQueryList&) = delete;
   ~MediaQueryList() override;
@@ -90,7 +88,7 @@ class CORE_EXPORT MediaQueryList final
   bool UpdateMatches();
 
   Member<MediaQueryMatcher> matcher_;
-  scoped_refptr<MediaQuerySet> media_;
+  Member<MediaQuerySet> media_;
   using ListenerList = HeapLinkedHashSet<Member<MediaQueryListListener>>;
   ListenerList listeners_;
   bool matches_dirty_;

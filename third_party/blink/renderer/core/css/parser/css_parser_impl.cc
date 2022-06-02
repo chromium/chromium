@@ -819,7 +819,7 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(CSSParserTokenStream& stream) {
   if (style_sheet_)
     style_sheet_->SetHasMediaQueries();
 
-  const auto media = MediaQueryParser::ParseMediaQuerySet(
+  MediaQuerySet* media = MediaQueryParser::ParseMediaQuerySet(
       prelude, context_->GetExecutionContext());
 
   ConsumeRuleList(stream, kRegularRuleList,
@@ -1203,11 +1203,11 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
     name = ident->Value();
   }
 
-  std::unique_ptr<MediaQueryExpNode> query = query_parser.ParseQuery(prelude);
+  const MediaQueryExpNode* query = query_parser.ParseQuery(prelude);
   if (!query)
     return nullptr;
   ContainerQuery* container_query = MakeGarbageCollected<ContainerQuery>(
-      ContainerSelector(std::move(name), *query), std::move(query));
+      ContainerSelector(std::move(name), *query), query);
 
   if (observer_)
     observer_->StartRuleBody(stream.Offset());

@@ -74,8 +74,7 @@ void HTMLSourceElement::CreateMediaQueryList(const AtomicString& media) {
   }
 
   ExecutionContext* execution_context = GetExecutionContext();
-  scoped_refptr<MediaQuerySet> set =
-      MediaQuerySet::Create(media, execution_context);
+  MediaQuerySet* set = MediaQuerySet::Create(media, execution_context);
   media_query_list_ = MakeGarbageCollected<MediaQueryList>(
       execution_context, &GetDocument().GetMediaQueryMatcher(), set);
   AddMediaQueryListListener();

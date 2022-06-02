@@ -421,6 +421,11 @@ RuleFeatureSet::~RuleFeatureSet() {
   is_alive_ = false;
 }
 
+void RuleFeatureSet::Trace(Visitor* visitor) const {
+  visitor->Trace(viewport_dependent_media_query_results_);
+  visitor->Trace(device_dependent_media_query_results_);
+}
+
 bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
   return metadata_ == other.metadata_ &&
          InvalidationSetMapsEqual<AtomicString>(

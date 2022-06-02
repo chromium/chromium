@@ -24,19 +24,15 @@ class CORE_EXPORT MediaQueryParser {
   STACK_ALLOCATED();
 
  public:
-  static scoped_refptr<MediaQuerySet> ParseMediaQuerySet(
-      const String&,
-      const ExecutionContext*);
-  static scoped_refptr<MediaQuerySet> ParseMediaQuerySet(
-      CSSParserTokenRange,
-      const ExecutionContext*);
-  static scoped_refptr<MediaQuerySet> ParseMediaCondition(
-      CSSParserTokenRange,
-      const ExecutionContext*);
-  static scoped_refptr<MediaQuerySet> ParseMediaQuerySetInMode(
-      CSSParserTokenRange,
-      CSSParserMode,
-      const ExecutionContext*);
+  static MediaQuerySet* ParseMediaQuerySet(const String&,
+                                           const ExecutionContext*);
+  static MediaQuerySet* ParseMediaQuerySet(CSSParserTokenRange,
+                                           const ExecutionContext*);
+  static MediaQuerySet* ParseMediaCondition(CSSParserTokenRange,
+                                            const ExecutionContext*);
+  static MediaQuerySet* ParseMediaQuerySetInMode(CSSParserTokenRange,
+                                                 CSSParserMode,
+                                                 const ExecutionContext*);
 
   // Passed to ConsumeFeature to determine which features are allowed.
   class FeatureSet {
@@ -104,18 +100,17 @@ class CORE_EXPORT MediaQueryParser {
   // Note that this function accepts CSSParserTokenRanges by *value*, unlike
   // Consume* functions, and that nullptr is returned if either |lhs|
   // or |rhs| aren't fully consumed.
-  std::unique_ptr<MediaQueryExpNode> ParseNameValueComparison(
-      CSSParserTokenRange lhs,
-      MediaQueryOperator op,
-      CSSParserTokenRange rhs,
-      NameAffinity,
-      const FeatureSet&);
+  const MediaQueryExpNode* ParseNameValueComparison(CSSParserTokenRange lhs,
+                                                    MediaQueryOperator op,
+                                                    CSSParserTokenRange rhs,
+                                                    NameAffinity,
+                                                    const FeatureSet&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-feature
   //
   // Currently, only <mf-boolean> and <mf-plain> productions are supported.
-  std::unique_ptr<MediaQueryExpNode> ConsumeFeature(CSSParserTokenRange&,
-                                                    const FeatureSet&);
+  const MediaQueryExpNode* ConsumeFeature(CSSParserTokenRange&,
+                                          const FeatureSet&);
 
   enum class ConditionMode {
     // https://drafts.csswg.org/mediaqueries-4/#typedef-media-condition
@@ -125,28 +120,27 @@ class CORE_EXPORT MediaQueryParser {
   };
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-condition
-  std::unique_ptr<MediaQueryExpNode> ConsumeCondition(
+  const MediaQueryExpNode* ConsumeCondition(
       CSSParserTokenRange&,
       ConditionMode = ConditionMode::kNormal);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-in-parens
-  std::unique_ptr<MediaQueryExpNode> ConsumeInParens(CSSParserTokenRange&);
+  const MediaQueryExpNode* ConsumeInParens(CSSParserTokenRange&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-general-enclosed
-  std::unique_ptr<MediaQueryExpNode> ConsumeGeneralEnclosed(
-      CSSParserTokenRange&);
+  const MediaQueryExpNode* ConsumeGeneralEnclosed(CSSParserTokenRange&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-query
-  std::unique_ptr<MediaQuery> ConsumeQuery(CSSParserTokenRange&);
+  MediaQuery* ConsumeQuery(CSSParserTokenRange&);
 
   // Used for ParserType::kMediaConditionParser.
   //
   // Parsing a single condition is useful for the 'sizes' attribute.
   //
   // https://html.spec.whatwg.org/multipage/images.html#sizes-attribute
-  scoped_refptr<MediaQuerySet> ConsumeSingleCondition(CSSParserTokenRange);
+  MediaQuerySet* ConsumeSingleCondition(CSSParserTokenRange);
 
-  scoped_refptr<MediaQuerySet> ParseImpl(CSSParserTokenRange);
+  MediaQuerySet* ParseImpl(CSSParserTokenRange);
 
   // True if <media-not> is enabled.
   bool IsNotKeywordEnabled() const;
@@ -157,7 +151,7 @@ class CORE_EXPORT MediaQueryParser {
   bool IsMediaQueries4SyntaxEnabled() const;
 
   ParserType parser_type_;
-  scoped_refptr<MediaQuerySet> query_set_;
+  MediaQuerySet* query_set_ = nullptr;
   CSSParserMode mode_;
   const ExecutionContext* execution_context_;
   SyntaxLevel syntax_level_;

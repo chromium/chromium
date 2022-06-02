@@ -835,6 +835,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(cue_pseudo_rules_);
   visitor->Trace(focus_pseudo_class_rules_);
   visitor->Trace(selector_fragment_anchor_rules_);
+  visitor->Trace(features_);
   visitor->Trace(focus_visible_pseudo_class_rules_);
   visitor->Trace(spatial_navigation_interest_class_rules_);
   visitor->Trace(universal_rules_);
@@ -849,6 +850,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(property_rules_);
   visitor->Trace(counter_style_rules_);
   visitor->Trace(scroll_timeline_rules_);
+  visitor->Trace(media_query_set_results_);
   visitor->Trace(implicit_outer_layer_);
   visitor->Trace(layer_intervals_);
   visitor->Trace(container_query_intervals_);

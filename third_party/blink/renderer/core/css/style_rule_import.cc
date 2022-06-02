@@ -37,7 +37,7 @@ namespace blink {
 
 StyleRuleImport::StyleRuleImport(const String& href,
                                  LayerName&& layer,
-                                 scoped_refptr<MediaQuerySet> media,
+                                 MediaQuerySet* media,
                                  OriginClean origin_clean)
     : StyleRuleBase(kImport),
       parent_style_sheet_(nullptr),
@@ -60,6 +60,7 @@ void StyleRuleImport::Dispose() {
 void StyleRuleImport::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(style_sheet_client_);
   visitor->Trace(parent_style_sheet_);
+  visitor->Trace(media_queries_);
   visitor->Trace(style_sheet_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }

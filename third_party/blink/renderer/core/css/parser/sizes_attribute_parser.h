@@ -30,7 +30,6 @@ class CORE_EXPORT SizesAttributeParser {
   bool MediaConditionMatches(const MediaQuerySet& media_condition);
   float EffectiveSizeDefaultValue();
 
-  scoped_refptr<MediaQuerySet> media_condition_;
   MediaValues* media_values_;
   const ExecutionContext* execution_context_;
   float length_;

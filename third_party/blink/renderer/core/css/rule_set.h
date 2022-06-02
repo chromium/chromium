@@ -451,7 +451,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRuleProperty>> property_rules_;
   HeapVector<Member<StyleRuleCounterStyle>> counter_style_rules_;
   HeapVector<Member<StyleRuleScrollTimeline>> scroll_timeline_rules_;
-  Vector<MediaQuerySetResult> media_query_set_results_;
+  HeapVector<MediaQuerySetResult> media_query_set_results_;
 
   // Whether there is a ruleset bucket for rules with a selector on
   // the style attribute (which is rare, but allowed). If so, the caller

@@ -115,7 +115,7 @@ MediaValuesCached* CreateMediaValues(
 bool MediaMatches(const String& media,
                   MediaValues* media_values,
                   const ExecutionContext* execution_context) {
-  scoped_refptr<MediaQuerySet> media_queries =
+  MediaQuerySet* media_queries =
       MediaQuerySet::Create(media, execution_context);
   MediaQueryEvaluator evaluator(media_values);
   return evaluator.Eval(*media_queries);

@@ -164,7 +164,7 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
   // If type is empty or CSS, this is a CSS style sheet.
   const AtomicString& type = this->type();
   if (IsCSS(element, type) && passes_content_security_policy_checks) {
-    scoped_refptr<MediaQuerySet> media_queries;
+    MediaQuerySet* media_queries = nullptr;
     const AtomicString& media_string = media();
     bool media_query_matches = true;
     if (!media_string.IsEmpty()) {

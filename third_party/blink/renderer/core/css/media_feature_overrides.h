@@ -7,21 +7,28 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
-class CORE_EXPORT MediaFeatureOverrides {
+class CORE_EXPORT MediaFeatureOverrides
+    : public GarbageCollected<MediaFeatureOverrides> {
  public:
+  void Trace(Visitor*) const;
   void SetOverride(const AtomicString& feature, const String& value_string);
   MediaQueryExpValue GetOverride(const AtomicString& feature) const {
     auto it = overrides_.find(feature);
-    return it != overrides_.end() ? it->value : MediaQueryExpValue();
+    return it != overrides_.end() ? it->value->value : MediaQueryExpValue();
   }
 
  private:
-  HashMap<AtomicString, MediaQueryExpValue> overrides_;
+  // TODO(crbug.com/1312000): HeapHashMap does not support storing
+  // MediaQueryExpValue (DISALLOW_NEW) directly. Refactor to avoid the
+  // wrapper.
+  HeapHashMap<AtomicString, Member<MediaQueryExpValueWrapper>> overrides_;
 };
 
 }  // namespace blink

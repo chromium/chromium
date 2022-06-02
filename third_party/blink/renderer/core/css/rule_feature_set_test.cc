@@ -29,6 +29,8 @@ class RuleFeatureSetTest : public testing::Test {
  public:
   RuleFeatureSetTest() = default;
 
+  void Trace(Visitor* visitor) const { visitor->Trace(rule_feature_set_); }
+
   void SetUp() override {
     document_ = HTMLDocument::CreateForTest();
     auto* html = MakeGarbageCollected<HTMLHtmlElement>(*document_);
@@ -38,8 +40,8 @@ class RuleFeatureSetTest : public testing::Test {
     document_->body()->setInnerHTML("<b><i></i></b>");
   }
 
-  Vector<MediaQueryExp> ExpressionsFrom(const MediaQuery& query) {
-    Vector<MediaQueryExp> expressions;
+  HeapVector<MediaQueryExp> ExpressionsFrom(const MediaQuery& query) {
+    HeapVector<MediaQueryExp> expressions;
     if (query.ExpNode())
       query.ExpNode()->CollectExpressions(expressions);
     return expressions;
@@ -1459,13 +1461,13 @@ TEST_F(RuleFeatureSetTest, invalidatesNonTerminalHas) {
 }
 
 TEST_F(RuleFeatureSetTest, MediaQueryResultListEquality) {
-  scoped_refptr<MediaQuerySet> min_width1 =
+  MediaQuerySet* min_width1 =
       MediaQueryParser::ParseMediaQuerySet("(min-width: 1000px)", nullptr);
-  scoped_refptr<MediaQuerySet> min_width2 =
+  MediaQuerySet* min_width2 =
       MediaQueryParser::ParseMediaQuerySet("(min-width: 2000px)", nullptr);
-  scoped_refptr<MediaQuerySet> min_resolution1 =
+  MediaQuerySet* min_resolution1 =
       MediaQueryParser::ParseMediaQuerySet("(min-resolution: 72dpi)", nullptr);
-  scoped_refptr<MediaQuerySet> min_resolution2 =
+  MediaQuerySet* min_resolution2 =
       MediaQueryParser::ParseMediaQuerySet("(min-resolution: 300dpi)", nullptr);
 
   {

@@ -26,11 +26,11 @@
 #include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -41,44 +41,43 @@ class ExecutionContext;
 class MediaList;
 class MediaQuery;
 
-class CORE_EXPORT MediaQuerySet : public RefCounted<MediaQuerySet> {
+class CORE_EXPORT MediaQuerySet : public GarbageCollected<MediaQuerySet> {
  public:
-  static scoped_refptr<MediaQuerySet> Create() {
-    return base::AdoptRef(new MediaQuerySet());
+  static MediaQuerySet* Create() {
+    return MakeGarbageCollected<MediaQuerySet>();
   }
-  static scoped_refptr<MediaQuerySet> Create(const String& media_string,
-                                             const ExecutionContext*);
+  static MediaQuerySet* Create(const String& media_string,
+                               const ExecutionContext*);
+
+  MediaQuerySet();
+  MediaQuerySet(const MediaQuerySet&);
+  void Trace(Visitor*) const;
 
   bool Set(const String&, const ExecutionContext*);
   bool Add(const String&, const ExecutionContext*);
   bool Remove(const String&, const ExecutionContext*);
 
-  void AddMediaQuery(std::unique_ptr<MediaQuery>);
+  void AddMediaQuery(MediaQuery*);
 
-  const Vector<std::unique_ptr<MediaQuery>>& QueryVector() const {
-    return queries_;
-  }
+  const HeapVector<Member<MediaQuery>>& QueryVector() const { return queries_; }
 
   String MediaText() const;
   bool HasUnknown() const;
 
-  scoped_refptr<MediaQuerySet> Copy() const {
-    return base::AdoptRef(new MediaQuerySet(*this));
+  MediaQuerySet* Copy() const {
+    return MakeGarbageCollected<MediaQuerySet>(*this);
   }
 
  private:
-  MediaQuerySet();
-  MediaQuerySet(const MediaQuerySet&);
-
-  Vector<std::unique_ptr<MediaQuery>> queries_;
+  HeapVector<Member<MediaQuery>> queries_;
 };
 
 class MediaList final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  MediaList(scoped_refptr<MediaQuerySet>, CSSStyleSheet* parent_sheet);
-  MediaList(scoped_refptr<MediaQuerySet>, CSSRule* parent_rule);
+  MediaList(MediaQuerySet*, CSSStyleSheet* parent_sheet);
+  MediaList(MediaQuerySet*, CSSRule* parent_rule);
 
   unsigned length() const { return media_queries_->QueryVector().size(); }
   String item(unsigned index) const;
@@ -101,14 +100,14 @@ class MediaList final : public ScriptWrappable {
   CSSRule* ParentRule() const { return parent_rule_; }
   CSSStyleSheet* ParentStyleSheet() const { return parent_style_sheet_; }
 
-  const MediaQuerySet* Queries() const { return media_queries_.get(); }
+  const MediaQuerySet* Queries() const { return media_queries_.Get(); }
 
-  void Reattach(scoped_refptr<MediaQuerySet>);
+  void Reattach(MediaQuerySet*);
 
   void Trace(Visitor*) const override;
 
  private:
-  scoped_refptr<MediaQuerySet> media_queries_;
+  Member<MediaQuerySet> media_queries_;
   Member<CSSStyleSheet> parent_style_sheet_;
   Member<CSSRule> parent_rule_;
 };

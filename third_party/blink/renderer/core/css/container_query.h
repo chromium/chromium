@@ -40,7 +40,7 @@ class CORE_EXPORT ContainerSelector {
 class CORE_EXPORT ContainerQuery final
     : public GarbageCollected<ContainerQuery> {
  public:
-  ContainerQuery(ContainerSelector, std::unique_ptr<MediaQueryExpNode> query);
+  ContainerQuery(ContainerSelector, const MediaQueryExpNode* query);
   ContainerQuery(const ContainerQuery&);
 
   const ContainerSelector& Selector() const { return selector_; }
@@ -50,7 +50,10 @@ class CORE_EXPORT ContainerQuery final
 
   String ToString() const;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(parent_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(query_);
+    visitor->Trace(parent_);
+  }
 
  private:
   friend class ContainerQueryTest;
@@ -61,7 +64,7 @@ class CORE_EXPORT ContainerQuery final
   const MediaQueryExpNode& Query() const { return *query_; }
 
   ContainerSelector selector_;
-  std::unique_ptr<MediaQueryExpNode> query_;
+  Member<const MediaQueryExpNode> query_;
   Member<const ContainerQuery> parent_;
 };
 
