@@ -9,7 +9,9 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/task/task_features.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -27,11 +29,18 @@
 namespace viz {
 namespace {
 
+const base::Feature kAsyncGpuLatencyReporting CONSTINIT{
+    "AsyncGpuLatencyReporting", base::FEATURE_ENABLED_BY_DEFAULT};
+
 using ::perfetto::protos::pbzero::ChromeLatencyInfo;
 
 scoped_refptr<base::SequencedTaskRunner> CreateLatencyTracerRunner() {
   if (!base::ThreadPoolInstance::Get())
     return nullptr;
+
+  if (!base::FeatureList::IsEnabled(kAsyncGpuLatencyReporting))
+    return nullptr;
+
   return base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
