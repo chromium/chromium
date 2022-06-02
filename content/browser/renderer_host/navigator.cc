@@ -1306,6 +1306,10 @@ void Navigator::RecordNavigationMetrics(
       navigation_data_->commit_navigation_sent_) {
     base::TimeTicks unload_start = params.unload_start.value();
     base::TimeTicks unload_end = params.unload_end.value();
+    // Note: we expect `commit_navigation_end` to be later than `unload_end`.
+    // `unload_end` is recorded when the unload handlers finish running, which
+    // happens prior to the navigation committing and recording
+    // `commit_navigation_end` in this same-process case.
     base::TimeTicks commit_navigation_end =
         params.commit_navigation_end.value();
 
@@ -1316,7 +1320,7 @@ void Navigator::RecordNavigationMetrics(
           blink::LocalTimeTicks::FromTimeTicks(first_before_unload_start_time),
           blink::LocalTimeTicks::FromTimeTicks(base::TimeTicks::Now()),
           blink::RemoteTimeTicks::FromTimeTicks(unload_start),
-          blink::RemoteTimeTicks::FromTimeTicks(unload_end));
+          blink::RemoteTimeTicks::FromTimeTicks(commit_navigation_end));
       blink::LocalTimeTicks converted_unload_start = converter.ToLocalTimeTicks(
           blink::RemoteTimeTicks::FromTimeTicks(unload_start));
       blink::LocalTimeTicks converted_unload_end = converter.ToLocalTimeTicks(
