@@ -3640,7 +3640,7 @@ chromium-metrics-reviews@google.com.
   <owner>csharrison@chromium.org</owner>
   <summary>
     Records the number of registered conversions
-    (https://github.com/WICG/conversion-measurement-api) on a given top level
+    (https://github.com/WICG/attribution-reporting-api) on a given top level
     page load. Recorded when the page navigates away or is otherwise closed.
     Only recorded for non-off-the-record profiles (OTR profiles have the feature
     disabled).

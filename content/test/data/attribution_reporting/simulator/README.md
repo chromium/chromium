@@ -206,7 +206,7 @@ JSON schema for the output of the simulator.
       },
 
       // The report itself. See
-      // https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#attribution-reports
+      // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#attribution-reports
       // for details about its fields.
       "report": {}
     },
@@ -238,7 +238,7 @@ JSON schema for the output of the simulator.
         ],
 
         // The report itself. See
-        // https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#aggregatable-reports
+        // https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#aggregatable-reports
         // for details about its fields.
         "report": {}
       }
@@ -291,7 +291,7 @@ JSON schema for the output of the simulator.
       },
 
       // The report itself. See
-      // https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#attribution-reports
+      // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#attribution-reports
       // for details about its fields.
       "report": {}
     }

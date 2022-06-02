@@ -41,11 +41,11 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   enum class AggregationMode {
     // Uses a server-side Trusted Execution Environment (TEE) to process the
     // encrypted payloads, see
-    // https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATION_SERVICE_TEE.md.
+    // https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATION_SERVICE_TEE.md.
     kTeeBased,
 
     // Implements a protocol similar to poplar VDAF in the PPM Framework, see
-    // https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#choosing-among-aggregation-services.
+    // https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#choosing-among-aggregation-services.
     kExperimentalPoplar,
 
     kDefault = kTeeBased,

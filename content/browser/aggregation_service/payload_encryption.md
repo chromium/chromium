@@ -3,7 +3,7 @@
 Here, we briefly describe the precise details of payload encryption for
 aggregatable reports used in the aggregation service. The format of the payload
 itself is provided in the
-[explainer](https://github.com/WICG/conversion-measurement-api/blob/3d0a541c708391d73905afafa155d6753c8565af/AGGREGATE.md#encrypted-payload)[^1],
+[explainer](https://github.com/WICG/attribution-reporting-api/blob/3d0a541c708391d73905afafa155d6753c8565af/AGGREGATE.md#encrypted-payload)[^1],
 but some of these details aren’t. Note that these details are subject to change,
 but reflect the current API offered by `aggregation_service/`.
 
@@ -20,7 +20,7 @@ in the `CreateFromRequestAndPublicKeys()` function in the same file.
 
 The unencrypted payload is first generated as a [CBOR](https://cbor.io/) map
 with the format described in the
-[explainer](https://github.com/WICG/conversion-measurement-api/blob/3d0a541c708391d73905afafa155d6753c8565af/AGGREGATE.md#encrypted-payload)[^1].
+[explainer](https://github.com/WICG/attribution-reporting-api/blob/3d0a541c708391d73905afafa155d6753c8565af/AGGREGATE.md#encrypted-payload)[^1].
 This map is serialized to binary and used as the plaintext input.
 
 ### Associated data
@@ -56,7 +56,7 @@ byte-for-byte identical to what was used for encryption.
 
 The public key is a 32-byte (256-bit) bytestring. The browser downloads public
 keys from the aggregation service according to the process described in the
-[explainer](https://github.com/WICG/conversion-measurement-api/blob/3d0a541c708391d73905afafa155d6753c8565af/AGGREGATE.md#encrypted-payload)[^1]
+[explainer](https://github.com/WICG/attribution-reporting-api/blob/3d0a541c708391d73905afafa155d6753c8565af/AGGREGATE.md#encrypted-payload)[^1]
 and picks one uniformly at random (if multiple are specified). Note that this
 key must be base64 decoded by the client. The browser provides the matching `id`
 of the key used to encrypt the payload as `key_id`.
@@ -91,7 +91,7 @@ the report.
 [^1]: Note that these links point to a specific commit of the explainer that
     reflects what is currently implemented as of the latest update to this file.
     The
-    [up-to-date explainer](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#encrypted-payload)
+    [up-to-date explainer](https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#encrypted-payload)
     may have recent changes that have not yet been implemented.
 
 [^2]: This ensures that ciphertexts for one API cannot be accepted for a

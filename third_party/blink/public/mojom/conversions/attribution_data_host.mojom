@@ -13,7 +13,7 @@ struct AttributionDebugKey {
 };
 
 // Filter data for selectively matching attribution sources and triggers.
-// See https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#optional-attribution-filters
+// See https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-attribution-filters
 // for details.
 struct AttributionFilterData {
   // Map of filter name to a possibly empty set of values.
@@ -98,7 +98,7 @@ struct EventTriggerData {
 
 // Represents a request from a reporting origin to trigger attribution on a
 // given site. See:
-// https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#triggering-attribution
+// https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#triggering-attribution
 struct AttributionTriggerData {
   // Origin that registered this trigger, used to determine which source this
   // trigger is associated with.

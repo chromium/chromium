@@ -25,8 +25,8 @@ class ResourceResponse;
 namespace attribution_response_parsing {
 
 // Helper functions to parse response headers. See details in the explainer.
-// https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md
-// https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md
+// https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md
+// https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md
 
 // Example JSON schema:
 // [{

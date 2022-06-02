@@ -92,7 +92,7 @@ void AggregatableReportSender::SendReport(const GURL& url,
             "Sends the aggregatable report to reporting endpoint requested by "
             "APIs that rely on private, secure aggregation (e.g. Attribution "
             "Reporting API, see "
-            "https://github.com/WICG/conversion-measurement-api)."
+            "https://github.com/WICG/attribution-reporting-api)."
           trigger:
             "When an aggregatable report has become eligible for reporting."
           data:

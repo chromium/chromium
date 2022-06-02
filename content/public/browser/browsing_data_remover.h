@@ -107,11 +107,11 @@ class BrowsingDataRemover {
   static constexpr DataType DATA_TYPE_TRUST_TOKENS = 1 << 16;
 
   // Conversion measurement API
-  // (https://github.com/WICG/conversion-measurement-api) persistent storage.
+  // (https://github.com/WICG/attribution-reporting-api) persistent storage.
   static constexpr DataType DATA_TYPE_CONVERSIONS = 1 << 17;
 
   // Aggregation Service
-  // (https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#data-processing-through-the-aggregation-service)
+  // (https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#data-processing-through-a-secure-aggregation-service)
   // persistent storage.
   static constexpr DataType DATA_TYPE_AGGREGATION_SERVICE = 1 << 18;
 

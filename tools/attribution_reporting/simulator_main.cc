@@ -88,10 +88,10 @@ containing sources and triggers to register in the simulation. The format
 is described below in detail.
 
 Learn more about the Attribution Reporting API at
-https://github.com/WICG/conversion-measurement-api#attribution-reporting-api.
+https://github.com/WICG/attribution-reporting-api#attribution-reporting-api.
 
 Learn about the meaning of the input and output fields at
-https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md.
+https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md.
 
 Switches:
   --copy_input_to_output    - Optional. If present, the input is copied to the

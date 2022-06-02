@@ -3,7 +3,7 @@
 This directory contains a set of tests which ensure the attribution logic as
 implemented matches the intended behavior of the Attribution Reporting API.
 
-See https://wicg.github.io/conversion-measurement-api/ for the draft specification.
+See https://wicg.github.io/attribution-reporting-api/ for the draft specification.
 
 See //content/browser/attribution_reporting/attribution_interop_unittest.cc
 for the tests.

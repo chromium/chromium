@@ -93,7 +93,7 @@ void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
           description:
             "Downloads public keys for helper servers requested by APIs that "
             "rely on private, secure aggregation (e.g. Attribution Reporting "
-            "API, see https://github.com/WICG/conversion-measurement-api). "
+            "API, see https://github.com/WICG/attribution-reporting-api). "
             "Keys are requested prior to aggregate reports being sent and are "
             "used to encrypt payloads for the helper servers."
           trigger:
