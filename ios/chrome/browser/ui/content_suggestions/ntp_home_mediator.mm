@@ -260,6 +260,11 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   [self.feedMetricsRecorder recordHeaderMenuLearnMoreTapped];
 }
 
+- (void)handleVisitSiteFromFollowManagementList:(const GURL&)url {
+  // TODO(crbug.com/1331102): Add metrics.
+  [self openMenuItemWebPage:url];
+}
+
 #pragma mark - Properties.
 
 - (void)setWebState:(web::WebState*)webState {

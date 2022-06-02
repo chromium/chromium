@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_NTP_FEED_MANAGEMENT_FEED_MANAGEMENT_NAVIGATION_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_NTP_FEED_MANAGEMENT_FEED_MANAGEMENT_NAVIGATION_DELEGATE_H_
 
+class GURL;
+
 // Delegate for handling navigation actions.
 @protocol FeedManagementNavigationDelegate
 
@@ -16,6 +18,9 @@
 
 // Navigate to hidden.
 - (void)handleNavigateToHidden;
+
+// Navigate to |url| of a followed site.
+- (void)handleNavigateToFollowedURL:(const GURL&)url;
 
 @end
 

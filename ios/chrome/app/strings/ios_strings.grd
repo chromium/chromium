@@ -969,6 +969,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FOLLOW_MANAGEMENT_UNFOLLOW_ACTION" desc="The 'Unfollow' action for a channel in the following feed management UI">
         Unfollow
       </message>
+      <message name="IDS_IOS_FOLLOW_MANAGEMENT_VISIT_SITE_ACTION" desc="The 'Visit Site' action for a followed item in the following feed management UI">
+        Visit Site
+      </message>
       <message name="IDS_IOS_FOLLOWING_FEED_TITLE" desc="The title in the Following feed header label.">
         Following
       </message>

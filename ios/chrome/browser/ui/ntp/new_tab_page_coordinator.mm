@@ -995,6 +995,10 @@ namespace {
   [self.ntpMediator handleFeedManageHiddenTapped];
 }
 
+- (void)handleNavigateToFollowedURL:(const GURL&)url {
+  [self.ntpMediator handleVisitSiteFromFollowManagementList:url];
+}
+
 #pragma mark - Private
 
 // Updates the NTP to take into account a new feed, or a change in feed
