@@ -17,19 +17,19 @@ namespace {
 base::Value NetLogInitEndInfoParams(int result,
                                     int total_size,
                                     bool is_chunked) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
-  dict.SetIntKey("net_error", result);
-  dict.SetIntKey("total_size", total_size);
-  dict.SetBoolKey("is_chunked", is_chunked);
-  return dict;
+  dict.Set("net_error", result);
+  dict.Set("total_size", total_size);
+  dict.Set("is_chunked", is_chunked);
+  return base::Value(std::move(dict));
 }
 
 base::Value CreateReadInfoParams(int current_position) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
-  dict.SetIntKey("current_position", current_position);
-  return dict;
+  dict.Set("current_position", current_position);
+  return base::Value(std::move(dict));
 }
 
 }  // namespace

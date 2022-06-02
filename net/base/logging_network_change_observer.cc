@@ -41,25 +41,24 @@ int HumanReadableNetworkHandle(NetworkChangeNotifier::NetworkHandle network) {
 // like the default network, and the types of active networks.
 base::Value NetworkSpecificNetLogParams(
     NetworkChangeNotifier::NetworkHandle network) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("changed_network_handle", HumanReadableNetworkHandle(network));
-  dict.SetStringKey(
-      "changed_network_type",
-      NetworkChangeNotifier::ConnectionTypeToString(
-          NetworkChangeNotifier::GetNetworkConnectionType(network)));
-  dict.SetIntKey(
+  base::Value::Dict dict;
+  dict.Set("changed_network_handle", HumanReadableNetworkHandle(network));
+  dict.Set("changed_network_type",
+           NetworkChangeNotifier::ConnectionTypeToString(
+               NetworkChangeNotifier::GetNetworkConnectionType(network)));
+  dict.Set(
       "default_active_network_handle",
       HumanReadableNetworkHandle(NetworkChangeNotifier::GetDefaultNetwork()));
   NetworkChangeNotifier::NetworkList networks;
   NetworkChangeNotifier::GetConnectedNetworks(&networks);
   for (NetworkChangeNotifier::NetworkHandle active_network : networks) {
-    dict.SetStringKey(
+    dict.Set(
         "current_active_networks." +
             base::NumberToString(HumanReadableNetworkHandle(active_network)),
         NetworkChangeNotifier::ConnectionTypeToString(
             NetworkChangeNotifier::GetNetworkConnectionType(active_network)));
   }
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 void NetLogNetworkSpecific(NetLog* net_log,

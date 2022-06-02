@@ -27,15 +27,15 @@ ConnectionEndpointMetadata::ConnectionEndpointMetadata(
     ConnectionEndpointMetadata&&) = default;
 
 base::Value ConnectionEndpointMetadata::ToValue() const {
-  base::Value::DictStorage dict;
+  base::Value::Dict dict;
 
-  base::Value::ListStorage alpns_list;
+  base::Value::List alpns_list;
   for (const std::string& alpn : supported_protocol_alpns) {
-    alpns_list.emplace_back(alpn);
+    alpns_list.Append(alpn);
   }
-  dict.emplace(kSupportedProtocolAlpnsKey, std::move(alpns_list));
+  dict.Set(kSupportedProtocolAlpnsKey, std::move(alpns_list));
 
-  dict.emplace(kEchConfigListKey, base::Base64Encode(ech_config_list));
+  dict.Set(kEchConfigListKey, base::Base64Encode(ech_config_list));
 
   return base::Value(std::move(dict));
 }
@@ -43,21 +43,22 @@ base::Value ConnectionEndpointMetadata::ToValue() const {
 // static
 absl::optional<ConnectionEndpointMetadata>
 ConnectionEndpointMetadata::FromValue(const base::Value& value) {
-  if (!value.is_dict())
+  const base::Value::Dict* dict = value.GetIfDict();
+  if (!dict)
     return absl::nullopt;
 
-  const base::Value* alpns_value =
-      value.FindListKey(kSupportedProtocolAlpnsKey);
+  const base::Value::List* alpns_list =
+      dict->FindList(kSupportedProtocolAlpnsKey);
   const std::string* ech_config_list_value =
-      value.FindStringKey(kEchConfigListKey);
+      dict->FindString(kEchConfigListKey);
 
-  if (!alpns_value || !ech_config_list_value)
+  if (!alpns_list || !ech_config_list_value)
     return absl::nullopt;
 
   ConnectionEndpointMetadata metadata;
 
   std::vector<std::string> alpns;
-  for (const base::Value& value : alpns_value->GetListDeprecated()) {
+  for (const base::Value& value : *alpns_list) {
     if (!value.is_string())
       return absl::nullopt;
     metadata.supported_protocol_alpns.push_back(value.GetString());

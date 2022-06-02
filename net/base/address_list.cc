@@ -116,19 +116,19 @@ void AddressList::AppendDnsAliases(std::vector<std::string> aliases) {
 }
 
 base::Value AddressList::NetLogParams() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
-  base::Value address_list(base::Value::Type::LIST);
+  base::Value::List address_list;
   for (const auto& ip_endpoint : *this)
     address_list.Append(ip_endpoint.ToString());
-  dict.SetKey("address_list", std::move(address_list));
+  dict.Set("address_list", std::move(address_list));
 
-  base::Value alias_list(base::Value::Type::LIST);
+  base::Value::List alias_list;
   for (const std::string& alias : dns_aliases_)
     alias_list.Append(alias);
-  dict.SetKey("aliases", std::move(alias_list));
+  dict.Set("aliases", std::move(alias_list));
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 void AddressList::Deduplicate() {
