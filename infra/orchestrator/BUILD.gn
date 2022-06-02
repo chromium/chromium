@@ -26,6 +26,13 @@ group("orchestrator_all") {
   if (use_clang_coverage) {
     data += [ "//tools/clang/scripts/update.py" ]
   }
+
+  if (use_jacoco_coverage) {
+    data += [
+      "//third_party/jdk/current/bin/java",
+      "//third_party/jacoco/lib/jacococli.jar",
+    ]
+  }
   write_runtime_deps = "$root_out_dir/orchestrator_all.runtime_deps"
 }
 
