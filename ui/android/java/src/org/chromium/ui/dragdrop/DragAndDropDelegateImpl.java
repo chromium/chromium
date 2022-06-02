@@ -113,10 +113,15 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         mDragTargetType = getDragTargetType(dropData);
         int windowWidth = containerView.getRootView().getWidth();
         int windowHeight = containerView.getRootView().getHeight();
+        Object myLocalState = null;
+        if (mDragAndDropBrowserDelegate != null
+                && mDragAndDropBrowserDelegate.getSupportDropInChrome()) {
+            myLocalState = dropData;
+        }
         return ApiHelperForN.startDragAndDrop(containerView, clipdata,
                 createDragShadowBuilder(containerView.getContext(), shadowImage,
                         dropData.hasImage(), windowWidth, windowHeight),
-                null, buildFlags(dropData));
+                myLocalState, buildFlags(dropData));
     }
 
     @Override
