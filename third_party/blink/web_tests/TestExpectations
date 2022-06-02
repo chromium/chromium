@@ -7089,10 +7089,6 @@ crbug.com/1325307 fast/css-grid-layout/grid-auto-repeat-huge-grid-003.html [ Ski
 crbug.com/1325307 fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Skip ]
 crbug.com/1325307 fast/css-grid-layout/grid-auto-repeat-huge-grid-010.html [ Skip ]
 
-# suppress geolocation failures
-crbug.com/1330988 http/tests/geolocation-api/geolocation-default-feature-policy.https.sub.html [ Failure ]
-crbug.com/1330988 http/tests/security/powerfulFeatureRestrictions/geolocation-on-secure-origin-in-secure-origin.html [ Failure ]
-
 # Sheriff 2022-05-30
 crbug.com/1330238 [ Mac ] http/tests/devtools/elements/styles-3/styles-computed-trace.js [ Failure Pass Timeout ]
 
