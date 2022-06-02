@@ -158,8 +158,9 @@ void ChromeOsFeedbackDelegate::SendReport(
 
 void ChromeOsFeedbackDelegate::OnSendFeedbackDone(SendReportCallback callback,
                                                   bool status) {
+  // When status is true, it means the report will be sent shortly.
   const SendReportStatus send_status =
-      status ? SendReportStatus::kDelayed : SendReportStatus::kSuccess;
+      status ? SendReportStatus::kSuccess : SendReportStatus::kDelayed;
   std::move(callback).Run(send_status);
 }
 

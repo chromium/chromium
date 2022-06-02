@@ -98,7 +98,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
     base::test::TestFuture<SendReportStatus> future;
     feedback_delegate_->SendReport(std::move(report), future.GetCallback());
 
-    EXPECT_NE(SendReportStatus::kUnknown, future.Get());
+    EXPECT_EQ(SendReportStatus::kSuccess, future.Get());
   }
 
   scoped_refptr<base::RefCountedMemory> CreateFakePngData() {
