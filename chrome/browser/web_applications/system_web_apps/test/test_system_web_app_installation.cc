@@ -786,6 +786,11 @@ TestSystemWebAppInstallation::CreateWebAppProvider(
   system_web_app_manager->SetSystemAppsForTesting(
       std::move(system_app_delegates_));
   system_web_app_manager->SetUpdatePolicyForTesting(update_policy_);
+
+  provider->on_registry_ready().Post(
+      FROM_HERE, base::BindOnce(&ash::SystemWebAppManager::Start,
+                                system_web_app_manager->GetWeakPtr()));
+
   provider->SetSystemWebAppManager(std::move(system_web_app_manager));
   provider->Start();
 
@@ -806,6 +811,11 @@ TestSystemWebAppInstallation::CreateWebAppProviderWithNoSystemWebApps(
       std::make_unique<ash::SystemWebAppManager>(profile);
   system_web_app_manager->SetSystemAppsForTesting({});
   system_web_app_manager->SetUpdatePolicyForTesting(update_policy_);
+
+  provider->on_registry_ready().Post(
+      FROM_HERE, base::BindOnce(&ash::SystemWebAppManager::Start,
+                                system_web_app_manager->GetWeakPtr()));
+
   provider->SetSystemWebAppManager(std::move(system_web_app_manager));
   provider->Start();
   return provider;

@@ -150,6 +150,7 @@ class WebAppProvider : public KeyedService {
  protected:
   // TODO(crbug.com/1321984): Delete system_web_app_manager_.
   friend class ash::SystemWebAppManager;
+  friend class WebAppProviderFactory;
 
   virtual void StartImpl();
 

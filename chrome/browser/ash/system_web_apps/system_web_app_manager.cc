@@ -357,9 +357,8 @@ void SystemWebAppManager::Start() {
   externally_managed_app_manager_->SynchronizeInstalledApps(
       std::move(install_options_list),
       web_app::ExternalInstallSource::kSystemInstalled,
-      base::BindOnce(&SystemWebAppManager::OnAppsSynchronized,
-                     weak_ptr_factory_.GetWeakPtr(), should_force_install_apps,
-                     install_start_time));
+      base::BindOnce(&SystemWebAppManager::OnAppsSynchronized, GetWeakPtr(),
+                     should_force_install_apps, install_start_time));
 }
 
 void SystemWebAppManager::InstallSystemAppsForTesting() {
@@ -484,6 +483,10 @@ SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return type;
+}
+
+base::WeakPtr<SystemWebAppManager> SystemWebAppManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void SystemWebAppManager::OnWebAppUiManagerDestroyed() {
@@ -630,8 +633,8 @@ void SystemWebAppManager::OnAppsSynchronized(
   // Start the tasks async to give any code running in an on_app_synchronized
   // context a chance to finish first.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&SystemWebAppManager::StartBackgroundTasks,
-                                weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&SystemWebAppManager::StartBackgroundTasks, GetWeakPtr()));
 }
 
 void SystemWebAppManager::StartBackgroundTasks() const {

@@ -351,7 +351,6 @@ void WebAppProvider::OnSyncBridgeReady() {
   install_manager_->Start();
   preinstalled_web_app_manager_->Start();
   web_app_policy_manager_->Start();
-  system_web_app_manager_->Start();
   manifest_update_manager_->Start();
   os_integration_manager_->Start();
   ui_manager_->Start();

@@ -106,6 +106,7 @@ class SystemWebAppManager : private web_app::WebAppUiManagerObserver {
       web_app::WebAppUiManager* ui_manager,
       web_app::WebAppPolicyManager* web_app_policy_manager);
 
+  // Gets called when `WebAppProvider` is ready.
   void Start();
 
   // The SystemWebAppManager is disabled in browser tests by default because it
@@ -158,6 +159,8 @@ class SystemWebAppManager : private web_app::WebAppUiManagerObserver {
   const SystemWebAppDelegateMap& system_app_delegates() const {
     return system_app_delegates_;
   }
+
+  base::WeakPtr<SystemWebAppManager> GetWeakPtr();
 
   // This call will override default System Apps configuration. You should call
   // Start() after this call to install |system_apps|.
