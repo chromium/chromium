@@ -206,6 +206,12 @@ bool ManifestParser::Parse() {
 
   manifest_->handle_links = ParseHandleLinks(root_object.get());
 
+  if (RuntimeEnabledFeatures::WebAppTabStripEnabled(execution_context_) &&
+      manifest_->display_override.Contains(
+          mojom::blink::DisplayMode::kTabbed)) {
+    manifest_->tab_strip = ParseTabStrip(root_object.get());
+  }
+
   ManifestUmaUtil::ParseSucceeded(manifest_);
 
   return has_comments;
@@ -1836,6 +1842,77 @@ mojom::blink::HandleLinks ManifestParser::ParseHandleLinks(
   if (enum_value == mojom::blink::HandleLinks::kUndefined)
     return mojom::blink::HandleLinks::kAuto;
   return enum_value;
+}
+
+mojom::blink::ManifestTabStripPtr ManifestParser::ParseTabStrip(
+    const JSONObject* object) {
+  if (!object->Get("tab_strip"))
+    return nullptr;
+
+  JSONObject* tab_strip_object = object->GetJSONObject("tab_strip");
+  if (!tab_strip_object) {
+    AddErrorInfo("property 'tab_strip' ignored, object expected.");
+    return nullptr;
+  }
+
+  auto result = mojom::blink::ManifestTabStrip::New();
+
+  JSONValue* home_tab_value = tab_strip_object->Get("home_tab");
+  if (home_tab_value && home_tab_value->GetType() == JSONValue::kTypeObject) {
+    JSONObject* home_tab_object = tab_strip_object->GetJSONObject("home_tab");
+    JSONValue* home_tab_icons = home_tab_object->Get("icons");
+
+    auto home_tab_params = mojom::blink::HomeTabParams::New();
+    String string_value;
+    if (home_tab_icons && !(home_tab_icons->AsString(&string_value) &&
+                            string_value.LowerASCII() == "auto")) {
+      home_tab_params->icons = ParseIcons(home_tab_object);
+    }
+    result->home_tab =
+        mojom::blink::HomeTabUnion::NewParams(std::move(home_tab_params));
+  } else {
+    result->home_tab = mojom::blink::HomeTabUnion::NewVisibility(
+        ParseTabStripMemberVisibility(home_tab_value));
+  }
+
+  JSONValue* new_tab_button_value = tab_strip_object->Get("new_tab_button");
+  if (new_tab_button_value &&
+      new_tab_button_value->GetType() == JSONValue::kTypeObject) {
+    JSONObject* new_tab_button_object =
+        tab_strip_object->GetJSONObject("new_tab_button");
+    JSONValue* new_tab_button_url = new_tab_button_object->Get("url");
+
+    auto new_tab_button_params = mojom::blink::NewTabButtonParams::New();
+    String string_value;
+    if (new_tab_button_url && !(new_tab_button_url->AsString(&string_value) &&
+                                string_value.LowerASCII() == "auto")) {
+      KURL url = ParseURL(new_tab_button_object, "url", manifest_url_,
+                          ParseURLRestrictions::kWithinScope);
+      if (!url.IsNull())
+        new_tab_button_params->url = url;
+    }
+    result->new_tab_button = mojom::blink::NewTabButtonUnion::NewParams(
+        std::move(new_tab_button_params));
+  } else {
+    result->new_tab_button = mojom::blink::NewTabButtonUnion::NewVisibility(
+        ParseTabStripMemberVisibility(new_tab_button_value));
+  }
+
+  return result;
+}
+
+mojom::blink::TabStripMemberVisibility
+ManifestParser::ParseTabStripMemberVisibility(const JSONValue* json_value) {
+  if (!json_value)
+    return mojom::blink::TabStripMemberVisibility::kAuto;
+
+  String string_value;
+  if (json_value->AsString(&string_value) &&
+      string_value.LowerASCII() == "absent") {
+    return mojom::blink::TabStripMemberVisibility::kAbsent;
+  }
+
+  return mojom::blink::TabStripMemberVisibility::kAuto;
 }
 
 void ManifestParser::AddErrorInfo(const String& error_msg,

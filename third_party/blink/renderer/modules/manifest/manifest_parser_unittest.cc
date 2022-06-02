@@ -5659,4 +5659,169 @@ TEST_F(ManifestParserTest, UserPreferencesParseRules) {
   }
 }
 
+TEST_F(ManifestParserTest, TabStripParseRules) {
+  using Visibility = mojom::blink::TabStripMemberVisibility;
+  {
+    ScopedWebAppTabStripForTest feature(false);
+    // Feature not enabled, should not be parsed.
+    {
+      auto& manifest =
+          ParseManifest(R"({ "tab_strip": {"home_tab": "auto"} })");
+      EXPECT_TRUE(manifest->tab_strip.is_null());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+  }
+  {
+    ScopedWebAppTabStripForTest feature(true);
+
+    // Display mode not 'tabbed', 'tab_strip' should not be parsed.
+    {
+      auto& manifest =
+          ParseManifest(R"({ "tab_strip": {"home_tab": "auto"} })");
+      EXPECT_TRUE(manifest->tab_strip.is_null());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Manifest does not contain 'tab_strip' field.
+    {
+      auto& manifest = ParseManifest(R"({ "display_override": [ "tabbed" ] })");
+      EXPECT_TRUE(manifest->tab_strip.is_null());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // 'tab_strip' object is empty.
+    {
+      auto& manifest = ParseManifest(
+          R"({  "display_override": [ "tabbed" ], "tab_strip": {} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Home tab and new tab button are empty objects.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {"home_tab": {}, "new_tab_button": {}} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_params()->icons.size(), 0u);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_visibility());
+      EXPECT_FALSE(
+          manifest->tab_strip->new_tab_button->get_params()->url.has_value());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Home tab and new tab button are invalid.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {"home_tab": "something", "new_tab_button": 42} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_params());
+      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_params());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Unknown members of 'tab_strip' are ignored.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {"unknown": {}} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_params());
+      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_params());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Home tab with icons and new tab button with url are parsed.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {
+            "home_tab": {"icons": [{"src": "foo.jpg"}]},
+            "new_tab_button": {"url": "foo"}} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_params()->icons.size(), 1u);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_visibility());
+      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_params()->url,
+                KURL(DefaultDocumentUrl(), "foo"));
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // New tab button url out of scope.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {"new_tab_button": {"url": "https://bar.com"}} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_visibility());
+      EXPECT_FALSE(
+          manifest->tab_strip->new_tab_button->get_params()->url.has_value());
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ(
+          "property 'url' ignored, should be within scope of the manifest.",
+          errors()[0]);
+    }
+
+    // Home tab and new tab button set to 'auto'.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {"home_tab": "auto", "new_tab_button": "auto"} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_params());
+      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_params());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Home tab and new tab button set to 'absent'.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {"home_tab": "absent", "new_tab_button": "absent"} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
+                Visibility::kAbsent);
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_params());
+      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
+                Visibility::kAbsent);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_params());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Home tab with 'auto' icons and new tab button with 'auto' url.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {
+            "home_tab": {"icons": "auto"},
+            "new_tab_button": {"url": "auto"}} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_params()->icons.size(), 0u);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_visibility());
+      EXPECT_FALSE(
+          manifest->tab_strip->new_tab_button->get_params()->url.has_value());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+  }
+}
+
 }  // namespace blink

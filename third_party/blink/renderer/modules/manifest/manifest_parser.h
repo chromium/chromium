@@ -478,6 +478,13 @@ class MODULES_EXPORT ManifestParser {
   // https://github.com/WICG/pwa-url-handler/blob/main/handle_links/explainer.md
   mojom::blink::HandleLinks ParseHandleLinks(const JSONObject* object);
 
+  // Parses the 'tab_strip' field of the manifest as defined in:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/tabbed-mode-explainer.md
+  mojom::blink::ManifestTabStripPtr ParseTabStrip(const JSONObject* object);
+
+  mojom::blink::TabStripMemberVisibility ParseTabStripMemberVisibility(
+      const JSONValue* json_value);
+
   void AddErrorInfo(const String& error_msg,
                     bool critical = false,
                     int error_line = 0,

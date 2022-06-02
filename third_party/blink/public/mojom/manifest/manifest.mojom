@@ -126,6 +126,11 @@ struct Manifest {
   // experiment. See:
   // https://github.com/WICG/pwa-url-handler/blob/main/handle_links/explainer.md
   HandleLinks handle_links;
+
+  // TODO(crbug.com/897314): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/tabbed-mode-explainer.md
+  ManifestTabStrip? tab_strip;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:
@@ -335,6 +340,43 @@ struct ManifestUserPreferenceOverrides {
 
   bool has_background_color;
   uint32 background_color;
+};
+
+// Structure representing customizations to the tab strip.
+struct ManifestTabStrip {
+  HomeTabUnion home_tab;
+  NewTabButtonUnion new_tab_button;
+};
+
+// Represents whether a particular tab strip customization is present or not.
+// If kAuto, the platform can decide what the behaviour should be.
+enum TabStripMemberVisibility {
+  kAuto,
+  kAbsent,
+};
+
+union HomeTabUnion {
+  TabStripMemberVisibility visibility;
+  HomeTabParams params;
+};
+
+union NewTabButtonUnion {
+  TabStripMemberVisibility visibility;
+  NewTabButtonParams params;
+};
+
+// Structure representing the home tab customization to the tab strip.
+struct HomeTabParams {
+  // If the array is empty, the platform can choose what icon to use. This is
+  // the same as setting 'auto' on the icons field.
+  array<ManifestImageResource> icons;
+};
+
+// Structure representing the new tab button customization to the tab strip.
+struct NewTabButtonParams {
+  // If url is not present, the platform can choose what to do. This is the
+  // same as setting 'auto' on the url field.
+  url.mojom.Url? url;
 };
 
 // Debug information for a parsed manifest.
