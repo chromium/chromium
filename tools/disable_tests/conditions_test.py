@@ -56,8 +56,9 @@ def powerset(iterable):
 class ConditionsTest(unittest.TestCase):
   # We have to keep max_leaves quite low and deadline quite high, as simplify is
   # exponential in the number of unique terminals and blows up quite quickly.
+  # Deadlines increased to 1,000 ms due to crbug.com/1331743
   @given(cond=condition_st(max_leaves=7))
-  @settings(deadline=timedelta(milliseconds=500))
+  @settings(deadline=timedelta(milliseconds=1000))
   def test_simplified_condition_evaluates_the_same(self, cond):
     simplified = conditions.simplify(cond)
 
@@ -72,7 +73,7 @@ class ConditionsTest(unittest.TestCase):
                        conditions.evaluate(simplified, true_vars))
 
   @given(cond=condition_st(max_leaves=7))
-  @settings(deadline=timedelta(milliseconds=500))
+  @settings(deadline=timedelta(milliseconds=1000))
   def test_simplified_condition_is_at_least_as_small_as_original(self, cond):
     simplified = conditions.simplify(cond)
 
