@@ -9,8 +9,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/system/network/network_detailed_network_view.h"
 #include "ash/system/network/network_detailed_view.h"
-#include "ash/system/network/network_list_network_header_view.h"
+#include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_item_view.h"
+#include "ash/system/network/network_list_wifi_header_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
@@ -138,11 +139,11 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
     network_detailed_network_view()->NotifyNetworkListChanged();
   }
 
-  NetworkListNetworkHeaderView* AddWifiSectionHeader() {
+  NetworkListWifiHeaderView* AddWifiSectionHeader() {
     return network_detailed_network_view()->AddWifiSectionHeader();
   }
 
-  NetworkListNetworkHeaderView* AddMobileSectionHeader() {
+  NetworkListMobileHeaderView* AddMobileSectionHeader() {
     return network_detailed_network_view()->AddMobileSectionHeader();
   }
 
@@ -180,11 +181,11 @@ TEST_F(NetworkDetailedNetworkViewTest, ViewsAreCreated) {
   ASSERT_NE(nullptr, network_list_item);
   EXPECT_STREQ("NetworkListNetworkItemView", network_list_item->GetClassName());
 
-  NetworkListNetworkHeaderView* wifi_section = AddWifiSectionHeader();
+  NetworkListWifiHeaderView* wifi_section = AddWifiSectionHeader();
   ASSERT_NE(nullptr, wifi_section);
   EXPECT_STREQ("NetworkListWifiHeaderView", wifi_section->GetClassName());
 
-  NetworkListNetworkHeaderView* mobile_section = AddMobileSectionHeader();
+  NetworkListMobileHeaderView* mobile_section = AddMobileSectionHeader();
   ASSERT_NE(nullptr, mobile_section);
   EXPECT_STREQ("NetworkListMobileHeaderView", mobile_section->GetClassName());
 }

@@ -9,6 +9,7 @@
 #include "ash/system/network/network_list_header_view.h"
 #include "ash/system/network/network_row_title_view.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"
 
@@ -34,9 +35,11 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
   NetworkListNetworkHeaderView(const NetworkListNetworkHeaderView&) = delete;
   NetworkListNetworkHeaderView& operator=(const NetworkListNetworkHeaderView&) =
       delete;
-  ~NetworkListNetworkHeaderView() override = default;
+  ~NetworkListNetworkHeaderView() override;
 
   virtual void SetToggleState(bool enabled, bool is_on);
+
+  void SetToggleVisibility(bool visible);
 
  protected:
   virtual void AddExtraButtons();
@@ -45,13 +48,10 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
   // enabled/disable their respective technology.
   virtual void OnToggleToggled(bool is_on);
 
-  void SetToggleVisibility(bool visible);
-
   Delegate* delegate() const { return delegate_; };
 
   TrayNetworkStateModel* model() { return model_; }
 
- protected:
   // Used for testing.
   static constexpr int kToggleButtonId =
       NetworkListHeaderView::kTitleLabelViewId + 1;
@@ -60,6 +60,7 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
   friend class NetworkListNetworkHeaderViewTest;
   friend class NetworkListMobileHeaderViewTest;
   friend class NetworkListWifiHeaderViewTest;
+  friend class NetworkListViewControllerTest;
 
   void ToggleButtonPressed();
 
@@ -69,6 +70,8 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
   views::ToggleButton* toggle_ = nullptr;
 
   Delegate* delegate_ = nullptr;
+
+  base::WeakPtrFactory<NetworkListNetworkHeaderView> weak_factory_{this};
 };
 
 }  // namespace ash

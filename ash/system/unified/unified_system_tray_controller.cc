@@ -354,7 +354,8 @@ void UnifiedSystemTrayController::ShowNetworkDetailedView(bool force) {
 
   base::RecordAction(base::UserMetricsAction("StatusArea_Network_Detailed"));
 
-  if (ash::features::IsQuickSettingsNetworkRevampEnabled()) {
+  if (ash::features::IsQuickSettingsNetworkRevampEnabled() &&
+      ash::features::IsBluetoothRevampEnabled()) {
     ShowDetailedView(std::make_unique<NetworkDetailedViewController>(this));
   } else {
     ShowDetailedView(

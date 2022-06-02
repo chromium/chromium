@@ -30,13 +30,13 @@ class ASH_EXPORT NetworkListNetworkItemView : public NetworkListItemView {
       delete;
   ~NetworkListNetworkItemView() override;
 
- private:
-  friend class NetworkListNetworkItemViewTest;
-
   // NetworkListItemView:
   void UpdateViewForNetwork(
       const chromeos::network_config::mojom::NetworkStatePropertiesPtr&
           network_properties) override;
+
+ private:
+  friend class NetworkListNetworkItemViewTest;
 
   void SetupCellularSubtext();
   void SetupNetworkSubtext();

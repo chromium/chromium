@@ -83,7 +83,8 @@ void NetworkListMobileHeaderViewImpl::AddExtraButtons() {
       IconButton::Type::kSmall, &icon, GetAddESimTooltipMessageId());
   add_esim_button.get()->SetID(kAddESimButtonId);
   add_esim_button_ = add_esim_button.get();
-  container()->AddView(TriView::Container::END, add_esim_button.release());
+  container()->AddViewAt(TriView::Container::END, add_esim_button.release(),
+                         /*index=*/0);
 };
 
 void NetworkListMobileHeaderViewImpl::OnToggleToggled(bool is_on) {

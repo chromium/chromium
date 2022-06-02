@@ -13,6 +13,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_toggle_button.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -22,13 +23,16 @@ NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(Delegate* delegate,
     : NetworkListHeaderView(label_id),
       model_(Shell::Get()->system_tray_model()->network_state_model()),
       delegate_(delegate) {
-  toggle_ = new TrayToggleButton(
+  std::unique_ptr<TrayToggleButton> toggle = std::make_unique<TrayToggleButton>(
       base::BindRepeating(&NetworkListNetworkHeaderView::ToggleButtonPressed,
-                          base::Unretained(this)),
+                          weak_factory_.GetWeakPtr()),
       label_id);
-  toggle_->SetID(kToggleButtonId);
-  container()->AddView(TriView::Container::END, toggle_);
+  toggle->SetID(kToggleButtonId);
+  toggle_ = toggle.get();
+  container()->AddView(TriView::Container::END, toggle.release());
 }
+
+NetworkListNetworkHeaderView::~NetworkListNetworkHeaderView() = default;
 
 void NetworkListNetworkHeaderView::SetToggleState(bool enabled, bool is_on) {
   toggle_->SetEnabled(enabled);

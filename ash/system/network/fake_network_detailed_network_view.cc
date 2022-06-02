@@ -8,7 +8,9 @@
 #include "ash/system/network/fake_network_list_wifi_header_view.h"
 #include "ash/system/network/network_detailed_network_view.h"
 #include "ash/system/network/network_list_item_view.h"
+#include "ash/system/network/network_list_mobile_header_view_impl.h"
 #include "ash/system/network/network_list_network_item_view.h"
+#include "ash/system/network/network_list_wifi_header_view_impl.h"
 
 namespace ash {
 
@@ -41,16 +43,16 @@ FakeNetworkDetailedNetworkView::AddNetworkListItem() {
       new NetworkListNetworkItemView(/*listener=*/nullptr));
 };
 
-NetworkListNetworkHeaderView*
+NetworkListWifiHeaderView*
 FakeNetworkDetailedNetworkView::AddWifiSectionHeader() {
   return network_list_->AddChildView(
       new FakeNetworkListWifiHeaderView(/*delegate=*/nullptr));
 };
 
-NetworkListNetworkHeaderView*
+NetworkListMobileHeaderView*
 FakeNetworkDetailedNetworkView::AddMobileSectionHeader() {
   return network_list_->AddChildView(
       new FakeNetworkListMobileHeaderView(/*delegate=*/nullptr));
-};
+}
 
 }  // namespace ash
