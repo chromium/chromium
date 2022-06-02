@@ -36,11 +36,10 @@ class ReportingServiceSettings {
   // false, then GetAnalysisSettings will always return absl::nullopt.
   bool IsValid() const;
 
-  // The service provider matching the name given in a Connector policy. nullptr
-  // implies that a corresponding service provider doesn't exist and that these
-  // settings are not valid.
-  raw_ptr<const ServiceProviderConfig::ServiceProvider> service_provider_ =
-      nullptr;
+  // The reporting config matching the name given in a Connector policy. nullptr
+  // implies that a corresponding service provider (if one exists) doesn't have
+  // a reporting config and that these settings are not valid.
+  raw_ptr<const ReportingConfig> reporting_config_ = nullptr;
 
   std::string service_provider_name_;
 

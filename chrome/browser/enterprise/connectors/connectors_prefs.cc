@@ -48,18 +48,12 @@ const char kOnSecurityEventScopePref[] =
 namespace {
 
 void RegisterFileSystemPrefs(PrefRegistrySimple* registry) {
-  std::vector<std::string> all_service_providers =
-      GetServiceProviderConfig()->GetServiceProviderNames();
-  std::vector<std::string> fs_service_providers;
-  std::copy_if(all_service_providers.begin(), all_service_providers.end(),
-               std::back_inserter(fs_service_providers), [](const auto& name) {
-                 const ServiceProviderConfig::ServiceProvider* provider =
-                     GetServiceProviderConfig()->GetServiceProvider(name);
-                 return !provider->fs_home_url().empty();
-               });
-
-  for (const auto& name : fs_service_providers) {
-    RegisterFileSystemPrefsForServiceProvider(registry, name);
+  const auto* service_provider_config = GetServiceProviderConfig();
+  for (const auto& name_and_configs : *service_provider_config) {
+    if (name_and_configs.second.file_system) {
+      RegisterFileSystemPrefsForServiceProvider(
+          registry, std::string(name_and_configs.first));
+    }
   }
 }
 

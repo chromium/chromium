@@ -49,8 +49,14 @@ ReportingServiceSettings::ReportingServiceSettings(
       settings_value.FindStringKey(kKeyServiceProvider);
   if (service_provider_name) {
     service_provider_name_ = *service_provider_name;
-    service_provider_ =
-        service_provider_config.GetServiceProvider(*service_provider_name);
+    if (service_provider_config.count(service_provider_name_)) {
+      reporting_config_ =
+          service_provider_config.at(service_provider_name_).reporting;
+    }
+  }
+  if (!reporting_config_) {
+    DLOG(ERROR) << "No reporting config for corresponding service provider";
+    return;
   }
 
   const base::Value* enabled_event_name_list_value =
@@ -105,7 +111,7 @@ ReportingServiceSettings::GetReportingSettings() const {
   ReportingSettings settings;
 
   settings.reporting_url =
-      GetUrlOverride().value_or(GURL(service_provider_->reporting_url()));
+      GetUrlOverride().value_or(GURL(reporting_config_->url));
   DCHECK(settings.reporting_url.is_valid());
 
   settings.enabled_event_names.insert(enabled_event_names_.begin(),
@@ -118,10 +124,10 @@ ReportingServiceSettings::GetReportingSettings() const {
 }
 
 bool ReportingServiceSettings::IsValid() const {
-  // The settings are valid only if a provider was given, and events are
-  // enabled. The list could be empty. The absence of a list means "all events",
-  // but the presence of an empty list means "no events".
-  return service_provider_ && !enabled_event_names_.empty();
+  // The settings are valid only if a provider with a reporting config was used,
+  // and events are enabled. The list could be empty. The absence of a list
+  // means "all events", but the presence of an empty list means "no events".
+  return reporting_config_ && !enabled_event_names_.empty();
 }
 
 ReportingServiceSettings::ReportingServiceSettings(ReportingServiceSettings&&) =

@@ -232,8 +232,8 @@ TEST_P(AnalysisServiceSettingsTest, Test) {
                                          base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(settings.has_value());
 
-  ServiceProviderConfig config(kServiceProviderConfig);
-  AnalysisServiceSettings service_settings(settings.value(), config);
+  AnalysisServiceSettings service_settings(settings.value(),
+                                           *GetServiceProviderConfig());
 
   auto analysis_settings = service_settings.GetAnalysisSettings(url());
   ASSERT_EQ((expected_settings() != nullptr), analysis_settings.has_value());

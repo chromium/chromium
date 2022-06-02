@@ -25,11 +25,11 @@ FileSystemServiceSettings::FileSystemServiceSettings(
   const std::string* service_provider_name =
       settings_value.FindStringKey(kKeyServiceProvider);
   if (service_provider_name) {
-    service_provider_ =
-        service_provider_config.GetServiceProvider(*service_provider_name);
+    file_system_config_ =
+        service_provider_config.at(*service_provider_name).file_system;
   }
-  if (!service_provider_) {
-    DLOG(ERROR) << "No service provider";
+  if (!file_system_config_) {
+    DLOG(ERROR) << "No file system config for corresponding service provider";
     return;
   }
 
@@ -95,16 +95,17 @@ FileSystemServiceSettings::GetGlobalSettings() const {
 
   FileSystemSettings settings;
   settings.service_provider = service_provider_name_;
-  settings.home = GURL(service_provider_->fs_home_url());
+  settings.home = GURL(file_system_config_->home);
   settings.authorization_endpoint =
-      GURL(service_provider_->fs_authorization_endpoint());
-  settings.token_endpoint = GURL(service_provider_->fs_token_endpoint());
+      GURL(file_system_config_->authorization_endpoint);
+  settings.token_endpoint = GURL(file_system_config_->token_endpoint);
   settings.enterprise_id = this->enterprise_id_;
   settings.email_domain = this->email_domain_;
-  settings.client_id = service_provider_->fs_client_id();
-  settings.client_secret = service_provider_->fs_client_secret();
-  settings.scopes = service_provider_->fs_scopes();
-  settings.max_direct_size = service_provider_->fs_max_direct_size();
+  settings.client_id = file_system_config_->client_id;
+  settings.client_secret = file_system_config_->client_secret;
+  settings.scopes = std::vector<std::string>(
+      file_system_config_->scopes.begin(), file_system_config_->scopes.end());
+  settings.max_direct_size = file_system_config_->max_direct_size;
 
   return settings;
 }
@@ -156,7 +157,7 @@ FileSystemServiceSettings::GetPatternSettings(const PatternSettings& patterns,
 
 bool FileSystemServiceSettings::IsValid() const {
   // The settings are valid only if a provider was given.
-  return service_provider_ && filters_validated_ && !enterprise_id_.empty();
+  return file_system_config_ && filters_validated_ && !enterprise_id_.empty();
 }
 
 bool FileSystemServiceSettings::AddUrlsDisabledByServiceProvider(
@@ -164,7 +165,7 @@ bool FileSystemServiceSettings::AddUrlsDisabledByServiceProvider(
   base::Value disable_value(base::Value::Type::DICTIONARY);
 
   std::vector<base::Value> urls;
-  for (const std::string& url : service_provider_->fs_disable())
+  for (const std::string& url : file_system_config_->disable)
     urls.emplace_back(url);
   disable_value.SetKey(kKeyUrlList, base::Value(urls));
 
@@ -184,7 +185,7 @@ bool FileSystemServiceSettings::AddUrlPatternSettings(
     bool enabled,
     URLMatchingID* id) {
   DCHECK(id);
-  DCHECK(service_provider_);
+  DCHECK(file_system_config_);
   if (enabled) {
     if (!disabled_patterns_settings_.empty()) {
       DLOG(ERROR) << "disabled_patterns_settings_ must be empty when enabling: "

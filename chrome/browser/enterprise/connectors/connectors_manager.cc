@@ -18,7 +18,7 @@
 namespace enterprise_connectors {
 
 ConnectorsManager::ConnectorsManager(PrefService* pref_service,
-                                     ServiceProviderConfig* config,
+                                     const ServiceProviderConfig* config,
                                      bool observe_prefs)
     : service_provider_config_(config) {
   if (observe_prefs)

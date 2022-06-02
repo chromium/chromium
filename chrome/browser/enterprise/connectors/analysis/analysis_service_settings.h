@@ -82,8 +82,7 @@ class AnalysisServiceSettings {
   // The service provider matching the name given in a Connector policy. nullptr
   // implies that a corresponding service provider doesn't exist and that these
   // settings are not valid.
-  raw_ptr<const ServiceProviderConfig::ServiceProvider> service_provider_ =
-      nullptr;
+  raw_ptr<const AnalysisConfig> analysis_config_ = nullptr;
 
   // The URL matcher created from the patterns set in the analysis policy. The
   // condition set IDs returned after matching against a URL can be used to
