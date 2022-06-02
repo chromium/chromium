@@ -1204,6 +1204,7 @@ void Layer::SetCaptureBounds(viz::RegionCaptureBounds bounds) {
   EnsureRareInputs().capture_bounds = std::move(bounds);
   SetPropertyTreesNeedRebuild();
   SetNeedsCommit();
+  SetSubtreePropertyChanged();
 }
 
 void Layer::SetWheelEventRegion(Region wheel_event_region) {
