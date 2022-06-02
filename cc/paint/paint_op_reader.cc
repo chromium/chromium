@@ -332,6 +332,10 @@ void PaintOpReader::Read(PaintImage* image) {
 
         SkImageInfo image_info =
             SkImageInfo::Make(width, height, color_type, kPremul_SkAlphaType);
+        if (pixel_size < image_info.computeMinByteSize()) {
+          SetInvalid(DeserializationError::kInsufficientPixelData);
+          return;
+        }
         const volatile void* pixel_data = ExtractReadableMemory(pixel_size);
         if (!valid_)
           return;
