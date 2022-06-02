@@ -81,7 +81,7 @@ void ApplicationBreadcrumbsLogger::OnUserAction(const std::string& action,
 
 void ApplicationBreadcrumbsLogger::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  std::string pressure_string = "";
+  const char* pressure_string = "";
   switch (memory_pressure_level) {
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
       pressure_string = "None";
@@ -94,7 +94,7 @@ void ApplicationBreadcrumbsLogger::OnMemoryPressure(
       break;
   }
 
-  AddEvent(base::StringPrintf("Memory Pressure: %s", pressure_string.c_str()));
+  AddEvent(base::StringPrintf("Memory Pressure: %s", pressure_string));
 }
 
 bool ApplicationBreadcrumbsLogger::IsUserTriggeredAction(
