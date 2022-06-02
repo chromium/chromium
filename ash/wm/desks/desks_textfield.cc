@@ -86,6 +86,10 @@ bool DesksTextfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
   return event.key_code() == ui::VKEY_TAB;
 }
 
+std::u16string DesksTextfield::GetTooltipText(const gfx::Point& p) const {
+  return GetPreferredSize().width() > width() ? GetText() : std::u16string();
+}
+
 void DesksTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Textfield::GetAccessibleNodeData(node_data);
   node_data->SetName(GetAccessibleName());

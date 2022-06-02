@@ -501,6 +501,36 @@ TEST_F(DesksTest, OnDeskNameChanged) {
   controller->RemoveObserver(&observer);
 }
 
+TEST_F(DesksTest, DesksTextfieldAddTooltipText) {
+  NewDesk();
+
+  auto* controller = DesksController::Get();
+
+  // Set the first desk with a name which is short enough to be fit in the desk
+  // name view.
+  controller->desks()[0]->SetName(u"test1", /*set_by_user=*/true);
+
+  // Set the second desk with a name which is long enough to be truncated in the
+  // desk name view.
+  std::u16string desk_name2(
+      u"test2 a very long desk name to test tooltip text");
+  controller->desks()[1]->SetName(desk_name2, /*set_by_user=*/true);
+
+  // Start overview.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EnterOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Expect there to be no tooltip when the desk name is short enough.
+  auto* desks_bar_view =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+  auto* desk_name_view1 = desks_bar_view->mini_views()[0]->desk_name_view();
+  EXPECT_TRUE(desk_name_view1->GetTooltipText(gfx::Point()).empty());
+
+  auto* desk_name_view2 = desks_bar_view->mini_views()[1]->desk_name_view();
+  EXPECT_EQ(desk_name2, desk_name_view2->GetTooltipText(gfx::Point()));
+}
+
 TEST_F(DesksTest, DesksBarViewDeskCreation) {
   auto* controller = DesksController::Get();
 
