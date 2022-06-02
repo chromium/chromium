@@ -16,7 +16,11 @@ GEN_INCLUDE(['../../common/testing/mock_speech_recognition_private.js']);
 DictationE2ETestBase = class extends E2ETestBase {
   constructor() {
     super();
+    this.navigateLacrosWithAutoComplete = true;
+
     this.mockAccessibilityPrivate = MockAccessibilityPrivate;
+    this.iconType = this.mockAccessibilityPrivate.DictationBubbleIconType;
+    this.hintType = this.mockAccessibilityPrivate.DictationBubbleHintType;
     chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
 
     this.mockInputIme = MockInputIme;
@@ -30,9 +34,6 @@ DictationE2ETestBase = class extends E2ETestBase {
 
     this.mockSpeechRecognitionPrivate = new MockSpeechRecognitionPrivate();
     chrome.speechRecognitionPrivate = this.mockSpeechRecognitionPrivate;
-
-    this.iconType = this.mockAccessibilityPrivate.DictationBubbleIconType;
-    this.hintType = this.mockAccessibilityPrivate.DictationBubbleHintType;
 
     this.dictationEngineId =
         '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
@@ -64,7 +65,7 @@ DictationE2ETestBase = class extends E2ETestBase {
     const reinit = module => {
       accessibilityCommon = new module.AccessibilityCommon();
     };
-import('/accessibility_common/accessibility_common_loader.js').then(reinit);
+    import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   }
 
   /** @override */
@@ -92,6 +93,8 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
 #include "base/command_line.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "components/prefs/pref_service.h"
+#include "ash/constants/ash_pref_names.h"
     `);
   }
 
@@ -99,6 +102,9 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   testGenPreamble() {
     super.testGenPreamble();
     GEN(`
+  browser()->profile()->GetPrefs()->SetBoolean(
+        ash::prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
+
   base::OnceClosure load_cb =
     base::BindOnce(&ash::AccessibilityManager::SetDictationEnabled,
         base::Unretained(ash::AccessibilityManager::Get()),
@@ -196,6 +202,7 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   /**
    * Checks that the latest IME commit text matches the expected value.
    * @param {string} expected
+   * @return {!Promise}
    */
   async assertCommittedText(expected) {
     if (!this.mockInputIme.getLastCommittedParameters()) {
@@ -217,6 +224,7 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   /**
    * Async function to get a preference value from Settings.
    * @param {string} name
+   * @return {!Promise<*>}
    */
   async getPref(name) {
     return new Promise(resolve => {
@@ -229,6 +237,7 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   /**
    * Async function to set a preference value in Settings.
    * @param {string} name
+   * @return {!Promise}
    */
   async setPref(name, value) {
     return new Promise(resolve => {
@@ -307,6 +316,7 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
    * Waits for the updateDictationBubble() API to be called with the given
    * properties.
    * @param {DictationBubbleProperties} targetProps
+   * @return {!Promise}
    */
   async waitForUIProperties(targetProps) {
     // Poll until the updateDictationBubble() API gets called with
@@ -321,7 +331,7 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
           clearInterval(intervalId);
           resolve();
         }
-      });
+      }, 100);
     });
   }
 

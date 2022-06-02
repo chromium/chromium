@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const AutomationNode = chrome.automation.AutomationNode;
-const AutomationEvent = chrome.automation.AutomationEvent;
-const EventType = chrome.automation.EventType;
 const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
 
 /**
  * InputController handles interaction with input fields for Dictation.
  */
 export class InputController {
-  constructor(stopDictationCallback) {
+  constructor(stopDictationCallback, focusHandler) {
     /** @private {number} */
     this.activeImeContextId_ = InputController.NO_ACTIVE_IME_CONTEXT_ID_;
+
+    /** @private {!FocusHandler} */
+    this.focusHandler_ = focusHandler;
 
     /**
      * The engine ID of the previously active IME input method. Used to
@@ -28,15 +28,6 @@ export class InputController {
     /** @private {?function():void} */
     this.onConnectCallback_ = null;
 
-    /**
-     * The currently focused editable node.
-     * @private {?AutomationNode}
-     */
-    this.editableNode_ = null;
-
-    /** @private {?EventHandler} */
-    this.focusHandler_ = null;
-
     this.initialize_();
   }
 
@@ -50,16 +41,6 @@ export class InputController {
         (context) => this.onImeFocus_(context));
     chrome.input.ime.onBlur.addListener(
         (contextId) => this.onImeBlur_(contextId));
-
-    // IME focus and blur listeners do not tell us which AutomationNode is
-    // currently focused. Register a focus event handler that will give us this
-    // information.
-    this.focusHandler_ = new EventHandler(
-        [], EventType.FOCUS, event => this.onFocusChanged_(event));
-    chrome.automation.getDesktop((desktop) => {
-      this.focusHandler_.setNodes(desktop);
-      this.focusHandler_.start();
-    });
   }
 
   /**
@@ -153,20 +134,6 @@ export class InputController {
   }
 
   /**
-   * @param {!AutomationEvent} event
-   * @private
-   */
-  onFocusChanged_(event) {
-    const node = event.target;
-    if (!node || !AutomationPredicate.editText(node)) {
-      this.editableNode_ = null;
-      return;
-    }
-
-    this.editableNode_ = node;
-  }
-
-  /**
    * @param {string} text
    * @return {string}
    */
@@ -177,14 +144,15 @@ export class InputController {
     // space when committed to a text field. This is a temporary workaround
     // until the blocking SODA bug can be fixed. Note, a similar strategy
     // already exists in Dictation::OnSpeechResult().
-    if (!this.editableNode_ ||
+    const editableNode = this.focusHandler_.getEditableNode();
+    if (!editableNode ||
         InputController.BEGINS_WITH_WHITESPACE_REGEX_.test(text)) {
       return text;
     }
 
-    const value = this.editableNode_.value;
-    const selStart = this.editableNode_.textSelStart;
-    const selEnd = this.editableNode_.textSelEnd;
+    const value = editableNode.value;
+    const selStart = editableNode.textSelStart;
+    const selEnd = editableNode.textSelEnd;
     // Prepend a space to `text` if there is text directly left of the cursor.
     if (!selStart || selStart !== selEnd || !value ||
         InputController.BEGINS_WITH_WHITESPACE_REGEX_.test(
