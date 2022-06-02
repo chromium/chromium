@@ -483,10 +483,6 @@ void InProcessBrowserTest::SetUpDefaultCommandLine(
   // TODO(pkotwicz): Investigate if we can remove this switch.
   if (exit_when_last_browser_closes_)
     command_line->AppendSwitch(switches::kDisableZeroBrowsersOpenForTests);
-#if BUILDFLAG(IS_CHROMEOS)
-  // Do not automaximize in browser tests.
-  command_line->AppendSwitch(switches::kDisableAutoMaximizeForTests);
-#endif
 }
 
 void InProcessBrowserTest::TearDown() {
@@ -722,6 +718,11 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
 
   SelectFirstBrowser();
   if (browser_) {
+#if BUILDFLAG(IS_CHROMEOS)
+    // There are cases where windows get created maximized by default.
+    if (browser_->window()->IsMaximized())
+      browser_->window()->Restore();
+#endif
     auto* tab = browser_->tab_strip_model()->GetActiveWebContents();
     content::WaitForLoadStop(tab);
     SetInitialWebContents(tab);

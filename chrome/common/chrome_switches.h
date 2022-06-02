@@ -67,9 +67,6 @@ extern const char kDevToolsFlags[];
 extern const char kDiagnostics[];
 extern const char kDiagnosticsFormat[];
 extern const char kDiagnosticsRecovery[];
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kDisableAutoMaximizeForTests[];
-#endif
 extern const char kDisableBackgroundNetworking[];
 extern const char kDisableClientSidePhishingDetection[];
 extern const char kDisableComponentExtensionsWithBackgroundPages[];
