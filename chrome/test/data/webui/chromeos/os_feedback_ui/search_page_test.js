@@ -101,8 +101,12 @@ export function searchPageTestSuite() {
     await initializePage();
     textAreaElement = page.shadowRoot.querySelector('#descriptionText');
     assertTrue(!!textAreaElement);
-    // Verify the textarea is empty.
+    // Verify the textarea is empty and hint is showing.
     assertEquals('', textAreaElement.value);
+    assertEquals(
+        'Share your feedback or describe your issue. ' +
+            'If possible, include steps to reproduce your issue.',
+        textAreaElement.placeholder);
 
     // Enter three chars.
     textAreaElement.value = 'abc';

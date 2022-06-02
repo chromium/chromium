@@ -42,6 +42,7 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 void AddLocalizedStrings(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"continueButtonLabel", IDS_FEEDBACK_TOOL_CONTINUE_BUTTON_LABEL},
+      {"descriptionHint", IDS_FEEDBACK_TOOL_DESCRIPTION_HINT},
       {"descriptionLabel", IDS_FEEDBACK_TOOL_DESCRIPTION_LABEL},
       {"descriptionRequired", IDS_FEEDBACK_TOOL_DESCRIPTION_REQUIRED},
       {"feedbackHelpLinkLabel", IDS_FEEDBACK_TOOL_FEEDBACK_HELP_LINK_LABEL},
