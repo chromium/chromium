@@ -955,6 +955,8 @@ static_library("extensions") {
 
   if (is_chromeos) {
     sources += [
+      "api/certificate_provider/certificate_provider_api.cc",
+      "api/certificate_provider/certificate_provider_api.h",
       "api/document_scan/document_scan_api.cc",
       "api/document_scan/document_scan_api.h",
       "api/enterprise_device_attributes/enterprise_device_attributes_api.h",
@@ -1007,6 +1009,7 @@ static_library("extensions") {
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chromeos/components/disks:prefs",
       "//chromeos/components/quick_answers/public/cpp:prefs",
+      "//chromeos/components/security_token_pin",
       "//chromeos/constants",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
@@ -1043,8 +1046,6 @@ static_library("extensions") {
 
   if (is_chromeos_ash) {
     sources += [
-      "api/certificate_provider/certificate_provider_api.cc",
-      "api/certificate_provider/certificate_provider_api.h",
       "api/crash_report_private/crash_report_private_api.cc",
       "api/crash_report_private/crash_report_private_api.h",
       "api/enterprise_device_attributes/enterprise_device_attributes_api_ash.cc",

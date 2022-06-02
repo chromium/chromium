@@ -20,7 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
+#include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chromeos/components/onc/certificate_scope.h"
 #include "chromeos/network/policy_certificate_provider.h"
 #endif

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_PIN_DIALOG_MANAGER_H_
-#define CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_PIN_DIALOG_MANAGER_H_
+#ifndef CHROME_BROWSER_CERTIFICATE_PROVIDER_PIN_DIALOG_MANAGER_H_
+#define CHROME_BROWSER_CERTIFICATE_PROVIDER_PIN_DIALOG_MANAGER_H_
 
 #include <map>
 #include <string>
@@ -14,8 +14,8 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
-#include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host_popup_impl.h"
+#include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
+#include "chrome/browser/certificate_provider/security_token_pin_dialog_host_popup_impl.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -202,4 +202,4 @@ class PinDialogManager final {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_PIN_DIALOG_MANAGER_H_
+#endif  // CHROME_BROWSER_CERTIFICATE_PROVIDER_PIN_DIALOG_MANAGER_H_

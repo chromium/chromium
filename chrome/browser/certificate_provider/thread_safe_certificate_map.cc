@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/certificate_provider/thread_safe_certificate_map.h"
+#include "chrome/browser/certificate_provider/thread_safe_certificate_map.h"
 
 #include <string>
 #include <vector>
@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
-#include "chrome/browser/ash/certificate_provider/certificate_info.h"
+#include "chrome/browser/certificate_provider/certificate_info.h"
 #include "net/base/hash_value.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"

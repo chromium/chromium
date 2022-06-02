@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_SERVICE_H_
-#define CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_SERVICE_H_
+#ifndef CHROME_BROWSER_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_SERVICE_H_
+#define CHROME_BROWSER_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_SERVICE_H_
 
 #include <stdint.h>
 
@@ -18,11 +18,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/ash/certificate_provider/certificate_info.h"
-#include "chrome/browser/ash/certificate_provider/certificate_requests.h"
-#include "chrome/browser/ash/certificate_provider/pin_dialog_manager.h"
-#include "chrome/browser/ash/certificate_provider/sign_requests.h"
-#include "chrome/browser/ash/certificate_provider/thread_safe_certificate_map.h"
+#include "chrome/browser/certificate_provider/certificate_info.h"
+#include "chrome/browser/certificate_provider/certificate_requests.h"
+#include "chrome/browser/certificate_provider/pin_dialog_manager.h"
+#include "chrome/browser/certificate_provider/sign_requests.h"
+#include "chrome/browser/certificate_provider/thread_safe_certificate_map.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/cert/x509_certificate.h"
@@ -277,4 +277,4 @@ class CertificateProviderService : public KeyedService {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_SERVICE_H_
+#endif  // CHROME_BROWSER_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_SERVICE_H_

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host_popup_impl.h"
+#include "chrome/browser/certificate_provider/security_token_pin_dialog_host_popup_impl.h"
 
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -20,14 +20,19 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/ui/login_display_host.h"
+#endif
+
 namespace chromeos {
 
 namespace {
 
 gfx::NativeWindow GetBrowserParentWindow() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (LoginDisplayHost::default_host())
     return LoginDisplayHost::default_host()->GetNativeWindow();
-
+#endif
   Browser* browser =
       chrome::FindTabbedBrowser(ProfileManager::GetPrimaryUserProfile(), true);
   if (browser)

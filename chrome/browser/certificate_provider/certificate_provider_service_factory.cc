@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 
 #include <memory>
 #include <string>
@@ -15,7 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/values.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/common/extensions/api/certificate_provider.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

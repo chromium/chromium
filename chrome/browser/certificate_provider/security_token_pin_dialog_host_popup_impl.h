@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_SECURITY_TOKEN_PIN_DIALOG_HOST_POPUP_IMPL_H_
-#define CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_SECURITY_TOKEN_PIN_DIALOG_HOST_POPUP_IMPL_H_
+#ifndef CHROME_BROWSER_CERTIFICATE_PROVIDER_SECURITY_TOKEN_PIN_DIALOG_HOST_POPUP_IMPL_H_
+#define CHROME_BROWSER_CERTIFICATE_PROVIDER_SECURITY_TOKEN_PIN_DIALOG_HOST_POPUP_IMPL_H_
 
 #include <string>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
+#include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 
 namespace views {
 class Widget;
@@ -66,4 +66,4 @@ class SecurityTokenPinDialogHostPopupImpl final
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_SECURITY_TOKEN_PIN_DIALOG_HOST_POPUP_IMPL_H_
+#endif  // CHROME_BROWSER_CERTIFICATE_PROVIDER_SECURITY_TOKEN_PIN_DIALOG_HOST_POPUP_IMPL_H_

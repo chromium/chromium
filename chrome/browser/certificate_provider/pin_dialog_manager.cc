@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/certificate_provider/pin_dialog_manager.h"
+#include "chrome/browser/certificate_provider/pin_dialog_manager.h"
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -191,8 +191,9 @@ PinDialogManager::SignRequestState::SignRequestState(
 
 PinDialogManager::SignRequestState::SignRequestState(const SignRequestState&) =
     default;
-PinDialogManager::SignRequestState& PinDialogManager::SignRequestState::
-operator=(const SignRequestState&) = default;
+PinDialogManager::SignRequestState&
+PinDialogManager::SignRequestState::operator=(const SignRequestState&) =
+    default;
 
 PinDialogManager::SignRequestState::~SignRequestState() = default;
 
