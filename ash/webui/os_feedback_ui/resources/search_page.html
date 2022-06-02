@@ -28,7 +28,6 @@
     font-weight: bold;
   }
 </style>
-<!--TODO(xiangdongkong): use localized strings -->
 <div id="container">
   <div id="header">
     <h1 id="title">[[i18n('pageTitle')]]</h1>
@@ -39,14 +38,14 @@
         <p id="descriptionTitle">[[i18n('descriptionLabel')]]</p>
         <a id="feedbackWritingGuidance" href="[[feedbackWritingGuidanceUrl_()]]"
             target="_blank">
-          How to write good feedback?
+            [[i18n('feedbackHelpLinkLabel')]]
         </a>
       </div>
       <textarea id="descriptionText" aria-labelledby="descriptionTitle"
           aria-required="true" on-input="handleInputChanged_">
       </textarea>
       <p id="descriptionEmptyError" aria-hidden="true" hidden>
-        Description is required
+        [[i18n('descriptionRequired')]]
       </p>
     </div>
     <iframe on-load="resolveIframeLoaded_"

@@ -61,6 +61,8 @@ export function searchPageTestSuite() {
     const writingGuidanceLink =
         page.shadowRoot.querySelector('#feedbackWritingGuidance');
     assertTrue(!!writingGuidanceLink);
+    assertEquals(
+        'Tips on writing feedback', writingGuidanceLink.textContent.trim());
     assertEquals('_blank', writingGuidanceLink.target);
     assertEquals(
         'https://support.google.com/chromebook/answer/2982029',
@@ -194,6 +196,8 @@ export function searchPageTestSuite() {
     buttonContinue.click();
     // Verify that the message is not hidden now.
     assertFalse(errorMsg.hidden);
+    assertEquals('Description is required', errorMsg.textContent.trim());
+
     // Verify that the textarea received focus again.
     assertEquals(page.shadowRoot.activeElement, textInput);
 
