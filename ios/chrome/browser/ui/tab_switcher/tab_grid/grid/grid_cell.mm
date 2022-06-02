@@ -305,16 +305,17 @@ void PositionView(UIView* view, CGPoint point) {
     return;
   }
   // Do not fade in if there is no previous snapshot
-  if (_snapshot == nil) {
-    return;
+  if (_snapshot != nil) {
+    [UIView transitionWithView:self.snapshotView
+                      duration:0.2f
+                       options:UIViewAnimationOptionTransitionCrossDissolve
+                    animations:^{
+                      self.snapshotView.image = snapshot;
+                    }
+                    completion:nil];
+  } else {
+    self.snapshotView.image = snapshot;
   }
-  [UIView transitionWithView:self.snapshotView
-                    duration:0.2f
-                     options:UIViewAnimationOptionTransitionCrossDissolve
-                  animations:^{
-                    self.snapshotView.image = snapshot;
-                  }
-                  completion:nil];
   _snapshot = snapshot;
 }
 
