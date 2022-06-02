@@ -31520,6 +31520,7 @@ Called by update_document_policy_enum.py.-->
   <int value="984" label="ClipboardAllowedForUrls"/>
   <int value="985" label="ClipboardBlockedForUrls"/>
   <int value="986" label="OsColorMode"/>
+  <int value="987" label="RendererAppContainerEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

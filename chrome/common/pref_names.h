@@ -1052,6 +1052,7 @@ extern const char kThirdPartyBlockingEnabled[];
 // Windows mitigation policies.
 #if BUILDFLAG(IS_WIN)
 extern const char kRendererCodeIntegrityEnabled[];
+extern const char kRendererAppContainerEnabled[];
 extern const char kBlockBrowserLegacyExtensionPoints[];
 #endif  // BUILDFLAG(IS_WIN)
 

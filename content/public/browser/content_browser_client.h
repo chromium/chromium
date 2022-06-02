@@ -1282,8 +1282,14 @@ class CONTENT_EXPORT ContentBrowserClient {
 #if BUILDFLAG(IS_WIN)
   // Defines flags that can be passed to PreSpawnChild.
   enum ChildSpawnFlags {
-    NONE = 0,
-    RENDERER_CODE_INTEGRITY = 1 << 0,
+    kChildSpawnFlagNone = 0,
+    kChildSpawnFlagRendererCodeIntegrity = 1 << 0,
+  };
+
+  // Defines flags that can be passed to GetAppContainerSidForSandboxType.
+  enum AppContainerFlags {
+    kAppContainerFlagNone = 0,
+    kAppContainerFlagDisableAppContainer = 1 << 0,
   };
 
   // This may be called on the PROCESS_LAUNCHER thread before the child process
@@ -1306,8 +1312,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns the AppContainer SID for the specified sandboxed process type, or
   // empty string if this sandboxed process type does not support living inside
   // an AppContainer. Called on PROCESS_LAUNCHER thread.
+  // `flags` can signal to the embedder any special behavior that should happen
+  // for the `sandbox_type`.
   virtual std::wstring GetAppContainerSidForSandboxType(
-      sandbox::mojom::Sandbox sandbox_type);
+      sandbox::mojom::Sandbox sandbox_type,
+      AppContainerFlags flags);
+
+  // Returns true if renderer App Container should be disabled.
+  // This is called on the UI thread.
+  virtual bool IsRendererAppContainerDisabled();
 
   // Returns the LPAC capability name to use for file data that the network
   // service needs to access to when running within LPAC sandbox. Embedders

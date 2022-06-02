@@ -57,7 +57,9 @@ RendererSandboxedProcessLauncherDelegateWin::
     RendererSandboxedProcessLauncherDelegateWin(base::CommandLine* cmd_line,
                                                 bool is_jit_disabled)
     : renderer_code_integrity_enabled_(
-          GetContentClient()->browser()->IsRendererCodeIntegrityEnabled()) {
+          GetContentClient()->browser()->IsRendererCodeIntegrityEnabled()),
+      renderer_app_container_disabled_(
+          GetContentClient()->browser()->IsRendererAppContainerDisabled()) {
   if (is_jit_disabled) {
     dynamic_code_can_be_disabled_ = true;
     return;
@@ -82,16 +84,22 @@ bool RendererSandboxedProcessLauncherDelegateWin::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
   sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(policy);
 
+  ContentBrowserClient::AppContainerFlags ac_flags(
+      ContentBrowserClient::AppContainerFlags::kAppContainerFlagNone);
+  if (renderer_app_container_disabled_)
+    ac_flags = ContentBrowserClient::AppContainerFlags::
+        kAppContainerFlagDisableAppContainer;
   const std::wstring& sid =
       GetContentClient()->browser()->GetAppContainerSidForSandboxType(
-          GetSandboxType());
+          GetSandboxType(), ac_flags);
   if (!sid.empty())
     sandbox::policy::SandboxWin::AddAppContainerPolicy(policy, sid.c_str());
 
   ContentBrowserClient::ChildSpawnFlags flags(
-      ContentBrowserClient::ChildSpawnFlags::NONE);
+      ContentBrowserClient::ChildSpawnFlags::kChildSpawnFlagNone);
   if (renderer_code_integrity_enabled_) {
-    flags = ContentBrowserClient::ChildSpawnFlags::RENDERER_CODE_INTEGRITY;
+    flags = ContentBrowserClient::ChildSpawnFlags::
+        kChildSpawnFlagRendererCodeIntegrity;
 
     // If the renderer process is protected by code integrity, more
     // mitigations become available.

@@ -3102,6 +3102,12 @@ const char kThirdPartyBlockingEnabled[] = "third_party_blocking_enabled";
 // mitigation enabled.
 const char kRendererCodeIntegrityEnabled[] = "renderer_code_integrity_enabled";
 
+// A boolean value, controlling whether Chrome renderer processes should have
+// Renderer App Container enabled or not. If this pref is set to false then
+// Renderer App Container is disabled, otherwise Renderer App Container is
+// controlled by the `RendererAppContainer` feature owned by sandbox/policy.
+const char kRendererAppContainerEnabled[] = "renderer_app_container_enabled";
+
 // A boolean that controls whether the Browser process has
 // ProcessExtensionPointDisablePolicy enabled.
 const char kBlockBrowserLegacyExtensionPoints[] =

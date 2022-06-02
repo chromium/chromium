@@ -369,6 +369,7 @@ source_set("browser_tests") {
       "test/audio_process_high_priority_enabled_browsertest.cc",
       "test/locale_policy_browsertest.cc",
       "test/network_service_sandbox_enabled_browsertest.cc",
+      "test/renderer_app_container_enabled_win_browsertest.cc",
     ]
   }
 
