@@ -459,14 +459,16 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
     return ERR_UNEXPECTED;
   }
 
-  void RequestSockets(
+  int RequestSockets(
       const ClientSocketPool::GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
+      CompletionOnceCallback callback,
       const NetLogWithSource& net_log) override {
     last_num_streams_ = num_sockets;
     last_group_id_ = group_id;
+    return OK;
   }
 
   void CancelRequest(const ClientSocketPool::GroupId& group_id,

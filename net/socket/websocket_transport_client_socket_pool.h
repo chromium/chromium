@@ -66,11 +66,12 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
       CompletionOnceCallback callback,
       const ProxyAuthCallback& proxy_auth_callback,
       const NetLogWithSource& net_log) override;
-  void RequestSockets(
+  int RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
+      CompletionOnceCallback callback,
       const NetLogWithSource& net_log) override;
   void SetPriority(const GroupId& group_id,
                    ClientSocketHandle* handle,

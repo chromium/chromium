@@ -198,11 +198,12 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       CompletionOnceCallback callback,
       const ProxyAuthCallback& proxy_auth_callback,
       const NetLogWithSource& net_log) override;
-  void RequestSockets(
+  int RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
+      CompletionOnceCallback callback,
       const NetLogWithSource& net_log) override;
   void SetPriority(const GroupId& group_id,
                    ClientSocketHandle* handle,
@@ -681,11 +682,24 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // This is the internal implementation of RequestSocket().  It differs in that
   // it does not handle logging into NetLog of the queueing status of
   // |request|.
-  int RequestSocketInternal(const GroupId& group_id, const Request& request);
+  // |preconnect_done_closure| is used only for preconnect requests. For
+  // preconnect requests, this method returns ERR_IO_PENDING only if a connect
+  // job is created and the connect job didn't finish synchronously. In such
+  // case, |preconnect_done_closure| will be called when the created connect job
+  // will be deleted.
+  // For normal non-preconnect requests, |preconnect_done_closure| must be null.
+  // And this method returns ERR_IO_PENDING when the number of sockets has
+  // reached the limit or the created connect job didn't finish synchronously.
+  // In such a case, the Request with a ClientSocketHandle must be registered to
+  // |group_map_| to receive the completion callback.
+  int RequestSocketInternal(const GroupId& group_id,
+                            const Request& request,
+                            base::OnceClosure preconnect_done_closure);
 
   // Wrapper around RequestSocketInternal that adds a reentrancy guard.
   int CheckedRequestSocketInternal(const GroupId& group_id,
-                                   const Request& request);
+                                   const Request& request,
+                                   base::OnceClosure preconnect_done_closure);
 
   // Assigns an idle socket for the group to the request.
   // Returns |true| if an idle socket is available, false otherwise.

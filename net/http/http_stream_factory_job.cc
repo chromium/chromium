@@ -828,11 +828,18 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     DCHECK(!is_websocket_);
     DCHECK(request_info_.socket_tag == SocketTag());
 
+    // The lifeime of the preconnect tasks is not controlled by |connection_|.
+    // It may outlives |this|. So we can't use |io_callback_| which holds
+    // base::Unretained(this).
+    auto callback =
+        base::BindOnce(&Job::OnIOComplete, ptr_factory_.GetWeakPtr());
+
     return PreconnectSocketsForHttpRequest(
         destination_, request_info_.load_flags, priority_, session_,
         proxy_info_, server_ssl_config_, proxy_ssl_config_,
         request_info_.privacy_mode, request_info_.network_isolation_key,
-        request_info_.secure_dns_policy, net_log_, num_streams_);
+        request_info_.secure_dns_policy, net_log_, num_streams_,
+        std::move(callback));
   }
 
   ClientSocketPool::ProxyAuthCallback proxy_auth_callback =

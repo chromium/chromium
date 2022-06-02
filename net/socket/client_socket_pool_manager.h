@@ -133,7 +133,8 @@ int PreconnectSocketsForHttpRequest(url::SchemeHostPort endpoint,
                                     NetworkIsolationKey network_isolation_key,
                                     SecureDnsPolicy secure_dns_policy,
                                     const NetLogWithSource& net_log,
-                                    int num_preconnect_streams);
+                                    int num_preconnect_streams,
+                                    CompletionOnceCallback callback);
 
 }  // namespace net
 

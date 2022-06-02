@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
@@ -264,7 +266,9 @@ int TransportClientSocketPool::RequestSocket(
 
   request->net_log().BeginEvent(NetLogEventType::SOCKET_POOL);
 
-  int rv = CheckedRequestSocketInternal(group_id, *request);
+  int rv = CheckedRequestSocketInternal(
+      group_id, *request,
+      /*preconnect_done_closure=*/base::OnceClosure());
   if (rv != ERR_IO_PENDING) {
     if (rv == OK) {
       request->handle()->socket()->ApplySocketTag(request->socket_tag());
@@ -291,11 +295,12 @@ int TransportClientSocketPool::RequestSocket(
   return rv;
 }
 
-void TransportClientSocketPool::RequestSockets(
+int TransportClientSocketPool::RequestSockets(
     const GroupId& group_id,
     scoped_refptr<SocketParams> params,
     const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     int num_sockets,
+    CompletionOnceCallback callback,
     const NetLogWithSource& net_log) {
   // TODO(eroman): Split out the host and port parameters.
   net_log.AddEvent(NetLogEventType::TCP_CLIENT_SOCKET_POOL_REQUESTED_SOCKETS,
@@ -323,10 +328,24 @@ void TransportClientSocketPool::RequestSockets(
   bool deleted_group = false;
 
   int rv = OK;
+
+  base::RepeatingClosure preconnect_done_closure = base::BarrierClosure(
+      num_sockets, base::BindOnce(
+                       [](CompletionOnceCallback callback) {
+                         base::ThreadTaskRunnerHandle::Get()->PostTask(
+                             FROM_HERE,
+                             base::BindOnce(std::move(callback), OK));
+                       },
+                       std::move(callback)));
+  int pending_connect_job_count = 0;
   for (int num_iterations_left = num_sockets;
        group->NumActiveSocketSlots() < num_sockets && num_iterations_left > 0;
        num_iterations_left--) {
-    rv = CheckedRequestSocketInternal(group_id, request);
+    rv = CheckedRequestSocketInternal(group_id, request,
+                                      preconnect_done_closure);
+    if (rv == ERR_IO_PENDING) {
+      ++pending_connect_job_count;
+    }
     if (rv < 0 && rv != ERR_IO_PENDING) {
       // We're encountering a synchronous error.  Give up.
       if (!base::Contains(group_map_, group_id))
@@ -349,12 +368,26 @@ void TransportClientSocketPool::RequestSockets(
     rv = OK;
   request.net_log().EndEventWithNetErrorCode(
       NetLogEventType::SOCKET_POOL_CONNECTING_N_SOCKETS, rv);
+
+  // Currently we don't handle preconnect errors. So this method returns OK even
+  // if failed to preconnect.
+  // TODO(crbug.com/1330235): Consider support error handlings when needed.
+  if (pending_connect_job_count == 0)
+    return OK;
+  for (int i = 0; i < num_sockets - pending_connect_job_count; ++i) {
+    preconnect_done_closure.Run();
+  }
+
+  return ERR_IO_PENDING;
 }
 
-int TransportClientSocketPool::RequestSocketInternal(const GroupId& group_id,
-                                                     const Request& request) {
+int TransportClientSocketPool::RequestSocketInternal(
+    const GroupId& group_id,
+    const Request& request,
+    base::OnceClosure preconnect_done_closure) {
   ClientSocketHandle* const handle = request.handle();
   const bool preconnecting = !handle;
+  DCHECK_EQ(preconnecting, !!preconnect_done_closure);
 
   Group* group = nullptr;
   auto group_it = group_map_.find(group_id);
@@ -382,7 +415,7 @@ int TransportClientSocketPool::RequestSocketInternal(const GroupId& group_id,
       // to this layer.
       request.net_log().AddEvent(
           NetLogEventType::SOCKET_POOL_STALLED_MAX_SOCKETS_PER_GROUP);
-      return ERR_IO_PENDING;
+      return preconnecting ? ERR_PRECONNECT_MAX_SOCKET_LIMIT : ERR_IO_PENDING;
     }
   }
 
@@ -404,7 +437,7 @@ int TransportClientSocketPool::RequestSocketInternal(const GroupId& group_id,
       // check later.
       request.net_log().AddEvent(
           NetLogEventType::SOCKET_POOL_STALLED_MAX_SOCKETS);
-      return ERR_IO_PENDING;
+      return preconnecting ? ERR_PRECONNECT_MAX_SOCKET_LIMIT : ERR_IO_PENDING;
     }
   }
 
@@ -422,6 +455,10 @@ int TransportClientSocketPool::RequestSocketInternal(const GroupId& group_id,
 
   int rv = connect_job->Connect();
   if (rv == ERR_IO_PENDING) {
+    if (preconnect_done_closure) {
+      DCHECK(preconnecting);
+      connect_job->set_done_closure(std::move(preconnect_done_closure));
+    }
     // If we didn't have any sockets in this group, set a timer for potentially
     // creating a new one.  If the SYN is lost, this backup socket may complete
     // before the slow socket, improving end user latency.
@@ -456,13 +493,15 @@ int TransportClientSocketPool::RequestSocketInternal(const GroupId& group_id,
 
 int TransportClientSocketPool::CheckedRequestSocketInternal(
     const GroupId& group_id,
-    const Request& request) {
+    const Request& request,
+    base::OnceClosure preconnect_done_closure) {
 #if DCHECK_IS_ON()
   DCHECK(!request_in_process_);
   request_in_process_ = true;
 #endif  // DCHECK_IS_ON()
 
-  int ret = RequestSocketInternal(group_id, request);
+  int ret = RequestSocketInternal(group_id, request,
+                                  std::move(preconnect_done_closure));
 
 #if DCHECK_IS_ON()
   request_in_process_ = false;
@@ -1135,7 +1174,9 @@ void TransportClientSocketPool::ProcessPendingRequest(const GroupId& group_id,
     return;
   }
 
-  int rv = CheckedRequestSocketInternal(group_id, *next_request);
+  int rv = CheckedRequestSocketInternal(
+      group_id, *next_request,
+      /*preconnect_done_closure=*/base::OnceClosure());
   if (rv != ERR_IO_PENDING) {
     std::unique_ptr<Request> request = group->PopNextUnboundRequest();
     DCHECK(request);

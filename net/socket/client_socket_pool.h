@@ -246,18 +246,21 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   // RequestSockets is used to request that |num_sockets| be connected in the
   // connection group for |group_id|.  If the connection group already has
   // |num_sockets| idle sockets / active sockets / currently connecting sockets,
-  // then this function doesn't do anything.  Otherwise, it will start up as
-  // many connections as necessary to reach |num_sockets| total sockets for the
-  // group.  It uses |params| to control how to connect the sockets.   The
+  // then this function doesn't do anything and returns OK.  Otherwise, it will
+  // start up as many connections as necessary to reach |num_sockets| total
+  // sockets for the group and returns ERR_IO_PENDING. And |callback| will be
+  // called with OK when the connection tasks are finished.
+  // It uses |params| to control how to connect the sockets. The
   // ClientSocketPool will assign a priority to the new connections, if any.
   // This priority will probably be lower than all others, since this method
   // is intended to make sure ahead of time that |num_sockets| sockets are
   // available to talk to a host.
-  virtual void RequestSockets(
+  virtual int RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
+      CompletionOnceCallback callback,
       const NetLogWithSource& net_log) = 0;
 
   // Called to change the priority of a RequestSocket call that returned

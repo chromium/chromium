@@ -128,13 +128,15 @@ int WebSocketTransportClientSocketPool::RequestSocket(
   return result;
 }
 
-void WebSocketTransportClientSocketPool::RequestSockets(
+int WebSocketTransportClientSocketPool::RequestSockets(
     const GroupId& group_id,
     scoped_refptr<SocketParams> params,
     const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     int num_sockets,
+    CompletionOnceCallback callback,
     const NetLogWithSource& net_log) {
   NOTIMPLEMENTED();
+  return OK;
 }
 
 void WebSocketTransportClientSocketPool::SetPriority(const GroupId& group_id,

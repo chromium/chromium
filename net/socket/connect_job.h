@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
@@ -244,6 +245,9 @@ class NET_EXPORT_PRIVATE ConnectJob {
     return connect_timing_;
   }
 
+  // Sets |done_closure_| which will be called when |this| is deleted.
+  void set_done_closure(base::OnceClosure done_closure);
+
   const NetLogWithSource& net_log() const { return net_log_; }
 
  protected:
@@ -320,6 +324,8 @@ class NET_EXPORT_PRIVATE ConnectJob {
   // ConnectJob has started / after it has completed.
   const bool top_level_job_;
   NetLogWithSource net_log_;
+  // This is called when |this| is deleted.
+  base::ScopedClosureRunner done_closure_;
   const NetLogEventType net_log_connect_event_type_;
 };
 
