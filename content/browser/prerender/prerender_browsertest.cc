@@ -2893,6 +2893,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
       "Prerender.Experimental.PrerenderCancelledUnknownInterface."
       "SpeculationRule",
       InterfaceNameHasher(mojom::PepperHost::Name_), 2);
+
+  // Run JavaScript code to inject a new iframe to load a page, and see if it
+  // correctly runs and results in making a navigation request in the iframe. If
+  // the initiator is still working normally after prerendering cancellation,
+  // this request should arrive.
+  RenderFrameHostImpl* main_frame_host = current_frame_host();
+  EXPECT_TRUE(AddTestUtilJS(main_frame_host));
+  EXPECT_TRUE(ExecJs(main_frame_host, "add_iframe_async('/title1.html')",
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  WaitForRequest(GetUrl("/title1.html"), 1);
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
