@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/inspect.h"
+#include "components/fuchsia_component_support/inspect.h"
 
 #include <lib/sys/inspect/cpp/component.h>
 
 #include "components/version_info/version_info.h"
 
-namespace cr_fuchsia {
+namespace fuchsia_component_support {
 
 namespace {
 const char kVersion[] = "version";
@@ -25,4 +25,4 @@ void PublishVersionInfoToInspect(sys::ComponentInspector* inspector) {
                                  inspector);
 }
 
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_component_support

@@ -8,7 +8,7 @@
 
 #include "base/fuchsia/file_utils.h"
 #include "base/path_service.h"
-#include "fuchsia/base/config_reader.h"
+#include "components/fuchsia_component_support/config_reader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -58,7 +58,8 @@ void ApplyCastStreamingContextParams(
 }
 
 std::string GetMessagePortOriginForAppId(const std::string& app_id) {
-  const absl::optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+  const absl::optional<base::Value>& config =
+      fuchsia_component_support::LoadPackageConfig();
   if (!config) {
     return kCastStreamingMessagePortOrigin;
   }

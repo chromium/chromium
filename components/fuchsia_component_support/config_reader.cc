@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/config_reader.h"
+#include "components/fuchsia_component_support/config_reader.h"
 
 #include <string>
 #include <utility>
@@ -15,7 +15,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 
-namespace cr_fuchsia {
+namespace fuchsia_component_support {
 
 namespace {
 
@@ -80,4 +80,4 @@ absl::optional<base::Value> LoadConfigFromDirForTest(  // IN-TEST
   return ReadConfigsFromDir(dir);
 }
 
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_component_support

@@ -17,29 +17,21 @@ source_set("base") {
     "//fuchsia/runners/*",
   ]
   sources = [
-    "config_reader.cc",
-    "feedback_registration.cc",
     "fuchsia_dir_scheme.cc",
     "init_logging.cc",
-    "inspect.cc",
     "string_util.cc",
   ]
   public = [
-    "config_reader.h",
-    "feedback_registration.h",
     "fuchsia_dir_scheme.h",
     "init_logging.h",
-    "inspect.h",
     "string_util.h",
   ]
   deps = [
     "//base",
     "//build:branding_buildflags",
     "//components/version_info",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
     "//third_party/fuchsia-sdk/sdk/pkg/fdio",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
     "//url",
   ]
 }
@@ -100,11 +92,7 @@ static_library("run_all_integration_tests") {
 
 # Unit-tests for all //fuchsia/base utilities.
 test("cr_fuchsia_base_unittests") {
-  sources = [
-    "agent_impl_unittest.cc",
-    "config_reader_unittest.cc",
-    "inspect_unittest.cc",
-  ]
+  sources = [ "agent_impl_unittest.cc" ]
   deps = [
     ":modular",
     "//base",
@@ -116,6 +104,5 @@ test("cr_fuchsia_base_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
   ]
 }

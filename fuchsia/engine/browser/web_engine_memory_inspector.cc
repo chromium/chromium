@@ -11,13 +11,14 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_dump_request_args.h"
-#include "fuchsia/base/config_reader.h"
+#include "components/fuchsia_component_support/config_reader.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 
 namespace {
 
 std::vector<std::string> GetAllocatorDumpNamesFromConfig() {
-  const absl::optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+  const absl::optional<base::Value>& config =
+      fuchsia_component_support::LoadPackageConfig();
   if (!config)
     return {};
 

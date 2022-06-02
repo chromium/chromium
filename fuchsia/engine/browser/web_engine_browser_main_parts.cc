@@ -30,6 +30,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/fuchsia_component_support/inspect.h"
 #include "components/fuchsia_legacymetrics/legacymetrics_client.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -40,7 +41,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
-#include "fuchsia/base/inspect.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
@@ -196,7 +196,8 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   // Initialize the |component_inspector_| to allow diagnostics to be published.
   component_inspector_ = std::make_unique<sys::ComponentInspector>(
       base::ComponentContextForProcess());
-  cr_fuchsia::PublishVersionInfoToInspect(component_inspector_.get());
+  fuchsia_component_support::PublishVersionInfoToInspect(
+      component_inspector_.get());
 
   // Add a node providing memory details for this whole web instance.
   memory_inspector_ =

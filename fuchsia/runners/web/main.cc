@@ -13,9 +13,9 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
+#include "components/fuchsia_component_support/inspect.h"
 #include "fuchsia/base/fuchsia_dir_scheme.h"
 #include "fuchsia/base/init_logging.h"
-#include "fuchsia/base/inspect.h"
 #include "fuchsia/engine/web_instance_host/web_instance_host.h"
 #include "fuchsia/runners/buildflags.h"
 #include "fuchsia/runners/common/web_content_runner.h"
@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
 
   // Publish version information for this component to Inspect.
   sys::ComponentInspector inspect(base::ComponentContextForProcess());
-  cr_fuchsia::PublishVersionInfoToInspect(&inspect);
+  fuchsia_component_support::PublishVersionInfoToInspect(&inspect);
 
   base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
 

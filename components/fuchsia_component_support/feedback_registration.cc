@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/feedback_registration.h"
+#include "components/fuchsia_component_support/feedback_registration.h"
 
 #include <fuchsia/feedback/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
@@ -12,7 +12,7 @@
 #include "build/branding_buildflags.h"
 #include "components/version_info/version_info.h"
 
-namespace cr_fuchsia {
+namespace fuchsia_component_support {
 
 void RegisterProductDataForCrashReporting(
     base::StringPiece component_url,
@@ -54,4 +54,4 @@ void RegisterProductDataForFeedback(base::StringPiece component_namespace) {
       ->Upsert(std::move(component_data), []() {});
 }
 
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_component_support

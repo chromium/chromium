@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/config_reader.h"
+#include "components/fuchsia_component_support/config_reader.h"
 
 #include <string>
 
@@ -10,7 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace cr_fuchsia {
+namespace fuchsia_component_support {
 
 TEST(ConfigReaderTest, NoConfigData) {
   base::ScopedTempDir temp_dir;
@@ -95,4 +95,4 @@ TEST(ConfigReaderTest, MultipleClashingConfigJson) {
   EXPECT_DEATH({ LoadConfigFromDirForTest(temp_dir.GetPath()); }, "");
 }
 
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_component_support

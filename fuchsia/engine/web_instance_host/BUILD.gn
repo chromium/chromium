@@ -11,6 +11,7 @@ source_set("web_instance_host") {
     "//base",
     "//base:base_static",
     "//components/embedder_support",
+    "//components/fuchsia_component_support",
     "//content/public/common",
     "//fuchsia/base",
     "//fuchsia/engine:switches",

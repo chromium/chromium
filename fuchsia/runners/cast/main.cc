@@ -20,11 +20,11 @@
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/values.h"
-#include "fuchsia/base/config_reader.h"
-#include "fuchsia/base/feedback_registration.h"
+#include "components/fuchsia_component_support/config_reader.h"
+#include "components/fuchsia_component_support/feedback_registration.h"
+#include "components/fuchsia_component_support/inspect.h"
 #include "fuchsia/base/fuchsia_dir_scheme.h"
 #include "fuchsia/base/init_logging.h"
-#include "fuchsia/base/inspect.h"
 #include "fuchsia/engine/web_instance_host/web_instance_host.h"
 #include "fuchsia/runners/cast/cast_runner.h"
 #include "fuchsia/runners/cast/cast_runner_switches.h"
@@ -43,7 +43,8 @@ constexpr char kRunCfv1ShimConfigKey[] = "enable-cfv1-shim";
 
 // Returns the value of |config_key| or false if it is not set.
 bool GetConfigBool(base::StringPiece config_key) {
-  const absl::optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+  const absl::optional<base::Value>& config =
+      fuchsia_component_support::LoadPackageConfig();
   if (config)
     return config->FindBoolPath(config_key).value_or(false);
   return false;
@@ -101,7 +102,7 @@ int main(int argc, char** argv) {
       "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cm");
   static constexpr base::StringPiece kComponentUrlCfv1(
       "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cmx");
-  cr_fuchsia::RegisterProductDataForCrashReporting(
+  fuchsia_component_support::RegisterProductDataForCrashReporting(
       enable_cfv2 ? kComponentUrl : kComponentUrlCfv1, "FuchsiaCastRunner");
 
   CHECK(cr_fuchsia::InitLoggingFromCommandLine(*command_line))
@@ -143,7 +144,7 @@ int main(int argc, char** argv) {
 
   // Publish version information for this component to Inspect.
   sys::ComponentInspector inspect(base::ComponentContextForProcess());
-  cr_fuchsia::PublishVersionInfoToInspect(&inspect);
+  fuchsia_component_support::PublishVersionInfoToInspect(&inspect);
 
   outgoing_directory->ServeFromStartupInfo();
 

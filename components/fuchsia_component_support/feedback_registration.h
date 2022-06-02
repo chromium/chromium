@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_BASE_FEEDBACK_REGISTRATION_H_
-#define FUCHSIA_BASE_FEEDBACK_REGISTRATION_H_
+#ifndef COMPONENTS_FUCHSIA_COMPONENT_SUPPORT_FEEDBACK_REGISTRATION_H_
+#define COMPONENTS_FUCHSIA_COMPONENT_SUPPORT_FEEDBACK_REGISTRATION_H_
 
 #include "base/strings/string_piece_forward.h"
 
-namespace cr_fuchsia {
+namespace fuchsia_component_support {
 
 // Overrides the default Fuchsia product info in crash reports.
 // Crashes for the component |component_url| will contain |crash_product_name|,
@@ -25,6 +25,6 @@ void RegisterProductDataForCrashReporting(base::StringPiece component_url,
 // "fuchsia.feedback.ComponentDataRegister".
 void RegisterProductDataForFeedback(base::StringPiece component_namespace);
 
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_component_support
 
-#endif  // FUCHSIA_BASE_FEEDBACK_REGISTRATION_H_
+#endif  // COMPONENTS_FUCHSIA_COMPONENT_SUPPORT_FEEDBACK_REGISTRATION_H_

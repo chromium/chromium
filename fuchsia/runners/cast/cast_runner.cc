@@ -26,8 +26,8 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/cast/common/constants.h"
+#include "components/fuchsia_component_support/config_reader.h"
 #include "fuchsia/base/agent_manager.h"
-#include "fuchsia/base/config_reader.h"
 #include "fuchsia/runners/cast/cast_streaming.h"
 #include "fuchsia/runners/cast/pending_cast_component.h"
 #include "fuchsia/runners/common/web_content_runner.h"
@@ -139,7 +139,8 @@ void EnsureSoftwareVideoDecodersAreDisabled(
 // Exits the Runner process if creation of data storage fails for any reason.
 void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
   // Set the web data quota based on the CastRunner configuration.
-  const absl::optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+  const absl::optional<base::Value>& config =
+      fuchsia_component_support::LoadPackageConfig();
   if (!config)
     return;
 
@@ -171,7 +172,8 @@ void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
 // CDM data persistence is always enabled, with an optional soft quota.
 // Exits the Runner if creation of CDM storage fails for any reason.
 void SetCdmParamsForMainContext(fuchsia::web::CreateContextParams* params) {
-  const absl::optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+  const absl::optional<base::Value>& config =
+      fuchsia_component_support::LoadPackageConfig();
   if (config) {
     constexpr char kCdmDataQuotaBytesSwitch[] = "cdm-data-quota-bytes";
     const absl::optional<int> cdm_data_quota_bytes =

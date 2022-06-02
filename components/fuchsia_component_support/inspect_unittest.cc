@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/inspect.h"
+#include "components/fuchsia_component_support/inspect.h"
 
 #include <lib/fdio/directory.h>
 #include <lib/inspect/cpp/hierarchy.h>
@@ -18,10 +18,9 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/test/task_environment.h"
 #include "components/version_info/version_info.h"
-#include "fuchsia/base/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace cr_fuchsia {
+namespace fuchsia_component_support {
 
 namespace {
 
@@ -55,7 +54,7 @@ class InspectTest : public ::testing::Test {
 }  // namespace
 
 TEST_F(InspectTest, PublishVersionInfoToInspect) {
-  cr_fuchsia::PublishVersionInfoToInspect(inspector_.get());
+  fuchsia_component_support::PublishVersionInfoToInspect(inspector_.get());
   fidl::InterfaceHandle<fuchsia::io::Directory> directory;
   zx_status_t status = fdio_service_connect_at(
       published_root_directory_.channel().get(), "diagnostics",
@@ -81,8 +80,11 @@ TEST_F(InspectTest, PublishVersionInfoToInspect) {
   ASSERT_TRUE(content.has_buffer());
   std::string buffer_data =
       base::StringFromMemBuffer(content.buffer()).value_or(std::string());
+  const uint8_t* raw_data =
+      reinterpret_cast<const uint8_t*>(buffer_data.data());
   inspect::Hierarchy hierarchy =
-      inspect::ReadFromBuffer(cr_fuchsia::StringToBytes(buffer_data))
+      inspect::ReadFromBuffer(
+          std::vector<uint8_t>(raw_data, raw_data + buffer_data.length()))
           .take_value();
 
   auto* property =
@@ -93,4 +95,4 @@ TEST_F(InspectTest, PublishVersionInfoToInspect) {
   EXPECT_EQ(property->value(), version_info::GetLastChange());
 }
 
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_component_support

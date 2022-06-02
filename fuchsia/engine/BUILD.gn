@@ -96,6 +96,7 @@ component("web_engine_core") {
     "//components/embedder_support/origin_trials",
     "//components/favicon/content",
     "//components/favicon/core",
+    "//components/fuchsia_component_support",
     "//components/fuchsia_legacymetrics",
     "//components/keyed_service/content",
     "//components/media_control/browser",

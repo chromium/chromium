@@ -275,7 +275,10 @@ test("components_unittests") {
   }
 
   if (is_fuchsia) {
-    deps += [ "//components/fuchsia_legacymetrics:unit_tests" ]
+    deps += [
+      "//components/fuchsia_component_support:unit_tests",
+      "//components/fuchsia_legacymetrics:unit_tests",
+    ]
   } else {
     # TODO(crbug.com/1290514): Enable all relevant tests on Fuchsia too.
     deps += [

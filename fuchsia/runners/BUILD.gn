@@ -82,6 +82,7 @@ source_set("cast_runner_core") {
     "//components/cast/common:constants",
     "//components/cast/message_port",
     "//components/cast/named_message_port_connector:named_message_port_connector",
+    "//components/fuchsia_component_support",
     "//fuchsia/base",
     "//fuchsia/base:modular",
 
@@ -123,6 +124,7 @@ executable("cast_runner_exe") {
     ":cast_runner_core",
     ":common",
     "//base",
+    "//components/fuchsia_component_support",
     "//fuchsia/base",
     "//fuchsia/engine/web_instance_host",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
@@ -299,6 +301,7 @@ executable("web_runner_exe") {
     ":buildflags",
     ":common",
     "//base",
+    "//components/fuchsia_component_support",
     "//fuchsia/base",
     "//fuchsia/engine/web_instance_host",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",

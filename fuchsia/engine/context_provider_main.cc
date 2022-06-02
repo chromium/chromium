@@ -15,9 +15,9 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
-#include "fuchsia/base/feedback_registration.h"
+#include "components/fuchsia_component_support/feedback_registration.h"
+#include "components/fuchsia_component_support/inspect.h"
 #include "fuchsia/base/init_logging.h"
-#include "fuchsia/base/inspect.h"
 #include "fuchsia/engine/context_provider_impl.h"
 
 namespace {
@@ -33,8 +33,8 @@ constexpr char kComponentUrl[] =
 int ContextProviderMain() {
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
 
-  cr_fuchsia::RegisterProductDataForCrashReporting(kComponentUrl,
-                                                   kCrashProductName);
+  fuchsia_component_support::RegisterProductDataForCrashReporting(
+      kComponentUrl, kCrashProductName);
 
   if (!cr_fuchsia::InitLoggingFromCommandLine(
           *base::CommandLine::ForCurrentProcess())) {
@@ -55,7 +55,7 @@ int ContextProviderMain() {
 
   // Publish version information for this component to Inspect.
   sys::ComponentInspector inspect(base::ComponentContextForProcess());
-  cr_fuchsia::PublishVersionInfoToInspect(&inspect);
+  fuchsia_component_support::PublishVersionInfoToInspect(&inspect);
 
   // Serve outgoing directory only after publishing all services.
   directory->ServeFromStartupInfo();

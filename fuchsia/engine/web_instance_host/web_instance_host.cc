@@ -40,11 +40,11 @@
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/embedder_support/switches.h"
+#include "components/fuchsia_component_support/config_reader.h"
+#include "components/fuchsia_component_support/feedback_registration.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
-#include "fuchsia/base/config_reader.h"
-#include "fuchsia/base/feedback_registration.h"
 #include "fuchsia/base/string_util.h"
 #include "fuchsia/engine/features.h"
 #include "fuchsia/engine/switches.h"
@@ -87,10 +87,11 @@ void RegisterWebInstanceProductData() {
   constexpr char kCrashProductName[] = "FuchsiaWebEngine";
   constexpr char kFeedbackAnnotationsNamespace[] = "web-engine";
 
-  cr_fuchsia::RegisterProductDataForCrashReporting(
+  fuchsia_component_support::RegisterProductDataForCrashReporting(
       WebInstanceHost::kComponentUrl, kCrashProductName);
 
-  cr_fuchsia::RegisterProductDataForFeedback(kFeedbackAnnotationsNamespace);
+  fuchsia_component_support::RegisterProductDataForFeedback(
+      kFeedbackAnnotationsNamespace);
 }
 
 // Returns the underlying channel if |directory| is a client endpoint for a
@@ -572,7 +573,8 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
   // Process command-line settings specified in our package config-data.
   base::Value web_engine_config;
   if (config_for_test_.is_none()) {
-    const absl::optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+    const absl::optional<base::Value>& config =
+        fuchsia_component_support::LoadPackageConfig();
     web_engine_config =
         config ? config->Clone() : base::Value(base::Value::Type::DICTIONARY);
   } else {
