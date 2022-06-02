@@ -57,6 +57,7 @@ class SettingsController : public AssistantClientObserver,
   void UpdateInternalOptions(const absl::optional<std::string>& locale,
                              absl::optional<bool> spoken_feedback_enabled,
                              absl::optional<bool> dark_mode_enabled);
+  void UpdateLocaleOverride(const absl::optional<std::string>& locale);
   void UpdateDeviceSettings(const absl::optional<std::string>& locale,
                             absl::optional<bool> hotword_enabled);
 

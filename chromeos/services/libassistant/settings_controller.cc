@@ -231,6 +231,7 @@ void SettingsController::SetAuthenticationTokens(
 
 void SettingsController::SetLocale(const std::string& value) {
   locale_ = LocaleOrDefault(value);
+  UpdateLocaleOverride(locale_);
   UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
   UpdateDeviceSettings(locale_, hotword_enabled_);
 }
@@ -298,15 +299,23 @@ void SettingsController::UpdateInternalOptions(
   if (!assistant_client_)
     return;
 
-  if (locale.has_value())
-    assistant_client_->SetLocaleOverride(locale.value());
-
   if (locale.has_value() && spoken_feedback_enabled.has_value() &&
       dark_mode_enabled.has_value()) {
     assistant_client_->SetDeviceAttributes(dark_mode_enabled.value());
     assistant_client_->SetInternalOptions(locale.value(),
                                           spoken_feedback_enabled.value());
   }
+}
+
+void SettingsController::UpdateLocaleOverride(
+    const absl::optional<std::string>& locale) {
+  if (!assistant_client_)
+    return;
+
+  if (!locale.has_value())
+    return;
+
+  assistant_client_->SetLocaleOverride(locale.value());
 }
 
 void SettingsController::UpdateDeviceSettings(
@@ -329,7 +338,10 @@ void SettingsController::OnAssistantClientStarted(
   // Libassistant to be fully ready.
   UpdateAuthenticationTokens(authentication_tokens_);
   UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
-  UpdateListeningEnabled(listening_enabled_);
+  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    UpdateLocaleOverride(locale_);
+    UpdateListeningEnabled(listening_enabled_);
+  }
 }
 
 void SettingsController::OnAssistantClientRunning(
@@ -338,6 +350,10 @@ void SettingsController::OnAssistantClientRunning(
       std::make_unique<DeviceSettingsUpdater>(this, assistant_client);
 
   UpdateDeviceSettings(locale_, hotword_enabled_);
+  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    UpdateLocaleOverride(locale_);
+    UpdateListeningEnabled(listening_enabled_);
+  }
 }
 
 void SettingsController::OnDestroyingAssistantClient(
