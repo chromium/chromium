@@ -18,7 +18,7 @@ _build_mac_webkit = checkout_ios_webkit && build_mac_webkit
 
 group("webkit") {
   if (_build_ios_webkit) {
-    deps = [ ":bundle_webkit_ios_frameworks" ]
+    public_deps = [ ":bundle_webkit_ios_frameworks" ]
   }
 
   public_configs = [ ":_webkit_ios_config" ]
