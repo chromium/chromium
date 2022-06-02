@@ -17,7 +17,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
@@ -503,14 +502,6 @@ void BlobStorageContext::FinishBuilding(BlobEntry* entry) {
   DCHECK(entry);
   BlobStatus status = entry->status_;
   DCHECK_NE(BlobStatus::DONE, status);
-
-  bool error = BlobStatusIsError(status);
-  UMA_HISTOGRAM_BOOLEAN("Storage.Blob.Broken", error);
-  if (error) {
-    UMA_HISTOGRAM_ENUMERATION("Storage.Blob.BrokenReason",
-                              static_cast<int>(status),
-                              (static_cast<int>(BlobStatus::LAST_ERROR) + 1));
-  }
 
   if (BlobStatusIsPending(entry->status_)) {
     for (const ItemCopyEntry& copy : entry->building_state_->copies) {

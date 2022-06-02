@@ -10790,16 +10790,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Ignored due to multiple pages in the renderer process"/>
 </enum>
 
-<enum name="BlobBrokenReason">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="There is not enough memory to store this blob"/>
-  <int value="2" label="File write failed"/>
-  <int value="3" label="Source died in transit"/>
-  <int value="4" label="Blob dereferenced while building"/>
-  <int value="5" label="Referenced blob broken"/>
-  <int value="6" label="Referenced file unavailable"/>
-</enum>
-
 <enum name="BlobBuildFromStreamResult">
   <int value="0" label="Success"/>
   <int value="1" label="Aborted while building"/>

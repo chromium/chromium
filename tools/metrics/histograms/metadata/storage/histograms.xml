@@ -224,26 +224,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.Blob.Broken" enum="BooleanBroken" expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    If a newly constructed blob is broken. See Storage.Blob.BrokenReason for a
-    the broken reasons.
-  </summary>
-</histogram>
-
-<histogram name="Storage.Blob.BrokenReason" enum="BlobBrokenReason"
-    expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    The reason a blob is broken, reported only for broken blobs upon
-    construction. See Storage.Blob.Broken for the breakdown of blobs broken vs
-    unbroken.
-  </summary>
-</histogram>
-
 <histogram name="Storage.Blob.CleanupSuccess" enum="Boolean"
     expires_after="M95">
   <owner>mek@chromium.org</owner>
