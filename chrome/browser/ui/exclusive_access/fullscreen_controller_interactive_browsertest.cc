@@ -767,9 +767,10 @@ IN_PROC_BROWSER_TEST_P(
                                GetParam());
 }
 
+// TODO(crbug.com/1331074): Flaky.
 IN_PROC_BROWSER_TEST_P(
     FullscreenCapabilityDelegationFullscreenControllerInteractiveTest,
-    CapabilityDelegationCrossOriginPopup) {
+    DISABLED_CapabilityDelegationCrossOriginPopup) {
   EXPECT_TRUE(embedded_test_server()->Start());
 
   // Navigate to a page that requests fullscreen and replies on message receipt.
