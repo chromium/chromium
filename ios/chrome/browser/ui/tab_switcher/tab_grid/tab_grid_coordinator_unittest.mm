@@ -168,7 +168,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         incognito_thumb_strip_supporting_;
 
     // TabGridCoordinator will make its view controller the root, so stash the
-    // original root view controller before starting |coordinator_|.
+    // original root view controller before starting `coordinator_`.
     original_root_view_controller_ = [GetAnyKeyWindow() rootViewController];
 
     delegate_ = [[TestTabGridCoordinatorDelegate alloc] init];

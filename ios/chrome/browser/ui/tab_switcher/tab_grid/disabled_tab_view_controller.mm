@@ -37,7 +37,7 @@ const CGFloat kVerticalMargin = 16.0;
 @implementation DisabledTabViewController
 
 namespace {
-// Create a NSString for the title based on |page|.
+// Create a NSString for the title based on `page`.
 NSString* GetTitleString(TabGridPage page) {
   switch (page) {
     case TabGridPageIncognitoTabs:

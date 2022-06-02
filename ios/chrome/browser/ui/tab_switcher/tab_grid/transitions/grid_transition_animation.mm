@@ -21,7 +21,7 @@ const CGFloat kInactiveItemScale = 0.95;
 }
 
 @interface GridTransitionAnimation ()
-// The property animator group backing the public |animator| property.
+// The property animator group backing the public `animator` property.
 @property(nonatomic, readonly) PropertyAnimatorGroup* animations;
 // The layout of the grid for this animation.
 @property(nonatomic, strong) GridTransitionLayout* layout;
@@ -230,7 +230,7 @@ const CGFloat kInactiveItemScale = 0.95;
   //   (C) Squaring the corners of the active cell.
   //   (D) Fading out the main cell view and fading in the main tab view, if
   //       necessary.
-  // These parts are timed over |duration| like this:
+  // These parts are timed over `duration` like this:
   //
   //  {0%}--[A]-----------------------------------{100%}
   //  {0%}--[B]---{30%}
@@ -421,7 +421,7 @@ const CGFloat kInactiveItemScale = 0.95;
   [self positionItemInGrid:self.layout.selectionItem];
 }
 
-// Positions |item| in it grid position.
+// Positions `item` in it grid position.
 - (void)positionItemInGrid:(GridTransitionItem*)item {
   UIView* cell = item.cell;
   CGPoint newCenter = [self.superview convertPoint:item.center fromView:nil];
@@ -429,9 +429,9 @@ const CGFloat kInactiveItemScale = 0.95;
 }
 
 // Helper function to construct keyframe animation blocks.
-// Given |start| and |duration| (in the [0.0-1.0] interval), returns an
-// animation block which runs |animations| starting at |start| (relative to
-// |self.duration|) and running for |duration| (likewise).
+// Given `start` and `duration` (in the [0.0-1.0] interval), returns an
+// animation block which runs `animations` starting at `start` (relative to
+// `self.duration`) and running for `duration` (likewise).
 - (void (^)(void))keyframeAnimationWithRelativeStart:(double)start
                                     relativeDuration:(double)duration
                                           animations:
@@ -451,11 +451,11 @@ const CGFloat kInactiveItemScale = 0.95;
 }
 
 // Returns a cross-fade keyframe animation between two views.
-// |startView| should have an alpha of 1; |endView| should have an alpha of 0.
-// |start| and |duration| are in the [0.0]-[1.0] interval and represent timing
-// relative to |self.duration|.
-// The animation returned by this method will fade |startView| to 0 over the
-// first half of |duration|, and then fade |endView| to 1.0 over the second
+// `startView` should have an alpha of 1; `endView` should have an alpha of 0.
+// `start` and `duration` are in the [0.0]-[1.0] interval and represent timing
+// relative to `self.duration`.
+// The animation returned by this method will fade `startView` to 0 over the
+// first half of `duration`, and then fade `endView` to 1.0 over the second
 // half, preventing any blurred frames showing both views. For best results, the
 // animation curev should be EaseInEaseOut.
 - (void (^)(void))keyframeAnimationFadingView:(UIView*)startView

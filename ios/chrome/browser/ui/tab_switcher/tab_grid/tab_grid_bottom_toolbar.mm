@@ -55,9 +55,9 @@
   }
 }
 
-// |pointInside| is called as long as this view is on the screen (even if its
+// `pointInside` is called as long as this view is on the screen (even if its
 // size is zero). It controls hit testing of the bottom toolbar. When the
-// toolbar is transparent and has the |_largeNewTabButton|, only respond to
+// toolbar is transparent and has the `_largeNewTabButton`, only respond to
 // tapping on that button.
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent*)event {
   if ([self isShowingFloatingButton]) {
@@ -144,7 +144,7 @@
   if (useUndo) {
     _closeAllOrUndoButton.title =
         l10n_util::GetNSString(IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON);
-    // Setting the |accessibilityIdentifier| seems to trigger layout, which
+    // Setting the `accessibilityIdentifier` seems to trigger layout, which
     // causes an infinite loop.
     if (_closeAllOrUndoButton.accessibilityIdentifier !=
         kTabGridUndoCloseAllButtonIdentifier) {
@@ -154,7 +154,7 @@
   } else {
     _closeAllOrUndoButton.title =
         l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON);
-    // Setting the |accessibilityIdentifier| seems to trigger layout, which
+    // Setting the `accessibilityIdentifier` seems to trigger layout, which
     // causes an infinite loop.
     if (_closeAllOrUndoButton.accessibilityIdentifier !=
         kTabGridCloseAllButtonIdentifier) {
@@ -399,7 +399,7 @@
   self.hidden = !self.subviews.count;
 }
 
-// Returns YES if the |_largeNewTabButton| is showing on the toolbar.
+// Returns YES if the `_largeNewTabButton` is showing on the toolbar.
 - (BOOL)isShowingFloatingButton {
   return _largeNewTabButton.superview &&
          _largeNewTabButtonBottomAnchor.isActive;

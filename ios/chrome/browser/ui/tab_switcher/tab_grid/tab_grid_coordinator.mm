@@ -125,9 +125,9 @@
     RecentTabsContextMenuHelper* recentTabsContextMenuHelper;
 // The action sheet coordinator, if one is currently being shown.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
-// Coordinator for snackbar presentation on |_regularBrowser|.
+// Coordinator for snackbar presentation on `_regularBrowser`.
 @property(nonatomic, strong) SnackbarCoordinator* snackbarCoordinator;
-// Coordinator for snackbar presentation on |_incognitoBrowser|.
+// Coordinator for snackbar presentation on `_incognitoBrowser`.
 @property(nonatomic, strong) SnackbarCoordinator* incognitoSnackbarCoordinator;
 // The timestamp of the user entering the tab grid.
 @property(nonatomic, assign) base::TimeTicks tabGridEnterTime;
@@ -292,7 +292,7 @@
 - (UIViewController*)activeViewController {
   if (self.bvcContainer) {
     // When installing the thumb strip while the tab grid is opened, there is no
-    // |currentBVC|.
+    // `currentBVC`.
     DCHECK(self.bvcContainer.currentBVC || [self isThumbStripEnabled]);
     return self.bvcContainer.currentBVC ?: self.bvcContainer;
   }
@@ -370,7 +370,7 @@
       // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s
       // for the status bar style to update. Work around that delay by taking
       // the snapshot first (during
-      // |transitionFromBrowser:toTabGrid:activePage:withCompletion|) and then
+      // `transitionFromBrowser:toTabGrid:activePage:withCompletion`) and then
       // updating the status bar style afterwards.
       self.baseViewController.childViewControllerForStatusBarStyle = nil;
     });
@@ -452,7 +452,7 @@
   if (self.firstPresentation)
     animated = NO;
 
-  // Extend |completion| to signal the tab switcher delegate
+  // Extend `completion` to signal the tab switcher delegate
   // that the animated "tab switcher dismissal" (that is, presenting something
   // on top of the tab switcher) transition has completed.
   // Finally, the launch mask view should be removed.
@@ -468,7 +468,7 @@
       // It is possible to already have a first responder (for example the
       // omnibox). In that case, we don't want to mark BVC as first responder.
       // TODO(crbug.com/1223090): Adding DCHECK below to confirm hypothesis
-      // that |-becomeFirstResponder| is crashing due to |currentBVC| not
+      // that `-becomeFirstResponder` is crashing due to `currentBVC` not
       // being in the view hierarchy.
       DCHECK(self.bvcContainer.currentBVC.view.window);
       [self.bvcContainer.currentBVC becomeFirstResponder];
@@ -495,7 +495,7 @@
   // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s for
   // the status bar style to update. Work around that delay by taking the
   // snapshot first (during
-  // |transitionFromTabGrid:toBrowser:activePage:withCompletion|) and then
+  // `transitionFromTabGrid:toBrowser:activePage:withCompletion`) and then
   // updating the status bar style afterwards.
   self.baseViewController.childViewControllerForStatusBarStyle =
       self.bvcContainer.currentBVC;
@@ -707,10 +707,10 @@
   self.firstPresentation = YES;
 
   // TODO(crbug.com/850387) : Currently, consumer calls from the mediator
-  // prematurely loads the view in |RecentTabsTableViewController|. Fix this so
+  // prematurely loads the view in `RecentTabsTableViewController`. Fix this so
   // that the view is loaded only by an explicit placement in the view
   // hierarchy. As a workaround, the view controller hierarchy is loaded here
-  // before |RecentTabsMediator| updates are started.
+  // before `RecentTabsMediator` updates are started.
   self.window.rootViewController = self.baseViewController;
   if (self.remoteTabsMediator.browserState) {
     [self.remoteTabsMediator initObservers];
@@ -964,7 +964,7 @@
 - (void)showHistoryFilteredBySearchText:(NSString*)searchText {
   // A history coordinator from main_controller won't work properly from the
   // tab grid. Using a local coordinator works better and we need to set
-  // |loadStrategy| to YES to ALWAYS_NEW_FOREGROUND_TAB.
+  // `loadStrategy` to YES to ALWAYS_NEW_FOREGROUND_TAB.
   self.historyCoordinator = [[HistoryCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.regularBrowser];

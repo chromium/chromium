@@ -165,7 +165,7 @@ const CGFloat kReducedMotionDuration = 0.25;
 
 #pragma mark - Private
 
-// Returns the transition layout for the |activePage|, based on the |browser|.
+// Returns the transition layout for the `activePage`, based on the `browser`.
 - (GridTransitionLayout*)transitionLayoutForTabInViewController:
                              (UIViewController*)viewControllerForTab
                                                      activePage:(TabGridPage)
@@ -177,7 +177,7 @@ const CGFloat kReducedMotionDuration = 0.25;
   // Conceptually the transition is dismissing/presenting a tab (a BVC).
   // However, currently the BVC instances are themselves contanted within a
   // BVCContainer view controller. This means that the
-  // |viewControllerForTab.view| is not the BVC's view; rather it's the view of
+  // `viewControllerForTab.view` is not the BVC's view; rather it's the view of
   // the view controller that contains the BVC. Unfortunatley, the layout guide
   // needed here is attached to the BVC's view, which is the first (and only)
   // subview of the BVCContainerViewController's view.
@@ -197,7 +197,7 @@ const CGFloat kReducedMotionDuration = 0.25;
   return layout;
 }
 
-// Animates the transition for the |tab|, whether it is |beingPresented| or not,
+// Animates the transition for the `tab`, whether it is `beingPresented` or not,
 // with reduced animations.
 - (void)transitionWithReducedAnimationsForTab:(UIView*)tab
                                beingPresented:(BOOL)beingPresented
@@ -243,7 +243,7 @@ const CGFloat kReducedMotionDuration = 0.25;
       }
       completion:^(BOOL finished) {
         // When presenting the FirstRun ViewController, this can be called with
-        // |finished| to NO on official builds. For now, the animation not
+        // `finished` to NO on official builds. For now, the animation not
         // finishing isn't handled anywhere.
         tab.clipsToBounds = oldClipsToBounds;
         if (completion)

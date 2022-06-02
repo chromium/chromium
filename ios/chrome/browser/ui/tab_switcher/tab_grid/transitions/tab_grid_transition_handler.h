@@ -23,18 +23,18 @@
 // Whether the animations should be disabled.
 @property(nonatomic, assign) BOOL animationDisabled;
 
-// Starts the transition from the |browser| to the |tabGrid|. Assumes that the
-// |browser| is currently a child ViewController of the |tabGrid|. The active
-// page of the |tabGrid| for the transition is |activePage|. Calls |completion|
+// Starts the transition from the `browser` to the `tabGrid`. Assumes that the
+// `browser` is currently a child ViewController of the `tabGrid`. The active
+// page of the `tabGrid` for the transition is `activePage`. Calls `completion`
 // when the transition finishes.
 - (void)transitionFromBrowser:(UIViewController*)browser
                     toTabGrid:(UIViewController*)tabGrid
                    activePage:(TabGridPage)activePage
                withCompletion:(void (^)(void))completion;
 
-// Starts the transition from |tabGrid| to |browser|. Adds |browser| as a child
-// ViewController of |tabGrid|, covering it. The active page of the |tabGrid|
-// for the transition is |activePage|. Calls |completion| when the transition
+// Starts the transition from `tabGrid` to `browser`. Adds `browser` as a child
+// ViewController of `tabGrid`, covering it. The active page of the `tabGrid`
+// for the transition is `activePage`. Calls `completion` when the transition
 // finishes.
 - (void)transitionFromTabGrid:(UIViewController*)tabGrid
                     toBrowser:(UIViewController*)browser

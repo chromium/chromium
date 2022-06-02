@@ -81,8 +81,8 @@
                                                 withCapInsets:UIEdgeInsetsZero];
   CGSize viewSize = view.bounds.size;
   if (rect.origin.y > 0) {
-    // |rect| starts below the top of |view|, so section off the top part of
-    // |view|.
+    // `rect` starts below the top of `view`, so section off the top part of
+    // `view`.
     CGRect topRect = CGRectMake(0, 0, viewSize.width, rect.origin.y);
     self.cell.topTabView =
         [view resizableSnapshotViewFromRect:topRect
@@ -91,8 +91,8 @@
   }
   CGFloat middleRectBottom = CGRectGetMaxY(rect);
   if (middleRectBottom < viewSize.height) {
-    // |rect| ends above the bottom of |view|, so section off the bottom part of
-    // |view|.
+    // `rect` ends above the bottom of `view`, so section off the bottom part of
+    // `view`.
     CGFloat bottomHeight = viewSize.height - middleRectBottom;
     CGRect bottomRect =
         CGRectMake(0, middleRectBottom, viewSize.width, bottomHeight);

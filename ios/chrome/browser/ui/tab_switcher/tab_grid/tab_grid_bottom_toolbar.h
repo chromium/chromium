@@ -26,11 +26,11 @@
 //   Remote page:    [                                                  ]
 //   Selection mode: [CloseTabButton       shareButton       AddToButton]
 @interface TabGridBottomToolbar : UIView
-// This property together with |mode| and self.traitCollection control the items
+// This property together with `mode` and self.traitCollection control the items
 // shown in toolbar and its background color. Setting this property will also
-// set it on |newTabButton|.
+// set it on `newTabButton`.
 @property(nonatomic, assign) TabGridPage page;
-// This property together with |page| and self.traitCollection control the
+// This property together with `page` and self.traitCollection control the
 // items shown in toolbar and its background color.
 @property(nonatomic, assign) TabGridMode mode;
 // This property indicates the count of selected tabs when the tab grid is in
@@ -44,33 +44,33 @@
 - (void)setCloseAllButtonTarget:(id)target action:(SEL)action;
 // Sets target/action for tapping event on done button.
 - (void)setDoneButtonTarget:(id)target action:(SEL)action;
-// Set |enabled| on the new tab button.
+// Set `enabled` on the new tab button.
 - (void)setNewTabButtonEnabled:(BOOL)enabled;
-// Set |enabled| on the done button.
+// Set `enabled` on the done button.
 - (void)setDoneButtonEnabled:(BOOL)enabled;
-// Set |enabled| on the closeAll button.
+// Set `enabled` on the closeAll button.
 - (void)setCloseAllButtonEnabled:(BOOL)enabled;
-// use undo or closeAll text on the close all button based on |useUndo| value.
+// use undo or closeAll text on the close all button based on `useUndo` value.
 - (void)useUndoCloseAll:(BOOL)useUndo;
 
 // Sets target/action for tapping event on close tabs button.
 - (void)setCloseTabsButtonTarget:(id)target action:(SEL)action;
-// Set |enabled| on the close tabs button.
+// Set `enabled` on the close tabs button.
 - (void)setCloseTabsButtonEnabled:(BOOL)enabled;
 
 // Sets target/action for tapping event on share tabs button.
 - (void)setShareTabsButtonTarget:(id)target action:(SEL)action;
-// Set |enabled| on the close tabs button.
+// Set `enabled` on the close tabs button.
 - (void)setShareTabsButtonEnabled:(BOOL)enabled;
 
-// Sets the |menu| displayed on tapping the Add To button.
+// Sets the `menu` displayed on tapping the Add To button.
 - (void)setAddToButtonMenu:(UIMenu*)menu API_AVAILABLE(ios(14.0));
-// Set |enabled| on the Add To button.
+// Set `enabled` on the Add To button.
 - (void)setAddToButtonEnabled:(BOOL)enabled;
 
-// Sets the |menu| displayed on tapping the Edit button.
+// Sets the `menu` displayed on tapping the Edit button.
 - (void)setEditButtonMenu:(UIMenu*)menu API_AVAILABLE(ios(14.0));
-// Set |enabled| on the Edit button.
+// Set `enabled` on the Edit button.
 - (void)setEditButtonEnabled:(BOOL)enabled;
 
 // Hides components and uses a black background color for tab grid transition

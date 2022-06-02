@@ -11,20 +11,20 @@
 @protocol SuggestedActionsDelegate <NSObject>
 
 // Tells the delegate to fetch the search history results count for
-// |searchText| and provide it to the |completion| block.
+// `searchText` and provide it to the `completion` block.
 - (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
                                    completion:(void (^)(size_t))completion;
 
 // Asks the delegate to open a history modal and filter the history
-// |searchText|.
+// `searchText`.
 - (void)searchHistoryForText:(NSString*)searchText;
 
 // Asks the delegate to open a new tab and use the default search engine to
-// search for |searchText| in web.
+// search for `searchText` in web.
 - (void)searchWebForText:(NSString*)searchText;
 
 // Asks the delegate to switch the tab grid page to recent tabs and filter the
-// page content by |searchText|.
+// page content by `searchText`.
 - (void)searchRecentTabsForText:(NSString*)searchText;
 
 @end

@@ -20,7 +20,7 @@ const CGFloat kVerticalMargin = 16.0;
 const CGFloat kImageHeight = 150.0;
 const CGFloat kImageWidth = 150.0;
 
-// Returns the image to display for the given grid |page|.
+// Returns the image to display for the given grid `page`.
 UIImage* ImageForPage(TabGridPage page) {
   switch (page) {
     case TabGridPageIncognitoTabs:
@@ -34,7 +34,7 @@ UIImage* ImageForPage(TabGridPage page) {
   return nil;
 }
 
-// Returns the title to display for the given grid |page| and |mode|.
+// Returns the title to display for the given grid `page` and `mode`.
 NSString* TitleForPageAndMode(TabGridPage page, TabGridMode mode) {
   if (mode == TabGridModeSearch) {
     return l10n_util::GetNSString(IDS_IOS_TAB_GRID_SEARCH_RESULTS_EMPTY_TITLE);
@@ -54,7 +54,7 @@ NSString* TitleForPageAndMode(TabGridPage page, TabGridMode mode) {
   return nil;
 }
 
-// Returns the message to display for the given grid |page| and |mode|.
+// Returns the message to display for the given grid `page` and `mode`.
 NSString* BodyTextForPageAndMode(TabGridPage page, TabGridMode mode) {
   if (mode == TabGridModeSearch) {
     return nil;

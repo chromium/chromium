@@ -17,7 +17,7 @@ class Browser;
 @protocol TabGridCoordinatorDelegate
 
 // Informs the delegate the tab switcher that the given browser should be set to
-// active. If |dismissTabGrid| is YES, the tab grid itself should also be
+// active. If `dismissTabGrid` is YES, the tab grid itself should also be
 // dismissed. This should always be the case except when using the thumb strip,
 // where the tab grid is never dismissed
 - (void)tabGrid:(TabGridCoordinator*)tabGrid

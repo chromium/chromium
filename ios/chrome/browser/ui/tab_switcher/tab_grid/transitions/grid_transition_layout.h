@@ -16,7 +16,7 @@
 // items (see below).
 @interface GridTransitionLayout : NSObject
 
-// The inactive items in the layout. |activeItem| and |selectionItem| are not
+// The inactive items in the layout. `activeItem` and `selectionItem` are not
 // in this array.
 @property(nonatomic, copy, readonly)
     NSArray<GridTransitionItem*>* inactiveItems;
@@ -37,8 +37,8 @@
 @property(nonatomic, assign) BOOL frameChanged;
 
 // Creates a new layout object.
-// |inactiveItems| should be non-nil, but it may be empty.
-// |activeItem| and |selectionItem| may be nil.
+// `inactiveItems` should be non-nil, but it may be empty.
+// `activeItem` and `selectionItem` may be nil.
 + (instancetype)layoutWithInactiveItems:(NSArray<GridTransitionItem*>*)items
                              activeItem:(GridTransitionActiveItem*)activeItem
                           selectionItem:(GridTransitionItem*)selectionItem;
@@ -53,12 +53,12 @@
 // otherwise be sized correctly and have the correct appearance.
 @property(nonatomic, strong, readonly) UIView* cell;
 
-// The position of |cell| in the grid view, normalized to UIWindow coordinates.
+// The position of `cell` in the grid view, normalized to UIWindow coordinates.
 @property(nonatomic, readonly) CGPoint center;
 
-// Creates a new layout item instance with |cell| and |center|. It's the
-// responsibility of the caller to normalize |center| to UIWindow coordinates.
-// It's an error if |cell| has a superview or is nil.
+// Creates a new layout item instance with `cell` and `center`. It's the
+// responsibility of the caller to normalize `center` to UIWindow coordinates.
+// It's an error if `cell` has a superview or is nil.
 + (instancetype)itemWithCell:(UIView*)cell center:(CGPoint)center;
 
 @end
@@ -72,20 +72,20 @@
 // otherwise be sized correctly and have the correct appearance.
 @property(nonatomic, strong, readonly) UIView<GridToTabTransitionView>* cell;
 
-// The size of |cell| in the grid.
+// The size of `cell` in the grid.
 @property(nonatomic, readonly) CGSize size;
 
 // YES if the item is "appearing" in the grid as part of this animation.
 @property(nonatomic, assign) BOOL isAppearing;
 
-// Creates a new active item instance with |cell|, |center| and |size|.
+// Creates a new active item instance with `cell`, `center` and `size`.
 + (instancetype)itemWithCell:(UIView<GridToTabTransitionView>*)cell
                       center:(CGPoint)center
                         size:(CGSize)size;
 
-// Populate the |cell| view of the reciever by extracting snapshots from |view|,
-// using |rect| to define (in |view|'s coordinates) the main tab view, with any
-// space above and below |rect| being the top and bottom tab views.
+// Populate the `cell` view of the reciever by extracting snapshots from `view`,
+// using `rect` to define (in `view`'s coordinates) the main tab view, with any
+// space above and below `rect` being the top and bottom tab views.
 - (void)populateWithSnapshotsFromView:(UIView*)view middleRect:(CGRect)rect;
 
 @end

@@ -69,7 +69,7 @@
 #endif
 
 namespace {
-// Constructs a TabSwitcherItem from a |web_state|.
+// Constructs a TabSwitcherItem from a `web_state`.
 TabSwitcherItem* CreateItem(web::WebState* web_state) {
   TabSwitcherItem* item = [[TabSwitcherItem alloc]
       initWithIdentifier:web_state->GetStableIdentifier()];
@@ -82,7 +82,7 @@ TabSwitcherItem* CreateItem(web::WebState* web_state) {
   return item;
 }
 
-// Constructs an array of TabSwitcherItems from a |web_state_list|.
+// Constructs an array of TabSwitcherItems from a `web_state_list`.
 NSArray* CreateItems(WebStateList* web_state_list) {
   NSMutableArray* items = [[NSMutableArray alloc] init];
   for (int i = 0; i < web_state_list->count(); i++) {
@@ -92,7 +92,7 @@ NSArray* CreateItems(WebStateList* web_state_list) {
   return [items copy];
 }
 
-// Returns the ID of the active tab in |web_state_list|.
+// Returns the ID of the active tab in `web_state_list`.
 NSString* GetActiveTabId(WebStateList* web_state_list) {
   if (!web_state_list)
     return nil;
@@ -118,7 +118,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
           .c_str()));
 }
 
-// Returns the index of the tab with |identifier| in |web_state_list|. Returns
+// Returns the index of the tab with `identifier` in `web_state_list`. Returns
 // WebStateList::kInvalidIndex if not found.
 int GetIndexOfTabWithId(WebStateList* web_state_list, NSString* identifier) {
   for (int i = 0; i < web_state_list->count(); i++) {
@@ -129,7 +129,7 @@ int GetIndexOfTabWithId(WebStateList* web_state_list, NSString* identifier) {
   return WebStateList::kInvalidIndex;
 }
 
-// Returns the WebState with |identifier| in |browser_state|. Returns |nullptr|
+// Returns the WebState with `identifier` in `browser_state`. Returns `nullptr`
 // if not found.
 web::WebState* GetWebStateWithId(ChromeBrowserState* browser_state,
                                  NSString* identifier) {
@@ -148,7 +148,7 @@ web::WebState* GetWebStateWithId(ChromeBrowserState* browser_state,
   return nullptr;
 }
 
-// Returns the Browser with |identifier| in its WebStateList. Returns |nullptr|
+// Returns the Browser with `identifier` in its WebStateList. Returns `nullptr`
 // if not found.
 Browser* GetBrowserForTabWithId(BrowserList* browser_list,
                                 NSString* identifier,
@@ -180,7 +180,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 @property(nonatomic, weak) id<BrowserCommands> readingListHandler;
 // The saved session window just before close all tabs is called.
 @property(nonatomic, strong) SessionWindowIOS* closedSessionWindow;
-// The number of tabs in |closedSessionWindow| that are synced by
+// The number of tabs in `closedSessionWindow` that are synced by
 // TabRestoreService.
 @property(nonatomic, assign) int syncedClosedTabsCount;
 // Short-term cache for grid thumbnails.
@@ -518,7 +518,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridCloseAllIncognitoTabs"));
   }
-  // This is a no-op if |webStateList| is already empty.
+  // This is a no-op if `webStateList` is already empty.
   self.webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
 }
@@ -873,13 +873,13 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 
 #pragma mark - Private
 
-// Calls |-populateItems:selectedItemID:| on the consumer.
+// Calls `-populateItems:selectedItemID:` on the consumer.
 - (void)populateConsumerItems {
   [self.consumer populateItems:CreateItems(self.webStateList)
                 selectedItemID:GetActiveTabId(self.webStateList)];
 }
 
-// Removes |self.syncedClosedTabsCount| most recent entries from the
+// Removes `self.syncedClosedTabsCount` most recent entries from the
 // TabRestoreService.
 - (void)removeEntriesFromTabRestoreService {
   if (!self.tabRestoreService) {

@@ -41,8 +41,8 @@ class Browser;
 // The view controller, if any, that is active.
 @property(nonatomic, readonly, strong) UIViewController* activeViewController;
 
-// If this property is YES, calls to |showTabSwitcher:completion:| and
-// |showTabViewController:completion:| will present the given view controllers
+// If this property is YES, calls to `showTabSwitcher:completion:` and
+// `showTabViewController:completion:` will present the given view controllers
 // without animation.  This should only be used by unittests.
 @property(nonatomic, readwrite, assign) BOOL animationsDisabledForTesting;
 
@@ -61,7 +61,7 @@ class Browser;
 @property(nonatomic, readonly, getter=isThumbStripEnabled)
     BOOL thumbStripEnabled;
 
-// Stops all child coordinators then calls |completion|. |completion| is called
+// Stops all child coordinators then calls `completion`. `completion` is called
 // whether or not child coordinators exist.
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion;
 
@@ -71,22 +71,22 @@ class Browser;
 // Displays the TabGrid.
 - (void)showTabGrid;
 
-// Displays the given view controller. If |closeTabGrid| is yes, any
+// Displays the given view controller. If `closeTabGrid` is yes, any
 // TabSwitchers or other view controllers that may currently be visible will be
 // replaced. Otherwise, the view controller is added to the current container.
-// Runs the given |completion| block after the view controller is visible.
-// |shouldCloseTabGrid| is only used for the thumb strip, where the
+// Runs the given `completion` block after the view controller is visible.
+// `shouldCloseTabGrid` is only used for the thumb strip, where the
 // tab container view controller is never dismissed.
 - (void)showTabViewController:(UIViewController*)viewController
                     incognito:(BOOL)incognito
            shouldCloseTabGrid:(BOOL)shouldCloseTabGrid
                    completion:(ProceduralBlock)completion;
 
-// Sets the |page| as the active (visible) one. The active page must not be the
+// Sets the `page` as the active (visible) one. The active page must not be the
 // remote tabs.
 - (void)setActivePage:(TabGridPage)page;
 
-// Sets the |mode| as the active one.
+// Sets the `mode` as the active one.
 - (void)setActiveMode:(TabGridMode)mode;
 
 @end

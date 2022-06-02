@@ -109,7 +109,7 @@ const CGFloat kSelectedColor = 0x3C4043;
 // The size of the symbol image.
 NSInteger kSymbolTabGridPageControlPointSize = 24;
 
-// Returns the point that's at the center of |rect|.
+// Returns the point that's at the center of `rect`.
 CGPoint RectCenter(CGRect rect) {
   return CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
 }
@@ -161,7 +161,7 @@ UIImageView* ImageViewForSymbolNamed(NSString* symbolName) {
 @property(nonatomic, weak) UILayoutGuide* remoteGuide;
 // The view for the slider.
 @property(nonatomic, weak) UIView* sliderView;
-// The view for the selected images and labels (a subview of |sliderView).
+// The view for the selected images and labels (a subview of `sliderView).
 @property(nonatomic, weak) UIView* selectedImageView;
 // The labels for the incognito and regular sections, in regular and selected
 // variants.
@@ -183,12 +183,12 @@ UIImageView* ImageViewForSymbolNamed(NSString* symbolName) {
 @property(nonatomic, weak) UIView* regularHoverView;
 @property(nonatomic, weak) UIView* remoteHoverView;
 
-// The center point for the slider corresponding to a |sliderPosition| of 0.
+// The center point for the slider corresponding to a `sliderPosition` of 0.
 @property(nonatomic) CGFloat sliderOrigin;
 // The (signed) x-coordinate distance the slider moves over. The slider's
-// position is set by adding a fraction of this distance to |sliderOrigin|, so
-// that when |sliderRange| is negative (in RTL layout), the slider will move in
-// the negative-x direction from |sliderOrigin|, and otherwise it will move in
+// position is set by adding a fraction of this distance to `sliderOrigin`, so
+// that when `sliderRange` is negative (in RTL layout), the slider will move in
+// the negative-x direction from `sliderOrigin`, and otherwise it will move in
 // the positive-x direction.
 @property(nonatomic) CGFloat sliderRange;
 // State properties to track the point and position (in the 0.0-1.0 range) of
@@ -196,7 +196,7 @@ UIImageView* ImageViewForSymbolNamed(NSString* symbolName) {
 @property(nonatomic) CGPoint dragStart;
 @property(nonatomic) CGFloat dragStartPosition;
 @property(nonatomic) BOOL draggingSlider;
-// Gesture recognizer used to handle taps. Owned by |self| as a UIView, so this
+// Gesture recognizer used to handle taps. Owned by `self` as a UIView, so this
 // property is just a weak pointer to refer to it in some touch logic.
 @property(nonatomic, weak) UIGestureRecognizer* tapRecognizer;
 @end
@@ -255,7 +255,7 @@ UIImageView* ImageViewForSymbolNamed(NSString* symbolName) {
 }
 
 - (void)setSliderPosition:(CGFloat)sliderPosition {
-  // Clamp |selectionOffset| to (0.0 - 1.0).
+  // Clamp `selectionOffset` to (0.0 - 1.0).
   sliderPosition = base::clamp<CGFloat>(sliderPosition, 0.0, 1.0);
   CGPoint center = self.sliderView.center;
   center.x = self.sliderOrigin + self.sliderRange * sliderPosition;
@@ -266,7 +266,7 @@ UIImageView* ImageViewForSymbolNamed(NSString* symbolName) {
                                               toView:self.sliderView];
   _sliderPosition = sliderPosition;
 
-  // |_selectedPage| should be kept in sync with the slider position.
+  // `_selectedPage` should be kept in sync with the slider position.
   TabGridPage previousSelectedPage = _selectedPage;
   if (sliderPosition < 0.25)
     _selectedPage = TabGridPageIncognitoTabs;
@@ -671,7 +671,7 @@ UIImageView* ImageViewForSymbolNamed(NSString* symbolName) {
   } else if (CGRectContainsPoint(self.remoteGuide.layoutFrame, point)) {
     page = TabGridPageRemoteTabs;
   } else {
-    // bug: taps in the left- or rightmost |kSliderOverhang| points of the
+    // bug: taps in the left- or rightmost `kSliderOverhang` points of the
     // control will fall through to this case.
     // TODO(crbug.com/804500): Fix this.
     page = TabGridPageRegularTabs;
@@ -682,7 +682,7 @@ UIImageView* ImageViewForSymbolNamed(NSString* symbolName) {
   }
 }
 
-// Returns the point at the center of |segment|.
+// Returns the point at the center of `segment`.
 - (CGPoint)centerOfSegment:(TabGridPage)segment {
   switch (segment) {
     case TabGridPageIncognitoTabs:
