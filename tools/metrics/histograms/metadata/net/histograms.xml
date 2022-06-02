@@ -4672,12 +4672,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSLKeyLogFileUse" enum="SSLKeyLogFileAction"
-    expires_after="M92">
+    expires_after="M110">
   <owner>cthomp@chromium.org</owner>
-  <owner>security-enamel@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
   <summary>
     Counts when the SSLKEYLOGFILE environment variable or --ssl-key-log-file
     command-line flag are set, and when they enable the SSLKeyLogger feature.
+
+    This histogram was temporarily expired from M92 until M104.
   </summary>
 </histogram>
 
