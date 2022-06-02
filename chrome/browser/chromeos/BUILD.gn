@@ -1164,6 +1164,8 @@ source_set("chromeos") {
     "../ash/login/onboarding_user_activity_counter.h",
     "../ash/login/oobe_configuration.cc",
     "../ash/login/oobe_configuration.h",
+    "../ash/login/oobe_quick_start/connectivity/target_device_bootstrap_controller.cc",
+    "../ash/login/oobe_quick_start/connectivity/target_device_bootstrap_controller.h",
     "../ash/login/oobe_quick_start/verification_shapes.cc",
     "../ash/login/oobe_quick_start/verification_shapes.h",
     "../ash/login/oobe_screen.cc",

@@ -1,0 +1,22 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_BOOTSTRAP_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_BOOTSTRAP_CONTROLLER_H_
+
+namespace ash::quick_start {
+
+class TargetDeviceBootstrapController {
+ public:
+  TargetDeviceBootstrapController() = default;
+  virtual ~TargetDeviceBootstrapController() = default;
+
+  // Checks to see whether the feature can be supported on the device's
+  // hardware. Returns true if Bluetooth is supported and an adapter is present.
+  virtual bool IsFeatureSupported() = 0;
+}
+
+}  // namespace ash::quick_start
+
+#endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_BOOTSTRAP_CONTROLLER_H_
