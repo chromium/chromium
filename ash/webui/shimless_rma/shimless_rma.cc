@@ -288,8 +288,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"firmwareUpdateRebootText", IDS_SHIMLESS_RMA_FIRMWARE_REBOOT},
       {"firmwareUpdateCompleteText", IDS_SHIMLESS_RMA_FIRMWARE_UPDATE_COMPLETE},
       // Onboarding update page
-      {"onboardingUpdateConnectToInternet",
-       IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_CONNECT},
       {"onboardingUpdateProgress", IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PROGRESS},
       {"onboardingUpdateIdle", IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_IDLE},
       {"onboardingUpdateChecking", IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_CHECKING},

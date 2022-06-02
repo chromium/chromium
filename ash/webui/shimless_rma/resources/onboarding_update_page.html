@@ -28,9 +28,6 @@
         </iron-icon>
         <span class="instructions">[[currentVersionText_]]</span>
       </div>
-      <p id="networkUnavailable" hidden$="[[networkAvailable]]">
-        [[i18n('onboardingUpdateConnectToInternet')]]
-      </p>
       <cr-button id="performUpdateButton" disabled="[[allButtonsDisabled]]"
           on-click="onUpdateButtonClicked_">
           [[updateVersionButtonLabel_]]

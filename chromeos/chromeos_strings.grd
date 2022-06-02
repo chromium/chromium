@@ -3111,9 +3111,6 @@ Try tapping the mic to ask me anything.
         Installation complete.
       </message>
       <!-- Onboarding update page -->
-      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_CONNECT" translateable="false" desc="The message that you can connect to the internet on the prevous page.">
-        To check if OS is up to date, connect to the internet in previous screen
-      </message>
       <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PROGRESS" translateable="false" desc="The update progress label.">
         OS update progress received <ph name="OPERATION_NAME">$1</ph> <ph name="PROGRESS">$2</ph>%
       </message>

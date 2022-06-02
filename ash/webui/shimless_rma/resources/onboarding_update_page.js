@@ -77,14 +77,6 @@ export class OnboardingUpdatePageElement extends
         value: '',
       },
 
-      /**
-       * TODO(joonbug): populate this and make private.
-       */
-      networkAvailable: {
-        type: Boolean,
-        value: true,
-      },
-
       /** @protected */
       updateInProgress_: {
         type: Boolean,
