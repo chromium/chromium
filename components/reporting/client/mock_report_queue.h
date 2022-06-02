@@ -6,6 +6,7 @@
 #define COMPONENTS_REPORTING_CLIENT_MOCK_REPORT_QUEUE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "components/reporting/client/report_queue.h"

@@ -4,6 +4,8 @@
 
 #include "components/reporting/client/mock_report_queue.h"
 
+#include <utility>
+
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::Invoke;

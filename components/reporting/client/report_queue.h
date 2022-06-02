@@ -156,6 +156,12 @@ class ReportQueue {
   PrepareToAttachActualQueue() const = 0;
 
  private:
+  // Allow SpeculativeReportQueue access to |AddProducedRecord|.
+  friend class SpeculativeReportQueueImpl;
+
+  // Invokes |record_producer| and posts resulting data to the queue storage.
+  // |record_producer| is expected to be called asynchronously.
+  // Should only be used within ReportQueue implementation and its derivatives.
   virtual void AddProducedRecord(RecordProducer record_producer,
                                  Priority priority,
                                  EnqueueCallback callback) const = 0;

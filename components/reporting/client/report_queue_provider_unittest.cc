@@ -64,10 +64,9 @@ TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
             // Asynchronously create ReportingQueue.
             base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
                 queue_cb = base::BindOnce(
-                    [](std::string data,
-                       reporting::ReportQueue::EnqueueCallback done_cb,
-                       reporting::StatusOr<std::unique_ptr<
-                           reporting::ReportQueue>> report_queue_result) {
+                    [](std::string data, ReportQueue::EnqueueCallback done_cb,
+                       StatusOr<std::unique_ptr<ReportQueue>>
+                           report_queue_result) {
                       // Bail out if queue failed to create.
                       if (!report_queue_result.ok()) {
                         std::move(done_cb).Run(report_queue_result.status());
@@ -85,8 +84,8 @@ TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
                           std::move(data), FAST_BATCH, std::move(done_cb));
                     },
                     std::string(data), std::move(done_cb));
-            reporting::ReportQueueProvider::CreateQueue(std::move(config),
-                                                        std::move(queue_cb));
+            ReportQueueProvider::CreateQueue(std::move(config),
+                                             std::move(queue_cb));
           },
           kTestMessage, e.cb(), std::move(config_result.ValueOrDie())));
   const auto res = e.result();

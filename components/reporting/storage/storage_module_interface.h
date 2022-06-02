@@ -24,9 +24,9 @@ class StorageModuleInterface
   StorageModuleInterface& operator=(const StorageModuleInterface& other) =
       delete;
 
-  // AddRecord will add |record| (taking ownership) to the |StorageModule|
-  // according to the provided |priority|. On completion, |callback| will be
-  // called.
+  // AddRecord will add |record| (taking ownership) to the
+  // |StorageModuleInterface| according to the provided |priority|. On
+  // completion, |callback| is called.
   virtual void AddRecord(Priority priority,
                          Record record,
                          EnqueueCallback callback) = 0;
