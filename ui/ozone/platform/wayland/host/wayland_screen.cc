@@ -108,13 +108,15 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
 WaylandScreen::~WaylandScreen() = default;
 
 void WaylandScreen::OnOutputAddedOrUpdated(uint32_t output_id,
-                                           const gfx::Rect& bounds,
+                                           const gfx::Point& origin,
+                                           const gfx::Size& logical_size,
+                                           const gfx::Size& physical_size,
                                            const gfx::Insets& insets,
                                            float scale,
                                            int32_t panel_transform,
                                            int32_t logical_transform) {
-  AddOrUpdateDisplay(output_id, bounds, insets, scale, panel_transform,
-                     logical_transform);
+  AddOrUpdateDisplay(output_id, origin, logical_size, physical_size, insets,
+                     scale, panel_transform, logical_transform);
 }
 
 void WaylandScreen::OnOutputRemoved(uint32_t output_id) {
@@ -144,7 +146,9 @@ void WaylandScreen::OnOutputRemoved(uint32_t output_id) {
 }
 
 void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
-                                       const gfx::Rect& new_bounds,
+                                       const gfx::Point& origin,
+                                       const gfx::Size& logical_size,
+                                       const gfx::Size& physical_size,
                                        const gfx::Insets& insets,
                                        float scale_factor,
                                        int32_t panel_transform,
@@ -163,14 +167,24 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
       WaylandTransformToRotation(logical_transform);
   changed_display.set_rotation(rotation);
 
-  gfx::Rect updated_bounds(new_bounds);
+  gfx::Size size_in_pixels(physical_size);
   if (panel_rotation == display::Display::Rotation::ROTATE_90 ||
       panel_rotation == display::Display::Rotation::ROTATE_270) {
-    updated_bounds.set_width(new_bounds.height());
-    updated_bounds.set_height(new_bounds.width());
+    size_in_pixels.Transpose();
   }
+  changed_display.set_size_in_pixels(size_in_pixels);
 
-  changed_display.SetScaleAndBounds(scale_factor, updated_bounds);
+  if (!logical_size.IsEmpty()) {
+    changed_display.set_bounds(gfx::Rect(origin, logical_size));
+    changed_display.SetScale(scale_factor);
+  } else {
+    // Fallback to calculating using physical size.
+    // This can happen if xdg_output.logical_size was not sent.
+    changed_display.SetScaleAndBounds(scale_factor, gfx::Rect(size_in_pixels));
+    gfx::Rect new_bounds(changed_display.bounds());
+    new_bounds.set_origin(origin);
+    changed_display.set_bounds(new_bounds);
+  }
   changed_display.UpdateWorkAreaFromInsets(insets);
 
   gfx::DisplayColorSpaces color_spaces;

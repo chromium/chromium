@@ -28,7 +28,10 @@ void XDGOutput::OutputHandleLogicalPosition(
     void* data,
     struct zxdg_output_v1* zxdg_output_v1,
     int32_t x,
-    int32_t y) {}
+    int32_t y) {
+  if (XDGOutput* xdg_output = static_cast<XDGOutput*>(data))
+    xdg_output->logical_position_ = gfx::Point(x, y);
+}
 
 // static
 void XDGOutput::OutputHandleLogicalSize(void* data,

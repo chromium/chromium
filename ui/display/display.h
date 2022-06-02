@@ -177,6 +177,11 @@ class DISPLAY_EXPORT Display final {
   void SetScaleAndBounds(float device_scale_factor,
                          const gfx::Rect& bounds_in_pixel);
 
+  // Sets the device scale factor while respecting forced scale factor and other
+  // constraints. Use this over set_device_scale_factor() unless you need to
+  // forcefully overwrite the scale.
+  void SetScale(float device_scale_factor);
+
   // Sets the display's size. This updates the work area using the same insets
   // between old bounds and work area.
   void SetSize(const gfx::Size& size_in_pixel);
