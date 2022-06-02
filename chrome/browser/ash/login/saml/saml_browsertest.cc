@@ -367,11 +367,12 @@ class SamlTestBase : public OobeBaseTest {
 };
 
 // The first value of the parameter runs the tests with
-// kUseAuthsessionAuthentication feature and the second value with
-// kRedirectToDefaultIdP feature.
+// kUseAuthsessionAuthentication feature, the second value with
+// kRedirectToDefaultIdP feature and the third value with
+// kCheckPasswordsAgainstCryptohomeHelper
 class SamlTestWithFeatures
     : public SamlTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   SamlTestWithFeatures() {
     std::vector<base::Feature> enabled_features;
@@ -386,15 +387,75 @@ class SamlTestWithFeatures
     } else {
       disabled_features.push_back(features::kRedirectToDefaultIdP);
     }
-    // TODO(https://crbug.com/1295294) Introduce a different test suite when the
-    // feature is enabled.
-    disabled_features.push_back(
-        features::kCheckPasswordsAgainstCryptohomeHelper);
+    if (std::get<2>(GetParam())) {
+      enabled_features.push_back(
+          features::kCheckPasswordsAgainstCryptohomeHelper);
+    } else {
+      disabled_features.push_back(
+          features::kCheckPasswordsAgainstCryptohomeHelper);
+    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// The first value of the parameter runs the tests with
+// kUseAuthsessionAuthentication feature and the second value with
+// kRedirectToDefaultIdP feature.
+class ImprovedScrapingTestBase
+    : public SamlTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  ImprovedScrapingTestBase();
+
+ protected:
+  void SetFeatures(bool enable_improved_scraping);
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+ImprovedScrapingTestBase::ImprovedScrapingTestBase() = default;
+
+void ImprovedScrapingTestBase::SetFeatures(bool enable_improved_scraping) {
+  std::vector<base::Feature> enabled_features;
+  std::vector<base::Feature> disabled_features;
+  if (std::get<0>(GetParam())) {
+    enabled_features.push_back(features::kUseAuthsessionAuthentication);
+  } else {
+    disabled_features.push_back(features::kUseAuthsessionAuthentication);
+  }
+  if (std::get<1>(GetParam())) {
+    enabled_features.push_back(features::kRedirectToDefaultIdP);
+  } else {
+    disabled_features.push_back(features::kRedirectToDefaultIdP);
+  }
+  if (enable_improved_scraping) {
+    enabled_features.push_back(
+        features::kCheckPasswordsAgainstCryptohomeHelper);
+  } else {
+    disabled_features.push_back(
+        features::kCheckPasswordsAgainstCryptohomeHelper);
+  }
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+}
+
+// Saml test with kCheckPasswordsAgainstCryptohomeHelper enabled.
+class SamlTestWithImprovedScraping : public ImprovedScrapingTestBase {
+ public:
+  SamlTestWithImprovedScraping() {
+    SetFeatures(/*enable_improved_scraping=*/true);
+  }
+};
+
+// Saml test with kCheckPasswordsAgainstCryptohomeHelper disabled.
+class SamlTestWithoutImprovedScraping : public ImprovedScrapingTestBase {
+ public:
+  SamlTestWithoutImprovedScraping() {
+    SetFeatures(/*enable_improved_scraping=*/false);
+  }
 };
 
 // The value of the parameter runs the tests with kRedirectToDefaultIdP feature.
@@ -691,7 +752,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedDynamic) {
 }
 
 // Tests the multiple password scraped flow.
-IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedMultiple) {
+IN_PROC_BROWSER_TEST_P(SamlTestWithoutImprovedScraping, ScrapedMultiple) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
 
@@ -711,6 +772,43 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedMultiple) {
   test::OobeJS().ExpectHiddenPath(kPasswordConfirmInput);
   // Either scraped password should be able to sign-in.
   SendConfirmPassword("password1");
+  test::WaitForPrimaryUserSessionStart();
+
+  EXPECT_FALSE(
+      user_manager::KnownUser(user_manager::UserManager::Get()->GetLocalState())
+          .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
+              saml_test_users::kFirstUserCorpExampleComEmail,
+              kFirstSAMLUserGaiaId)));
+
+  histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 2, 1);
+  histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
+                                      2, 1);
+  histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 1,
+                                     1);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 1,
+                                     1);
+}
+
+// Tests the multiple password scraped flow.
+IN_PROC_BROWSER_TEST_P(SamlTestWithImprovedScraping, ScrapedMultiple) {
+  base::HistogramTester histogram_tester;
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
+
+  StartSamlAndWaitForIdpPageLoad(
+      saml_test_users::kFirstUserCorpExampleComEmail);
+
+  SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
+  SigninFrameJS().TypeIntoPath("fake_password", {"Password"});
+  SigninFrameJS().TypeIntoPath("password1", {"Password1"});
+  SigninFrameJS().TapOn("Submit");
+
   test::WaitForPrimaryUserSessionStart();
 
   EXPECT_FALSE(
@@ -826,7 +924,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures,
   WaitForSigninScreen();
 }
 
-IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, PasswordConfirmFlow) {
+IN_PROC_BROWSER_TEST_P(SamlTestWithoutImprovedScraping, PasswordConfirmFlow) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
   StartSamlAndWaitForIdpPageLoad(
@@ -1956,6 +2054,16 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SamlTestWithFeatures,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
+                                            ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         SamlTestWithImprovedScraping,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SamlTestWithoutImprovedScraping,
                          ::testing::Combine(::testing::Bool(),
                                             ::testing::Bool()));
 
