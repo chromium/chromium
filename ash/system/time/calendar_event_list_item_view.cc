@@ -203,7 +203,7 @@ bool CalendarEventListItemView::PerformAction(const ui::Event& event) {
   bool opened_pwa = false;
   DCHECK(calendar_view_controller_->selected_date().has_value());
   Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-      event_url_, calendar_view_controller_->selected_date().value(),
+      event_url_, calendar_view_controller_->selected_date_midnight(),
       opened_pwa, finalized_url);
   return true;
 }

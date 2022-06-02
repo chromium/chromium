@@ -90,8 +90,10 @@ class CalendarEmptyEventListView : public views::LabelButton {
     GURL finalized_url;
     bool opened_pwa = false;
     DCHECK(controller_->selected_date().has_value());
+
+    // Open Google calendar and land on the local day/month/year.
     Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-        absl::nullopt, controller_->selected_date().value(), opened_pwa,
+        absl::nullopt, controller_->selected_date_midnight(), opened_pwa,
         finalized_url);
   }
 

@@ -82,12 +82,12 @@ class ASH_EXPORT CalendarViewController {
   absl::optional<base::Time> selected_date() { return selected_date_; }
 
   // The midnight of the currently selected date adjusted to the local timezone.
-  base::Time selected_date_midnight() { return selected_date_midnight_; };
+  base::Time selected_date_midnight() { return selected_date_midnight_; }
 
   // The midnight of the selected date in UTC time.
   base::Time selected_date_midnight_utc() {
     return selected_date_midnight_utc_;
-  };
+  }
 
   // The row index of the currently selected date. This is used for auto
   // scrolling to this row when the event list is expanded.
