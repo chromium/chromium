@@ -8,8 +8,8 @@
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import './styles.js';
-import '../../common/styles.js';
+import './trusted_style.css.js';
+import '../../common/common_style.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 

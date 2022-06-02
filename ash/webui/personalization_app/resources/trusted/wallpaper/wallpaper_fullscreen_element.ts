@@ -9,7 +9,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../common/icons.js';
+import '../../common/icons.html.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 

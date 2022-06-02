@@ -11,13 +11,15 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import '../common/styles.js';
-import './cros_button_style.js';
+import '../common/common_style.css.js';
+import './cros_button_style.css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+
 import {isSelectionEvent} from '../common/utils.js';
+
 import {WithPersonalizationStore} from './personalization_store.js';
 import {getTemplate} from './personalization_theme_element.html.js';
 import {initializeData, setColorModeAutoSchedule, setColorModePref} from './theme/theme_controller.js';

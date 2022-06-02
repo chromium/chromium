@@ -11,6 +11,6 @@
 // guarantee that polymer and certain polymer elements are loaded first.
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
-import '../common/icons.js';
-import '../common/styles.js';
+import '../common/icons.html.js';
+import '../common/common_style.css.js';
 import '/strings.m.js';

@@ -7,10 +7,12 @@
  */
 
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
-import '../../common/styles.js';
+import '../../common/common_style.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {getLoadingPlaceholderAnimationDelay} from '../../common/utils.js';
+
 import {getTemplate} from './wallpaper_grid_item_element.html.js';
 
 export interface WallpaperGridItem {

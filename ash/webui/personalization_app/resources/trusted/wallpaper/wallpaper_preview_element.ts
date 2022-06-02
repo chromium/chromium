@@ -9,10 +9,10 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../common/icons.js';
-import '../../common/styles.js';
-import './styles.js';
-import '../cros_button_style.js';
+import '../../common/icons.html.js';
+import '../../common/common_style.css.js';
+import './trusted_style.css.js';
+import '../cros_button_style.css.js';
 
 import {getLocalStorageAttribution, isNonEmptyArray} from '../../common/utils.js';
 import {CurrentWallpaper, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';

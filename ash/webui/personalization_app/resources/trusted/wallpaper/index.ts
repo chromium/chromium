@@ -18,7 +18,7 @@ import './wallpaper_selected_element.js';
 import './wallpaper_subpage_element.js';
 import '../../untrusted/collections_grid.js';
 import '../../untrusted/images_grid.js';
-import './styles.js';
+import './trusted_style.css.js';
 
 import {WallpaperObserver} from './wallpaper_observer.js';
 

@@ -7,7 +7,7 @@
  * the ambient mode settings.
  */
 
-import '../../common/styles.js';
+import '../../common/common_style.css.js';
 import './albums_subpage_element.js';
 import './ambient_weather_element.js';
 import './ambient_preview_element.js';

@@ -8,7 +8,7 @@
  * objects.
  */
 
-import './styles.js';
+import './trusted_style.css.js';
 
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 

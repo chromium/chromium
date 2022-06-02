@@ -11,9 +11,9 @@
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './styles.js';
-import '../../common/icons.js';
-import '../../common/styles.js';
+import './trusted_style.css.js';
+import '../../common/icons.html.js';
+import '../../common/common_style.css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';

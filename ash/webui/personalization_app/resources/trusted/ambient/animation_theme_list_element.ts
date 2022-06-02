@@ -6,7 +6,7 @@
  * @fileoverview The element for displaying a list of animation themes.
  */
 import './animation_theme_item_element.js';
-import '../../common/styles.js';
+import '../../common/common_style.css.js';
 
 import {AnimationTheme} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';

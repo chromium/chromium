@@ -6,7 +6,7 @@
  * @fileoverview The element for displaying an animation theme.
  */
 
-import '../../common/styles.js';
+import '../../common/common_style.css.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 

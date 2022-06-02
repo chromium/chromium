@@ -7,7 +7,7 @@
  * behaviors similar to a radio button group, e.g. single selection.
  */
 
-import '../../common/styles.js';
+import '../../common/common_style.css.js';
 import './topic_source_item_element.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
