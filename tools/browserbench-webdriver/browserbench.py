@@ -6,6 +6,7 @@ from optparse import OptionParser
 from selenium import webdriver
 
 import json
+import logging
 import selenium
 import subprocess
 import sys
@@ -20,6 +21,8 @@ MAX_ATTEMPTS = 6
 
 class BrowserBench(object):
   def __init__(self, name, version):
+    # Log more information to help identify failures.
+    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
     self._name = name
     self._version = version
     self._output = None
@@ -67,10 +70,10 @@ class BrowserBench(object):
           return BrowserBench._CreateSafariDriver(optargs)
         except selenium.common.exceptions.SessionNotCreatedException as e:
           traceback.print_exc(e)
-          print('Connecting to Safari failed, will try again')
+          logging.info('Connecting to Safari failed, will try again')
           time.sleep(5)
-      print('Failed to connect to Safari, this likely means Safari is running '
-            ' something else')
+      logging.warning('Failed to connect to Safari, this likely means Safari '
+                      'is running something else')
       return None
     else:
       return None
@@ -78,25 +81,33 @@ class BrowserBench(object):
   @staticmethod
   def _KillBrowser(optargs):
     if optargs.browser == 'safari' or optargs.browser == 'stp':
-      print('Killing browser')
-      subprocess.run([
-          'killall', 'Safari'
-          if optargs.browser == 'safari' else 'Safari Technology Preview'
-      ])
+      browser_process_name = ('Safari' if optargs.browser == 'safari' else
+                          'Safari Technology Preview')
+      logging.warning('Killing Safari')
+      subprocess.run(['killall', '-9', browser_process_name])
       # Sleep for a little bit to ensure the kill happened.
       time.sleep(5)
-      print('Continuing after kill')
+
+      # safaridriver may be wedged, kill it too.
+      logging.warning('Killing safaridriver')
+      subprocess.run(['killall', '-9', 'safaridriver'])
+      # Sleep for a little bit to ensure the kill happened.
+      time.sleep(5)
+
+      logging.warning('Continuing after kill')
       return
     # This logic is primarily for Safari, which seems to occasionally hang. Will
     # implement for Chrome if necessary.
-    print('Not handling kill of chrome, if this is hit and test fails, '
-          'implement it')
+    logging.warning('Not handling kill of chrome, if this is hit and test '
+                    'fails, implement it')
 
   def _CreateDriverAndRun(self, optargs):
+    logging.info('Creating Driver')
     driver = BrowserBench._CreateDriver(optargs)
     if not driver:
       raise Exception('failed to create driver')
     driver.set_window_size(900, 780)
+    logging.info('About to run test')
     return self.RunAndExtractMeasurements(driver, optargs)
 
   def _ConvertMeasurementsToSkiaFormat(self, measurements):
@@ -157,6 +168,8 @@ class BrowserBench(object):
     line arguments.
     '''
 
+    logging.info('Script starting')
+
     parser = OptionParser()
     parser.add_option('-b',
                       '--browser',
@@ -214,18 +227,20 @@ class BrowserBench(object):
       run_count += 1
       try:
         measurements = self._CreateDriverAndRun(optargs)
+        break
       except Exception as e:
         if run_count < MAX_ATTEMPTS:
-          sys.stderr.write('Got exception running, will try again')
-          traceback.print_exc()
+          logging.warning('Got exception running, will try again',
+                          exc_info=True)
         else:
-          sys.stderr.write(
-              'Got exception running, retried too many times, giving up')
+          logging.critical('Got exception running, retried too many times, '
+                           'giving up')
           raise e
       # When rerunning, first try killing the browser in hopes of state
       # resetting.
       BrowserBench._KillBrowser(optargs)
 
+    logging.info('Test completed')
     self._ProduceOutput(measurements, extra_key_values)
 
   def AddExtraParserOptions(self, parser):
