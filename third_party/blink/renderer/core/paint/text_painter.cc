@@ -140,19 +140,7 @@ void TextPainter::PaintDecorationsExceptLineThrough(
     }
 
     if (has_overline && decoration_info.FontData()) {
-      // Don't apply text-underline-offset to overline.
-      Length line_offset =
-          flip_underline_and_overline ? decoration.UnderlineOffset() : Length();
-
-      FontVerticalPositionType position =
-          flip_underline_and_overline ? FontVerticalPositionType::TopOfEmHeight
-                                      : FontVerticalPositionType::TextTop;
-      const int paint_overline_offset =
-          decoration_offset.ComputeUnderlineOffsetForUnder(
-              line_offset, decoration_info.Style().ComputedFontSize(),
-              decoration_info.FontData(), resolved_thickness, position);
-      decoration_info.SetLineData(TextDecorationLine::kOverline,
-                                  paint_overline_offset);
+      decoration_info.SetOverlineLineData(decoration_offset);
       PaintDecorationUnderOrOverLine(context, decoration_info,
                                      TextDecorationLine::kOverline);
     }

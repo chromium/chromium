@@ -261,6 +261,25 @@ void TextDecorationInfo::SetUnderlineLineData(
   SetLineData(TextDecorationLine::kUnderline, paint_underline_offset);
 }
 
+void TextDecorationInfo::SetOverlineLineData(
+    const TextDecorationOffsetBase& decoration_offset) {
+  bool flip_underline_and_overline =
+      UnderlinePosition() == ResolvedUnderlinePosition::kOver;
+
+  // Don't apply text-underline-offset to overline.
+  const Length line_offset = flip_underline_and_overline
+                                 ? applied_text_decoration_->UnderlineOffset()
+                                 : Length();
+  const FontVerticalPositionType position =
+      flip_underline_and_overline ? FontVerticalPositionType::TopOfEmHeight
+                                  : FontVerticalPositionType::TextTop;
+  const int paint_overline_offset =
+      decoration_offset.ComputeUnderlineOffsetForUnder(
+          line_offset, Style().ComputedFontSize(), FontData(),
+          ResolvedThickness(), position);
+  SetLineData(TextDecorationLine::kOverline, paint_overline_offset);
+}
+
 void TextDecorationInfo::SetLineThroughLineData() {
   // For increased line thickness, the line-through decoration needs to grow
   // in both directions from its origin, subtract half the thickness to keep
