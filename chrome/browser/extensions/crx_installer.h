@@ -44,7 +44,6 @@ class CrxInstallError;
 class ExtensionService;
 class ExtensionUpdaterTest;
 enum class InstallationStage;
-class MockCrxInstaller;
 class PreloadCheckGroup;
 
 // This class installs a crx file into a profile.
@@ -120,7 +119,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   void InstallCrx(const base::FilePath& source_file);
 
   // Install the crx in |source_file|.
-  virtual void InstallCrxFile(const CRXFileInfo& source_file);
+  void InstallCrxFile(const CRXFileInfo& source_file);
 
   // Install the unpacked crx in |unpacked_dir|.
   // If |delete_source_| is true, |unpacked_dir| will be removed at the end of
@@ -263,7 +262,6 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   friend class ::ExtensionServiceTest;
   friend class BookmarkAppInstallFinalizerTest;
   friend class ExtensionUpdaterTest;
-  friend class MockCrxInstaller;
 
   CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
                std::unique_ptr<ExtensionInstallPrompt> client,
