@@ -429,7 +429,10 @@ export function scanPreviewTest() {
     const darkModeSvg = `${srcBase}svg/ready_to_scan_dark.svg`;
     const getReadyToScanSvg = () =>
         (/** @type {!HTMLImageElement} */ (scanPreview.$$('#readyToScanImg')));
+
+    // Mock media query state for light mode.
     setIsDarkModeEnabled_(false);
+    await flushTasks();
     assertEquals(getReadyToScanSvg().src, lightModeSvg);
 
     // Mock media query state for dark mode.
