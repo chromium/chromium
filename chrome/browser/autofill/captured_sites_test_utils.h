@@ -309,41 +309,38 @@ class TestRecipeReplayer {
   bool ReplayRecordedActions(
       const base::FilePath& recipe_file_path,
       const absl::optional<base::FilePath>& command_file_path);
-  bool InitializeBrowserToExecuteRecipe(base::Value::DictStorage& recipe);
-  bool ExecuteAutofillAction(base::Value::DictStorage action);
-  bool ExecuteClickAction(base::Value::DictStorage action);
-  bool ExecuteClickIfNotSeenAction(base::Value::DictStorage action);
-  bool ExecuteCoolOffAction(base::Value::DictStorage action);
-  bool ExecuteCloseTabAction(base::Value::DictStorage action);
-  bool ExecuteHoverAction(base::Value::DictStorage action);
-  bool ExecuteForceLoadPage(base::Value::DictStorage action);
-  bool ExecutePressEnterAction(base::Value::DictStorage action);
-  bool ExecutePressEscapeAction(base::Value::DictStorage action);
-  bool ExecutePressSpaceAction(base::Value::DictStorage action);
-  bool ExecuteRunCommandAction(base::Value::DictStorage action);
-  bool ExecuteSavePasswordAction(base::Value::DictStorage action);
-  bool ExecuteSelectDropdownAction(base::Value::DictStorage action);
-  bool ExecuteTypeAction(base::Value::DictStorage action);
-  bool ExecuteTypePasswordAction(base::Value::DictStorage action);
-  bool ExecuteUpdatePasswordAction(base::Value::DictStorage action);
-  bool ExecuteValidateFieldValueAction(base::Value::DictStorage action);
-  bool ExecuteValidateNoSavePasswordPromptAction(
-      base::Value::DictStorage action);
-  bool ExecuteValidatePasswordGenerationPromptAction(
-      base::Value::DictStorage action);
-  bool ExecuteValidateSaveFallbackAction(base::Value::DictStorage action);
-  bool ExecuteWaitForStateAction(base::Value::DictStorage action);
-  bool GetTargetHTMLElementXpathFromAction(
-      const base::Value::DictStorage& action,
-      std::string* xpath);
-  bool GetTargetFrameFromAction(const base::Value::DictStorage& action,
+  bool InitializeBrowserToExecuteRecipe(base::Value::Dict& recipe);
+  bool ExecuteAutofillAction(base::Value::Dict action);
+  bool ExecuteClickAction(base::Value::Dict action);
+  bool ExecuteClickIfNotSeenAction(base::Value::Dict action);
+  bool ExecuteCoolOffAction(base::Value::Dict action);
+  bool ExecuteCloseTabAction(base::Value::Dict action);
+  bool ExecuteHoverAction(base::Value::Dict action);
+  bool ExecuteForceLoadPage(base::Value::Dict action);
+  bool ExecutePressEnterAction(base::Value::Dict action);
+  bool ExecutePressEscapeAction(base::Value::Dict action);
+  bool ExecutePressSpaceAction(base::Value::Dict action);
+  bool ExecuteRunCommandAction(base::Value::Dict action);
+  bool ExecuteSavePasswordAction(base::Value::Dict action);
+  bool ExecuteSelectDropdownAction(base::Value::Dict action);
+  bool ExecuteTypeAction(base::Value::Dict action);
+  bool ExecuteTypePasswordAction(base::Value::Dict action);
+  bool ExecuteUpdatePasswordAction(base::Value::Dict action);
+  bool ExecuteValidateFieldValueAction(base::Value::Dict action);
+  bool ExecuteValidateNoSavePasswordPromptAction(base::Value::Dict action);
+  bool ExecuteValidatePasswordGenerationPromptAction(base::Value::Dict action);
+  bool ExecuteValidateSaveFallbackAction(base::Value::Dict action);
+  bool ExecuteWaitForStateAction(base::Value::Dict action);
+  bool GetTargetHTMLElementXpathFromAction(const base::Value::Dict& action,
+                                           std::string* xpath);
+  bool GetTargetFrameFromAction(const base::Value::Dict& action,
                                 content::RenderFrameHost** frame);
-  bool GetIFramePathFromAction(const base::Value::DictStorage& action,
+  bool GetIFramePathFromAction(const base::Value::Dict& action,
                                std::vector<std::string>* iframe_path);
   bool GetTargetHTMLElementVisibilityEnumFromAction(
-      const base::Value::DictStorage& action,
+      const base::Value::Dict& action,
       int* visibility_enum_val);
-  bool ExtractFrameAndVerifyElement(const base::Value::DictStorage& action,
+  bool ExtractFrameAndVerifyElement(const base::Value::Dict& action,
                                     std::string* xpath,
                                     content::RenderFrameHost** frame,
                                     bool set_focus = false,
@@ -383,13 +380,12 @@ class TestRecipeReplayer {
   void SimulateKeyPressWrapper(content::WebContents* web_contents,
                                ui::DomKey key);
   void NavigateAwayAndDismissBeforeUnloadDialog();
-  bool HasChromeStoredCredential(const base::Value::DictStorage& action,
+  bool HasChromeStoredCredential(const base::Value::Dict& action,
                                  bool* stored_cred);
   bool OverrideAutofillClock(const base::FilePath capture_file_path);
   bool SetupSavedAutofillProfile(
-      base::Value::ListStorage saved_autofill_profile_container);
-  bool SetupSavedPasswords(
-      base::Value::ListStorage saved_password_list_container);
+      base::Value::List saved_autofill_profile_container);
+  bool SetupSavedPasswords(base::Value::List saved_password_list_container);
 
   // Wait until Chrome finishes loading a page and updating the page's visuals.
   // If Chrome finishes loading a page but continues to paint every half
