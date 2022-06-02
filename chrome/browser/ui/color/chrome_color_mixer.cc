@@ -260,8 +260,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       SkColorSetA(kColorDownloadToolbarButtonInactive, 0x33)};
   mixer[kColorExtensionDialogBackground] = {SK_ColorWHITE};
   mixer[kColorExtensionIconBadgeBackgroundDefault] = {ui::kColorAccent};
-  mixer[kColorExtensionIconBadgeForegroundDefault] =
-      ui::GetColorWithMaxContrast(kColorExtensionIconBadgeBackgroundDefault);
   mixer[kColorExtensionIconDecorationAmbientShadow] =
       ui::SetAlpha(ui::kColorShadowBase, 0x26);
   mixer[kColorExtensionIconDecorationBackground] = {SK_ColorWHITE};

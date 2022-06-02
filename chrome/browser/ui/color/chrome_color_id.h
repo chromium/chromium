@@ -76,7 +76,6 @@
   /* Extension colors. */ \
   E_CPONLY(kColorExtensionDialogBackground) \
   E_CPONLY(kColorExtensionIconBadgeBackgroundDefault) \
-  E_CPONLY(kColorExtensionIconBadgeForegroundDefault) \
   E_CPONLY(kColorExtensionIconDecorationAmbientShadow) \
   E_CPONLY(kColorExtensionIconDecorationBackground) \
   E_CPONLY(kColorExtensionIconDecorationKeyShadow) \
