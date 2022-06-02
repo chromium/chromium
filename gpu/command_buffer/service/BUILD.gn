@@ -284,6 +284,8 @@ target(link_target_type, "gles2_sources") {
   if (use_dawn) {
     deps += [ "//gpu/webgpu:common" ]
     sources += [
+      "dawn_caching_interface.cc",
+      "dawn_caching_interface.h",
       "dawn_instance.cc",
       "dawn_instance.h",
       "dawn_platform.cc",
@@ -430,6 +432,7 @@ target(link_target_type, "gles2_sources") {
 
   if (use_dawn) {
     deps += [
+      "//net",
       "//third_party/dawn/src/dawn:proc",
       "//third_party/dawn/src/dawn/native",
       "//third_party/dawn/src/dawn/platform",
