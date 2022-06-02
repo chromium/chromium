@@ -480,6 +480,81 @@ suite('Multidevice', () => {
     assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
   });
 
+  test('Test screen lock without pin number with next button', async () => {
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: true,
+      showAppStreaming: true,
+      combinedSetupSupported: false,
+      isPhoneScreenLockEnabled: true,
+      isChromeosScreenLockEnabled: true,
+      isScreenLockEnabled_: true,
+      flowState_: SetupFlowStatus.SET_LOCKSCREEN,
+      isPinNumberSelected_: false
+    });
+    flush();
+
+    loadTimeData.overrideValues({isEcheAppEnabled: true});
+    buttonContainer.querySelector('#getStartedButton').click();
+
+    assertFalse(permissionsSetupDialog.showSetupPinDialog_);
+    assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 1);
+    assertTrue(
+        isExpectedFlowState(SetupFlowStatus.WAIT_FOR_PHONE_NOTIFICATION));
+  });
+
+  test('Test screen lock with pin number with next button', async () => {
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: true,
+      showAppStreaming: true,
+      combinedSetupSupported: false,
+      isPhoneScreenLockEnabled: true,
+      isChromeosScreenLockEnabled: true,
+      isScreenLockEnabled_: true,
+      flowState_: SetupFlowStatus.SET_LOCKSCREEN,
+      isPinNumberSelected_: true
+    });
+    flush();
+
+    const screenLockSubpage =
+        permissionsSetupDialog.$$('settings-multidevice-screen-lock-subpage');
+    screenLockSubpage.dispatchEvent(new CustomEvent(
+        'pin-number-selected', {detail: {isPinNumberSelected: true}}));
+    loadTimeData.overrideValues({isEcheAppEnabled: true});
+    buttonContainer.querySelector('#getStartedButton').click();
+
+    assertTrue(permissionsSetupDialog.showSetupPinDialog_);
+    assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 0);
+    assertTrue(isExpectedFlowState(SetupFlowStatus.SET_LOCKSCREEN));
+  });
+
+  test('Test screen lock with pin number done', async () => {
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: true,
+      showAppStreaming: true,
+      combinedSetupSupported: false,
+      isPhoneScreenLockEnabled: true,
+      isChromeosScreenLockEnabled: true,
+      isScreenLockEnabled_: true,
+      flowState_: SetupFlowStatus.SET_LOCKSCREEN,
+      isPinNumberSelected_: true,
+      isSetPinDone_: true,
+      isPasswordDialogShowing: true
+    });
+    flush();
+
+    loadTimeData.overrideValues({isEcheAppEnabled: true});
+    buttonContainer.querySelector('#getStartedButton').click();
+
+    assertFalse(permissionsSetupDialog.showSetupPinDialog_);
+    assertFalse(permissionsSetupDialog.isPasswordDialogShowing);
+    assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 1);
+    assertTrue(
+        isExpectedFlowState(SetupFlowStatus.WAIT_FOR_PHONE_NOTIFICATION));
+  });
+
   test('Test phone and ChromeOS enabled screen lock', async () => {
     permissionsSetupDialog.setProperties({
       showCameraRoll: false,

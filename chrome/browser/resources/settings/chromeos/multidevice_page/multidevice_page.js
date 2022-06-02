@@ -149,6 +149,15 @@ Polymer({
       value: false,
     },
 
+    /**
+     * Reflects the pin number sub-dialog property.
+     * @private
+     */
+    isPinNumberDialogShowing_: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @private */
     isChromeosScreenLockEnabled_: {
       type: Boolean,
@@ -679,12 +688,23 @@ Polymer({
 
   /** @private */
   onHidePhonePermissionsSetupDialog_() {
+    // Don't close the main dialog if the pin number sub-dialog is open.
+    if (this.isPinNumberDialogShowing_) {
+      this.isPinNumberDialogShowing_ = false;
+      return;
+    }
     // Don't close the main dialog if the password sub-dialog is open.
     if (this.isPasswordDialogShowing_) {
       this.isPasswordDialogShowing_ = false;
       return;
     }
     this.showPhonePermissionSetupDialog_ = false;
+  },
+
+  /** @private */
+  onPinNumberSelected_(e) {
+    assert(typeof e.detail.isPinNumberSelected === 'boolean');
+    this.isPinNumberDialogShowing_ = e.detail.isPinNumberSelected;
   },
 
   /** @private */
