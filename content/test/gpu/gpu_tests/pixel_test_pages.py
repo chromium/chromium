@@ -808,13 +808,13 @@ class PixelTestPages():
         # the pixel tests by default.
         PixelTestPage('canvas_uses_overlay.html',
                       base_name + '_CanvasUsesOverlay',
-                      test_rect=[0, 0, 200, 200]),
+                      test_rect=[0, 0, 100, 100]),
 
         # --enable-gpu-benchmarking is required to run this test. it's added to
         # the pixel tests by default.
         PixelTestPage('canvas_uses_overlay.html',
                       base_name + '_UnacceleratedCanvasUsesOverlay',
-                      test_rect=[0, 0, 200, 200],
+                      test_rect=[0, 0, 100, 100],
                       browser_args=unaccelerated_2d_canvas_args),
 
         # --enable-gpu-benchmarking is required to run this test. it's added to
