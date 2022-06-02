@@ -269,6 +269,10 @@ TEST_F(NGInlineLayoutAlgorithmTest, BoxForEndMargin) {
 TEST_F(NGInlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
   SetBodyInnerHTML(R"HTML(
     <style>
+    div {
+      font-size: 10px;
+      line-height: 10px;
+    }
     span {
       border-left: 1px solid blue;
       border-top: 2px solid blue;
@@ -289,7 +293,8 @@ TEST_F(NGInlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
   NGInlineCursor cursor(*block_flow);
   const LayoutObject* span = GetLayoutObjectByElementId("span");
   cursor.MoveTo(*span);
-  const NGPhysicalBoxFragment* box1 = cursor.Current().BoxFragment();
+  const NGFragmentItem& item1 = *cursor.Current();
+  const NGPhysicalBoxFragment* box1 = item1.BoxFragment();
   ASSERT_TRUE(box1);
   const NGPhysicalBoxStrut borders1 = box1->Borders();
   const NGPhysicalBoxStrut padding1 = box1->Padding();
@@ -299,8 +304,13 @@ TEST_F(NGInlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
       padding1.right.ToInt(),  padding1.bottom.ToInt()};
   EXPECT_THAT(borders_and_padding1,
               testing::ElementsAre(1, 2, 0, 4, 5, 6, 0, 8));
+  EXPECT_EQ(box1->ContentOffset(), PhysicalOffset(6, 8));
+  EXPECT_EQ(item1.ContentOffsetInContainerFragment(),
+            item1.OffsetInContainerFragment() + box1->ContentOffset());
+
   cursor.MoveToNextForSameLayoutObject();
-  const NGPhysicalBoxFragment* box2 = cursor.Current().BoxFragment();
+  const NGFragmentItem& item2 = *cursor.Current();
+  const NGPhysicalBoxFragment* box2 = item2.BoxFragment();
   ASSERT_TRUE(box2);
   const NGPhysicalBoxStrut borders2 = box2->Borders();
   const NGPhysicalBoxStrut padding2 = box2->Padding();
@@ -310,6 +320,9 @@ TEST_F(NGInlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
       padding2.right.ToInt(),  padding2.bottom.ToInt()};
   EXPECT_THAT(borders_and_padding2,
               testing::ElementsAre(0, 2, 3, 4, 0, 6, 7, 8));
+  EXPECT_EQ(box2->ContentOffset(), PhysicalOffset(0, 8));
+  EXPECT_EQ(item2.ContentOffsetInContainerFragment(),
+            item2.OffsetInContainerFragment() + box2->ContentOffset());
 }
 
 // A block with inline children generates fragment tree as follows:
@@ -341,10 +354,11 @@ TEST_F(NGInlineLayoutAlgorithmTest, ContainerBorderPadding) {
   EXPECT_EQ(0, *layout_result->BfcBlockOffset());
   EXPECT_EQ(0, layout_result->BfcLineOffset());
 
-  PhysicalOffset line_offset =
-      layout_result->PhysicalFragment().Children()[0].Offset();
-  EXPECT_EQ(5, line_offset.left);
-  EXPECT_EQ(10, line_offset.top);
+  const auto& fragment =
+      To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+  EXPECT_EQ(fragment.ContentOffset(), PhysicalOffset(5, 10));
+  PhysicalOffset line_offset = fragment.Children()[0].Offset();
+  EXPECT_EQ(line_offset, PhysicalOffset(5, 10));
 }
 
 // The test leaks memory. crbug.com/721932
