@@ -6,6 +6,7 @@
 #define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_WIN_COM_FAKES_H_
 
 #include <atlcomcli.h>
+#include <iwscapi.h>
 #include <wbemidl.h>
 #include <iterator>
 #include <map>
@@ -23,6 +24,18 @@ namespace device_signals {
   ULONG STDMETHODCALLTYPE AddRef() override;                       \
   ULONG STDMETHODCALLTYPE Release(void) override;                  \
   ULONG ref_count_ = 1;
+
+#define DECLARE_IDISPATCH()                                                   \
+  DECLARE_IUNKOWN_NOQI_WITH_REF()                                             \
+  IFACEMETHODIMP GetTypeInfoCount(UINT* pctinfo) override;                    \
+  IFACEMETHODIMP GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo)     \
+      override;                                                               \
+  IFACEMETHODIMP GetIDsOfNames(REFIID riid, LPOLESTR* rgszNames, UINT cNames, \
+                               LCID lcid, DISPID* rgDispId) override;         \
+  IFACEMETHODIMP Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,          \
+                        WORD wFlags, DISPPARAMS* pDispParams,                 \
+                        VARIANT* pVarResult, EXCEPINFO* pExcepInfo,           \
+                        UINT* puArgErr) override;
 
 class FakeEnumWbemClassObject : public IEnumWbemClassObject {
  public:
@@ -131,6 +144,89 @@ class FakeWbemClassObject : public IWbemClassObject {
                                IWbemClassObject** ppNewInstance) override;
 
   std::map<std::wstring, base::win::ScopedVariant> map_;
+};
+
+class FakeWscProduct : public IWscProduct {
+ public:
+  FakeWscProduct();
+  FakeWscProduct(const wchar_t* name,
+                 const wchar_t* id,
+                 WSC_SECURITY_PRODUCT_STATE state);
+
+  FakeWscProduct(const FakeWscProduct& copy) = delete;
+  FakeWscProduct& operator=(const FakeWscProduct&) = delete;
+  FakeWscProduct(FakeWscProduct&&);
+  FakeWscProduct& operator=(FakeWscProduct&&);
+
+  virtual ~FakeWscProduct();
+
+  enum class FailureStep {
+    kProductName = 0,
+    kProductId = 1,
+    kProductState = 2,
+  };
+
+  // IWscProduct:
+  IFACEMETHODIMP get_ProductName(BSTR* pVal) override;
+  IFACEMETHODIMP get_ProductGuid(BSTR* pVal) override;
+  IFACEMETHODIMP get_ProductState(WSC_SECURITY_PRODUCT_STATE* pVal) override;
+
+  // Can be used to force a failure to happen in one of the functions
+  // represented by `step`.
+  void set_failed_step(FailureStep step) { failed_step_ = step; }
+
+ private:
+  // IWscProduct:
+  DECLARE_IDISPATCH()
+  IFACEMETHODIMP get_ProductStateTimestamp(BSTR* pVal) override;
+  IFACEMETHODIMP get_RemediationPath(BSTR* pVal) override;
+  IFACEMETHODIMP get_SignatureStatus(
+      WSC_SECURITY_SIGNATURE_STATUS* pVal) override;
+  IFACEMETHODIMP get_ProductIsDefault(BOOL* pVal) override;
+
+  bool ShouldFail(FailureStep step);
+
+  absl::optional<FailureStep> failed_step_;
+
+  base::win::ScopedBstr name_;
+  base::win::ScopedBstr id_;
+  WSC_SECURITY_PRODUCT_STATE state_;
+};
+
+class FakeWSCProductList : public IWSCProductList {
+ public:
+  FakeWSCProductList();
+
+  virtual ~FakeWSCProductList();
+
+  enum class FailureStep {
+    kInitialize = 0,
+    kGetCount = 1,
+    kGetItem = 2,
+  };
+
+  void Add(IWscProduct* product) { products_.push_back(product); }
+  // IWSCProductList:
+  IFACEMETHODIMP get_Count(LONG* pVal) override;
+  IFACEMETHODIMP get_Item(ULONG index, IWscProduct** pVal) override;
+  IFACEMETHODIMP Initialize(ULONG provider) override;
+
+  // Can be used to force a failure to happen in one of the functions
+  // represented by `step`.
+  void set_failed_step(FailureStep step) { failed_step_ = step; }
+
+  const absl::optional<ULONG>& provider() { return provider_; }
+
+ private:
+  // IWSCProductList:
+  DECLARE_IDISPATCH()
+
+  bool ShouldFail(FailureStep step);
+
+  absl::optional<FailureStep> failed_step_;
+
+  absl::optional<ULONG> provider_;
+  std::vector<IWscProduct*> products_;
 };
 
 }  // namespace device_signals

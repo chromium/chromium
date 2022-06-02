@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/win/wmi.h"
 #include "components/device_signals/core/common/win/com_fakes.h"
+#include "components/device_signals/core/common/win/win_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

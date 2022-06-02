@@ -4,13 +4,18 @@
 
 static_library("win") {
   public = [
+    "win_types.h",
     "wmi_client.h",
     "wmi_client_impl.h",
+    "wsc_client.h",
+    "wsc_client_impl.h",
   ]
 
   sources = [
     "wmi_client.cc",
     "wmi_client_impl.cc",
+    "wsc_client.cc",
+    "wsc_client_impl.cc",
   ]
 
   public_deps = [
@@ -35,7 +40,10 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "wmi_client_impl_unittest.cc" ]
+  sources = [
+    "wmi_client_impl_unittest.cc",
+    "wsc_client_impl_unittest.cc",
+  ]
 
   deps = [
     ":test_support",

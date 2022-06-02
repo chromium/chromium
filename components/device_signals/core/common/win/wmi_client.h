@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/win/wmi.h"
+#include "components/device_signals/core/common/win/win_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // WMI interfaces are available on Windows Vista and above, and are officially
@@ -20,14 +21,6 @@ enum class WmiParsingError {
   kFailedToIterateResults = 0,
   kFailedToGetName = 1,
   kMaxValue = kFailedToGetName
-};
-
-// Metadata about an installed Hotfix update.
-struct InstalledHotfix {
-  // In WMI, this value represents the `HotFixID` property from entries in
-  // "Win32_QuickFixEngineering". They have a format looking like `KB123123`.
-  // https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-quickfixengineering
-  std::string hotfix_id;
 };
 
 // Response object for calls to retrieve information about installed hotfix
