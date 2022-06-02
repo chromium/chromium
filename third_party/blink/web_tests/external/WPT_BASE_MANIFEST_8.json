@@ -321798,6 +321798,10 @@
       "5cfb9e8c259a05d0b4646c49bea449b4244ae3b9",
       []
      ],
+     "echo-referrer.py": [
+      "287e000f8f2739cba513612eb12909dcdcbba842",
+      []
+     ],
      "echo-with-cors.py": [
       "06d30c303c601ccabcfc1e3810c965dc45016538",
       []
@@ -321824,6 +321828,10 @@
      ],
      "foo.vtt.sub.headers": [
       "360e6686bfb65ed33d811d15e1ba7183a736d552",
+      []
+     ],
+     "link-header-referrer-policy.html": [
+      "dd2144d5075c68c3ad6d6c7ea393b8f58c24e057",
       []
      ],
      "module1.js": [
@@ -499982,6 +499990,15 @@
      [
       null,
       {}
+     ]
+    ],
+    "preload-referrer-policy.html": [
+     "c6a2622a6502f24a9f783b3280318c90790f8d28",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "preload-resource-match.https.html": [

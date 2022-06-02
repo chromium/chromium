@@ -3345,6 +3345,14 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] external/wpt/html/semantics/popups/popup-light-dismiss.tentative.html [ Timeout ]
+crbug.com/626703 [ Linux ] external/wpt/preload/preload-referrer-policy.html [ Skip Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/preload/preload-referrer-policy.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11 ] external/wpt/preload/preload-referrer-policy.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/preload/preload-referrer-policy.html [ Skip Timeout ]
+crbug.com/626703 [ Mac12 ] external/wpt/preload/preload-referrer-policy.html [ Skip Timeout ]
+crbug.com/626703 [ Mac12-arm64 ] external/wpt/preload/preload-referrer-policy.html [ Skip Timeout ]
+crbug.com/626703 [ Win ] external/wpt/preload/preload-referrer-policy.html [ Skip Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
