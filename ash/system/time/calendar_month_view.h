@@ -72,6 +72,7 @@ class CalendarDateCellView : public CalendarViewController::Observer,
  private:
   // For unit tests.
   friend class CalendarMonthViewTest;
+  friend class CalendarViewTest;
 
   // Callback called when this view is activated.
   void OnDateCellActivated(const ui::Event& event);
