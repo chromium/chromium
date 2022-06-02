@@ -161,12 +161,12 @@ struct GridSpan {
                                     : kLegacyGridMaxTracks;
     start_line_ =
         ClampTo<int>(start_line, -grid_max_tracks, grid_max_tracks - 1);
-    end_line_ = ClampTo<int>(end_line, -grid_max_tracks + 1, grid_max_tracks);
+    end_line_ = ClampTo<int>(end_line, start_line_ + 1, grid_max_tracks);
 
 #if DCHECK_IS_ON()
-    DCHECK_LT(start_line, end_line);
+    DCHECK_LT(start_line_, end_line_);
     if (type == kTranslatedDefinite)
-      DCHECK_GE(start_line, static_cast<T>(0));
+      DCHECK_GE(start_line_, 0);
 #endif
   }
 
