@@ -13,8 +13,10 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
@@ -96,6 +98,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final AnimatorListener mSpinnerFadeoutAnimatorListener;
     private final int mHandleHeight;
     private ValueAnimator mAnimator;
+    private int mShadowOffset;
 
     private @HeightStatus int mStatus = HeightStatus.INITIAL_HEIGHT;
     private @HeightStatus int mTargetStatus;
@@ -110,6 +113,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private LinearLayout mNavbar;
     private CircularProgressDrawable mSpinner;
     private View mToolbarView;
+    private View mToolbarCoordinator;
 
     /** A callback to be called once the Custom Tab has been resized. */
     interface OnResizedCallback {
@@ -258,12 +262,21 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         // Invoked twice - when populated/destroyed(null)
         parentViewSupplier.addObserver(parentView -> {
+            if (parentView == null) return;
+
+            // Elevate the main web contents area as high as the handle bar to have the shadow
+            // effect look right.
+            int ev = mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
+            View coordinatorLayout = (View) parentView.getParent();
+            coordinatorLayout.setElevation(ev);
+
             // When the navigation bar on the right side (not at the bottom), no need to call
             // the methods below since the contents height is fixed and the system navigation
             // bar works as expected.
             if (mNavbarHeight == 0) return;
+
             setContentsHeight();
-            updateNavbarVisibility(parentView != null);
+            updateNavbarVisibility(true);
         });
 
         mOnResizedCallback = onResizedCallback;
@@ -331,21 +344,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     @Override
-    public boolean changeBackgroundColorForResizing() {
-        GradientDrawable background =
-                (GradientDrawable) mActivity.getWindow().getDecorView().getBackground();
-        if (background == null) {
-            return false;
-        }
-
-        final int color = mActivity.getColor(R.color.window_background_color);
-        ((GradientDrawable) background.mutate()).setColor(color);
-        return true;
-    }
-
-    @Override
     public void onToolbarInitialized(
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
+        mToolbarCoordinator = coordinatorView;
         roundCorners(coordinatorView, toolbar, toolbarCornerRadius);
 
         mToolbarView = toolbar;
@@ -364,6 +365,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         if (newConfig.orientation != mOrientation) {
             mOrientation = newConfig.orientation;
             initializeHeight();
+            updateShadowOffset();
             setContentsHeight();
             updateNavbarVisibility(true);
         }
@@ -382,22 +384,20 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         ViewStub handleViewStub = mActivity.findViewById(R.id.custom_tabs_handle_view_stub);
         handleViewStub.inflate();
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
-
+        handleView.setElevation(
+                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation));
         GradientDrawable background = (GradientDrawable) handleView.getBackground();
         background.mutate();
         background.setCornerRadii(new float[] {toolbarCornerRadius, toolbarCornerRadius,
                 toolbarCornerRadius, toolbarCornerRadius, 0, 0, 0, 0});
+        handleView.setBackground(background);
+        updateShadowOffset();
 
         // Pass the handle View to CustomTabToolbar for background color management.
         toolbar.setHandleView(handleView);
 
-        // Make enough room for the handle View.
-        ViewGroup.MarginLayoutParams mlp =
-                (ViewGroup.MarginLayoutParams) coordinator.getLayoutParams();
-        mlp.setMargins(0, mHandleHeight, 0, 0);
-        coordinator.requestLayout();
-
-        mActivity.getWindow().setBackgroundDrawable(background);
+        // Having the transparent background is necessary for the shadow effect.
+        mActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
     private void initializeHeight() {
@@ -429,6 +429,26 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // corner bug in Android S. See b/223536648.
         attributes.y = Math.max(maxExpandedY, maxHeight - height - mNavbarHeight);
         mActivity.getWindow().setAttributes(attributes);
+    }
+
+    private void updateShadowOffset() {
+        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // Shadow is not necessary as CCT will be always of full-height in landscape mode.
+            mShadowOffset = 0;
+        } else {
+            mShadowOffset = mActivity.getResources().getDimensionPixelSize(
+                    R.dimen.custom_tabs_shadow_offset);
+        }
+        View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) handleView.getLayoutParams();
+        lp.setMargins(0, mShadowOffset, 0, 0);
+
+        // Make enough room for the handle View.
+        ViewGroup.MarginLayoutParams mlp =
+                (ViewGroup.MarginLayoutParams) mToolbarCoordinator.getLayoutParams();
+        mlp.setMargins(0, mHandleHeight + mShadowOffset, 0, 0);
+        mToolbarCoordinator.requestLayout();
     }
 
     private void updateWindowPos(@Px int y) {
@@ -511,8 +531,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // We resize CompositorViewHolder to occupy the size we want for CCT. This excludes
         // the bottom navigation bar height and the top margin of CVH set aside for
         // the handle bar portion of the CCT toolbar header.
+        // TODO(jinsukkim):
+        //   - Remove the shadow when in full-height so there won't be a gap beneath the status bar.
+        //   - Draw a thin border line around CCT on low-mem devices where the shadow effect via
+        //     android:elevation directive won't work.
         int windowPos = mActivity.getWindow().getAttributes().y;
-        lp.height = getDisplayHeight() - windowPos - mHandleHeight - mNavbarHeight;
+        lp.height = getDisplayHeight() - windowPos - mHandleHeight - mShadowOffset - mNavbarHeight;
         parentView.setLayoutParams(lp);
         if (oldHeight >= 0 && lp.height != oldHeight) mOnResizedCallback.onResized(lp.height);
     }
@@ -656,11 +680,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     @VisibleForTesting
     void setMockViewForTesting(LinearLayout navbar, ImageView spinnerView,
-            CircularProgressDrawable spinner, View toolbar) {
+            CircularProgressDrawable spinner, View toolbar, View toolbarCoordinator) {
         mNavbar = navbar;
         mSpinnerView = spinnerView;
         mSpinner = spinner;
         mToolbarView = toolbar;
+        mToolbarCoordinator = toolbarCoordinator;
     }
 
     @VisibleForTesting
