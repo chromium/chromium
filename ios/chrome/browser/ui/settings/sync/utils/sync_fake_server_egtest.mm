@@ -27,7 +27,7 @@ namespace {
 // Constant for timeout while waiting for asynchronous sync operations.
 const NSTimeInterval kSyncOperationTimeout = 10.0;
 
-// Waits for |entity_count| entities of type |entity_type|, and fails with
+// Waits for `entity_count` entities of type `entity_type`, and fails with
 // a GREYAssert if the condition is not met, within a short period of time.
 void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   ConditionBlock condition = ^{

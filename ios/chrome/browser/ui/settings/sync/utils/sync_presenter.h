@@ -27,13 +27,13 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)showAccountSettings;
 
 // Presents the Trusted Vault reauthentication dialog.
-// |trigger| UI elements where the trusted vault reauth has been triggered.
+// `trigger` UI elements where the trusted vault reauth has been triggered.
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger;
 
 // Presents the Trusted Vault degraded recoverability dialog (to enroll
 // additional recovery factors).
-// |trigger| UI elements where the trusted vault reauth has been triggered.
+// `trigger` UI elements where the trusted vault reauth has been triggered.
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger;
 

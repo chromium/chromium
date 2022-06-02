@@ -36,7 +36,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
 
   ~SyncErrorInfoBarDelegate() override;
 
-  // Creates a sync error infobar and adds it to |infobar_manager|.
+  // Creates a sync error infobar and adds it to `infobar_manager`.
   static bool Create(infobars::InfoBarManager* infobar_manager,
                      ChromeBrowserState* browser_state,
                      id<SyncPresenter> presenter);
