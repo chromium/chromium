@@ -54,14 +54,4 @@ public class TapSuppressionHeuristics extends ContextualSearchHeuristics {
         }
         return false;
     }
-
-    /**
-     * @return Whether the Tap should override an ML suppression.
-     */
-    boolean shouldOverrideMlTapSuppression() {
-        for (ContextualSearchHeuristic heuristic : mHeuristics) {
-            if (heuristic.shouldOverrideMlTapSuppression()) return true;
-        }
-        return false;
-    }
 }

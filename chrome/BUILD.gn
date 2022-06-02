@@ -1594,12 +1594,6 @@ group("strings") {
 }
 
 if (is_android) {
-  java_cpp_enum("assist_ranker_prediction_enum_javagen") {
-    sources = [
-      "browser/android/contextualsearch/contextual_search_ranker_logger_impl.h",
-    ]
-  }
-
   java_cpp_enum("partner_bookmarks_javagen") {
     sources = [ "browser/android/bookmarks/partner_bookmarks_reader.h" ]
   }

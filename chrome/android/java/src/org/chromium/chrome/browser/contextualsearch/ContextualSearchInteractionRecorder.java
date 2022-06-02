@@ -97,26 +97,6 @@ public interface ContextualSearchInteractionRecorder {
      */
     void logOutcome(@Feature int feature, Object value);
 
-    /**
-     * Tries to run the machine intelligence model for tap suppression and returns an int that
-     * describes whether the prediction was obtainable and what it was.
-     * See chrome/browser/android/contextualsearch/contextual_search_ranker_logger_impl.h for
-     * details on the {@link AssistRankerPrediction} possibilities.
-     * @return An integer that encodes the prediction result.
-     */
-    @AssistRankerPrediction
-    int runPredictionForTapSuppression();
-
-    /**
-     * Gets the previous result from trying to run the machine intelligence model for tap
-     * suppression. A previous call to {@link #runPredictionForTapSuppression} is required.
-     * See chrome/browser/android/contextualsearch/contextual_search_ranker_logger_impl.h for
-     * details on the {@link AssistRankerPrediction} possibilities.
-     * @return An integer that encodes the prediction.
-     */
-    @AssistRankerPrediction
-    int getPredictionForTapSuppression();
-
     /** Stores an Event ID from the server that we should persist along with user interactions. */
     void persistInteraction(long eventId);
 

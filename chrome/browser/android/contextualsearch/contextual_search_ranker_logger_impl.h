@@ -20,15 +20,6 @@ class BinaryClassifierPredictor;
 class RankerExample;
 }  // namespace assist_ranker
 
-// A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.contextualsearch
-enum AssistRankerPrediction {
-  ASSIST_RANKER_PREDICTION_UNDETERMINED,
-  ASSIST_RANKER_PREDICTION_UNAVAILABLE,
-  ASSIST_RANKER_PREDICTION_SUPPRESS,
-  ASSIST_RANKER_PREDICTION_SHOW,
-};
-
 // Provides the native portion of the Java class by the same name.
 // Runs Ranker inference and logging through UKM for Ranker model development.
 // This is used to prediction whether a tap gesture will be useful to the user
@@ -56,10 +47,6 @@ class ContextualSearchRankerLoggerImpl {
       JNIEnv* env,
       jobject obj,
       const base::android::JavaParamRef<jobject>& java_web_contents);
-
-  // Runs the model and returns the inference result as an
-  // AssistRankerPrediction enum.
-  AssistRankerPrediction RunInference(JNIEnv* env, jobject obj);
 
   // Writes the currently logged data and resets the current builder to be
   // ready to start logging the next set of data.

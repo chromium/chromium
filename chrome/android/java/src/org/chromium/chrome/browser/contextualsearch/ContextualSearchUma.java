@@ -769,43 +769,6 @@ public class ContextualSearchUma {
                 "Search.ContextualSearch.CardTag", cardTagEnum, CardTag.NUM_ENTRIES);
     }
 
-    /**
-     * Logs results-seen when we have a useful Ranker prediction inference.
-     * @param wasPanelSeen Whether the panel was seen.
-     * @param predictionKind An integer reflecting the Ranker prediction, e.g. that this is a good
-     *        time to suppress triggering because the likelihood of opening the panel is relatively
-     *        low.
-     */
-    public static void logRankerInference(
-            boolean wasPanelSeen, @AssistRankerPrediction int predictionKind) {
-        if (predictionKind == AssistRankerPrediction.SHOW) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Search.ContextualSearch.Ranker.NotSuppressed.ResultsSeen",
-                    wasPanelSeen ? Results.SEEN : Results.NOT_SEEN, Results.NUM_ENTRIES);
-        } else if (predictionKind == AssistRankerPrediction.SUPPRESS) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Search.ContextualSearch.Ranker.WouldSuppress.ResultsSeen",
-                    wasPanelSeen ? Results.SEEN : Results.NOT_SEEN, Results.NUM_ENTRIES);
-        }
-    }
-
-    /**
-     * Logs Ranker's prediction of whether or not to suppress.
-     * @param predictionKind An integer reflecting the Ranker prediction, e.g. that this is a good
-     *        time to suppress triggering because the likelihood of opening the panel is relatively
-     *        low.
-     */
-    public static void logRankerPrediction(@AssistRankerPrediction int predictionKind) {
-        // For now we just log whether or not suppression is predicted.
-        RecordHistogram.recordBooleanHistogram("Search.ContextualSearch.Ranker.Suppressed",
-                predictionKind == AssistRankerPrediction.SUPPRESS);
-    }
-
-    /** Logs that Ranker recorded a set of features for training or inference. */
-    public static void logRecordedFeaturesToRanker() {
-        logRecordedToRanker(false);
-    }
-
     /** Logs that Ranker recorded a set of outcomes for training or inference. */
     public static void logRecordedOutcomesToRanker() {
         logRecordedToRanker(true);

@@ -666,7 +666,6 @@ android_library("chrome_java") {
     ":chrome_strict_mode_switch",
     ":resource_id_javagen",
     ":vr_build_config",
-    "//chrome:assist_ranker_prediction_enum_javagen",
     "//chrome:instant_apps_reasons_enum_javagen",
     "//chrome:offline_pages_enum_javagen",
     "//chrome:quick_action_category_enum_javagen",

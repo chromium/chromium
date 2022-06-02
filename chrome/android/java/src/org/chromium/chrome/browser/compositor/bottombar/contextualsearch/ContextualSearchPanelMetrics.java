@@ -344,8 +344,6 @@ public class ContextualSearchPanelMetrics {
             mInteractionRecorder.logOutcome(
                     ContextualSearchInteractionRecorder.Feature.OUTCOME_WAS_PANEL_OPENED,
                     mWasSearchContentViewSeen);
-            ContextualSearchUma.logRankerInference(mWasSearchContentViewSeen,
-                    mInteractionRecorder.getPredictionForTapSuppression());
             mInteractionRecorder.logOutcome(
                     ContextualSearchInteractionRecorder.Feature.OUTCOME_WAS_CARDS_DATA_SHOWN,
                     mWasContextualCardsDataShown);

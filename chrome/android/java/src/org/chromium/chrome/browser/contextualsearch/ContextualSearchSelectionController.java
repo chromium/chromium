@@ -467,31 +467,10 @@ public class ContextualSearchSelectionController {
         mHandler.handleMetricsForWouldSuppressTap(tapHeuristics);
 
         boolean shouldSuppressTapBasedOnHeuristics = tapHeuristics.shouldSuppressTap();
-        boolean shouldOverrideMlTapSuppression = tapHeuristics.shouldOverrideMlTapSuppression();
-
-        // Make sure Tap Suppression features are consistent.
-        assert !ContextualSearchFieldTrial.getSwitch(
-                ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED)
-                || interactionRecorder.isQueryEnabled()
-            : "Tap Suppression requires the Ranker Query feature to be enabled!";
-
-        // If we're suppressing based on heuristics then Ranker doesn't need to know about it.
-        @AssistRankerPrediction
-        int tapPrediction = AssistRankerPrediction.UNDETERMINED;
-        if (!shouldSuppressTapBasedOnHeuristics) {
-            tapHeuristics.logRankerTapSuppression(interactionRecorder);
-            tapPrediction = interactionRecorder.runPredictionForTapSuppression();
-            ContextualSearchUma.logRankerPrediction(tapPrediction);
-        }
 
         // Make the suppression decision and act upon it.
-        boolean shouldSuppressTapBasedOnRanker = (tapPrediction == AssistRankerPrediction.SUPPRESS)
-                && ContextualSearchFieldTrial.getSwitch(
-                        ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED)
-                && !shouldOverrideMlTapSuppression;
-        if (shouldSuppressTapBasedOnHeuristics || shouldSuppressTapBasedOnRanker) {
-            Log.i(TAG, "Tap suppressed due to Ranker: %s, heuristics: %s",
-                    shouldSuppressTapBasedOnRanker, shouldSuppressTapBasedOnHeuristics);
+        if (shouldSuppressTapBasedOnHeuristics) {
+            Log.i(TAG, "Tap suppressed due to heuristics: %s", shouldSuppressTapBasedOnHeuristics);
             mHandler.handleSuppressedTap();
         } else {
             mHandler.handleNonSuppressedTap(mTapTimeNanoseconds);
@@ -499,8 +478,7 @@ public class ContextualSearchSelectionController {
 
         if (mTapTimeNanoseconds != 0) {
             // Remember the tap state for subsequent tap evaluation.
-            mLastTapState = new ContextualSearchTapState(
-                    x, y, mTapTimeNanoseconds, shouldSuppressTapBasedOnRanker);
+            mLastTapState = new ContextualSearchTapState(x, y, mTapTimeNanoseconds);
         } else {
             mLastTapState = null;
         }

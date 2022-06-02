@@ -69,33 +69,6 @@ void ContextualSearchRankerLoggerImpl::SetupRankerPredictor(
   }
 }
 
-AssistRankerPrediction ContextualSearchRankerLoggerImpl::RunInference(
-    JNIEnv* env,
-    jobject obj) {
-  has_predicted_decision_ = true;
-  bool prediction = false;
-  bool was_able_to_predict = false;
-  if (IsQueryEnabledInternal()) {
-    was_able_to_predict = predictor_->Predict(*ranker_example_, &prediction);
-    // Log to UMA whether we were able to predict or not.
-    base::UmaHistogramBoolean("Search.ContextualSearch.Ranker.WasAbleToPredict",
-                              was_able_to_predict);
-  }
-  AssistRankerPrediction prediction_enum;
-  if (was_able_to_predict) {
-    if (prediction) {
-      prediction_enum = ASSIST_RANKER_PREDICTION_SHOW;
-    } else {
-      prediction_enum = ASSIST_RANKER_PREDICTION_SUPPRESS;
-    }
-  } else {
-    prediction_enum = ASSIST_RANKER_PREDICTION_UNAVAILABLE;
-  }
-  // TODO(donnd): remove when behind-the-flag bug fixed (crbug.com/786589).
-  DVLOG(0) << "prediction: " << prediction_enum;
-  return prediction_enum;
-}
-
 void ContextualSearchRankerLoggerImpl::WriteLogAndReset(JNIEnv* env,
                                                         jobject obj) {
   if (predictor_ && ranker_example_ && source_id_ != ukm::kInvalidSourceId) {

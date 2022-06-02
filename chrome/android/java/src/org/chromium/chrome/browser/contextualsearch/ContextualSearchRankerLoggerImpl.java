@@ -27,14 +27,6 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
     // The WebContents of the base page that the log data is associated with.
     private WebContents mBasePageWebContents;
 
-    // Whether inference has already occurred for this interaction (and calling #logFeature is no
-    // longer allowed).
-    private boolean mHasInferenceOccurred;
-
-    // What kind of ML prediction we were able to get.
-    private @AssistRankerPrediction int mAssistRankerPrediction =
-            AssistRankerPrediction.UNDETERMINED;
-
     // Map that accumulates all of the Features to log for a specific user-interaction.
     private Map<Integer /* @Feature */, Object> mFeaturesToLog;
 
@@ -111,7 +103,6 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
     public void setupLoggingForPage(@Nullable WebContents basePageWebContents) {
         mIsLoggingReadyForPage = true;
         mBasePageWebContents = basePageWebContents;
-        mHasInferenceOccurred = false;
         ContextualSearchRankerLoggerImplJni.get().setupLoggingAndRanker(
                 mNativePointer, ContextualSearchRankerLoggerImpl.this, basePageWebContents);
     }
@@ -125,37 +116,16 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
     @Override
     public void logOutcome(@Feature int feature, Object value) {
         assert mIsLoggingReadyForPage;
-        assert mHasInferenceOccurred;
         if (!isEnabled()) return;
 
         logInternal(feature, value);
     }
 
     @Override
-    public @AssistRankerPrediction int runPredictionForTapSuppression() {
-        assert mIsLoggingReadyForPage;
-        assert !mHasInferenceOccurred;
-        mHasInferenceOccurred = true;
-        if (isEnabled() && mBasePageWebContents != null) {
-            mAssistRankerPrediction = ContextualSearchRankerLoggerImplJni.get().runInference(
-                    mNativePointer, ContextualSearchRankerLoggerImpl.this);
-            ContextualSearchUma.logRecordedFeaturesToRanker();
-        }
-        return mAssistRankerPrediction;
-    }
-
-    @Override
-    public @AssistRankerPrediction int getPredictionForTapSuppression() {
-        return mAssistRankerPrediction;
-    }
-
-    @Override
     public void reset() {
         mIsLoggingReadyForPage = false;
-        mHasInferenceOccurred = false;
         mFeaturesToLog = null;
         mBasePageWebContents = null;
-        mAssistRankerPrediction = AssistRankerPrediction.UNDETERMINED;
     }
 
     @Override
@@ -164,7 +134,6 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
             if (mBasePageWebContents != null && mFeaturesToLog != null
                     && !mFeaturesToLog.isEmpty()) {
                 assert mIsLoggingReadyForPage;
-                assert mHasInferenceOccurred;
 
                 mOutcomesLoggedForTesting = mFeaturesToLog;
                 ContextualSearchUma.logRecordedOutcomesToRanker();
@@ -230,9 +199,6 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
                 ContextualSearchRankerLoggerImpl caller);
         void setupLoggingAndRanker(long nativeContextualSearchRankerLoggerImpl,
                 ContextualSearchRankerLoggerImpl caller, WebContents basePageWebContents);
-        // Returns an AssistRankerPrediction integer value.
-        int runInference(long nativeContextualSearchRankerLoggerImpl,
-                ContextualSearchRankerLoggerImpl caller);
 
         void writeLogAndReset(long nativeContextualSearchRankerLoggerImpl,
                 ContextualSearchRankerLoggerImpl caller);
