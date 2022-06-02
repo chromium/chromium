@@ -331,7 +331,7 @@ const base::Feature kAutofillFixServerQueriesIfPasswordManagerIsEnabled{
 // shown. This is to prevent double clicks accidentally accepting suggestions.
 // TODO(crbug/1279268): Remove once launched.
 const base::Feature kAutofillIgnoreEarlyClicksOnPopup{
-    "AutofillIgnoreEarlyClicksOnPopup", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillIgnoreEarlyClicksOnPopup", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // The duration for which clicks on the just-shown Autofill popup should be
 // ignored if AutofillIgnoreEarlyClicksOnPopup is enabled.
@@ -340,7 +340,7 @@ const base::Feature kAutofillIgnoreEarlyClicksOnPopup{
 const base::FeatureParam<base::TimeDelta>
     kAutofillIgnoreEarlyClicksOnPopupDuration{
         &kAutofillIgnoreEarlyClicksOnPopup, "duration",
-        base::Milliseconds(500)};
+        base::Milliseconds(250)};
 
 // When enabled, only changed values are highlighted in preview mode.
 // TODO(crbug/1248585): Remove when launched.
