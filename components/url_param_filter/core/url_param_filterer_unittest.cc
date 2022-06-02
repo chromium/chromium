@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_classifications_loader.h"
 #include "components/url_param_filter/core/url_param_filter_classification.pb.h"
 #include "components/url_param_filter/core/url_param_filter_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +27,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlEmptyClassifications) {
                 FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 0);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlNoChanges) {
@@ -48,6 +51,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlNoChanges) {
                                   FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 0);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlSourceBlocked) {
@@ -66,6 +71,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlSourceBlocked) {
                 ClassificationMap(), FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 1);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlSourceBlockedNoValue) {
@@ -84,6 +91,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlSourceBlockedNoValue) {
                 ClassificationMap(), FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 1);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlMultipleSourceBlocked) {
@@ -105,6 +114,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlMultipleSourceBlocked) {
                 ClassificationMap(), FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlDestinationBlocked) {
@@ -124,6 +135,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlDestinationBlocked) {
                                   FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 1);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlMultipleDestinationBlocked) {
@@ -145,6 +158,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlMultipleDestinationBlocked) {
                                   FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlSourceAndDestinationBlocked) {
@@ -169,6 +184,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlSourceAndDestinationBlocked) {
       destination_classification_map, FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlSourceAndDestinationAsIPBlocked) {
@@ -193,6 +210,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlSourceAndDestinationAsIPBlocked) {
       destination_classification_map, FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlSourceAndDestinationAsIPv6Blocked) {
@@ -218,6 +237,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlSourceAndDestinationAsIPv6Blocked) {
       destination_classification_map, FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest,
@@ -244,6 +265,8 @@ TEST_F(UrlParamFiltererTest,
       destination_classification_map, FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest,
@@ -272,6 +295,8 @@ TEST_F(UrlParamFiltererTest,
       destination_classification_map, FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlSubdomainsApplied) {
@@ -295,6 +320,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlSubdomainsApplied) {
       destination_classification_map, FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlCaseIgnored) {
@@ -318,6 +345,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlCaseIgnored) {
       destination_classification_map, FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlWithNestedUrl) {
@@ -349,6 +378,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlWithNestedUrl) {
       destination_classification_map, FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlWithNestedUrlNotNeedingFiltering) {
@@ -410,6 +441,8 @@ TEST_F(UrlParamFiltererTest, FilterUrlWithNestedUrlAndDuplicates) {
       destination_classification_map, FilterClassification::USE_CASE_UNKNOWN);
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 4);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FeatureDeactivated) {
@@ -432,6 +465,8 @@ TEST_F(UrlParamFiltererTest, FeatureDeactivatedUseCaseVariant) {
 
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 0);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FeatureActivatedNoQueryString) {
@@ -453,6 +488,8 @@ TEST_F(UrlParamFiltererTest, FeatureActivatedNoQueryString) {
 
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 0);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FeatureActivatedAllRemoved) {
@@ -475,6 +512,8 @@ TEST_F(UrlParamFiltererTest, FeatureActivatedAllRemoved) {
 
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, FeatureActivatedSourceAndDestinationRemoval) {
@@ -497,6 +536,8 @@ TEST_F(UrlParamFiltererTest, FeatureActivatedSourceAndDestinationRemoval) {
 
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, CrossOtrUseCase) {
@@ -522,6 +563,8 @@ TEST_F(UrlParamFiltererTest, CrossOtrUseCase) {
 
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, MismatchedUseCases) {
@@ -547,6 +590,8 @@ TEST_F(UrlParamFiltererTest, MismatchedUseCases) {
   // There are no rules for CROSS_SITE_NO_3PC, so the URL should not change.
   ASSERT_EQ(result.filtered_url, destination);
   ASSERT_EQ(result.filtered_param_count, 0);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, MixedUseCases) {
@@ -575,6 +620,8 @@ TEST_F(UrlParamFiltererTest, MixedUseCases) {
   // source.xyz.
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 1);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
 TEST_F(UrlParamFiltererTest, MultipleUseCases) {
@@ -607,6 +654,85 @@ TEST_F(UrlParamFiltererTest, MultipleUseCases) {
   // `blockotrsource` should be left alone, but `blockno3pcdest` should not.
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
 
+TEST_F(UrlParamFiltererTest, ExperimentalClassifications) {
+  GURL source = GURL{"http://source.xyz"};
+  GURL destination = GURL{
+      "https://"
+      "destination.xyz?srcexperimental=1&destexperimental=2&noblock=1&plzblock="
+      "1&plzblockdest=1"};
+  ClassificationMap source_classification_map =
+      CreateClassificationMapForTesting(
+          {{"source.xyz", {"plzblock"}}},
+          FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE);
+  // In addition to the default `plzblock`, also set `srcexperimental` as an
+  // experiment-driven parameter.
+  source_classification_map["source.xyz"]
+                           [FilterClassification::USE_CASE_UNKNOWN]
+                           ["srcexperimental"] =
+                               ClassificationExperimentStatus::EXPERIMENTAL;
+
+  ClassificationMap destination_classification_map =
+      CreateClassificationMapForTesting(
+          {{"destination.xyz", {"plzblockdest"}}},
+          FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
+  // In addition to the default `plzblockdest`, also set `destexperimental` as
+  // an experiment-driven parameter.
+  destination_classification_map
+      ["destination.xyz"][FilterClassification::USE_CASE_UNKNOWN]
+      ["destexperimental"] = ClassificationExperimentStatus::EXPERIMENTAL;
+
+  FilterResult result = FilterUrl(
+      source, destination, source_classification_map,
+      destination_classification_map, FilterClassification::USE_CASE_UNKNOWN);
+  // `blockotrsource` should be left alone, but `blockno3pcdest` should not.
+  GURL expected = GURL{"https://destination.xyz?noblock=1"};
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 4);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::EXPERIMENTAL);
+}
+
+TEST_F(UrlParamFiltererTest, ExperimentalClassificationsWithNestedUrl) {
+  GURL source = GURL{"https://source.xyz"};
+  GURL destination = GURL{
+      "https://"
+      "subdomain.source.xyz?destination=https%3A%2F%2Fdestination.xyz%2F%"
+      "3Fplzblock1%"
+      "3D123%26destexperimental%3D1%26nochange%3Dasdf&PLZBLOCK1=321&nochange="
+      "asdf"};
+  ClassificationMap source_classification_map =
+      CreateClassificationMapForTesting(
+          {{"source.xyz", {"plzblock"}}},
+          FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE);
+  ClassificationMap destination_classification_map =
+      CreateClassificationMapForTesting(
+          {{"destination.xyz", {"plzblock1"}}, {"source.xyz", {"plzblock1"}}},
+          FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
+
+  // In addition to the default params, also set `destexperimental` as
+  // an experiment-driven parameter and verify the nested URL correctly results
+  // in `ClassificationExperimentStatus::EXPERIMENTAL`.
+  destination_classification_map
+      ["destination.xyz"][FilterClassification::USE_CASE_UNKNOWN]
+      ["destexperimental"] = ClassificationExperimentStatus::EXPERIMENTAL;
+
+  GURL expected = GURL{
+      "https://"
+      "subdomain.source.xyz?destination=https%3A%2F%2Fdestination.xyz%2F%"
+      "3Fnochange%"
+      "3Dasdf&nochange=asdf"};
+  FilterResult result = FilterUrl(
+      source, destination, source_classification_map,
+      destination_classification_map, FilterClassification::USE_CASE_UNKNOWN);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 3);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::EXPERIMENTAL);
+}
 }  // namespace url_param_filter

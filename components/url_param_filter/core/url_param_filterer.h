@@ -19,6 +19,7 @@ namespace url_param_filter {
 struct FilterResult {
   GURL filtered_url;
   int filtered_param_count;
+  ClassificationExperimentStatus experimental_status;
 };
 
 // Filter the destination URL according to the parameter classifications for the

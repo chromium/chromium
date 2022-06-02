@@ -45,16 +45,19 @@ FilterResult FilterUrl(const GURL& source_url,
                        const FilterClassification::UseCase use_case) {
   GURL result = GURL{destination_url};
   int filtered_params_count = 0;
+  ClassificationExperimentStatus experiment_status =
+      ClassificationExperimentStatus::NON_EXPERIMENTAL;
 
   // If there's no query string, we can short-circuit immediately.
   if (!destination_url.has_query()) {
-    return FilterResult{destination_url, filtered_params_count};
+    return FilterResult{destination_url, filtered_params_count,
+                        experiment_status};
   }
 
   std::string source_classified_site = GetClassifiedSite(source_url);
   std::string destination_classified_site = GetClassifiedSite(destination_url);
 
-  std::map<std::string, bool> blocked_parameters;
+  std::map<std::string, ClassificationExperimentStatus> blocked_parameters;
   // Check whether source site, as seen by the classifier (eTLD+1 or IP), has
   // params classified as requiring filtering. If so, and the params are present
   // on the destination URL, or any nested URLs, remove them.
@@ -85,7 +88,8 @@ FilterResult FilterUrl(const GURL& source_url,
   }
   // Return quickly if there are no parameters we care about.
   if (blocked_parameters.size() == 0) {
-    return FilterResult{destination_url, filtered_params_count};
+    return FilterResult{destination_url, filtered_params_count,
+                        experiment_status};
   }
 
   std::vector<std::string> query_parts;
@@ -93,8 +97,8 @@ FilterResult FilterUrl(const GURL& source_url,
     const std::string key = std::string{it.GetKey()};
     // If we don't find the given param in our set of blocked parameters, we can
     // add it to the result safely.
-    if (blocked_parameters.find(base::ToLowerASCII(key)) ==
-        blocked_parameters.end()) {
+    auto classification = blocked_parameters.find(base::ToLowerASCII(key));
+    if (classification == blocked_parameters.end()) {
       std::string value = std::string{it.GetValue()};
       if (check_nested) {
         GURL nested = GURL{base::UnescapeBinaryURLComponent(value)};
@@ -107,6 +111,10 @@ FilterResult FilterUrl(const GURL& source_url,
             value = base::EscapeQueryParamValue(
                 nested_result.filtered_url.spec(), /*use_plus=*/false);
             filtered_params_count += nested_result.filtered_param_count;
+            if (nested_result.experimental_status ==
+                ClassificationExperimentStatus::EXPERIMENTAL) {
+              experiment_status = ClassificationExperimentStatus::EXPERIMENTAL;
+            }
           }
         }
       }
@@ -117,6 +125,10 @@ FilterResult FilterUrl(const GURL& source_url,
       }
     } else {
       filtered_params_count++;
+      if (classification->second ==
+          ClassificationExperimentStatus::EXPERIMENTAL) {
+        experiment_status = classification->second;
+      }
     }
   }
 
@@ -128,7 +140,7 @@ FilterResult FilterUrl(const GURL& source_url,
     replacements.SetQueryStr(new_query);
   }
   result = result.ReplaceComponents(replacements);
-  return FilterResult{result, filtered_params_count};
+  return FilterResult{result, filtered_params_count, experiment_status};
 }
 }  // anonymous namespace
 
@@ -156,7 +168,8 @@ FilterResult FilterUrl(const GURL& source_url,
                        const GURL& destination_url,
                        const FilterClassification::UseCase use_case) {
   if (!base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
-    return FilterResult{destination_url, 0};
+    return FilterResult{destination_url, 0,
+                        ClassificationExperimentStatus::NON_EXPERIMENTAL};
   }
   return FilterUrl(
       source_url, destination_url,
