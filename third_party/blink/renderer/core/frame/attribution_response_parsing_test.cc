@@ -184,22 +184,24 @@ TEST(AttributionResponseParsingTest, ParseAggregationKeys_CheckSize) {
 TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
   const struct {
     String description;
-    String header;
+    std::unique_ptr<JSONValue> json;
     mojom::blink::AttributionAggregatableTriggerPtr expected;
   } kTestCases[] = {
-      {"Empty header", "", nullptr},
-      {"Invalid JSON", "{", nullptr},
-      {"Not an array", "{}", nullptr},
-      {"Element not a dictionary", "[123]", nullptr},
-      {"Missing source_keys field", R"([{"key_piece":"0x400"}])", nullptr},
-      {"source_keys not an array",
-       R"([{"key_piece":"0x400","source_keys":"key"}])", nullptr},
-      {"source_keys element not a string",
-       R"([{"key_piece":"0x400","source_keys":[123]}])"},
-      {"Missing key_piece field", R"([{"source_keys":["key"]}])", nullptr},
-      {"Invalid key", R"([{"key_piece":"0xG00","source_keys":["key"]}])",
+      {"Null", nullptr, AggregatableTriggerBuilder().Build()},
+      {"Not an array", ParseJSON(R"({})"), nullptr},
+      {"Element not a dictionary", ParseJSON(R"([123])"), nullptr},
+      {"Missing source_keys field", ParseJSON(R"([{"key_piece":"0x400"}])"),
        nullptr},
-      {"Valid trigger", R"([{"key_piece":"0x400","source_keys":["key"]}])",
+      {"source_keys not an array",
+       ParseJSON(R"([{"key_piece":"0x400","source_keys":"key"}])"), nullptr},
+      {"source_keys element not a string",
+       ParseJSON(R"([{"key_piece":"0x400","source_keys":[123]}])")},
+      {"Missing key_piece field", ParseJSON(R"([{"source_keys":["key"]}])"),
+       nullptr},
+      {"Invalid key",
+       ParseJSON(R"([{"key_piece":"0xG00","source_keys":["key"]}])"), nullptr},
+      {"Valid trigger",
+       ParseJSON(R"([{"key_piece":"0x400","source_keys":["key"]}])"),
        AggregatableTriggerBuilder()
            .AddTriggerData(
                mojom::blink::AttributionAggregatableTriggerData::New(
@@ -208,13 +210,12 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
                    /*filters=*/mojom::blink::AttributionFilterData::New(),
                    /*not_filters=*/mojom::blink::AttributionFilterData::New()))
            .Build()},
-      {"Valid trigger with filters",
-       R"([{
+      {"Valid trigger with filters", ParseJSON(R"([{
          "key_piece": "0x400",
          "source_keys": ["key"],
          "filters": {"filter": ["value1"]},
          "not_filters": {"filter": ["value2"]}
-       }])",
+       }])"),
        AggregatableTriggerBuilder()
            .AddTriggerData(
                mojom::blink::AttributionAggregatableTriggerData::New(
@@ -230,8 +231,8 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
                        .Build()))
            .Build()},
       {"Two valid trigger data",
-       R"([{"key_piece":"0x400","source_keys":["key1"]},
-           {"key_piece":"0xA80","source_keys":["key2"]}])",
+       ParseJSON(R"([{"key_piece":"0x400","source_keys":["key1"]},
+           {"key_piece":"0xA80","source_keys":["key2"]}])"),
        AggregatableTriggerBuilder()
            .AddTriggerData(
                mojom::blink::AttributionAggregatableTriggerData::New(
@@ -251,8 +252,8 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
   for (const auto& test_case : kTestCases) {
     WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>
         trigger_data;
-    bool valid =
-        ParseAttributionAggregatableTriggerData(test_case.header, trigger_data);
+    bool valid = ParseAttributionAggregatableTriggerData(test_case.json.get(),
+                                                         trigger_data);
     EXPECT_EQ(!test_case.expected.is_null(), valid) << test_case.description;
     if (test_case.expected) {
       EXPECT_EQ(test_case.expected->trigger_data, trigger_data)
@@ -270,10 +271,10 @@ TEST(AttributionResponseParsingTest,
     wtf_size_t key_count;
     wtf_size_t key_size;
 
-    String GetHeader() const {
+    std::unique_ptr<JSONArray> GetHeader() const {
       String key = GetKey();
 
-      JSONArray array;
+      auto array = std::make_unique<JSONArray>();
       for (wtf_size_t i = 0u; i < trigger_data_count; ++i) {
         auto object = std::make_unique<JSONObject>();
         object->SetString("key_piece", "0x1");
@@ -284,10 +285,10 @@ TEST(AttributionResponseParsingTest,
         }
         object->SetArray("source_keys", std::move(keys));
 
-        array.PushObject(std::move(object));
+        array->PushObject(std::move(object));
       }
 
-      return array.ToJSONString();
+      return array;
     }
 
     WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>
@@ -327,10 +328,11 @@ TEST(AttributionResponseParsingTest,
   };
 
   for (const auto& test_case : kTestCases) {
+    std::unique_ptr<JSONArray> json = test_case.GetHeader();
     WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>
         trigger_data;
-    bool valid = ParseAttributionAggregatableTriggerData(test_case.GetHeader(),
-                                                         trigger_data);
+    bool valid =
+        ParseAttributionAggregatableTriggerData(json.get(), trigger_data);
 
     EXPECT_EQ(test_case.valid, valid) << test_case.description;
     if (test_case.valid) {
@@ -343,26 +345,29 @@ TEST(AttributionResponseParsingTest,
 TEST(AttributionResponseParsingTest, ParseAttributionAggregatableValues) {
   const struct {
     String description;
-    String header;
+    std::unique_ptr<JSONValue> json;
     bool valid;
     WTF::HashMap<String, uint32_t> values;
   } kTestCases[] = {
-      {"Empty header", "", false, {}},
-      {"Invalid JSON", "{", false, {}},
-      {"Value not an integer", R"({"key":"1"})", false, {}},
-      {"Invalid value", R"({"key":-1})", false, {}},
-      {"Valid value", R"({"key":123})", true, {{"key", 123}}},
+      {"Null", nullptr, true, {}},
+      {"Value not an integer", ParseJSON(R"({"key":"1"})"), false, {}},
+      {"Invalid value", ParseJSON(R"({"key":-1})"), false, {}},
+      {"Valid value", ParseJSON(R"({"key":123})"), true, {{"key", 123}}},
       {"Two valid values",
-       R"({"key1":123,"key2":456})",
+       ParseJSON(R"({"key1":123,"key2":456})"),
        true,
        {{"key1", 123}, {"key2", 456}}},
-      {"Max valid value", R"({"key":65536})", true, {{"key", 65536}}},
-      {"Value out of range", R"({"key":65537})", false, {}},
+      {"Max valid value",
+       ParseJSON(R"({"key":65536})"),
+       true,
+       {{"key", 65536}}},
+      {"Value out of range", ParseJSON(R"({"key":65537})"), false, {}},
   };
 
   for (const auto& test_case : kTestCases) {
     WTF::HashMap<String, uint32_t> values;
-    bool valid = ParseAttributionAggregatableValues(test_case.header, values);
+    bool valid =
+        ParseAttributionAggregatableValues(test_case.json.get(), values);
     EXPECT_EQ(test_case.valid, valid) << test_case.description;
     if (test_case.valid)
       EXPECT_EQ(test_case.values, values) << test_case.description;
@@ -377,12 +382,12 @@ TEST(AttributionResponseParsingTest,
     wtf_size_t key_count;
     wtf_size_t key_size;
 
-    String GetHeader() const {
-      JSONObject object;
+    std::unique_ptr<JSONValue> GetHeader() const {
+      auto object = std::make_unique<JSONObject>();
       for (wtf_size_t i = 0u; i < key_count; ++i) {
-        object.SetInteger(GetKey(i), i + 1);
+        object->SetInteger(GetKey(i), i + 1);
       }
-      return object.ToJSONString();
+      return object;
     }
 
     WTF::HashMap<String, uint32_t> GetValues() const {
@@ -419,9 +424,9 @@ TEST(AttributionResponseParsingTest,
   };
 
   for (const auto& test_case : kTestCases) {
+    std::unique_ptr<JSONValue> json = test_case.GetHeader();
     WTF::HashMap<String, uint32_t> values;
-    bool valid =
-        ParseAttributionAggregatableValues(test_case.GetHeader(), values);
+    bool valid = ParseAttributionAggregatableValues(json.get(), values);
 
     EXPECT_EQ(test_case.valid, valid) << test_case.description;
     if (test_case.valid)
@@ -429,19 +434,19 @@ TEST(AttributionResponseParsingTest,
   }
 }
 
-TEST(AttributionResponseParsingTest, ParseFilters) {
+TEST(AttributionResponseParsingTest, ParseFilterData) {
   const auto make_filter_data_with_keys = [](wtf_size_t n) {
-    JSONObject root;
+    auto root = std::make_unique<JSONObject>();
     for (wtf_size_t i = 0; i < n; ++i) {
-      root.SetArray(String::Number(i), std::make_unique<JSONArray>());
+      root->SetArray(String::Number(i), std::make_unique<JSONArray>());
     }
-    return root.ToJSONString();
+    return root;
   };
 
   const auto make_filter_data_with_key_length = [](wtf_size_t n) {
-    JSONObject root;
-    root.SetArray(String(std::string(n, 'a')), std::make_unique<JSONArray>());
-    return root.ToJSONString();
+    auto root = std::make_unique<JSONObject>();
+    root->SetArray(String(std::string(n, 'a')), std::make_unique<JSONArray>());
+    return root;
   };
 
   const auto make_filter_data_with_values = [](wtf_size_t n) {
@@ -450,64 +455,64 @@ TEST(AttributionResponseParsingTest, ParseFilters) {
       array->PushString("x");
     }
 
-    JSONObject root;
-    root.SetArray("a", std::move(array));
-    return root.ToJSONString();
+    auto root = std::make_unique<JSONObject>();
+    root->SetArray("a", std::move(array));
+    return root;
   };
 
   const auto make_filter_data_with_value_length = [](wtf_size_t n) {
     auto array = std::make_unique<JSONArray>();
     array->PushString(String(std::string(n, 'a')));
 
-    JSONObject root;
-    root.SetArray("a", std::move(array));
-    return root.ToJSONString();
+    auto root = std::make_unique<JSONObject>();
+    root->SetArray("a", std::move(array));
+    return root;
   };
 
   const struct {
     String description;
-    String json;
+    std::unique_ptr<JSONValue> json;
     mojom::blink::AttributionFilterDataPtr expected;
   } kTestCases[] = {
       {
+          "Null",
+          nullptr,
+          AttributionFilterDataBuilder().Build(),
+      },
+      {
           "empty",
-          R"json({})json",
+          ParseJSON(R"json({})json"),
           AttributionFilterDataBuilder().Build(),
       },
       {
           "source_type",
-          R"json({"source_type": []})json",
+          ParseJSON(R"json({"source_type": []})json"),
           AttributionFilterDataBuilder().AddFilter("source_type", {}).Build(),
       },
       {
           "multiple",
-          R"json({
+          ParseJSON(R"json({
             "a": ["b"],
             "c": ["e", "d"]
-          })json",
+          })json"),
           AttributionFilterDataBuilder()
               .AddFilter("a", {"b"})
               .AddFilter("c", {"e", "d"})
               .Build(),
       },
       {
-          "invalid_json",
-          "!",
-          nullptr,
-      },
-      {
           "not_dictionary",
-          R"json(true)json",
+          ParseJSON(R"json(true)json"),
           nullptr,
       },
       {
           "value_not_array",
-          R"json({"a": true})json",
+          ParseJSON(R"json({"a": true})json"),
           nullptr,
       },
       {
           "array_element_not_string",
-          R"json({"a": [true]})json",
+          ParseJSON(R"json({"a": [true]})json"),
           nullptr,
       },
       {
@@ -535,7 +540,7 @@ TEST(AttributionResponseParsingTest, ParseFilters) {
   for (const auto& test_case : kTestCases) {
     mojom::blink::AttributionFilterData filter_data;
 
-    bool valid = ParseFilters(test_case.json, filter_data);
+    bool valid = ParseAttributionFilterData(test_case.json.get(), filter_data);
     EXPECT_EQ(valid, !test_case.expected.is_null()) << test_case.description;
 
     if (test_case.expected) {
@@ -544,25 +549,27 @@ TEST(AttributionResponseParsingTest, ParseFilters) {
   }
 
   {
+    std::unique_ptr<JSONValue> json = make_filter_data_with_keys(50);
     mojom::blink::AttributionFilterData filter_data;
-    EXPECT_TRUE(ParseFilters(make_filter_data_with_keys(50), filter_data));
+    EXPECT_TRUE(ParseAttributionFilterData(json.get(), filter_data));
   }
 
   {
+    std::unique_ptr<JSONValue> json = make_filter_data_with_key_length(25);
     mojom::blink::AttributionFilterData filter_data;
-    EXPECT_TRUE(
-        ParseFilters(make_filter_data_with_key_length(25), filter_data));
+    EXPECT_TRUE(ParseAttributionFilterData(json.get(), filter_data));
   }
 
   {
+    std::unique_ptr<JSONValue> json = make_filter_data_with_values(50);
     mojom::blink::AttributionFilterData filter_data;
-    EXPECT_TRUE(ParseFilters(make_filter_data_with_values(50), filter_data));
+    EXPECT_TRUE(ParseAttributionFilterData(json.get(), filter_data));
   }
 
   {
+    std::unique_ptr<JSONValue> json = make_filter_data_with_value_length(25);
     mojom::blink::AttributionFilterData filter_data;
-    EXPECT_TRUE(
-        ParseFilters(make_filter_data_with_value_length(25), filter_data));
+    EXPECT_TRUE(ParseAttributionFilterData(json.get(), filter_data));
   }
 }
 
@@ -891,55 +898,55 @@ TEST(AttributionResponseParsingTest, ParseDebugKey) {
 TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
   const struct {
     String description;
-    String json;
+    std::unique_ptr<JSONValue> json;
     bool valid;
     Vector<mojom::blink::EventTriggerDataPtr> expected;
   } kTestCases[] = {
       {
-          "invalid_json",
-          "!",
-          false,
+          "Null",
+          nullptr,
+          true,
           {},
       },
       {
           "root_not_array",
-          R"json({})json",
+          ParseJSON(R"json({})json"),
           false,
           {},
       },
       {
           "empty",
-          R"json([])json",
+          ParseJSON(R"json([])json"),
           true,
           {},
       },
       {
           "too_many_values",
-          R"json([{},{},{},{},{},{},{},{},{},{},{}])json",
+          ParseJSON(R"json([{},{},{},{},{},{},{},{},{},{},{}])json"),
           false,
           {},
       },
       {
           "value_not_object",
-          R"json([123])json",
+          ParseJSON(R"json([123])json"),
           false,
           {},
       },
       {
           "missing_trigger_data",
-          R"json([{}])json",
+          ParseJSON(R"json([{}])json"),
           false,
           {},
       },
       {
           "trigger_data_not_string",
-          R"json([{"trigger_data": 1}])json",
+          ParseJSON(R"json([{"trigger_data": 1}])json"),
           false,
           {},
       },
       {
           "invalid_trigger_data",
-          R"json([{"trigger_data": "-5"}])json",
+          ParseJSON(R"json([{"trigger_data": "-5"}])json"),
           true,
           VectorBuilder<mojom::blink::EventTriggerDataPtr>()
               .Add(mojom::blink::EventTriggerData::New(
@@ -952,7 +959,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
       },
       {
           "valid_trigger_data",
-          R"json([{"trigger_data": "5"}])json",
+          ParseJSON(R"json([{"trigger_data": "5"}])json"),
           true,
           VectorBuilder<mojom::blink::EventTriggerDataPtr>()
               .Add(mojom::blink::EventTriggerData::New(
@@ -965,11 +972,11 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
       },
       {
           "multiple",
-          R"json([
+          ParseJSON(R"json([
             {"trigger_data": "5"},
             {"trigger_data": "3"},
             {"trigger_data": "4"}
-          ])json",
+          ])json"),
           true,
           VectorBuilder<mojom::blink::EventTriggerDataPtr>()
               .Add(mojom::blink::EventTriggerData::New(
@@ -994,10 +1001,10 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
       },
       {
           "valid_priority",
-          R"json([{
+          ParseJSON(R"json([{
             "trigger_data": "5",
             "priority": "3"
-          }])json",
+          }])json"),
           true,
           VectorBuilder<mojom::blink::EventTriggerDataPtr>()
               .Add(mojom::blink::EventTriggerData::New(
@@ -1010,10 +1017,10 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
       },
       {
           "priority_not_string",
-          R"json([{
+          ParseJSON(R"json([{
             "trigger_data": "5",
             "priority": 3
-          }])json",
+          }])json"),
           true,
           VectorBuilder<mojom::blink::EventTriggerDataPtr>()
               .Add(mojom::blink::EventTriggerData::New(
@@ -1026,10 +1033,10 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
       },
       {
           "invalid_priority",
-          R"json([{
+          ParseJSON(R"json([{
             "trigger_data": "5",
             "priority": "abc"
-          }])json",
+          }])json"),
           true,
           VectorBuilder<mojom::blink::EventTriggerDataPtr>()
               .Add(mojom::blink::EventTriggerData::New(
@@ -1042,10 +1049,10 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
       },
       {
           "valid_dedup_key",
-          R"json([{
+          ParseJSON(R"json([{
             "trigger_data": "5",
             "deduplication_key": "3"
-          }])json",
+          }])json"),
           true,
           VectorBuilder<mojom::blink::EventTriggerDataPtr>()
               .Add(mojom::blink::EventTriggerData::New(
@@ -1059,10 +1066,10 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
       },
       {
           "dedup_key_not_string",
-          R"json([{
+          ParseJSON(R"json([{
             "trigger_data": "5",
             "deduplication_key": 3
-          }])json",
+          }])json"),
           true,
           VectorBuilder<mojom::blink::EventTriggerDataPtr>()
               .Add(mojom::blink::EventTriggerData::New(
@@ -1075,10 +1082,10 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
       },
       {
           "invalid_dedup_Key",
-          R"json([{
+          ParseJSON(R"json([{
             "trigger_data": "5",
             "deduplication_key": "abc"
-          }])json",
+          }])json"),
           true,
           VectorBuilder<mojom::blink::EventTriggerDataPtr>()
               .Add(mojom::blink::EventTriggerData::New(
@@ -1091,10 +1098,10 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
       },
       {
           "valid_filters",
-          R"json([{
+          ParseJSON(R"json([{
             "trigger_data": "5",
             "filters": {"source_type": ["navigation"]}
-          }])json",
+          }])json"),
           true,
           VectorBuilder<mojom::blink::EventTriggerDataPtr>()
               .Add(mojom::blink::EventTriggerData::New(
@@ -1110,19 +1117,19 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
       },
       {
           "invalid_filters",
-          R"json([{
+          ParseJSON(R"json([{
             "trigger_data": "5",
             "filters": 1
-          }])json",
+          }])json"),
           false,
           {},
       },
       {
           "valid_not_filters",
-          R"json([{
+          ParseJSON(R"json([{
             "trigger_data": "5",
             "not_filters": {"source_type": ["navigation"]}
-          }])json",
+          }])json"),
           true,
           VectorBuilder<mojom::blink::EventTriggerDataPtr>()
               .Add(mojom::blink::EventTriggerData::New(
@@ -1138,10 +1145,10 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
       },
       {
           "invalid_not_filters",
-          R"json([{
+          ParseJSON(R"json([{
             "trigger_data": "5",
             "not_filters": 1
-          }])json",
+          }])json"),
           false,
           {},
       },
@@ -1149,7 +1156,7 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
 
   for (const auto& test_case : kTestCases) {
     Vector<mojom::blink::EventTriggerDataPtr> actual;
-    bool valid = ParseEventTriggerData(test_case.json, actual);
+    bool valid = ParseEventTriggerData(test_case.json.get(), actual);
     EXPECT_EQ(valid, test_case.valid) << test_case.description;
     EXPECT_EQ(actual, test_case.expected) << test_case.description;
   }
@@ -1162,9 +1169,9 @@ TEST(AttributionResponseParsingTest, FilterValuesHistogram) {
       array->PushString("x");
     }
 
-    JSONObject object;
-    object.SetArray("a", std::move(array));
-    return object.ToJSONString();
+    auto object = std::make_unique<JSONObject>();
+    object->SetArray("a", std::move(array));
+    return object;
   };
 
   const struct {
@@ -1178,8 +1185,9 @@ TEST(AttributionResponseParsingTest, FilterValuesHistogram) {
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
+    std::unique_ptr<JSONValue> json = make_filter_data(test_case.size);
     mojom::blink::AttributionFilterData filter_data;
-    ParseFilters(make_filter_data(test_case.size), filter_data);
+    ParseAttributionFilterData(json.get(), filter_data);
     histograms.ExpectUniqueSample("Conversions.ValuesPerFilter", test_case.size,
                                   test_case.expected);
   }
@@ -1187,11 +1195,11 @@ TEST(AttributionResponseParsingTest, FilterValuesHistogram) {
 
 TEST(AttributionResponseParsingTest, FiltersSizeHistogram) {
   const auto make_filter_data = [](wtf_size_t n) {
-    JSONObject object;
+    auto object = std::make_unique<JSONObject>();
     for (wtf_size_t i = 0; i < n; ++i) {
-      object.SetArray(String::Number(i), std::make_unique<JSONArray>());
+      object->SetArray(String::Number(i), std::make_unique<JSONArray>());
     }
-    return object.ToJSONString();
+    return object;
   };
 
   const struct {
@@ -1205,8 +1213,9 @@ TEST(AttributionResponseParsingTest, FiltersSizeHistogram) {
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
+    std::unique_ptr<JSONValue> json = make_filter_data(test_case.size);
     mojom::blink::AttributionFilterData filter_data;
-    ParseFilters(make_filter_data(test_case.size), filter_data);
+    ParseAttributionFilterData(json.get(), filter_data);
     histograms.ExpectUniqueSample("Conversions.FiltersPerFilterData",
                                   test_case.size, test_case.expected);
   }
@@ -1242,14 +1251,14 @@ TEST(AttributionResponseParsingTest, SourceAggregatableKeysHistogram) {
 
 TEST(AttributionResponseParsingTest, AggregatableTriggerDataHistogram) {
   const auto make_aggregatable_trigger_with_trigger_data = [](wtf_size_t n) {
-    JSONArray array;
+    auto array = std::make_unique<JSONArray>();
     for (wtf_size_t i = 0; i < n; ++i) {
       auto object = std::make_unique<JSONObject>();
       object->SetString("key_piece", "0x1");
       object->SetArray("source_keys", std::make_unique<JSONArray>());
-      array.PushObject(std::move(object));
+      array->PushObject(std::move(object));
     }
-    return array.ToJSONString();
+    return array;
   };
 
   const struct {
@@ -1263,11 +1272,11 @@ TEST(AttributionResponseParsingTest, AggregatableTriggerDataHistogram) {
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
+    std::unique_ptr<JSONValue> json =
+        make_aggregatable_trigger_with_trigger_data(test_case.size);
     WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>
         trigger_data;
-    ParseAttributionAggregatableTriggerData(
-        make_aggregatable_trigger_with_trigger_data(test_case.size),
-        trigger_data);
+    ParseAttributionAggregatableTriggerData(json.get(), trigger_data);
     histograms.ExpectUniqueSample("Conversions.AggregatableTriggerDataLength",
                                   test_case.size, test_case.expected);
   }

@@ -1,3 +1,3 @@
 <?php
-header('Attribution-Reporting-Register-Event-Trigger: []');
+header('Attribution-Reporting-Register-Trigger: {}');
 ?>

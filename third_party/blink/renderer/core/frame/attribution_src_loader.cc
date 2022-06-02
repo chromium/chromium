@@ -56,16 +56,6 @@ enum class AttributionSrcRequestStatus {
   kMaxValue = kFailed,
 };
 
-bool ContainsTriggerHeaders(const HTTPHeaderMap& headers) {
-  return headers.Contains(
-             http_names::kAttributionReportingRegisterEventTrigger) ||
-         (headers.Contains(
-              http_names::
-                  kAttributionReportingRegisterAggregatableTriggerData) &&
-          headers.Contains(
-              http_names::kAttributionReportingRegisterAggregatableValues));
-}
-
 void RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus status) {
   base::UmaHistogramEnumeration("Conversions.AttributionSrcRequestStatus",
                                 status);
@@ -338,8 +328,10 @@ void AttributionSrcLoader::MaybeRegisterTrigger(
     return;
   }
 
-  if (!ContainsTriggerHeaders(response.HttpHeaderFields()))
+  if (!response.HttpHeaderFields().Contains(
+          http_names::kAttributionReportingRegisterTrigger)) {
     return;
+  }
 
   if (!CanRegisterAttribution(RegisterContext::kResourceTrigger,
                               response.CurrentRequestUrl(),
@@ -429,7 +421,8 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
   // are present together.
   bool can_process_trigger =
       type_ == SrcType::kUndetermined || type_ == SrcType::kTrigger;
-  if (can_process_trigger && ContainsTriggerHeaders(headers)) {
+  if (can_process_trigger &&
+      headers.Contains(http_names::kAttributionReportingRegisterTrigger)) {
     type_ = SrcType::kTrigger;
     HandleTriggerRegistration(response);
   }

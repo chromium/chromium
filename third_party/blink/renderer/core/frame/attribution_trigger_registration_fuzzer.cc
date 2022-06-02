@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/frame/attribution_response_parsing.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -27,8 +26,8 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
     std::cout << native_input << std::endl;
 
   const String input(native_input.c_str());
-  WTF::Vector<mojom::blink::EventTriggerDataPtr> output;
-  attribution_response_parsing::ParseEventTriggerData(input, output);
+  mojom::blink::AttributionTriggerData output;
+  attribution_response_parsing::ParseTriggerRegistrationHeader(input, output);
 }
 
 }  // namespace blink
