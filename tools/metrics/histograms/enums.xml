@@ -25100,6 +25100,8 @@ Called by update_debug_scenarios.py.-->
 <enum name="DevToolsRecordingExported">
   <int value="1" label="To Puppeteer"/>
   <int value="2" label="To JSON"/>
+  <int value="3" label="To @puppeteer/replay"/>
+  <int value="4" label="To extension"/>
 </enum>
 
 <enum name="DevToolsRecordingReplayFinished">
