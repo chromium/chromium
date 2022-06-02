@@ -15,8 +15,8 @@ namespace performance_manager {
 
 class ProcessNodeImpl;
 
-// Responsible for maintaining the process nodes for the browser and the GPU
-// process.
+// Responsible for maintaining the process nodes for the browser, the GPU and
+// utility process.
 class BrowserChildProcessWatcher : public content::BrowserChildProcessObserver {
  public:
   BrowserChildProcessWatcher();
@@ -46,17 +46,18 @@ class BrowserChildProcessWatcher : public content::BrowserChildProcessObserver {
       const content::ChildProcessData& data,
       const content::ChildProcessTerminationInfo& info) override;
 
-  void GPUProcessExited(int id, int exit_code);
+  void TrackedProcessExited(int id, int exit_code);
 
   static void OnProcessLaunched(const base::Process& process,
+                                const std::string& metrics_name,
                                 ProcessNodeImpl* process_node);
 
   std::unique_ptr<ProcessNodeImpl> browser_process_node_;
 
-  // Apparently more than one GPU process can be existent at a time, though
-  // secondaries are very transient. This map keeps track of all GPU processes
-  // by their unique ID from |content::ChildProcessData|.
-  base::flat_map<int, std::unique_ptr<ProcessNodeImpl>> gpu_process_nodes_;
+  // This map keeps track of all GPU and Utility processes by their unique ID
+  // from |content::ChildProcessData|. Apparently more than one GPU process can
+  // be existent at a time, though secondaries are very transient.
+  base::flat_map<int, std::unique_ptr<ProcessNodeImpl>> tracked_process_nodes_;
 };
 
 }  // namespace performance_manager

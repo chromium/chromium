@@ -168,6 +168,11 @@ void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {
   receiver_.reset();
 }
 
+void ProcessNodeImpl::SetProcessMetricsName(const std::string& metrics_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  metrics_name_ = metrics_name;
+}
+
 void ProcessNodeImpl::SetProcess(base::Process process,
                                  base::TimeTicks launch_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -302,6 +307,11 @@ base::TimeTicks ProcessNodeImpl::GetLaunchTime() const {
 absl::optional<int32_t> ProcessNodeImpl::GetExitStatus() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return exit_status();
+}
+
+const std::string& ProcessNodeImpl::GetMetricsName() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return metrics_name();
 }
 
 bool ProcessNodeImpl::VisitFrameNodes(const FrameNodeVisitor& visitor) const {

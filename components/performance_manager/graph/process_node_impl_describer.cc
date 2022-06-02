@@ -173,6 +173,10 @@ base::Value ProcessNodeImplDescriber::DescribeProcessNodeData(
     ret.SetIntKey("exit_status", impl->exit_status().value());
   }
 
+  if (!impl->metrics_name().empty()) {
+    ret.SetStringKey("metrics_name", impl->metrics_name());
+  }
+
   ret.SetBoolKey("main_thread_task_load_is_low",
                  impl->main_thread_task_load_is_low());
 

@@ -241,6 +241,12 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
   process_node->SetProcessExitStatus(kExitStatus);
   EXPECT_EQ(process_node->exit_status(), public_process_node->GetExitStatus());
 
+  const std::string kMetricsName("TestUtilityProcess");
+  process_node->SetProcessMetricsName(kMetricsName);
+  EXPECT_EQ(process_node->metrics_name(), kMetricsName);
+  EXPECT_EQ(process_node->metrics_name(),
+            public_process_node->GetMetricsName());
+
   const auto& frame_nodes = process_node->frame_nodes();
   auto public_frame_nodes = public_process_node->GetFrameNodes();
   EXPECT_EQ(frame_nodes.size(), public_frame_nodes.size());

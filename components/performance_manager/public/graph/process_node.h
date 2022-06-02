@@ -94,6 +94,10 @@ class ProcessNode : public Node {
   // has not yet exited.
   virtual absl::optional<int32_t> GetExitStatus() const = 0;
 
+  // Returns the non-localized name of the process used for metrics reporting
+  // metrics as specified in content::ChildProcessData during process creation.
+  virtual const std::string& GetMetricsName() const = 0;
+
   // Visits the frame nodes that are hosted in this process. The iteration is
   // halted if the visitor returns false. Returns true if every call to the
   // visitor returned true, false otherwise.
