@@ -5,6 +5,7 @@
 package org.chromium.components.safe_browsing;
 
 import org.chromium.base.Log;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -92,6 +93,12 @@ public final class SafeBrowsingApiBridge {
      * @return the handler if it's usable, or null if the API is not supported.
      */
     private static SafeBrowsingApiHandler create() {
+        try (TraceEvent t = TraceEvent.scoped("SafeBrowsingApiBridge.create")) {
+            return createInTraceEvent();
+        }
+    }
+
+    private static SafeBrowsingApiHandler createInTraceEvent() {
         if (DEBUG) {
             Log.i(TAG, "create");
         }
@@ -106,6 +113,7 @@ public final class SafeBrowsingApiBridge {
         boolean initSuccessful = handler.init((callbackId, resultStatus, metadata, checkDelta) -> {
             if (sUrlCheckTimeObserver != null) {
                 sUrlCheckTimeObserver.onUrlCheckTime(checkDelta);
+                TraceEvent.instant("FirstSafeBrowsingResponse", String.valueOf(checkDelta));
                 sUrlCheckTimeObserver = null;
             }
             SafeBrowsingApiBridgeJni.get().onUrlCheckDone(
@@ -119,13 +127,15 @@ public final class SafeBrowsingApiBridge {
      */
     @CalledByNative
     private static void startUriLookup(long callbackId, String uri, int[] threatsOfInterest) {
-        assert getHandler() != null;
-        if (DEBUG) {
-            Log.i(TAG, "Starting request: %s", uri);
-        }
-        getHandler().startUriLookup(callbackId, uri, threatsOfInterest);
-        if (DEBUG) {
-            Log.i(TAG, "Done starting request: %s", uri);
+        try (TraceEvent t = TraceEvent.scoped("SafeBrowsingApiBridge.startUriLookup")) {
+            assert getHandler() != null;
+            if (DEBUG) {
+                Log.i(TAG, "Starting request: %s", uri);
+            }
+            getHandler().startUriLookup(callbackId, uri, threatsOfInterest);
+            if (DEBUG) {
+                Log.i(TAG, "Done starting request: %s", uri);
+            }
         }
     }
 
@@ -137,8 +147,10 @@ public final class SafeBrowsingApiBridge {
      */
     @CalledByNative
     private static boolean startAllowlistLookup(String uri, int threatType) {
-        assert getHandler() != null;
-        return getHandler().startAllowlistLookup(uri, threatType);
+        try (TraceEvent t = TraceEvent.scoped("SafeBrowsingApiBridge.startAllowlistLookup")) {
+            assert getHandler() != null;
+            return getHandler().startAllowlistLookup(uri, threatType);
+        }
     }
 
     @NativeMethods
