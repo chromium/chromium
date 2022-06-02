@@ -103,7 +103,7 @@ gfx::Insets WaylandOutput::insets() const {
   return aura_output_ ? aura_output_->insets() : gfx::Insets();
 }
 
-zaura_output* WaylandOutput::get_zaura_output() const {
+zaura_output* WaylandOutput::get_zaura_output() {
   return aura_output_ ? aura_output_->wl_object() : nullptr;
 }
 

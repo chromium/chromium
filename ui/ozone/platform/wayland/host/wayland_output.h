@@ -69,8 +69,8 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   // global compositor space.
   bool is_ready() const { return !rect_in_physical_pixels_.IsEmpty(); }
 
-  wl_output* get_output() const { return output_.get(); }
-  zaura_output* get_zaura_output() const;
+  wl_output* get_output() { return output_.get(); }
+  zaura_output* get_zaura_output();
 
  private:
   static constexpr int32_t kDefaultScaleFactor = 1;
