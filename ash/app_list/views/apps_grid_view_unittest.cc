@@ -14,6 +14,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/apps_grid_row_change_animator.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
@@ -673,6 +674,12 @@ class AppsGridViewTest : public AshTestBase {
         ui::HapticTouchpadEffectStrength::kMedium);
   }
 
+  // Get the number of item layer copies used for the between row animation.
+  int GetNumberOfRowChangeLayersForTest() {
+    return apps_grid_view_->row_change_animator_
+        ->GetNumberOfRowChangeLayersForTest();
+  }
+
   // May be a PagedAppsGridView or a ScrollableAppsGridView depending on the
   // ProductivityLauncher flag and tablet mode.
   AppsGridView* apps_grid_view_ = nullptr;
@@ -974,6 +981,7 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationOnDragToPreviousPage) {
 
   GetPaginationModel()->SelectPage(1 /*page*/, false /*animate*/);
   EXPECT_EQ(1, GetSelectedPage(paged_apps_grid_view_));
+  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest());
 
   // Begin dragging the third item of the second page.
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 2,
@@ -1008,6 +1016,9 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationOnDragToPreviousPage) {
   // following items to animate one slot over, overflowing to the second page.
   EXPECT_EQ(GridIndex(0, 1), paged_apps_grid_view_->reorder_placeholder());
 
+  // Four items should have a layer copy used for animating between rows.
+  EXPECT_EQ(4, GetNumberOfRowChangeLayersForTest());
+
   for (int i = 1; i < view_model->view_size(); i++) {
     AppListItemView* item_view = view_model->view_at(i);
     // The first item and items off screen on the second page should not
@@ -1027,6 +1038,90 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationOnDragToPreviousPage) {
     EXPECT_EQ(item_view->bounds().y(), target_bounds.y());
     EXPECT_NE(item_view->bounds().x(), target_bounds.x());
   }
+
+  // End the drag and check that no more item layer copies remain.
+  EndDrag(apps_grid_view_, false /*cancel*/);
+  test_api_->WaitForItemMoveAnimationDone();
+  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest());
+}
+
+// Test dragging an app item from the first row to second row, and then back to
+// the first row. This causes the between rows animation to reverse.
+TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
+  ASSERT_TRUE(paged_apps_grid_view_);
+  model_->PopulateApps(GetTilesPerPage(0));
+  UpdateLayout();
+
+  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest());
+
+  // Begin dragging the first item.
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
+                                     apps_grid_view_);
+
+  // Move dragged item to the middle slot on the second row.
+  gfx::Point to;
+  if (is_rtl_) {
+    to = GetItemRectOnCurrentPageAt(0, 7).left_center();
+  } else {
+    to = GetItemRectOnCurrentPageAt(0, 7).right_center();
+  }
+  UpdateDrag(AppsGridView::MOUSE, to, paged_apps_grid_view_, 5 /*steps*/);
+
+  ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
+  paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+
+  // The reorder placeholder should be on the second row.
+  EXPECT_EQ(GridIndex(0, 7), paged_apps_grid_view_->reorder_placeholder());
+
+  const views::ViewModelT<AppListItemView>* view_model =
+      apps_grid_view_->view_model();
+
+  // View at index 0, 5 should be animating from second row to the first.
+  AppListItemView* item_view = view_model->view_at(5);
+
+  const int first_row_y = GetItemRectOnCurrentPageAt(0, 0).y();
+  const int second_row_y = GetItemRectOnCurrentPageAt(0, 6).y();
+  EXPECT_GT(second_row_y, first_row_y);
+  EXPECT_EQ(1, GetNumberOfRowChangeLayersForTest());
+
+  // The item in slot 5 should now be on animating into the first row position.
+  EXPECT_EQ(item_view->bounds().y(), first_row_y);
+  EXPECT_TRUE(apps_grid_view_->IsAnimatingView(item_view));
+  gfx::Rect target_bounds =
+      apps_grid_view_->bounds_animator_for_testing()->GetTargetBounds(
+          item_view);
+  EXPECT_GT(item_view->bounds().x(), target_bounds.x());
+
+  // Update drag to move placeholder back to the first row.
+  if (is_rtl_) {
+    to = GetItemRectOnCurrentPageAt(0, 0).left_center();
+  } else {
+    to = GetItemRectOnCurrentPageAt(0, 0).right_center();
+  }
+  UpdateDrag(AppsGridView::MOUSE, to, paged_apps_grid_view_, 5 /*steps*/);
+
+  ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
+  paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+
+  // The reorder placeholder should now be on the first row.
+  EXPECT_EQ(GridIndex(0, 1), paged_apps_grid_view_->reorder_placeholder());
+
+  // The item in slot 5 should now be animating from first row to the second.
+  EXPECT_EQ(item_view->bounds().y(), second_row_y);
+  EXPECT_TRUE(apps_grid_view_->IsAnimatingView(item_view));
+
+  // Item should be moving from offscreen into target position on second row.
+  target_bounds =
+      apps_grid_view_->bounds_animator_for_testing()->GetTargetBounds(
+          item_view);
+  EXPECT_LT(item_view->bounds().x(), target_bounds.x());
+  EXPECT_EQ(target_bounds.y(), second_row_y);
+  EXPECT_EQ(1, GetNumberOfRowChangeLayersForTest());
+
+  // End the drag and check that no more item layer copies remain.
+  EndDrag(apps_grid_view_, false /*cancel*/);
+  test_api_->WaitForItemMoveAnimationDone();
+  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest());
 }
 
 // Tests that control + arrow while a suggested chip is focused does not crash.

@@ -59,6 +59,7 @@ class AppsGridContextMenu;
 class AppsGridViewFocusDelegate;
 class AppsGridViewFolderDelegate;
 class PulsingBlockView;
+class AppsGridRowChangeAnimator;
 class GhostImageView;
 class AppsGridViewTest;
 class ScrollableAppsGridViewTest;
@@ -505,6 +506,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override;
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
 
+  // Destroys all item view layers if they are not required.
+  void DestroyLayerItemsIfNotNeeded();
+
   // Whether app list item views require layers - for example during drag, or
   // folder repositioning animation.
   bool ItemViewsRequireLayers() const;
@@ -586,6 +590,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   friend class test::AppsGridViewTest;
   friend class PagedAppsGridView;
   friend class PagedViewStructure;
+  friend class AppsGridRowChangeAnimator;
 
   enum DropTargetRegion {
     NO_TARGET,
@@ -643,19 +648,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Calculates ideal bounds for app list item views within the apps grid, and
   // animates their bounds (using `bounds_animator_`) to their ideal position.
   void AnimateToIdealBounds();
-
-  // Invoked when the given |view|'s current bounds and target bounds are on
-  // different rows. To avoid moving diagonally, |view| would be put into a
-  // slot prior |target| and fade in while moving to |target|. In the meanwhile,
-  // a layer copy of |view| would start at |current| and fade out while moving
-  // to succeeding slot of |current|. |animate_current| controls whether to run
-  // fading out animation from |current|. |animate_target| controls whether to
-  // run fading in animation to |target|.
-  void AnimationBetweenRows(AppListItemView* view,
-                            bool animate_current,
-                            const gfx::Rect& current,
-                            bool animate_target,
-                            const gfx::Rect& target);
 
   // Extracts drag location info from |root_location| into |drag_point|.
   void ExtractDragLocation(const gfx::Point& root_location,
@@ -1104,6 +1096,9 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // A closure that runs at the end of the fade out animation.
   base::OnceClosure fade_out_done_closure_for_test_;
+
+  // Used to trigger and manage row change animations.
+  std::unique_ptr<AppsGridRowChangeAnimator> row_change_animator_;
 
   base::WeakPtrFactory<AppsGridView> weak_factory_{this};
 };

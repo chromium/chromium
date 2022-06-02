@@ -1294,7 +1294,7 @@ void PagedAppsGridView::MaybeCallOnBoundsAnimatorDone() {
   --bounds_animation_for_cardified_state_in_progress_;
   if (bounds_animation_for_cardified_state_in_progress_ == 0) {
     animation_observers_.clear();
-    OnBoundsAnimatorDone(/*animator=*/nullptr);
+    DestroyLayerItemsIfNotNeeded();
 
     // Notify container that cardified state has ended once ending animations
     // are complete.

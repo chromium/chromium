@@ -14,6 +14,7 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/apps_grid_row_change_animator.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
@@ -129,73 +130,14 @@ constexpr base::TimeDelta kFolderItemFadeInDuration = base::Milliseconds(300);
 // faded out.
 constexpr base::TimeDelta kFolderItemFadeInDelay = base::Milliseconds(300);
 
-// RowMoveAnimationDelegate is used when moving an item into a different row.
-// Before running the animation, the item's layer is re-created and kept in
-// the original position, then the item is moved to just before its target
-// position and opacity set to 0. When the animation runs, this delegate moves
-// the layer and fades it out while fading in the item at the same time.
-class RowMoveAnimationDelegate : public views::AnimationDelegateViews {
- public:
-  RowMoveAnimationDelegate(views::View* view,
-                           ui::Layer* layer,
-                           const gfx::Vector2d& offset)
-      : views::AnimationDelegateViews(view),
-        view_(view),
-        layer_(layer),
-        offset_(offset) {}
-
-  RowMoveAnimationDelegate(const RowMoveAnimationDelegate&) = delete;
-  RowMoveAnimationDelegate& operator=(const RowMoveAnimationDelegate&) = delete;
-
-  ~RowMoveAnimationDelegate() override = default;
-
-  // views::AnimationDelegateViews:
-  void AnimationProgressed(const gfx::Animation* animation) override {
-    view_->layer()->SetOpacity(animation->GetCurrentValue());
-    view_->layer()->ScheduleDraw();
-
-    if (layer_) {
-      layer_->SetOpacity(1 - animation->GetCurrentValue());
-
-      gfx::Transform transform;
-      transform.Translate(animation->CurrentValueBetween(0, offset_.x()),
-                          animation->CurrentValueBetween(0, offset_.y()));
-      layer_->SetTransform(transform);
-      layer_->ScheduleDraw();
-    }
-  }
-  void AnimationEnded(const gfx::Animation* animation) override {
-    if (layer_)
-      view_->layer()->SetOpacity(1.0f);
-  }
-  void AnimationCanceled(const gfx::Animation* animation) override {
-    if (layer_)
-      view_->layer()->SetOpacity(1.0f);
-  }
-
- private:
-  // The view that needs to be wrapped. Owned by views hierarchy.
-  views::View* view_;
-
-  std::unique_ptr<ui::Layer> layer_;
-  const gfx::Vector2d offset_;
-};
+// The time duration for item bounds animations.
+constexpr base::TimeDelta kItemBoundsAnimationDuration =
+    base::Milliseconds(300);
 
 bool IsOEMFolderItem(AppListItem* item) {
   return IsFolderItem(item) &&
          (static_cast<AppListFolderItem*>(item))->folder_type() ==
              AppListFolderItem::FOLDER_TYPE_OEM;
-}
-
-// Returns the relative horizontal position of a point compared to a rect. -1
-// means the point is outside on the left side of the rect. 0 means the point is
-// within the rect. 1 means it's on the right side of the rect.
-int CompareHorizontalPointPositionToRect(gfx::Point point, gfx::Rect bounds) {
-  if (point.x() > bounds.right())
-    return 1;
-  if (point.x() < bounds.x())
-    return -1;
-  return 0;
 }
 
 }  // namespace
@@ -355,7 +297,7 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
   bounds_animator_ = std::make_unique<views::BoundsAnimator>(
       items_container_, /*use_transforms=*/true);
   bounds_animator_->AddObserver(this);
-  bounds_animator_->SetAnimationDuration(base::Milliseconds(300));
+  bounds_animator_->SetAnimationDuration(kItemBoundsAnimationDuration);
   if (features::IsProductivityLauncherEnabled()) {
     bounds_animator_->set_tween_type(gfx::Tween::ACCEL_40_DECEL_100_3);
 
@@ -374,6 +316,7 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
     context_menu_ = std::make_unique<AppsGridContextMenu>();
     set_context_menu_controller(context_menu_.get());
   }
+  row_change_animator_ = std::make_unique<AppsGridRowChangeAnimator>(this);
 }
 
 AppsGridView::~AppsGridView() {
@@ -992,7 +935,7 @@ void AppsGridView::AnimateFolderItemViewIn() {
 
 void AppsGridView::OnFolderHideAnimationDone() {
   reordering_folder_view_.reset();
-  OnBoundsAnimatorDone(nullptr);
+  DestroyLayerItemsIfNotNeeded();
   if (IsDraggingForReparentInRootLevelGridView()) {
     MaybeStartCardifiedView();
     UpdateDrag(drag_pointer_, last_drag_point_);
@@ -1128,6 +1071,7 @@ void AppsGridView::ViewHierarchyChanged(
       reordering_folder_view_.reset();
 
     bounds_animator_->StopAnimatingView(details.child);
+    row_change_animator_->CancelAnimation(details.child);
   }
 }
 
@@ -1495,10 +1439,11 @@ void AppsGridView::AnimateToIdealBounds() {
   for (int i = 0; i < view_model_.view_size(); ++i) {
     AppListItemView* view = GetItemViewAt(i);
     const gfx::Rect& target = view_model_.ideal_bounds(i);
+    const gfx::Rect& current = view->bounds();
+
     if (bounds_animator_->GetTargetBounds(view) == target)
       continue;
 
-    const gfx::Rect& current = view->bounds();
     const bool current_visible = visible_bounds.Intersects(current);
     const bool target_visible = visible_bounds.Intersects(target);
     const bool visible = !IsViewHiddenForFolderReorder(view) &&
@@ -1507,8 +1452,7 @@ void AppsGridView::AnimateToIdealBounds() {
 
     if (visible && view->has_pending_row_change()) {
       view->reset_has_pending_row_change();
-      AnimationBetweenRows(view, current_visible, current, target_visible,
-                           target);
+      row_change_animator_->AnimateBetweenRows(view, current, target);
     } else if (visible || bounds_animator_->IsAnimating(view)) {
       view->EnsureLayer();
       bounds_animator_->AnimateViewTo(view, target);
@@ -1521,51 +1465,6 @@ void AppsGridView::AnimateToIdealBounds() {
   // Destroy layers created for drag if they're not longer necessary.
   if (!bounds_animator_->IsAnimating())
     OnBoundsAnimatorDone(bounds_animator_.get());
-}
-
-void AppsGridView::AnimationBetweenRows(AppListItemView* view,
-                                        bool animate_current,
-                                        const gfx::Rect& current,
-                                        bool animate_target,
-                                        const gfx::Rect& target) {
-  // Determine page of |current| and |target|.
-  const int current_page =
-      CompareHorizontalPointPositionToRect(current.origin(), GetLocalBounds());
-  const int target_page =
-      CompareHorizontalPointPositionToRect(target.origin(), GetLocalBounds());
-
-  std::unique_ptr<ui::Layer> layer;
-  if (view->layer()) {
-    if (animate_current) {
-      layer = view->RecreateLayer();
-      layer->SuppressPaint();
-
-      view->layer()->SetFillsBoundsOpaquely(false);
-      view->layer()->SetOpacity(0.f);
-    }
-  } else {
-    view->EnsureLayer();
-  }
-
-  const gfx::Size total_tile_size = GetTotalTileSize(current_page);
-  int dir = current_page < target_page ||
-                    (current_page == target_page && current.y() < target.y())
-                ? 1
-                : -1;
-
-  gfx::Rect target_in(target);
-  if (animate_target)
-    target_in.Offset(-dir * total_tile_size.width(), 0);
-  bounds_animator_->StopAnimatingView(view);
-  view->SetBoundsRect(target_in);
-  bounds_animator_->AnimateViewTo(view, target);
-
-  // Flip the direction for the layer move out animation if rtl mode is used.
-  dir = base::i18n::IsRTL() ? -dir : dir;
-  bounds_animator_->SetAnimationDelegate(
-      view, std::make_unique<RowMoveAnimationDelegate>(
-                view, layer.release(),
-                gfx::Vector2d(dir * total_tile_size.width(), 0)));
 }
 
 void AppsGridView::ExtractDragLocation(const gfx::Point& root_location,
@@ -1718,7 +1617,7 @@ void AppsGridView::OnDragIconDropDone() {
   drag_view_hider_.reset();
   folder_icon_item_hider_.reset();
   drag_icon_proxy_.reset();
-  OnBoundsAnimatorDone(nullptr);
+  DestroyLayerItemsIfNotNeeded();
 
   if (!folder_to_open_after_drag_icon_animation_.empty()) {
     AppListItemView* folder_view =
@@ -2715,6 +2614,11 @@ void AppsGridView::OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) {
 }
 
 void AppsGridView::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
+  row_change_animator_->OnBoundsAnimatorDone();
+  DestroyLayerItemsIfNotNeeded();
+}
+
+void AppsGridView::DestroyLayerItemsIfNotNeeded() {
   if (ItemViewsRequireLayers())
     return;
 
@@ -2730,7 +2634,8 @@ bool AppsGridView::ItemViewsRequireLayers() const {
 
   // Bounds animations are in progress, which use layers to animate transforms.
   if (bounds_animation_for_cardified_state_in_progress_ ||
-      (bounds_animator_ && bounds_animator_->IsAnimating())) {
+      (bounds_animator_ && bounds_animator_->IsAnimating()) ||
+      row_change_animator_->IsAnimating()) {
     return true;
   }
 
@@ -3316,7 +3221,7 @@ void AppsGridView::OnFadeInAnimationEnded(ReorderAnimationCallback callback,
   reorder_animation_tracker_.reset();
 
   // Clean app list items' layers.
-  OnBoundsAnimatorDone(nullptr);
+  DestroyLayerItemsIfNotNeeded();
 
   if (!callback.is_null())
     callback.Run(aborted);
