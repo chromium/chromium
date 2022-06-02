@@ -983,6 +983,11 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
     const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame,
     OnAcceptCHFrameReceivedCallback callback) {
   received_accept_ch_frame_ = true;
+  if (!base::FeatureList::IsEnabled(network::features::kAcceptCHFrame)) {
+    std::move(callback).Run(net::OK);
+    return;
+  }
+
   LogAcceptCHFrameStatus(AcceptCHFrameRestart::kFramePresent);
 
   // Given that this is happening in the middle of navigation, there should

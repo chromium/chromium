@@ -1149,7 +1149,8 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
     return net::ERR_FAILED;
   }
 
-  if (!accept_ch_frame_observer_ || info.accept_ch_frame.empty()) {
+  if (!accept_ch_frame_observer_ || info.accept_ch_frame.empty() ||
+      !base::FeatureList::IsEnabled(features::kAcceptCHFrame)) {
     return net::OK;
   }
 

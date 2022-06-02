@@ -65,6 +65,9 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kWebSocketReassembleShortMessages;
 
 COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kAcceptCHFrame;
+
+COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kSCTAuditingRetryReports;
 
 COMPONENT_EXPORT(NETWORK_CPP)
