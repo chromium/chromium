@@ -3703,6 +3703,7 @@ hooks = [
         'src/third_party/blink/renderer/build/scripts',
         'src/third_party/blink/tools',  # See http://crbug.com/625877.
         'src/third_party/catapult',
+        'src/third_party/mako', # Some failures triggered by crrev.com/c/3686969
         'src/tools',
     ],
   },
