@@ -58,9 +58,11 @@ class UserAgentBrowserTest : public InProcessBrowserTest,
         prefs::kUserAgentReduction);
   }
 
-  void set_force_major_version_to_minor_policy(int policy) {
+  void set_force_major_version_to_minor_policy(
+      ForceMajorVersionToMinorPolicyState policy) {
     browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kForceMajorVersionToMinorPositionInUserAgent, policy);
+        prefs::kForceMajorVersionToMinorPositionInUserAgent,
+        static_cast<int>(policy));
   }
 
   std::string observed_user_agent() { return observered_user_agent_; }

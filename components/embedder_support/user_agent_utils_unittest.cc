@@ -428,7 +428,8 @@ TEST_F(UserAgentUtilsTest, UserAgentStringReduced) {
        blink::features::kForceMajorVersionInMinorPositionInUserAgent},
       {});
   {
-    std::string buffer = GetReducedUserAgent(kForceDisabled);
+    std::string buffer =
+        GetReducedUserAgent(ForceMajorVersionToMinorPosition::kForceDisabled);
     std::string device_compat = "Mobile ";
     EXPECT_EQ(buffer,
               base::StringPrintf(content::frozen_user_agent_strings::kAndroid,
@@ -465,7 +466,8 @@ TEST_F(UserAgentUtilsTest, UserAgentStringReduced) {
        blink::features::kForceMajorVersionInMinorPositionInUserAgent},
       {});
   {
-    std::string buffer = GetReducedUserAgent(kForceDisabled);
+    std::string buffer =
+        GetReducedUserAgent(ForceMajorVersionToMinorPosition::kForceDisabled);
     EXPECT_EQ(buffer, base::StringPrintf(
                           content::frozen_user_agent_strings::kDesktop,
                           content::GetUnifiedPlatform().c_str(),
@@ -547,7 +549,8 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
 
   // ForceMajorVersionToMinorPosition: kForceDisabled
   pref_service.registry()->RegisterIntegerPref(
-      kForceMajorVersionToMinorPosition, kForceDisabled);
+      kForceMajorVersionToMinorPosition,
+      static_cast<int>(ForceMajorVersionToMinorPosition::kForceDisabled));
   metadata = GetUserAgentMetadata(&pref_service);
   EXPECT_EQ(metadata.full_version, full_version);
   EXPECT_TRUE(ContainsBrandVersion(metadata.brand_version_list,
@@ -569,7 +572,9 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
                                     major_to_minor_product_brand_full_version));
 
   // ForceMajorVersionToMinorPosition: kForceEnabled
-  pref_service.SetInteger(kForceMajorVersionToMinorPosition, kForceEnabled);
+  pref_service.SetInteger(
+      kForceMajorVersionToMinorPosition,
+      static_cast<int>(ForceMajorVersionToMinorPosition::kForceEnabled));
   metadata = GetUserAgentMetadata(&pref_service);
   EXPECT_EQ(metadata.full_version, major_to_minor_full_version);
   EXPECT_TRUE(ContainsBrandVersion(metadata.brand_version_list,
@@ -1007,7 +1012,8 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
   EXPECT_EQ(minor_version, "0");
 
   // Ensure policy is respected if ForceMajorToMinor is force enabled
-  product = GetProductAndVersion(/*force_major_to_minor=*/kForceEnabled);
+  product =
+      GetProductAndVersion(ForceMajorVersionToMinorPosition::kForceEnabled);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version));
   EXPECT_EQ(major_version, "99");
@@ -1038,7 +1044,8 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
       /*enabled_features=*/{blink::features::
                                 kForceMajorVersionInMinorPositionInUserAgent},
       /*disabled_features=*/{blink::features::kReduceUserAgentMinorVersion});
-  product = GetProductAndVersion(/*force_major_to_minor=*/kForceDisabled);
+  product =
+      GetProductAndVersion(ForceMajorVersionToMinorPosition::kForceDisabled);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
                                   &build_version));
