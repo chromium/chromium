@@ -181,7 +181,6 @@ public class ActivityTabStartupMetricsTracker {
                         boolean isTrackedPage = navigation.hasCommitted()
                                 && navigation.isInPrimaryMainFrame() && !navigation.isErrorPage()
                                 && !navigation.isSameDocument()
-                                && !navigation.isFragmentNavigation()
                                 && UrlUtilities.isHttpOrHttps(navigation.getUrl());
                         registerFinishNavigation(isTrackedPage);
                     }

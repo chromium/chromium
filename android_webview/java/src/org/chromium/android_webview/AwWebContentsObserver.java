@@ -167,7 +167,7 @@ public class AwWebContentsObserver extends WebContentsObserver {
             });
         }
 
-        if (client != null && navigation.isFragmentNavigation()) {
+        if (client != null && navigation.isPrimaryMainFrameFragmentNavigation()) {
             // Note fragment navigations do not have a matching onPageStarted.
             client.getCallbackHelper().postOnPageFinished(url);
         }
