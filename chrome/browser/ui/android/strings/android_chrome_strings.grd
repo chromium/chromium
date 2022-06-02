@@ -5067,10 +5067,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Can\u2019t go lower. Try starting from further down the page.
       </message>
 
-      <message name="IDS_SHARING_LONG_SCREENSHOT_MEMORY_PRESSURE" desc="Text shown in the toast notification when additional screenshot data cannot be captured due to memory pressure, in the long screenshots feature.">
-        Can\u2019t extend screenshot. Try again when your phone isn\u2019t busy.
-      </message>
-
       <message name="IDS_SHARING_LONG_SCREENSHOT_UNKNOWN_ERROR" desc="Text shown in the toast notification when screenshot data cannot be captured due to a general or unknown error, in the long screenshots feature.">
         Something went wrong. Try again.
       </message>

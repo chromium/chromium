@@ -26,7 +26,6 @@ import android.widget.ScrollView;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
@@ -107,8 +106,7 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
             @Override
             public void onCompositorReady(Size size, Point offset) {
                 mEntryManager.removeBitmapGeneratorObserver(this);
-                // TODO(skare): If testing does not hit memory limits, simplify EntryManager.
-                LongScreenshotsEntry entry = mEntryManager.generateInitialEntry();
+                LongScreenshotsEntry entry = mEntryManager.generateFullpageEntry();
                 entry.setListener(new LongScreenshotsEntry.EntryListener() {
                     @Override
                     public void onResult(@EntryStatus int status) {
@@ -248,35 +246,6 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         params.height = newHeight;
         maskView.setLayoutParams(params);
         mScrollView.smoothScrollBy(0, (isTop ? 1 : -1) * (newHeight - oldHeight));
-    }
-
-    // Performs postprocessing or error handling on new entry availability.
-    // TODO(skare): Remove if no longer needed.
-    private void processNewEntry(LongScreenshotsEntry newEntry) {
-        if (newEntry == null) {
-            return;
-        }
-        if (newEntry.getStatus() == EntryStatus.BOUNDS_ABOVE_CAPTURE) {
-            Toast.makeText(
-                         mActivity, R.string.sharing_long_screenshot_reached_top, Toast.LENGTH_LONG)
-                    .show();
-            return;
-        }
-
-        if (newEntry.getStatus() == EntryStatus.BOUNDS_BELOW_CAPTURE) {
-            Toast.makeText(mActivity, R.string.sharing_long_screenshot_reached_bottom,
-                         Toast.LENGTH_LONG)
-                    .show();
-            return;
-        }
-
-        if (newEntry.getStatus() == EntryStatus.INSUFFICIENT_MEMORY) {
-            Log.w(TAG, "Encountered memory pressure.");
-            Toast.makeText(mActivity, R.string.sharing_long_screenshot_memory_pressure,
-                         Toast.LENGTH_LONG)
-                    .show();
-            return;
-        }
     }
 
     @Override
