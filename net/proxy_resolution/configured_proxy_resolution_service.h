@@ -176,7 +176,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
   void ForceReloadProxyConfig();
 
   // ProxyResolutionService
-  base::Value GetProxyNetLogValues() override;
+  base::Value::Dict GetProxyNetLogValues() override;
 
   // ProxyResolutionService
   [[nodiscard]] bool CastToConfiguredProxyResolutionService(

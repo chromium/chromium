@@ -133,7 +133,7 @@ base::Value GetActiveFieldTrialList() {
 
 }  // namespace
 
-base::Value GetNetConstants() {
+base::Value::Dict GetNetConstants() {
   base::Value::Dict constants_dict;
 
   // Version of the file format.
@@ -345,16 +345,15 @@ base::Value GetNetConstants() {
   // Additional trials may be enabled later in the browser session.
   constants_dict.Set(kNetInfoFieldTrials, GetActiveFieldTrialList());
 
-  return base::Value(std::move(constants_dict));
+  return constants_dict;
 }
 
-NET_EXPORT base::Value GetNetInfo(URLRequestContext* context) {
+NET_EXPORT base::Value::Dict GetNetInfo(URLRequestContext* context) {
   // May only be called on the context's thread.
   context->AssertCalledOnValidThread();
 
-  base::Value net_info =
+  base::Value::Dict net_info_dict =
       context->proxy_resolution_service()->GetProxyNetLogValues();
-  base::Value::Dict& net_info_dict = net_info.GetDict();
 
   // Log Host Resolver info.
   {
@@ -507,7 +506,7 @@ NET_EXPORT base::Value GetNetInfo(URLRequestContext* context) {
   // the start of this browser session (crbug.com/1133396).
   net_info_dict.Set(kNetInfoFieldTrials, GetActiveFieldTrialList());
 
-  return base::Value(std::move(net_info_dict));
+  return net_info_dict;
 }
 
 NET_EXPORT void CreateNetLogEntriesForActiveObjects(

@@ -1363,18 +1363,18 @@ void ConfiguredProxyResolutionService::ForceReloadProxyConfig() {
   ApplyProxyConfigIfAvailable();
 }
 
-base::Value ConfiguredProxyResolutionService::GetProxyNetLogValues() {
-  base::Value net_info_dict(base::Value::Type::DICTIONARY);
+base::Value::Dict ConfiguredProxyResolutionService::GetProxyNetLogValues() {
+  base::Value::Dict net_info_dict;
 
   // Log Proxy Settings.
   {
-    base::Value dict(base::Value::Type::DICTIONARY);
+    base::Value::Dict dict;
     if (fetched_config_)
-      dict.SetKey("original", fetched_config_->value().ToValue());
+      dict.Set("original", fetched_config_->value().ToValue());
     if (config_)
-      dict.SetKey("effective", config_->value().ToValue());
+      dict.Set("effective", config_->value().ToValue());
 
-    net_info_dict.SetKey(kNetInfoProxySettings, std::move(dict));
+    net_info_dict.Set(kNetInfoProxySettings, std::move(dict));
   }
 
   // Log Bad Proxies.
@@ -1393,7 +1393,7 @@ base::Value ConfiguredProxyResolutionService::GetProxyNetLogValues() {
       list.Append(std::move(dict));
     }
 
-    net_info_dict.SetKey(kNetInfoBadProxies, std::move(list));
+    net_info_dict.Set(kNetInfoBadProxies, std::move(list));
   }
 
   return net_info_dict;

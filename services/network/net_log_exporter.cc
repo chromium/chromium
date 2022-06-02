@@ -80,22 +80,21 @@ void NetLogExporter::Start(base::File destination,
 void NetLogExporter::Stop(base::Value polled_data_value,
                           StopCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::DictionaryValue* polled_data = nullptr;
-  bool ok = polled_data_value.GetAsDictionary(&polled_data);
-  DCHECK(ok);  // mojo is supposed to enforce that.
+  base::Value::Dict* polled_data = polled_data_value.GetIfDict();
+  DCHECK(polled_data);
 
   if (state_ != STATE_RUNNING) {
     std::move(callback).Run(net::ERR_UNEXPECTED);
     return;
   }
 
-  base::Value net_info =
+  base::Value::Dict net_info =
       net::GetNetInfo(network_context_->url_request_context());
   if (polled_data)
-    net_info.MergeDictionary(polled_data);
+    net_info.Merge(*polled_data);
 
   file_net_observer_->StopObserving(
-      base::Value::ToUniquePtrValue(std::move(net_info)),
+      std::make_unique<base::Value>(std::move(net_info)),
       base::BindOnce([](StopCallback sc) { std::move(sc).Run(net::OK); },
                      std::move(callback)));
   file_net_observer_ = nullptr;
@@ -162,9 +161,9 @@ void NetLogExporter::StartWithScratchDir(
     StartCallback callback,
     const base::FilePath& scratch_dir_path) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::DictionaryValue* extra_constants = nullptr;
-  bool ok = extra_constants_value.GetAsDictionary(&extra_constants);
-  DCHECK(ok);  // mojo is supposed to enforce that before Start() is invoked.
+  base::Value::Dict* extra_constants = extra_constants_value.GetIfDict();
+  DCHECK(extra_constants);  // mojo is supposed to enforce that before Start()
+                            // is invoked.
 
   if (scratch_dir_path.empty() && max_file_size != kUnlimitedFileSize) {
     state_ = STATE_IDLE;
@@ -175,21 +174,21 @@ void NetLogExporter::StartWithScratchDir(
 
   state_ = STATE_RUNNING;
 
-  std::unique_ptr<base::DictionaryValue> constants =
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(net::GetNetConstants()));
+  base::Value::Dict constants = net::GetNetConstants();
 
   if (extra_constants)
-    constants->MergeDictionary(extra_constants);
+    constants.Merge(*extra_constants);
+  std::unique_ptr<base::Value> constants_value =
+      std::make_unique<base::Value>(std::move(constants));
 
   if (max_file_size != kUnlimitedFileSize) {
     file_net_observer_ = net::FileNetLogObserver::CreateBoundedPreExisting(
         scratch_dir_path, std::move(destination_), max_file_size, capture_mode,
-        std::move(constants));
+        std::move(constants_value));
   } else {
     DCHECK(scratch_dir_path.empty());
     file_net_observer_ = net::FileNetLogObserver::CreateUnboundedPreExisting(
-        std::move(destination_), capture_mode, std::move(constants));
+        std::move(destination_), capture_mode, std::move(constants_value));
   }
 
   // There might not be a NetworkService object e.g. on iOS; in that case

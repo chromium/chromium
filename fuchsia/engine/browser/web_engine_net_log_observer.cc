@@ -18,21 +18,17 @@
 
 namespace {
 
-std::unique_ptr<base::DictionaryValue> GetWebEngineConstants() {
-  std::unique_ptr<base::DictionaryValue> constants_dict =
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(net::GetNetConstants()));
+std::unique_ptr<base::Value> GetWebEngineConstants() {
+  base::Value::Dict constants_dict = net::GetNetConstants();
 
-  base::DictionaryValue dict;
-  dict.SetKey("name", base::Value("WebEngine"));
-  dict.SetKey(
-      "command_line",
-      base::Value(
-          base::CommandLine::ForCurrentProcess()->GetCommandLineString()));
+  base::Value::Dict dict;
+  dict.Set("name", "WebEngine");
+  dict.Set("command_line",
+           base::CommandLine::ForCurrentProcess()->GetCommandLineString());
 
-  constants_dict->SetKey("clientInfo", std::move(dict));
+  constants_dict.Set("clientInfo", std::move(dict));
 
-  return constants_dict;
+  return std::make_unique<base::Value>(std::move(constants_dict));
 }
 
 }  // namespace

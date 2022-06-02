@@ -258,20 +258,14 @@ bool URLDataManagerBackend::CheckURLIsValid(const GURL& url) {
 }
 
 bool URLDataManagerBackend::IsValidNetworkErrorCode(int error_code) {
-  base::Value error_codes = net::GetNetConstants();
-  const base::DictionaryValue* net_error_codes_dict = nullptr;
-
-  for (auto item : error_codes.DictItems()) {
-    if (item.first == kNetworkErrorKey) {
-      item.second.GetAsDictionary(&net_error_codes_dict);
-      break;
-    }
-  }
+  base::Value::Dict error_codes = net::GetNetConstants();
+  const base::Value::Dict* net_error_codes_dict =
+      error_codes.FindDict(kNetworkErrorKey);
 
   if (net_error_codes_dict != nullptr) {
-    for (base::DictionaryValue::Iterator itr(*net_error_codes_dict);
-         !itr.IsAtEnd(); itr.Advance()) {
-      if (error_code == itr.value().GetInt())
+    for (auto it = net_error_codes_dict->begin();
+         it != net_error_codes_dict->end(); ++it) {
+      if (error_code == it->second.GetInt())
         return true;
     }
   }

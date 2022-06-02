@@ -50,20 +50,19 @@ TEST(NetLogUtil, GetNetInfo) {
 
   // Get NetInfo when there's no cache backend (It's only created on first use).
   EXPECT_FALSE(http_cache->GetCurrentBackend());
-  base::Value net_info_without_cache(GetNetInfo(context.get()));
+  base::Value::Dict net_info_without_cache(GetNetInfo(context.get()));
   EXPECT_FALSE(http_cache->GetCurrentBackend());
-  EXPECT_GT(net_info_without_cache.GetDict().size(), 0u);
+  EXPECT_GT(net_info_without_cache.size(), 0u);
 
   // Force creation of a cache backend, and get NetInfo again.
   disk_cache::Backend* backend = nullptr;
   EXPECT_EQ(OK, context->http_transaction_factory()->GetCache()->GetBackend(
                     &backend, TestCompletionCallback().callback()));
   EXPECT_TRUE(http_cache->GetCurrentBackend());
-  base::Value net_info_with_cache = GetNetInfo(context.get());
-  EXPECT_GT(net_info_with_cache.GetDict().size(), 0u);
+  base::Value::Dict net_info_with_cache = GetNetInfo(context.get());
+  EXPECT_GT(net_info_with_cache.size(), 0u);
 
-  EXPECT_EQ(net_info_without_cache.GetDict().size(),
-            net_info_with_cache.GetDict().size());
+  EXPECT_EQ(net_info_without_cache.size(), net_info_with_cache.size());
 }
 
 // Verify that active Field Trials are reflected.

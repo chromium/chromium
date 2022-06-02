@@ -214,12 +214,12 @@ void CronetEnvironment::StopNetLogOnNetworkThread(
 }
 
 base::Value CronetEnvironment::GetNetLogInfo() const {
-  base::Value net_info = net::GetNetInfo(main_context_.get());
+  base::Value::Dict net_info = net::GetNetInfo(main_context_.get());
   if (!effective_experimental_options_.DictEmpty()) {
-    net_info.SetKey("cronetExperimentalParams",
-                    effective_experimental_options_.Clone());
+    net_info.Set("cronetExperimentalParams",
+                 effective_experimental_options_.Clone());
   }
-  return net_info;
+  return base::Value(std::move(net_info));
 }
 
 net::HttpNetworkSession* CronetEnvironment::GetHttpNetworkSession(

@@ -491,7 +491,7 @@ FileNetLogObserver::FileNetLogObserver(
       file_writer_(std::move(file_writer)),
       capture_mode_(capture_mode) {
   if (!constants)
-    constants = base::Value::ToUniquePtrValue(GetNetConstants());
+    constants = std::make_unique<base::Value>(GetNetConstants());
 
   DCHECK(constants->is_dict());
   DCHECK(!constants->GetDict().Find("logCaptureMode"));
