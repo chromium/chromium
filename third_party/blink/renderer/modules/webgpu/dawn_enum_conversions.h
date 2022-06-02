@@ -72,7 +72,6 @@ WGPUCullMode AsDawnEnum(const V8GPUCullMode& webgpu_enum);
 WGPUFrontFace AsDawnEnum(const V8GPUFrontFace& webgpu_enum);
 WGPUTextureAspect AsDawnEnum(const V8GPUTextureAspect& webgpu_enum);
 WGPUErrorFilter AsDawnEnum(const V8GPUErrorFilter& webgpu_enum);
-WGPUPredefinedColorSpace AsDawnEnum(PredefinedColorSpace color_space);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_DAWN_ENUM_CONVERSIONS_H_

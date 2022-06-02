@@ -433,15 +433,6 @@ WGPUIndexFormat AsDawnEnum(const V8GPUIndexFormat& webgpu_enum) {
   }
 }
 
-WGPUPredefinedColorSpace AsDawnEnum(PredefinedColorSpace color_space) {
-  switch (color_space) {
-    case PredefinedColorSpace::kSRGB:
-      return WGPUPredefinedColorSpace_Srgb;
-    default:
-      return WGPUPredefinedColorSpace_Undefined;
-  }
-}
-
 WGPUFeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
   switch (webgpu_enum.AsEnum()) {
     case V8GPUFeatureName::Enum::kPipelineStatisticsQuery:

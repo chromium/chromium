@@ -237,7 +237,6 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
     WGPUExternalTextureDescriptor external_texture_desc = {};
     external_texture_desc.plane0 = plane0;
     external_texture_desc.plane1 = plane1;
-    external_texture_desc.colorSpace = AsDawnEnum(dst_predefined_color_space);
 
     std::array<float, 12> yuvToRgbMatrix =
         GetYUVToRGBMatrix(srcColorSpace, media_video_frame->BitDepth());
@@ -326,7 +325,6 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
 
   WGPUExternalTextureDescriptor dawn_desc = {};
   dawn_desc.plane0 = plane0;
-  dawn_desc.colorSpace = AsDawnEnum(dst_predefined_color_space);
 
   ColorSpaceConversionConstants colorSpaceConversionConstants =
       GetColorSpaceConversionConstants(srcColorSpace, dstColorSpace);
