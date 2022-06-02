@@ -146,7 +146,6 @@ void ScreenshotCapturedBubble::Init() {
                                   weak_factory_.GetWeakPtr()))
           .SetText(l10n_util::GetStringUTF16(
               IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_EDIT_BUTTON_LABEL))
-          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .Build();
 
   auto download_button =
@@ -156,7 +155,6 @@ void ScreenshotCapturedBubble::Init() {
               weak_factory_.GetWeakPtr()))
           .SetText(l10n_util::GetStringUTF16(
               IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_DOWNLOAD_BUTTON_LABEL))
-          .SetHorizontalAlignment(gfx::ALIGN_RIGHT)
           .SetProminent(true)
           .Build();
 
