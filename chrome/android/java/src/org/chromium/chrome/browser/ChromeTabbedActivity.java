@@ -650,7 +650,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void openTabletTabSwitcherIfNoTabs() {
-        if (!isTablet()) return;
+        if (!isTablet() || mLayoutManager == null
+                || !mTabModelOrchestrator.areTabModelsInitialized()) {
+            return;
+        }
 
         boolean gridTabSwitcherEnabled = TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(this);
         boolean overviewVisible = mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER);
