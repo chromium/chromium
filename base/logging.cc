@@ -125,6 +125,8 @@ namespace logging {
 
 namespace {
 
+int g_min_log_level = 0;
+
 #if BUILDFLAG(USE_RUNTIME_VLOG)
 // NOTE: Once |g_vlog_info| has been initialized, it might be in use
 // by another thread. Never delete the old VLogInfo, just create a second
@@ -138,6 +140,25 @@ namespace {
 // std::memory_order_release)| when reading or writing. This
 // guarantees that referenced object is available at the time the point is read.
 std::atomic<VlogInfo*> g_vlog_info = nullptr;
+
+// Creates a VlogInfo from the commandline if it has been initialized and if it
+// contains relevant switches, otherwise this returns |nullptr|.
+VlogInfo* VlogInfoFromCommandLine() {
+  if (!base::CommandLine::InitializedForCurrentProcess())
+    return nullptr;
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kV) &&
+      !command_line->HasSwitch(switches::kVModule)) {
+    return nullptr;
+  }
+#if defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
+  // See comments on |g_vlog_info|.
+  ScopedLeakSanitizerDisabler lsan_disabler;
+#endif  // defined(LEAK_SANITIZER)
+  return new VlogInfo(command_line->GetSwitchValueASCII(switches::kV),
+                      command_line->GetSwitchValueASCII(switches::kVModule),
+                      &g_min_log_level);
+}
 #endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
 const char* const log_severity_names[] = {"INFO", "WARNING", "ERROR", "FATAL"};
@@ -149,8 +170,6 @@ const char* log_severity_name(int severity) {
     return log_severity_names[severity];
   return "UNKNOWN";
 }
-
-int g_min_log_level = 0;
 
 // Specifies the process' logging sink(s), represented as a combination of
 // LoggingDestination values joined by bitwise OR.
@@ -414,21 +433,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
 
 #if BUILDFLAG(USE_RUNTIME_VLOG)
   if (base::CommandLine::InitializedForCurrentProcess()) {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    // Don't bother initializing |g_vlog_info| unless we use one of the
-    // vlog switches.
-    if (command_line->HasSwitch(switches::kV) ||
-        command_line->HasSwitch(switches::kVModule)) {
-#if defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
-      // See comments on |g_vlog_info|.
-      ScopedLeakSanitizerDisabler lsan_disabler;
-#endif  // defined(LEAK_SANITIZER)
-      g_vlog_info.store(
-          new VlogInfo(command_line->GetSwitchValueASCII(switches::kV),
-                       command_line->GetSwitchValueASCII(switches::kVModule),
-                       &g_min_log_level),
-          std::memory_order_release);
-    }
+    g_vlog_info.store(VlogInfoFromCommandLine(), std::memory_order_release);
   }
 #endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
