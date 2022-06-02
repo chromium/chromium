@@ -295,9 +295,10 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
   if (current_draw_mode_ == DRAW_MODE_RESOURCELESS_SOFTWARE) {
     DCHECK(shared_quad_state->quad_layer_rect.origin() == gfx::Point(0, 0));
+    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
     AppendDebugBorderQuad(
         render_pass, shared_quad_state->quad_layer_rect, shared_quad_state,
-        append_quads_data, DebugColors::DirectPictureBorderColor(),
+        append_quads_data, DebugColors::DirectPictureBorderColor().toSkColor(),
         DebugColors::DirectPictureBorderWidth(device_scale_factor));
 
     gfx::Rect geometry_rect = shared_quad_state->visible_quad_layer_rect;
@@ -369,28 +370,30 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       SkColor color;
       float width;
       if (*iter && iter->draw_info().IsReadyToDraw()) {
+        // TODO(crbug/1308932): Remove all instances of toSkColor below and make
+        // all SkColor4f.
         TileDrawInfo::Mode mode = iter->draw_info().mode();
         if (mode == TileDrawInfo::SOLID_COLOR_MODE) {
-          color = DebugColors::SolidColorTileBorderColor();
+          color = DebugColors::SolidColorTileBorderColor().toSkColor();
           width = DebugColors::SolidColorTileBorderWidth(device_scale_factor);
         } else if (mode == TileDrawInfo::OOM_MODE) {
-          color = DebugColors::OOMTileBorderColor();
+          color = DebugColors::OOMTileBorderColor().toSkColor();
           width = DebugColors::OOMTileBorderWidth(device_scale_factor);
         } else if (iter.resolution() == HIGH_RESOLUTION) {
-          color = DebugColors::HighResTileBorderColor();
+          color = DebugColors::HighResTileBorderColor().toSkColor();
           width = DebugColors::HighResTileBorderWidth(device_scale_factor);
         } else if (iter.resolution() == LOW_RESOLUTION) {
-          color = DebugColors::LowResTileBorderColor();
+          color = DebugColors::LowResTileBorderColor().toSkColor();
           width = DebugColors::LowResTileBorderWidth(device_scale_factor);
         } else if (iter->contents_scale_key() > max_contents_scale) {
-          color = DebugColors::ExtraHighResTileBorderColor();
+          color = DebugColors::ExtraHighResTileBorderColor().toSkColor();
           width = DebugColors::ExtraHighResTileBorderWidth(device_scale_factor);
         } else {
-          color = DebugColors::ExtraLowResTileBorderColor();
+          color = DebugColors::ExtraLowResTileBorderColor().toSkColor();
           width = DebugColors::ExtraLowResTileBorderWidth(device_scale_factor);
         }
       } else {
-        color = DebugColors::MissingTileBorderColor();
+        color = DebugColors::MissingTileBorderColor().toSkColor();
         width = DebugColors::MissingTileBorderWidth(device_scale_factor);
       }
 
@@ -408,14 +411,16 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   }
 
   if (layer_tree_impl()->debug_state().highlight_non_lcd_text_layers) {
-    SkColor color =
+    // TODO(crbug/1308932): Remove all instances of toSkColor below and make all
+    // SkColor4f.
+    SkColor4f color =
         DebugColors::NonLCDTextHighlightColor(lcd_text_disallowed_reason());
-    if (color != SK_ColorTRANSPARENT &&
+    if (color != SkColors::kTransparent &&
         GetRasterSource()->GetDisplayItemList()->AreaOfDrawText(
             gfx::Rect(bounds()))) {
       render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>()->SetNew(
-          shared_quad_state, debug_border_rect, debug_border_rect, color,
-          append_quads_data);
+          shared_quad_state, debug_border_rect, debug_border_rect,
+          color.toSkColor(), append_quads_data);
     }
   }
 
@@ -516,7 +521,8 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       SkColor color = safe_opaque_background_color();
       if (ShowDebugBorders(DebugBorderType::LAYER)) {
         // Fill the whole tile with the missing tile color.
-        color = DebugColors::DefaultCheckerboardColor();
+        // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+        color = DebugColors::DefaultCheckerboardColor().toSkColor();
       }
       auto* quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
@@ -1868,10 +1874,12 @@ void PictureLayerImpl::GetDebugBorderProperties(
       layer_tree_impl() ? layer_tree_impl()->device_scale_factor() : 1;
 
   if (IsDirectlyCompositedImage()) {
-    *color = DebugColors::ImageLayerBorderColor();
+    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+    *color = DebugColors::ImageLayerBorderColor().toSkColor();
     *width = DebugColors::ImageLayerBorderWidth(device_scale_factor);
   } else {
-    *color = DebugColors::TiledContentLayerBorderColor();
+    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+    *color = DebugColors::TiledContentLayerBorderColor().toSkColor();
     *width = DebugColors::TiledContentLayerBorderWidth(device_scale_factor);
   }
 }

@@ -219,7 +219,8 @@ gfx::Rect SurfaceLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
 
 void SurfaceLayerImpl::GetDebugBorderProperties(SkColor* color,
                                                 float* width) const {
-  *color = DebugColors::SurfaceLayerBorderColor();
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  *color = DebugColors::SurfaceLayerBorderColor().toSkColor();
   *width = DebugColors::SurfaceLayerBorderWidth(
       layer_tree_impl() ? layer_tree_impl()->device_scale_factor() : 1);
 }

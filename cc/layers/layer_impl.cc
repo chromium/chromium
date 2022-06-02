@@ -233,12 +233,14 @@ void LayerImpl::GetDebugBorderProperties(SkColor* color, float* width) const {
       layer_tree_impl() ? layer_tree_impl()->device_scale_factor() : 1;
 
   if (draws_content_) {
-    *color = DebugColors::ContentLayerBorderColor();
+    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+    *color = DebugColors::ContentLayerBorderColor().toSkColor();
     *width = DebugColors::ContentLayerBorderWidth(device_scale_factor);
     return;
   }
 
-  *color = DebugColors::ContainerLayerBorderColor();
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  *color = DebugColors::ContainerLayerBorderColor().toSkColor();
   *width = DebugColors::ContainerLayerBorderWidth(device_scale_factor);
 }
 
