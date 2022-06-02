@@ -2132,17 +2132,17 @@ int AXPlatformNodeBase::FindTextBoundary(
   const AXPosition position = delegate_->CreateTextPositionAt(offset, affinity);
   // On Windows and Linux ATK, searching for a text boundary should always stop
   // at the boundary of the current object.
-  auto boundary_behavior = AXBoundaryBehavior::kStopAtAnchorBoundary;
+  AXMovementOptions options{AXBoundaryBehavior::kStopAtAnchorBoundary,
+                            AXBoundaryDetection::kDontCheckInitialPosition};
   // On Windows and Linux ATK, it is standard text navigation behavior to stop
   // if we are searching in the backwards direction and the current position is
   // already at the required text boundary.
   if (direction == ax::mojom::MoveDirection::kBackward) {
-    boundary_behavior =
-        AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary;
+    options.boundary_detection = AXBoundaryDetection::kCheckInitialPosition;
   }
 
-  const AXPosition boundary_position = position->CreatePositionAtTextBoundary(
-      boundary, direction, boundary_behavior);
+  const AXPosition boundary_position =
+      position->CreatePositionAtTextBoundary(boundary, direction, options);
   if (boundary_position->IsNullPosition())
     return -1;
   DCHECK_GE(boundary_position->text_offset(), 0);

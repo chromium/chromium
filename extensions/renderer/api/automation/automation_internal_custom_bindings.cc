@@ -2881,7 +2881,8 @@ std::vector<int> AutomationInternalCustomBindings::CalculateSentenceBoundary(
   if (!head_pos->AtStartOfParagraph()) {
     ui::AXNodePosition::AXPositionInstance start_para_pos =
         head_pos->CreatePreviousParagraphStartPosition(
-            ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary);
+            {ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+             ui::AXBoundaryDetection::kDontCheckInitialPosition});
     ui::AXRange<ui::AXPosition<ui::AXNodePosition, ui::AXNode>> pre_range(
         start_para_pos->Clone(), head_pos->Clone());
     pre_str = pre_range.GetText();
@@ -2891,7 +2892,8 @@ std::vector<int> AutomationInternalCustomBindings::CalculateSentenceBoundary(
   // node to the end of the paragraph.
   ui::AXNodePosition::AXPositionInstance end_para_pos =
       head_pos->CreateNextParagraphEndPosition(
-          ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary);
+          {ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+           ui::AXBoundaryDetection::kDontCheckInitialPosition});
   ui::AXRange<ui::AXPosition<ui::AXNodePosition, ui::AXNode>> post_range(
       head_pos->Clone(), end_para_pos->Clone());
   post_str = post_range.GetText();

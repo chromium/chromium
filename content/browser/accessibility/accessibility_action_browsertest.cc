@@ -561,7 +561,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, TextareaSetValue) {
       target->CreateTextPositionAt(0);
   BrowserAccessibility::AXPosition end_of_line_1 =
       start_position->CreateNextLineEndPosition(
-          ui::AXBoundaryBehavior::kCrossBoundary);
+          {ui::AXBoundaryBehavior::kCrossBoundary,
+           ui::AXBoundaryDetection::kDontCheckInitialPosition});
   EXPECT_EQ(5, end_of_line_1->text_offset());
 #endif
 }
@@ -595,7 +596,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
       target->CreateTextPositionAt(0);
   BrowserAccessibility::AXPosition end_of_line_1 =
       start_position->CreateNextLineEndPosition(
-          ui::AXBoundaryBehavior::kCrossBoundary);
+          {ui::AXBoundaryBehavior::kCrossBoundary,
+           ui::AXBoundaryDetection::kDontCheckInitialPosition});
   EXPECT_EQ(5, end_of_line_1->text_offset());
 #endif
 }

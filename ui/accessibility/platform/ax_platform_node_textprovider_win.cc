@@ -146,7 +146,8 @@ HRESULT AXPlatformNodeTextProviderWin::GetVisibleRanges(
   auto current_line_start = start->Clone();
   while (!current_line_start->IsNullPosition() && *current_line_start < *end) {
     auto current_line_end = current_line_start->CreateNextLineEndPosition(
-        AXBoundaryBehavior::kCrossBoundary);
+        {AXBoundaryBehavior::kCrossBoundary,
+         AXBoundaryDetection::kDontCheckInitialPosition});
     if (current_line_end->IsNullPosition() || *current_line_end > *end)
       current_line_end = end->Clone();
 
@@ -163,7 +164,8 @@ HRESULT AXPlatformNodeTextProviderWin::GetVisibleRanges(
     }
 
     current_line_start = current_line_start->CreateNextLineStartPosition(
-        AXBoundaryBehavior::kCrossBoundary);
+        {AXBoundaryBehavior::kCrossBoundary,
+         AXBoundaryDetection::kDontCheckInitialPosition});
   }
 
   base::win::ScopedSafearray scoped_visible_ranges(

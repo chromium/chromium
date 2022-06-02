@@ -63,16 +63,29 @@ enum class AXBoundaryBehavior {
   // equivalent position, this behavior will only stop when the bounds of the
   // original anchor, i.e. the text field, have been crossed.
   kStopAtAnchorBoundary,
-  // Stops if the current anchor is crossed or if we are already at the
-  // requested boundary. For an example of the former, imagine a position inside
-  // a text field and the resulting position outside it. For an example of the
-  // latter, say we are moving to the previous word start position when we are
-  // already at the start of a word.
-  kStopAtAnchorBoundaryOrIfAlreadyAtBoundary,
   // Stops if we have reached the start or the end of of a window-like
   // container, such as a webpage, a PDF, a dialog, the browser's UI (AKA
   // Views), or the whole desktop.
   kStopAtLastAnchorBoundary
+};
+
+// Defines whether moving to the next or previous position should consider the
+// initial position before testing for the given boundary/behavior.
+// kCheckInitialPosition should be used if the current position should be
+// maintained if it meets the boundary criteria. Otherwise,
+// kDontCheckInitialPosition will move to the next/previous position before
+// testing for the specified boundary.
+enum class AXBoundaryDetection {
+  kCheckInitialPosition,
+  kDontCheckInitialPosition,
+};
+
+struct AXMovementOptions {
+  AXMovementOptions(AXBoundaryBehavior boundary, AXBoundaryDetection detection)
+      : boundary_behavior(boundary), boundary_detection(detection) {}
+
+  AXBoundaryBehavior boundary_behavior;
+  AXBoundaryDetection boundary_detection;
 };
 
 // Describes in further detail what type of boundary a current position is on.
@@ -1736,8 +1749,8 @@ class AXPosition {
   // latter. The resulting AXRange is always a forward range: its anchor always
   // comes before its focus in document order. The resulting AXRange is bounded
   // by the anchor of this position and the requested boundary type, i.e. the
-  // AXBoundaryBehavior is set to
-  // `AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary`. The
+  // AXMovementOptions is set to `AXBoundaryBehavior::kStopAtAnchorBoundary` and
+  // `AXBoundaryDetection::kCheckInitialPosition`. The
   // exception is `ax::mojom::TextBoundary::kWebPage`, where this behavior won't
   // make sense. This behavior is based on current platform needs and might be
   // relaxed if necessary in the future.
@@ -1751,34 +1764,32 @@ class AXPosition {
   AXRangeType ExpandToEnclosingTextBoundary(
       ax::mojom::TextBoundary boundary,
       AXRangeExpandBehavior expand_behavior) const {
-    AXBoundaryBehavior left_boundary_behavior =
-        AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary;
-    AXBoundaryBehavior right_boundary_behavior =
-        AXBoundaryBehavior::kStopAtAnchorBoundary;
+    AXMovementOptions left_options{AXBoundaryBehavior::kStopAtAnchorBoundary,
+                                   AXBoundaryDetection::kCheckInitialPosition};
+    AXMovementOptions right_options{
+        AXBoundaryBehavior::kStopAtAnchorBoundary,
+        AXBoundaryDetection::kDontCheckInitialPosition};
     if (boundary == ax::mojom::TextBoundary::kWebPage) {
-      left_boundary_behavior = AXBoundaryBehavior::kCrossBoundary;
-      right_boundary_behavior = AXBoundaryBehavior::kCrossBoundary;
+      left_options =
+          right_options = {AXBoundaryBehavior::kCrossBoundary,
+                           AXBoundaryDetection::kDontCheckInitialPosition};
     }
 
     switch (expand_behavior) {
       case AXRangeExpandBehavior::kLeftFirst: {
         AXPositionInstance left_position = CreatePositionAtTextBoundary(
-            boundary, ax::mojom::MoveDirection::kBackward,
-            left_boundary_behavior);
+            boundary, ax::mojom::MoveDirection::kBackward, left_options);
         AXPositionInstance right_position =
             left_position->CreatePositionAtTextBoundary(
-                boundary, ax::mojom::MoveDirection::kForward,
-                right_boundary_behavior);
+                boundary, ax::mojom::MoveDirection::kForward, right_options);
         return AXRangeType(std::move(left_position), std::move(right_position));
       }
       case AXRangeExpandBehavior::kRightFirst: {
         AXPositionInstance right_position = CreatePositionAtTextBoundary(
-            boundary, ax::mojom::MoveDirection::kForward,
-            left_boundary_behavior);
+            boundary, ax::mojom::MoveDirection::kForward, left_options);
         AXPositionInstance left_position =
             right_position->CreatePositionAtTextBoundary(
-                boundary, ax::mojom::MoveDirection::kBackward,
-                right_boundary_behavior);
+                boundary, ax::mojom::MoveDirection::kBackward, right_options);
         return AXRangeType(std::move(left_position), std::move(right_position));
       }
     }
@@ -1793,7 +1804,7 @@ class AXPosition {
   AXPositionInstance CreatePositionAtTextBoundary(
       ax::mojom::TextBoundary boundary,
       ax::mojom::MoveDirection direction,
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     AXPositionInstance resulting_position = CreateNullPosition();
     switch (boundary) {
       case ax::mojom::TextBoundary::kNone:
@@ -1806,11 +1817,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousCharacterPosition(boundary_behavior);
+            resulting_position = CreatePreviousCharacterPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position = CreateNextCharacterPosition(boundary_behavior);
+            resulting_position = CreateNextCharacterPosition(options);
             break;
         }
         break;
@@ -1821,11 +1831,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousFormatEndPosition(boundary_behavior);
+            resulting_position = CreatePreviousFormatEndPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position = CreateNextFormatEndPosition(boundary_behavior);
+            resulting_position = CreateNextFormatEndPosition(options);
             break;
         }
         break;
@@ -1836,12 +1845,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousFormatStartPosition(boundary_behavior);
+            resulting_position = CreatePreviousFormatStartPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position =
-                CreateNextFormatStartPosition(boundary_behavior);
+            resulting_position = CreateNextFormatStartPosition(options);
             break;
         }
         break;
@@ -1852,11 +1859,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousFormatStartPosition(boundary_behavior);
+            resulting_position = CreatePreviousFormatStartPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position = CreateNextFormatEndPosition(boundary_behavior);
+            resulting_position = CreateNextFormatEndPosition(options);
             break;
         }
         break;
@@ -1867,11 +1873,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousLineEndPosition(boundary_behavior);
+            resulting_position = CreatePreviousLineEndPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position = CreateNextLineEndPosition(boundary_behavior);
+            resulting_position = CreateNextLineEndPosition(options);
             break;
         }
         break;
@@ -1882,11 +1887,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousLineStartPosition(boundary_behavior);
+            resulting_position = CreatePreviousLineStartPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position = CreateNextLineStartPosition(boundary_behavior);
+            resulting_position = CreateNextLineStartPosition(options);
             break;
         }
         break;
@@ -1897,11 +1901,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousLineStartPosition(boundary_behavior);
+            resulting_position = CreatePreviousLineStartPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position = CreateNextLineEndPosition(boundary_behavior);
+            resulting_position = CreateNextLineEndPosition(options);
             break;
         }
         break;
@@ -1926,11 +1929,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousPageEndPosition(boundary_behavior);
+            resulting_position = CreatePreviousPageEndPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position = CreateNextPageEndPosition(boundary_behavior);
+            resulting_position = CreateNextPageEndPosition(options);
             break;
         }
         break;
@@ -1941,11 +1943,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousPageStartPosition(boundary_behavior);
+            resulting_position = CreatePreviousPageStartPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position = CreateNextPageStartPosition(boundary_behavior);
+            resulting_position = CreateNextPageStartPosition(options);
             break;
         }
         break;
@@ -1956,11 +1957,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousPageStartPosition(boundary_behavior);
+            resulting_position = CreatePreviousPageStartPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position = CreateNextPageEndPosition(boundary_behavior);
+            resulting_position = CreateNextPageEndPosition(options);
             break;
         }
         break;
@@ -1971,12 +1971,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousParagraphEndPosition(boundary_behavior);
+            resulting_position = CreatePreviousParagraphEndPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position =
-                CreateNextParagraphEndPosition(boundary_behavior);
+            resulting_position = CreateNextParagraphEndPosition(options);
             break;
         }
         break;
@@ -1987,12 +1985,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousParagraphStartPosition(boundary_behavior);
+            resulting_position = CreatePreviousParagraphStartPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position =
-                CreateNextParagraphStartPosition(boundary_behavior);
+            resulting_position = CreateNextParagraphStartPosition(options);
             break;
         }
         break;
@@ -2010,12 +2006,12 @@ class AXPosition {
           case ax::mojom::MoveDirection::kBackward:
             resulting_position =
                 CreatePreviousParagraphStartPositionSkippingEmptyParagraphs(
-                    boundary_behavior);
+                    options);
             break;
           case ax::mojom::MoveDirection::kForward:
             resulting_position =
                 CreateNextParagraphStartPositionSkippingEmptyParagraphs(
-                    boundary_behavior);
+                    options);
             break;
         }
         break;
@@ -2026,12 +2022,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousParagraphStartPosition(boundary_behavior);
+            resulting_position = CreatePreviousParagraphStartPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position =
-                CreateNextParagraphEndPosition(boundary_behavior);
+            resulting_position = CreateNextParagraphEndPosition(options);
             break;
         }
         break;
@@ -2042,12 +2036,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousSentenceEndPosition(boundary_behavior);
+            resulting_position = CreatePreviousSentenceEndPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position =
-                CreateNextSentenceEndPosition(boundary_behavior);
+            resulting_position = CreateNextSentenceEndPosition(options);
             break;
         }
         break;
@@ -2058,12 +2050,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousSentenceStartPosition(boundary_behavior);
+            resulting_position = CreatePreviousSentenceStartPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position =
-                CreateNextSentenceStartPosition(boundary_behavior);
+            resulting_position = CreateNextSentenceStartPosition(options);
             break;
         }
         break;
@@ -2074,18 +2064,16 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousSentenceStartPosition(boundary_behavior);
+            resulting_position = CreatePreviousSentenceStartPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position =
-                CreateNextSentenceEndPosition(boundary_behavior);
+            resulting_position = CreateNextSentenceEndPosition(options);
             break;
         }
         break;
 
       case ax::mojom::TextBoundary::kWebPage:
-        DCHECK_EQ(boundary_behavior, AXBoundaryBehavior::kCrossBoundary)
+        DCHECK_EQ(options.boundary_behavior, AXBoundaryBehavior::kCrossBoundary)
             << "We can't reach the start of the whole contents if we are "
                "disallowed from crossing boundaries.";
         switch (direction) {
@@ -2107,11 +2095,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousWordEndPosition(boundary_behavior);
+            resulting_position = CreatePreviousWordEndPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position = CreateNextWordEndPosition(boundary_behavior);
+            resulting_position = CreateNextWordEndPosition(options);
             break;
         }
         break;
@@ -2122,11 +2109,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousWordStartPosition(boundary_behavior);
+            resulting_position = CreatePreviousWordStartPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position = CreateNextWordStartPosition(boundary_behavior);
+            resulting_position = CreateNextWordStartPosition(options);
             break;
         }
         break;
@@ -2137,11 +2123,10 @@ class AXPosition {
             NOTREACHED();
             break;
           case ax::mojom::MoveDirection::kBackward:
-            resulting_position =
-                CreatePreviousWordStartPosition(boundary_behavior);
+            resulting_position = CreatePreviousWordStartPosition(options);
             break;
           case ax::mojom::MoveDirection::kForward:
-            resulting_position = CreateNextWordEndPosition(boundary_behavior);
+            resulting_position = CreateNextWordEndPosition(options);
             break;
         }
         break;
@@ -2678,17 +2663,16 @@ class AXPosition {
   //
   // See also http://www.unicode.org/reports/tr29/#Grapheme_Cluster_Boundaries
   AXPositionInstance CreateNextCharacterPosition(
-      AXBoundaryBehavior boundary_behavior) const {
-    if ((boundary_behavior == AXBoundaryBehavior::kStopAtAnchorBoundary ||
-         boundary_behavior ==
-             AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary) &&
+      AXMovementOptions options) const {
+    if (options.boundary_behavior ==
+            AXBoundaryBehavior::kStopAtAnchorBoundary &&
         AtEndOfAnchor()) {
       return Clone();
     }
 
     AXPositionInstance text_position = AsLeafTextPositionBeforeCharacter();
     if (text_position->IsNullPosition()) {
-      if (boundary_behavior != AXBoundaryBehavior::kCrossBoundary)
+      if (options.boundary_behavior != AXBoundaryBehavior::kCrossBoundary)
         text_position = Clone();
 
       return text_position;
@@ -2706,8 +2690,10 @@ class AXPosition {
     // positions that have the same affinity, since
     // `AsLeafTextPositionBeforeCharacter` resets the affinity to downstream,
     // while the original affinity might have been upstream.
-    if (boundary_behavior ==
-            AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary &&
+    if (options.boundary_behavior ==
+            AXBoundaryBehavior::kStopAtAnchorBoundary &&
+        options.boundary_detection ==
+            AXBoundaryDetection::kCheckInitialPosition &&
         (AtEndOfAnchor() || *text_position == *CloneWithDownstreamAffinity())) {
       return Clone();
     }
@@ -2733,7 +2719,8 @@ class AXPosition {
     if (GetAnchor() == common_anchor) {
       text_position = text_position->CreateAncestorPosition(
           common_anchor, ax::mojom::MoveDirection::kForward);
-    } else if (boundary_behavior == AXBoundaryBehavior::kStopAtAnchorBoundary) {
+    } else if (options.boundary_behavior ==
+               AXBoundaryBehavior::kStopAtAnchorBoundary) {
       // If the next character position crosses the current anchor boundary
       // with kStopAtAnchorBoundary, snap to the end of the current anchor.
       return CreatePositionAtEndOfAnchor();
@@ -2756,17 +2743,16 @@ class AXPosition {
   // See the comment above `CreateNextCharacterPosition` for the definition of a
   // grapheme cluster.
   AXPositionInstance CreatePreviousCharacterPosition(
-      AXBoundaryBehavior boundary_behavior) const {
-    if ((boundary_behavior == AXBoundaryBehavior::kStopAtAnchorBoundary ||
-         boundary_behavior ==
-             AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary) &&
+      AXMovementOptions options) const {
+    if (options.boundary_behavior ==
+            AXBoundaryBehavior::kStopAtAnchorBoundary &&
         AtStartOfAnchor()) {
       return Clone();
     }
 
     AXPositionInstance text_position = AsLeafTextPositionAfterCharacter();
     if (text_position->IsNullPosition()) {
-      if (boundary_behavior != AXBoundaryBehavior::kCrossBoundary)
+      if (options.boundary_behavior != AXBoundaryBehavior::kCrossBoundary)
         text_position = Clone();
 
       return text_position;
@@ -2783,8 +2769,10 @@ class AXPosition {
     // our current anchor. We also need to ignore any differences that might be
     // due to the affinity, because that should not be a determining factor as
     // to whether we would stop if we are already at boundary or not.
-    if (boundary_behavior ==
-            AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary &&
+    if (options.boundary_behavior ==
+            AXBoundaryBehavior::kStopAtAnchorBoundary &&
+        options.boundary_detection ==
+            AXBoundaryDetection::kCheckInitialPosition &&
         (AtStartOfAnchor() || *text_position == *CloneWithUpstreamAffinity() ||
          *text_position == *CloneWithDownstreamAffinity())) {
       return Clone();
@@ -2809,7 +2797,8 @@ class AXPosition {
     if (GetAnchor() == common_anchor) {
       text_position = text_position->CreateAncestorPosition(
           common_anchor, ax::mojom::MoveDirection::kBackward);
-    } else if (boundary_behavior == AXBoundaryBehavior::kStopAtAnchorBoundary) {
+    } else if (options.boundary_behavior ==
+               AXBoundaryBehavior::kStopAtAnchorBoundary) {
       // If the previous character position crosses the current anchor boundary
       // with StopAtAnchorBoundary, snap to the start of the current anchor.
       return CreatePositionAtStartOfAnchor();
@@ -2826,28 +2815,28 @@ class AXPosition {
   }
 
   AXPositionInstance CreateNextWordStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfWordPredicate),
         base::BindRepeating(&AtEndOfWordPredicate),
         base::BindRepeating(&GetWordStartOffsetsFunc));
   }
 
   AXPositionInstance CreatePreviousWordStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfWordPredicate),
         base::BindRepeating(&AtEndOfWordPredicate),
         base::BindRepeating(&GetWordStartOffsetsFunc));
-      }
+  }
 
   // Word end positions are one past the last character of the word.
   AXPositionInstance CreateNextWordEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfWordPredicate),
         base::BindRepeating(&AtEndOfWordPredicate),
         base::BindRepeating(&GetWordEndOffsetsFunc));
@@ -2855,26 +2844,26 @@ class AXPosition {
 
   // Word end positions are one past the last character of the word.
   AXPositionInstance CreatePreviousWordEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfWordPredicate),
         base::BindRepeating(&AtEndOfWordPredicate),
         base::BindRepeating(&GetWordEndOffsetsFunc));
   }
 
   AXPositionInstance CreateNextLineStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfLinePredicate),
         base::BindRepeating(&AtEndOfLinePredicate));
   }
 
   AXPositionInstance CreatePreviousLineStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfLinePredicate),
         base::BindRepeating(&AtEndOfLinePredicate));
   }
@@ -2882,9 +2871,9 @@ class AXPosition {
   // Line end positions are one past the last character of the line, excluding
   // any white space or newline characters that separate the lines.
   AXPositionInstance CreateNextLineEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfLinePredicate),
         base::BindRepeating(&AtEndOfLinePredicate));
   }
@@ -2892,93 +2881,93 @@ class AXPosition {
   // Line end positions are one past the last character of the line, excluding
   // any white space or newline characters separating the lines.
   AXPositionInstance CreatePreviousLineEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfLinePredicate),
         base::BindRepeating(&AtEndOfLinePredicate));
   }
 
   AXPositionInstance CreateNextFormatStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfFormatPredicate),
         base::BindRepeating(&AtEndOfFormatPredicate));
   }
 
   AXPositionInstance CreatePreviousFormatStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfFormatPredicate),
         base::BindRepeating(&AtEndOfFormatPredicate));
   }
 
   AXPositionInstance CreateNextFormatEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfFormatPredicate),
         base::BindRepeating(&AtEndOfFormatPredicate));
   }
 
   AXPositionInstance CreatePreviousFormatEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfFormatPredicate),
         base::BindRepeating(&AtEndOfFormatPredicate));
   }
 
   AXPositionInstance CreateNextSentenceStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfSentencePredicate),
         base::BindRepeating(&AtEndOfSentencePredicate),
         base::BindRepeating(&GetSentenceStartOffsetsFunc));
   }
 
   AXPositionInstance CreatePreviousSentenceStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfSentencePredicate),
         base::BindRepeating(&AtEndOfSentencePredicate),
         base::BindRepeating(&GetSentenceStartOffsetsFunc));
   }
 
   AXPositionInstance CreateNextSentenceEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfSentencePredicate),
         base::BindRepeating(&AtEndOfSentencePredicate),
         base::BindRepeating(&GetSentenceEndOffsetsFunc));
   }
 
   AXPositionInstance CreatePreviousSentenceEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfSentencePredicate),
         base::BindRepeating(&AtEndOfSentencePredicate),
         base::BindRepeating(&GetSentenceEndOffsetsFunc));
   }
 
   AXPositionInstance CreateNextParagraphStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfParagraphPredicate),
         base::BindRepeating(&AtEndOfParagraphPredicate));
   }
 
   AXPositionInstance CreateNextParagraphStartPositionSkippingEmptyParagraphs(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(
             &AtStartOfParagraphExcludingEmptyParagraphsPredicate),
         base::BindRepeating(
@@ -2986,18 +2975,18 @@ class AXPosition {
   }
 
   AXPositionInstance CreatePreviousParagraphStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfParagraphPredicate),
         base::BindRepeating(&AtEndOfParagraphPredicate));
   }
 
   AXPositionInstance
   CreatePreviousParagraphStartPositionSkippingEmptyParagraphs(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(
             &AtStartOfParagraphExcludingEmptyParagraphsPredicate),
         base::BindRepeating(
@@ -3005,55 +2994,55 @@ class AXPosition {
   }
 
   AXPositionInstance CreateNextParagraphEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfParagraphPredicate),
         base::BindRepeating(&AtEndOfParagraphPredicate));
   }
 
   AXPositionInstance CreatePreviousParagraphEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfParagraphPredicate),
         base::BindRepeating(&AtEndOfParagraphPredicate));
   }
 
   AXPositionInstance CreateNextPageStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfPagePredicate),
         base::BindRepeating(&AtEndOfPagePredicate));
   }
 
   AXPositionInstance CreatePreviousPageStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfPagePredicate),
         base::BindRepeating(&AtEndOfPagePredicate));
   }
 
   AXPositionInstance CreateNextPageEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfPagePredicate),
         base::BindRepeating(&AtEndOfPagePredicate));
   }
 
   AXPositionInstance CreatePreviousPageEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
+      AXMovementOptions options) const {
     return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfPagePredicate),
         base::BindRepeating(&AtEndOfPagePredicate));
   }
 
   AXPositionInstance CreateBoundaryStartPosition(
-      AXBoundaryBehavior boundary_behavior,
+      AXMovementOptions options,
       ax::mojom::MoveDirection move_direction,
       BoundaryConditionPredicate at_start_condition,
       BoundaryConditionPredicate at_end_condition,
@@ -3074,15 +3063,15 @@ class AXPosition {
     if (text_position->IsNullPosition())
       return text_position;
 
-    if (boundary_behavior !=
-        AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary) {
+    if (options.boundary_detection ==
+        AXBoundaryDetection::kDontCheckInitialPosition) {
       text_position =
           text_position->CreateAdjacentLeafTextPosition(move_direction);
       if (text_position->IsNullPosition()) {
         // There is no adjacent position to move to; in such case, CrossBoundary
         // behavior shall return a null position, while any other behavior shall
         // fallback to return the initial position.
-        if (boundary_behavior == AXBoundaryBehavior::kCrossBoundary)
+        if (options.boundary_behavior == AXBoundaryBehavior::kCrossBoundary)
           return text_position;
         return Clone();
       }
@@ -3115,10 +3104,8 @@ class AXPosition {
         }
 
         if (next_position->IsNullPosition()) {
-          if (boundary_behavior == AXBoundaryBehavior::kStopAtAnchorBoundary ||
-              boundary_behavior ==
-                  AXBoundaryBehavior::
-                      kStopAtAnchorBoundaryOrIfAlreadyAtBoundary) {
+          if (options.boundary_behavior ==
+              AXBoundaryBehavior::kStopAtAnchorBoundary) {
             switch (move_direction) {
               case ax::mojom::MoveDirection::kNone:
                 NOTREACHED();
@@ -3132,7 +3119,7 @@ class AXPosition {
             }
           }
 
-          if (boundary_behavior ==
+          if (options.boundary_behavior ==
               AXBoundaryBehavior::kStopAtLastAnchorBoundary) {
             // We can't simply return the following position; break and after
             // this loop we'll try to do some adjustments to text_position.
@@ -3169,10 +3156,8 @@ class AXPosition {
     if (GetAnchor() == common_anchor) {
       text_position =
           text_position->CreateAncestorPosition(common_anchor, move_direction);
-    } else if (boundary_behavior == AXBoundaryBehavior::kStopAtAnchorBoundary ||
-               boundary_behavior ==
-                   AXBoundaryBehavior::
-                       kStopAtAnchorBoundaryOrIfAlreadyAtBoundary) {
+    } else if (options.boundary_behavior ==
+               AXBoundaryBehavior::kStopAtAnchorBoundary) {
       switch (move_direction) {
         case ax::mojom::MoveDirection::kNone:
           NOTREACHED();
@@ -3199,7 +3184,8 @@ class AXPosition {
     // return a position within the whole content just before crossing into the
     // ignored content. This will be the last unignored anchor boundary.
     if (unignored_position->IsNullPosition() &&
-        boundary_behavior == AXBoundaryBehavior::kStopAtLastAnchorBoundary) {
+        options.boundary_behavior ==
+            AXBoundaryBehavior::kStopAtLastAnchorBoundary) {
       unignored_position = text_position->AsUnignoredPosition(
           AXPositionAdjustmentBehavior::kMoveBackward);
     }
@@ -3207,7 +3193,7 @@ class AXPosition {
   }
 
   AXPositionInstance CreateBoundaryEndPosition(
-      AXBoundaryBehavior boundary_behavior,
+      AXMovementOptions options,
       ax::mojom::MoveDirection move_direction,
       BoundaryConditionPredicate at_start_condition,
       BoundaryConditionPredicate at_end_condition,
@@ -3228,15 +3214,15 @@ class AXPosition {
     if (text_position->IsNullPosition())
       return text_position;
 
-    if (boundary_behavior !=
-        AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary) {
+    if (options.boundary_detection ==
+        AXBoundaryDetection::kDontCheckInitialPosition) {
       text_position =
           text_position->CreateAdjacentLeafTextPosition(move_direction);
       if (text_position->IsNullPosition()) {
         // There is no adjacent position to move to; in such case, CrossBoundary
         // behavior shall return a null position, while any other behavior shall
         // fallback to return the initial position.
-        if (boundary_behavior == AXBoundaryBehavior::kCrossBoundary)
+        if (options.boundary_behavior == AXBoundaryBehavior::kCrossBoundary)
           return text_position;
         return Clone();
       }
@@ -3272,10 +3258,8 @@ class AXPosition {
         }
 
         if (next_position->IsNullPosition()) {
-          if (boundary_behavior == AXBoundaryBehavior::kStopAtAnchorBoundary ||
-              boundary_behavior ==
-                  AXBoundaryBehavior::
-                      kStopAtAnchorBoundaryOrIfAlreadyAtBoundary) {
+          if (options.boundary_behavior ==
+              AXBoundaryBehavior::kStopAtAnchorBoundary) {
             switch (move_direction) {
               case ax::mojom::MoveDirection::kNone:
                 NOTREACHED();
@@ -3289,7 +3273,7 @@ class AXPosition {
             }
           }
 
-          if (boundary_behavior ==
+          if (options.boundary_behavior ==
               AXBoundaryBehavior::kStopAtLastAnchorBoundary) {
             // We can't simply return the following position; break and after
             // this loop we'll try to do some adjustments to text_position.
@@ -3326,10 +3310,8 @@ class AXPosition {
     if (GetAnchor() == common_anchor) {
       text_position =
           text_position->CreateAncestorPosition(common_anchor, move_direction);
-    } else if (boundary_behavior == AXBoundaryBehavior::kStopAtAnchorBoundary ||
-               boundary_behavior ==
-                   AXBoundaryBehavior::
-                       kStopAtAnchorBoundaryOrIfAlreadyAtBoundary) {
+    } else if (options.boundary_behavior ==
+               AXBoundaryBehavior::kStopAtAnchorBoundary) {
       switch (move_direction) {
         case ax::mojom::MoveDirection::kNone:
           NOTREACHED();
@@ -3371,7 +3353,8 @@ class AXPosition {
     // return a position within the whole content just before crossing into the
     // ignored content. This will be the last unignored anchor boundary.
     if (unignored_position->IsNullPosition() &&
-        boundary_behavior == AXBoundaryBehavior::kStopAtLastAnchorBoundary) {
+        options.boundary_behavior ==
+            AXBoundaryBehavior::kStopAtLastAnchorBoundary) {
       unignored_position = text_position->AsUnignoredPosition(
           AXPositionAdjustmentBehavior::kMoveForward);
     }
