@@ -521,10 +521,6 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type =
           protocol::Audits::DeprecationIssueTypeEnum::ObsoleteWebRtcCipherSuite;
       break;
-    case DeprecationIssueType::kPaymentRequestBasicCard:
-      type =
-          protocol::Audits::DeprecationIssueTypeEnum::PaymentRequestBasicCard;
-      break;
     case DeprecationIssueType::kPictureSourceSrc:
       type = protocol::Audits::DeprecationIssueTypeEnum::PictureSourceSrc;
       break;

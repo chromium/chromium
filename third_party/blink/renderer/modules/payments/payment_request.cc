@@ -437,8 +437,6 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
   if (RuntimeEnabledFeatures::PaymentRequestBasicCardEnabled(
           &execution_context) &&
       supported_method == "basic-card") {
-    Deprecation::CountDeprecation(&execution_context,
-                                  WebFeature::kPaymentRequestBasicCard);
     BasicCardHelper::ParseBasiccardData(input, output->supported_networks,
                                         exception_state);
   } else if (supported_method == kSecurePaymentConfirmationMethod &&

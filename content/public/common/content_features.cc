@@ -801,8 +801,8 @@ const base::Feature kSendBeaconThrowForBlobWithNonSimpleType{
 const base::Feature kServiceWorkerPaymentApps{"ServiceWorkerPaymentApps",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable the basic-card payment method from the PaymentRequest API. This flag
-// will be used to deprecate basic-card eventually: crbug.com/1209835.
+// Enable the basic-card payment method from the PaymentRequest API. This has
+// been disabled since M100 and is soon to be removed: crbug.com/1209835.
 const base::Feature kPaymentRequestBasicCard{"PaymentRequestBasicCard",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -65,7 +65,6 @@ enum class DeprecationIssueType {
   kNotificationInsecureOrigin,
   kNotificationPermissionRequestedIframe,
   kObsoleteWebRtcCipherSuite,
-  kPaymentRequestBasicCard,
   kPictureSourceSrc,
   kPrefixedCancelAnimationFrame,
   kPrefixedRequestAnimationFrame,

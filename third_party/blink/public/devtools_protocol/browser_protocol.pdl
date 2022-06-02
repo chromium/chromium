@@ -767,7 +767,6 @@ experimental domain Audits
       NotificationInsecureOrigin
       NotificationPermissionRequestedIframe
       ObsoleteWebRtcCipherSuite
-      PaymentRequestBasicCard
       PictureSourceSrc
       PrefixedCancelAnimationFrame
       PrefixedRequestAnimationFrame
