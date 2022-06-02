@@ -27,11 +27,8 @@ enum class ContextMenuTitleOrigin {
 
 typedef std::pair<NSString*, ContextMenuTitleOrigin> TitleAndOrigin;
 
-// DEPRECATED
 // Returns the title and origin for |params|.
 TitleAndOrigin GetContextMenuTitleAndOrigin(web::ContextMenuParams params) {
-  DCHECK(!base::FeatureList::IsEnabled(
-      web::features::kWebViewNativeContextMenuPhase2));
   NSString* title = nil;
   ContextMenuTitleOrigin origin = ContextMenuTitleOrigin::kUnknown;
 
@@ -78,36 +75,7 @@ TitleAndOrigin GetContextMenuTitleAndOrigin(web::ContextMenuParams params) {
 }  // namespace
 
 NSString* GetContextMenuTitle(web::ContextMenuParams params) {
-  if (!base::FeatureList::IsEnabled(
-          web::features::kWebViewNativeContextMenuPhase2)) {
-    return GetContextMenuTitleAndOrigin(params).first;
-  }
-  if (params.link_url.is_valid()) {
-    if (params.link_url.SchemeIsHTTPOrHTTPS()) {
-      url_formatter::FormatUrlTypes format_types =
-          url_formatter::kFormatUrlOmitDefaults |
-          url_formatter::kFormatUrlTrimAfterHost |
-          url_formatter::kFormatUrlOmitHTTPS |
-          url_formatter::kFormatUrlOmitTrivialSubdomains;
-
-      std::u16string formatted_url = url_formatter::FormatUrl(
-          params.link_url, format_types, base::UnescapeRule::NORMAL,
-          /*new_parsed=*/nullptr,
-          /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr);
-      return base::SysUTF16ToNSString(formatted_url);
-    } else {
-      return base::SysUTF8ToNSString(params.link_url.scheme());
-    }
-  }
-  NSString* title = params.title_attribute;
-  if (params.alt_text && params.src_url.is_valid()) {
-    if (title) {
-      title = [NSString stringWithFormat:@"%@ – %@", params.alt_text, title];
-    } else {
-      title = params.alt_text;
-    }
-  }
-  return title;
+  return GetContextMenuTitleAndOrigin(params).first;
 }
 
 NSString* GetContextMenuSubtitle(web::ContextMenuParams params) {
@@ -115,8 +83,6 @@ NSString* GetContextMenuSubtitle(web::ContextMenuParams params) {
 }
 
 bool IsImageTitle(web::ContextMenuParams params) {
-  DCHECK(!base::FeatureList::IsEnabled(
-      web::features::kWebViewNativeContextMenuPhase2));
   return GetContextMenuTitleAndOrigin(params).second ==
          ContextMenuTitleOrigin::kImageTitle;
 }

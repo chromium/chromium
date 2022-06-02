@@ -361,100 +361,8 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests context menu for image that are also links.
-- (void)testContextMenuImageLink {
-  if (![ChromeEarlGrey isContextMenuInWebViewEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test for the new implementation of context menu");
-  }
-
-  const GURL shortTileURL = self.testServer->GetURL(kLinkImagePageUrl);
-  [ChromeEarlGrey loadURL:shortTileURL];
-  [ChromeEarlGrey waitForPageToFinishLoading];
-  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
-
-  LongPressElement(kLogoPageChromiumImageId);
-  // Check that the title is shown.
-  std::string displayedHost = shortTileURL.host() + ":" + shortTileURL.port();
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
-                                base::SysUTF8ToNSString(displayedHost)),
-                            grey_not(grey_ancestor(grey_kindOfClassName(
-                                @"LocationBarSteadyView"))),
-                            nil)] assertWithMatcher:grey_notNil()];
-  // Check the subtitle is shown.
-  const GURL shortLinkHrefURL =
-      self.testServer->GetURL(base::SysNSStringToUTF8(kShortLinkHref));
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
-                                          base::SysUTF8ToNSString(
-                                              shortLinkHrefURL.spec()))]
-      assertWithMatcher:grey_notNil()];
-
-  ClearContextMenu();
-}
-
 // Tests context menu title truncation cases.
 - (void)testContextMenuTitleTruncation {
-  if (![ChromeEarlGrey isContextMenuInWebViewEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test for the new implementation of context menu");
-  }
-
-  const GURL shortTileURL = self.testServer->GetURL(kShortTruncationPageUrl);
-  [ChromeEarlGrey loadURL:shortTileURL];
-  [ChromeEarlGrey waitForPageToFinishLoading];
-  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
-
-  LongPressElement(kLogoPageChromiumImageId);
-  [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitle)]
-      assertWithMatcher:grey_notNil()];
-  ClearContextMenu();
-
-  LongPressElement(kInitialPageDestinationLinkId);
-  // Check that the title is shown.
-  std::string displayedHost = shortTileURL.host() + ":" + shortTileURL.port();
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
-                                base::SysUTF8ToNSString(displayedHost)),
-                            grey_not(grey_ancestor(grey_kindOfClassName(
-                                @"LocationBarSteadyView"))),
-                            nil)] assertWithMatcher:grey_notNil()];
-
-  // Check the subtitle is shown.
-  const GURL shortLinkHrefURL =
-      self.testServer->GetURL(base::SysNSStringToUTF8(kShortLinkHref));
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
-                                          base::SysUTF8ToNSString(
-                                              shortLinkHrefURL.spec()))]
-      assertWithMatcher:grey_notNil()];
-  ClearContextMenu();
-
-  // Check the long title.
-  const GURL longTitleURL = self.testServer->GetURL(kLongTruncationPageUrl);
-  [ChromeEarlGrey loadURL:longTitleURL];
-  [ChromeEarlGrey waitForPageToFinishLoading];
-  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
-
-  LongPressElement(kLogoPageChromiumImageId);
-  [[EarlGrey selectElementWithMatcher:grey_text(kLongImgTitle)]
-      assertWithMatcher:grey_notNil()];
-  ClearContextMenu();
-
-  LongPressElement(kInitialPageDestinationLinkId);
-  // The menu will be fully displayed (the truncation is done by UILabel).
-  const GURL longLinkHrefURL =
-      self.testServer->GetURL(base::SysNSStringToUTF8(kLongLinkHref));
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
-                                          base::SysUTF8ToNSString(
-                                              longLinkHrefURL.spec()))]
-      assertWithMatcher:grey_notNil()];
-  ClearContextMenu();
-}
-
-// Tests context menu title truncation cases.
-- (void)testLegacyContextMenuTitleTruncation {
-  if ([ChromeEarlGrey isContextMenuInWebViewEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test for the old implementation of context menu");
-  }
-
   const GURL shortTtileURL = self.testServer->GetURL(kShortTruncationPageUrl);
   [ChromeEarlGrey loadURL:shortTtileURL];
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -677,38 +585,6 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   // tabs.
   [ChromeEarlGrey waitForIncognitoTabCount:1 inWindowWithNumber:1];
   [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:1];
-}
-
-// Tests that tapping on the preview loads the page pointed by the destination
-// URL.
-- (void)testTappingOnPreview {
-  if (![ChromeEarlGrey isContextMenuInWebViewEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test for the new implementation of context menu");
-  }
-
-  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
-  [ChromeEarlGrey loadURL:initialURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:kInitialPageDestinationLinkText];
-  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
-
-  LongPressElement(kInitialPageDestinationLinkId);
-
-  const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
-                                              base::SysUTF8ToNSString(
-                                                  destinationURL.spec())),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-
-  [ChromeEarlGrey waitForWebStateContainingText:kDestinationPageText];
-  [ChromeEarlGrey waitForMainTabCount:1];
-
-  // Verify url.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
 }
 
 // Checks that JavaScript links only have the "copy" option.

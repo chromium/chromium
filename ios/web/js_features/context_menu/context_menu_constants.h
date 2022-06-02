@@ -47,21 +47,6 @@ extern const char kContextMenuElementTextOffset[];
 // only).
 extern const char kContextMenuElementAlt[];
 
-// Optional key. Represents element's naturalWidth attribute if present (<img>
-// element only).
-extern const char kContextMenuElementNaturalWidth[];
-
-// Optional key. Represents element's naturalHeight attribute if present (<img>
-// element only).
-extern const char kContextMenuElementNaturalHeight[];
-
-// Optional key. Represents element's client bounding box if present.
-extern const char kContextMenuElementBoundingBox[];
-extern const char kContextMenuElementBoundingBoxX[];
-extern const char kContextMenuElementBoundingBoxY[];
-extern const char kContextMenuElementBoundingBoxWidth[];
-extern const char kContextMenuElementBoundingBoxHeight[];
-
 }  // namespace web
 
 #endif  // IOS_WEB_JS_FEATURES_CONTEXT_MENU_CONTEXT_MENU_CONSTANTS_H_

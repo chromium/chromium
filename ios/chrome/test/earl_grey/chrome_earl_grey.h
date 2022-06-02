@@ -654,9 +654,6 @@ UIWindow* GetAnyKeyWindow();
 // can, open multiple windows.
 - (BOOL)areMultipleWindowsSupported;
 
-// Returns whether the new ContextMenu for web content feature is enabled.
-- (BOOL)isContextMenuInWebViewEnabled;
-
 // Returns whether the NewOverflowMenu feature is enabled.
 - (BOOL)isNewOverflowMenuEnabled;
 

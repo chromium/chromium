@@ -927,14 +927,6 @@
     "owners": [ "yusuyoutube@google.com", "benwgold@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 103
   },
-  { "name":"context-menu-phase2",
-      "owners":["gambard", "bling-flags@google.com"],
-      "expiry_milestone":100
-  },
-  { "name":"context-menu-phase2-screenshot",
-      "owners":["christianxu", "gambard", "bling-flags@google.com"],
-      "expiry_milestone":103
-  },
   {
     "name": "context-menu-popup-style",
     "owners": [ "wenyufu", "clank-app-team@google.com" ],

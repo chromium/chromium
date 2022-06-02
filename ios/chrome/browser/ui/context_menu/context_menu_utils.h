@@ -17,7 +17,6 @@ NSString* GetContextMenuTitle(web::ContextMenuParams params);
 // Returns the subtitle for the context menu |params|.
 NSString* GetContextMenuSubtitle(web::ContextMenuParams params);
 
-// DEPRECATED.
 // Returns whether the title for context menu |params| is an image title.
 bool IsImageTitle(web::ContextMenuParams params);
 

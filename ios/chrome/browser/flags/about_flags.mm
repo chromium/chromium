@@ -664,11 +664,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillFillMerchantPromoCodeFields)},
-    {"context-menu-phase2",
-     flag_descriptions::kWebViewNativeContextMenuPhase2Name,
-     flag_descriptions::kWebViewNativeContextMenuPhase2Description,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::features::kWebViewNativeContextMenuPhase2)},
     {"default-wkwebview-context-menu",
      flag_descriptions::kDefaultWebViewContextMenuName,
      flag_descriptions::kDefaultWebViewContextMenuDescription, flags_ui::kOsIos,
@@ -836,12 +831,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnhancedProtectionPhase2Name,
      flag_descriptions::kEnhancedProtectionPhase2Description, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(safe_browsing::kEnhancedProtectionPhase2IOS)},
-    {"context-menu-phase2-screenshot",
-     flag_descriptions::kWebViewNativeContextMenuPhase2ScreenshotName,
-     flag_descriptions::kWebViewNativeContextMenuPhase2ScreenshotDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         web::features::kWebViewNativeContextMenuPhase2Screenshot)},
     {"autofill-enable-unmask-card-request-set-instrument-id",
      flag_descriptions::kAutofillEnableUnmaskCardRequestSetInstrumentIdName,
      flag_descriptions::

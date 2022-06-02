@@ -186,9 +186,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
-  if (IsDiscoverFeedPreviewEnabled() ||
-      base::FeatureList::IsEnabled(
-          web::features::kWebViewNativeContextMenuPhase2)) {
+  if (IsDiscoverFeedPreviewEnabled()) {
     [model addItem:[self linkPreviewItem]
         toSectionWithIdentifier:SectionIdentifierSettings];
   }

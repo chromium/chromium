@@ -24,8 +24,6 @@
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
-#import "ios/chrome/browser/ui/context_menu/image_preview_view_controller.h"
-#import "ios/chrome/browser/ui/context_menu/link_no_preview_view_controller.h"
 #import "ios/chrome/browser/ui/image_util/image_copier.h"
 #import "ios/chrome/browser/ui/image_util/image_saver.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
@@ -299,19 +297,14 @@ NSString* const kContextMenuEllipsis = @"…";
 
   NSString* menuTitle = nil;
   if (isLink || isImage) {
-    if (!base::FeatureList::IsEnabled(
-            web::features::kWebViewNativeContextMenuPhase2)) {
-      menuTitle = GetContextMenuTitle(params);
+    menuTitle = GetContextMenuTitle(params);
 
-      // Truncate context meny titles that originate from URLs, leaving text
-      // titles untruncated.
-      if (!IsImageTitle(params) &&
-          menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
-        menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
-            stringByAppendingString:kContextMenuEllipsis];
-      }
-    } else if (!isLink) {
-      menuTitle = GetContextMenuTitle(params);
+    // Truncate context meny titles that originate from URLs, leaving text
+    // titles untruncated.
+    if (!IsImageTitle(params) &&
+        menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
+      menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
+          stringByAppendingString:kContextMenuEllipsis];
     }
   }
 
@@ -323,55 +316,9 @@ NSString* const kContextMenuEllipsis = @"…";
         return menu;
       };
 
-  UIContextMenuContentPreviewProvider previewProvider = nil;
-  if (isLink || isImage) {
-    previewProvider = ^UIViewController* {
-      if (!weakSelf || !base::FeatureList::IsEnabled(
-                           web::features::kWebViewNativeContextMenuPhase2)) {
-        return nil;
-      }
-      if (isLink) {
-        NSString* title = GetContextMenuTitle(params);
-        NSString* subtitle = GetContextMenuSubtitle(params);
-        LinkNoPreviewViewController* previewViewController =
-            [[LinkNoPreviewViewController alloc] initWithTitle:title
-                                                      subtitle:subtitle];
-
-        __weak LinkNoPreviewViewController* weakPreview = previewViewController;
-        FaviconLoader* faviconLoader =
-            IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                weakSelf.browser->GetBrowserState());
-        faviconLoader->FaviconForPageUrl(
-            linkURL, kDesiredSmallFaviconSizePt, kDesiredSmallFaviconSizePt,
-            /*fallback_to_google_server=*/false,
-            ^(FaviconAttributes* attributes) {
-              [weakPreview configureFaviconWithAttributes:attributes];
-            });
-        return previewViewController;
-      }
-      DCHECK(isImage);
-      ImagePreviewViewController* preview = [[ImagePreviewViewController alloc]
-          initWithPreferredContentSize:CGSizeMake(params.natural_width,
-                                                  params.natural_height)];
-      if (params.screenshot) {
-        [preview updateImage:params.screenshot];
-      }
-      __weak ImagePreviewViewController* weakPreview = preview;
-
-      ImageFetchTabHelper* imageFetcher =
-          ImageFetchTabHelper::FromWebState(weakSelf.currentWebState);
-      DCHECK(imageFetcher);
-      imageFetcher->GetImageData(imageURL, referrer, ^(NSData* data) {
-        [weakPreview updateImageData:data];
-      });
-
-      return preview;
-    };
-  }
-
   return
       [UIContextMenuConfiguration configurationWithIdentifier:nil
-                                              previewProvider:previewProvider
+                                              previewProvider:nil
                                                actionProvider:actionProvider];
 }
 
