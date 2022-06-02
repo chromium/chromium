@@ -208,6 +208,13 @@ class LegacyAppCommandWebImplTest : public testing::Test {
     }
   }
 
+  std::wstring GetCommandLine(int key, const std::wstring& exe_name) {
+    base::FilePath programfiles_path;
+    EXPECT_TRUE(base::PathService::Get(key, &programfiles_path));
+    return base::CommandLine(programfiles_path.Append(exe_name))
+        .GetCommandLineString();
+  }
+
   base::CommandLine test_process_command_line_;
   base::FilePath temp_directory_;
 };
@@ -228,48 +235,43 @@ TEST_F(LegacyAppCommandWebImplTest, InvalidPaths) {
             absl::nullopt);
 }
 
-TEST_F(LegacyAppCommandWebImplTest, NoArguments) {
-  EXPECT_EQ(FormatCommandLine(L"\"C:\\Program Files (x86)\\process.exe\"", {})
-                .value(),
-            L"\"C:\\Program Files (x86)\\process.exe\"");
-  EXPECT_EQ(FormatCommandLine(L"\"C:\\Program Files (x86)\\process.exe\"", {})
-                .value(),
-            L"\"C:\\Program Files (x86)\\process.exe\"");
+TEST_F(LegacyAppCommandWebImplTest, ProgramFilesPaths) {
+  for (const int key : {base::DIR_PROGRAM_FILES, base::DIR_PROGRAM_FILESX86,
+                        base::DIR_PROGRAM_FILES6432}) {
+    const std::wstring process_command_line =
+        GetCommandLine(key, L"process.exe");
+    EXPECT_EQ(FormatCommandLine(process_command_line, {}).value(),
+              process_command_line);
+  }
 }
 
 TEST_F(LegacyAppCommandWebImplTest, UnformattedParameters) {
   std::wstring process_name;
   std::wstring arguments;
+  const std::wstring process_command_line =
+      GetCommandLine(base::DIR_PROGRAM_FILES, L"process.exe");
+
+  EXPECT_EQ(FormatCommandLine(process_command_line + L" abc=1", {}).value(),
+            process_command_line + L" abc=1");
   EXPECT_EQ(
-      FormatCommandLine(L"\"C:\\Program Files (x86)\\process.exe\" abc=1", {})
-          .value(),
-      L"\"C:\\Program Files (x86)\\process.exe\" abc=1");
-  EXPECT_EQ(FormatCommandLine(
-                L"\"C:\\Program Files (x86)\\process.exe\" abc=1 xyz=2", {})
+      FormatCommandLine(process_command_line + L" abc=1 xyz=2", {}).value(),
+      process_command_line + L" abc=1 xyz=2");
+  EXPECT_EQ(FormatCommandLine(process_command_line + L"  abc=1  xyz=2   q ", {})
                 .value(),
-            L"\"C:\\Program Files (x86)\\process.exe\" abc=1 xyz=2");
+            process_command_line + L" abc=1 xyz=2 q");
   EXPECT_EQ(
-      FormatCommandLine(
-          L"\"C:\\Program Files (x86)\\process.exe\"  abc=1  xyz=2   q ", {})
-          .value(),
-      L"\"C:\\Program Files (x86)\\process.exe\" abc=1 xyz=2 q");
-  EXPECT_EQ(FormatCommandLine(
-                L"\"C:\\Program Files (x86)\\process.exe\" \"abc = 1\"", {})
-                .value(),
-            L"\"C:\\Program Files (x86)\\process.exe\" \"abc = 1\"");
-  EXPECT_EQ(FormatCommandLine(
-                L"\"C:\\Program Files (x86)\\process.exe\" abc\" = \"1", {})
-                .value(),
-            L"\"C:\\Program Files (x86)\\process.exe\" \"abc = 1\"");
+      FormatCommandLine(process_command_line + L" \"abc = 1\"", {}).value(),
+      process_command_line + L" \"abc = 1\"");
+  EXPECT_EQ(
+      FormatCommandLine(process_command_line + L" abc\" = \"1", {}).value(),
+      process_command_line + L" \"abc = 1\"");
 
   EXPECT_EQ(
-      FormatCommandLine(L"\"c:\\Program Files\\process.exe\" \"abc = 1\"", {})
-          .value(),
-      L"\"c:\\Program Files\\process.exe\" \"abc = 1\"");
+      FormatCommandLine(process_command_line + L" \"abc = 1\"", {}).value(),
+      process_command_line + L" \"abc = 1\"");
   EXPECT_EQ(
-      FormatCommandLine(L"\"c:\\Program Files\\process.exe\" abc\" = \"1", {})
-          .value(),
-      L"\"c:\\Program Files\\process.exe\" \"abc = 1\"");
+      FormatCommandLine(process_command_line + L" abc\" = \"1", {}).value(),
+      process_command_line + L" \"abc = 1\"");
 }
 
 TEST_F(LegacyAppCommandWebImplTest, SimpleParameters) {
@@ -277,25 +279,26 @@ TEST_F(LegacyAppCommandWebImplTest, SimpleParameters) {
   parameters.push_back(L"p1");
   parameters.push_back(L"p2");
   parameters.push_back(L"p3");
+  const std::wstring process_command_line =
+      GetCommandLine(base::DIR_PROGRAM_FILES, L"process.exe");
 
-  EXPECT_EQ(FormatCommandLine(
-                L"\"C:\\Program Files (x86)\\process.exe\" abc=%1", parameters)
-                .value(),
-            L"\"C:\\Program Files (x86)\\process.exe\" abc=p1");
-  EXPECT_EQ(FormatCommandLine(
-                L"\"C:\\Program Files (x86)\\process.exe\" abc=%1 %3 %2=x",
-                parameters)
-                .value(),
-            L"\"C:\\Program Files (x86)\\process.exe\" abc=p1 p3 p2=x");
+  EXPECT_EQ(
+      FormatCommandLine(process_command_line + L" abc=%1", parameters).value(),
+      process_command_line + L" abc=p1");
+  EXPECT_EQ(
+      FormatCommandLine(process_command_line + L" abc=%1 %3 %2=x", parameters)
+          .value(),
+      process_command_line + L" abc=p1 p3 p2=x");
 
-  EXPECT_EQ(FormatCommandLine(L"\"C:\\Program Files (x86)\\process.exe\" %4",
-                              parameters),
+  EXPECT_EQ(FormatCommandLine(process_command_line + L" %4", parameters),
             absl::nullopt);
 }
 
 TEST_F(LegacyAppCommandWebImplTest, SimpleParametersNoFormatParameters) {
   EXPECT_EQ(
-      FormatCommandLine(L"\"C:\\Program Files (x86)\\process.exe\" abc=%1", {}),
+      FormatCommandLine(
+          GetCommandLine(base::DIR_PROGRAM_FILES, L"process.exe") + L" abc=%1",
+          {}),
       absl::nullopt);
 }
 
@@ -308,15 +311,15 @@ TEST_F(LegacyAppCommandWebImplTest, FormatParametersSucceeds) {
       {L"%%%1", L"%p1"}, {L"abc%%def%%", L"abc%def%"},
       {L"%12", L"p12"},  {L"%1%2", L"p1p2"},
   };
+  const std::wstring process_command_line =
+      GetCommandLine(base::DIR_PROGRAM_FILES, L"process.exe");
 
   for (const auto& test_case : test_cases) {
     EXPECT_EQ(FormatCommandLine(
-                  base::StrCat({L"\"C:\\Program Files (x86)\\process.exe\" ",
-                                test_case.input}),
+                  base::StrCat({process_command_line, L" ", test_case.input}),
                   {L"p1", L"p2", L"p3"})
                   .value(),
-              base::StrCat({L"\"C:\\Program Files (x86)\\process.exe\" ",
-                            test_case.output}));
+              base::StrCat({process_command_line, L" ", test_case.output}));
   }
 }
 
@@ -330,13 +333,14 @@ TEST_F(LegacyAppCommandWebImplTest, FormatParametersFails) {
       L"placeholder %4  is > size of input substitutions",
       L"%1 is ok, but %8 or %9 is not ok",
   };
+  const std::wstring process_command_line =
+      GetCommandLine(base::DIR_PROGRAM_FILES, L"process.exe");
 
   for (const wchar_t* test_case : test_cases) {
-    EXPECT_EQ(FormatCommandLine(
-                  base::StrCat({L"\"C:\\Program Files (x86)\\process.exe\" ",
-                                test_case}),
-                  {L"p1", L"p2", L"p3"}),
-              absl::nullopt);
+    EXPECT_EQ(
+        FormatCommandLine(base::StrCat({process_command_line, L" ", test_case}),
+                          {L"p1", L"p2", L"p3"}),
+        absl::nullopt);
   }
 }
 
@@ -370,15 +374,15 @@ TEST_F(LegacyAppCommandWebImplTest, ParameterQuoting) {
       // leading space.
       {L" abcdef", L"\" abcdef\""},
   };
+  const std::wstring process_command_line =
+      GetCommandLine(base::DIR_PROGRAM_FILES, L"process.exe");
 
   for (const auto& test_case : test_cases) {
     std::wstring command_line =
-        FormatCommandLine(L"\"C:\\Program Files (x86)\\process.exe\" %1",
-                          {test_case.input})
+        FormatCommandLine(process_command_line + L" %1", {test_case.input})
             .value();
     EXPECT_EQ(command_line,
-              base::StrCat({L"\"C:\\Program Files (x86)\\process.exe\" ",
-                            test_case.output}));
+              base::StrCat({process_command_line, L" ", test_case.output}));
 
     // The formatted output is now sent through ::CommandLineToArgvW to verify
     // that it produces the original input.
