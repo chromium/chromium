@@ -643,8 +643,6 @@ TEST_F(CleanExitBeaconTest,
 
   // Verify metrics.
   histogram_tester_.ExpectTotalCount(
-      "Variations.ExtendedSafeMode.WritePrefsTime", 0);
-  histogram_tester_.ExpectTotalCount(
       "Variations.ExtendedSafeMode.BeaconFileWrite", 0);
 }
 

@@ -478,16 +478,8 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
       base::FieldTrialList::FindFullName(kExtendedSafeModeTrial);
   DCHECK(!group_name.empty());
 
-  if (group_name == kDefaultGroup)
+  if (group_name == kDefaultGroup || group_name == kControlGroup)
     return;
-
-  if (group_name == kControlGroup) {
-    // Populate the histogram for the control group to more easily compare it
-    // with the groups that introduce new behavior.
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-        "Variations.ExtendedSafeMode.WritePrefsTime");
-    return;
-  }
 
   DCHECK_EQ(group_name, kEnabledGroup);
   metrics_state_manager->LogHasSessionShutdownCleanly(

@@ -372,8 +372,6 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
     extended_monitoring_stage_start_time_ = base::TimeTicks::Now();
 #endif
 
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-        "Variations.ExtendedSafeMode.WritePrefsTime");
     // The beacon value is written to disk synchronously twice during
     // startup for clients in the Extended Variations Safe Mode experiment
     // group. The first time is via
