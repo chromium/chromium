@@ -90,33 +90,21 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSource) {
   } kTestCases[] = {
       {"Empty header", "", false, {}},
       {"Invalid JSON", "{", false, {}},
-      {"Not an array", "{}", false, {}},
-      {"Element not a dictionary", R"([123])", false, {}},
-      {"Missing id field", R"([{"key_piece":"0x159"}])", false, {}},
-      {"id not a string", R"([{"id":123}])", false, {}},
-      {"Missing key_piece field", R"([{"id":"key"}])", false, {}},
-      {"key_piece not a string",
-       R"([{"id":"key","key_piece":123}])",
-       false,
-       {}},
-      {"Invalid key", R"([{"id":"key","key_piece":"0xG59"}])", false, {}},
+      {"Not a dictionary", "[]", false, {}},
+      {"key not a string", R"({"key":123})", false, {}},
+      {"Invalid key", R"({"key":"0xG59"})", false, {}},
       {"One valid key",
-       R"([{"id":"key","key_piece":"0x159"}])",
+       R"({"key":"0x159"})",
        true,
        {{"key", absl::MakeUint128(/*high=*/0, /*low=*/345)}}},
       {"Two valid keys",
-       R"([{"id":"key1","key_piece":"0x159"},
-           {"id":"key2","key_piece":"0x50000000000000159"}])",
+       R"({"key1":"0x159","key2":"0x50000000000000159"})",
        true,
        {
            {"key1", absl::MakeUint128(/*high=*/0, /*low=*/345)},
            {"key2", absl::MakeUint128(/*high=*/5, /*low=*/345)},
        }},
-      {"Second key invalid",
-       R"([{"id":"key1","key_piece":"0x159"},
-           {"id":"key2","key_piece":""}])",
-       false,
-       {}},
+      {"Second key invalid", R"({"key1":"0x159","key2":""})", false, {}},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -137,14 +125,11 @@ TEST(AttributionResponseParsingTest,
     wtf_size_t key_size;
 
     String GetHeader() const {
-      JSONArray array;
+      JSONObject object;
       for (wtf_size_t i = 0u; i < key_count; ++i) {
-        auto object = std::make_unique<JSONObject>();
-        object->SetString("key_piece", "0x1");
-        object->SetString("id", GetKey(i));
-        array.PushObject(std::move(object));
+        object.SetString(GetKey(i), "0x1");
       }
-      return array.ToJSONString();
+      return object.ToJSONString();
     }
 
     WTF::HashMap<String, absl::uint128> GetAggregationKeys() const {
@@ -1227,14 +1212,11 @@ TEST(AttributionResponseParsingTest, FiltersSizeHistogram) {
 
 TEST(AttributionResponseParsingTest, SourceAggregatableKeysHistogram) {
   const auto make_aggregatable_source_with_keys = [](wtf_size_t n) {
-    JSONArray array;
+    JSONObject object;
     for (wtf_size_t i = 0; i < n; ++i) {
-      auto object = std::make_unique<JSONObject>();
-      object->SetString("id", String::Number(i));
-      object->SetString("key_piece", "0x1");
-      array.PushObject(std::move(object));
+      object.SetString(String::Number(i), "0x1");
     }
-    return array.ToJSONString();
+    return object.ToJSONString();
   };
 
   const struct {

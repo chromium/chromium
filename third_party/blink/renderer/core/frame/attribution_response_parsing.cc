@@ -31,10 +31,13 @@ namespace blink::attribution_response_parsing {
 
 namespace {
 
-bool ParseAttributionAggregatableKey(const JSONObject* object,
+bool ParseAttributionAggregatableKey(const JSONValue* value,
                                      absl::uint128* out) {
+  if (!value)
+    return false;
+
   String key_piece;
-  if (!object->GetString("key_piece", &key_piece))
+  if (!value->AsString(&key_piece))
     return false;
 
   // Final keys will be restricted to a maximum of 128 bits and the hex strings
@@ -155,11 +158,11 @@ bool ParseAttributionAggregatableSource(
           kExclusiveMaxHistogramValue,
       "Bump the version for histogram Conversions.AggregatableKeysPerSource");
 
-  const auto* array = JSONArray::Cast(json.get());
-  if (!array)
+  const auto* object = JSONObject::Cast(json.get());
+  if (!object)
     return false;
 
-  const wtf_size_t num_keys = array->size();
+  const wtf_size_t num_keys = object->size();
   if (num_keys > kMaxAttributionAggregatableKeysPerSourceOrTrigger)
     return false;
 
@@ -169,22 +172,18 @@ bool ParseAttributionAggregatableSource(
   aggregation_keys.ReserveCapacityForSize(num_keys);
 
   for (wtf_size_t i = 0; i < num_keys; ++i) {
-    JSONValue* value = array->at(i);
+    JSONObject::Entry entry = object->at(i);
+    String key_id = entry.first;
+    JSONValue* value = entry.second;
     DCHECK(value);
 
-    const auto* object = JSONObject::Cast(value);
-    if (!object)
-      return false;
-
-    String key_id;
-    if (!object->GetString("id", &key_id) ||
-        key_id.CharactersSizeInBytes() >
-            kMaxBytesPerAttributionAggregatableKeyId) {
+    if (key_id.CharactersSizeInBytes() >
+        kMaxBytesPerAttributionAggregatableKeyId) {
       return false;
     }
 
     absl::uint128 key;
-    if (!ParseAttributionAggregatableKey(object, &key))
+    if (!ParseAttributionAggregatableKey(value, &key))
       return false;
 
     aggregation_keys.insert(std::move(key_id), key);
@@ -397,7 +396,7 @@ bool ParseAttributionAggregatableTriggerData(
 
     auto data = mojom::blink::AttributionAggregatableTriggerData::New();
 
-    if (!ParseAttributionAggregatableKey(object, &data->key))
+    if (!ParseAttributionAggregatableKey(object->Get("key_piece"), &data->key))
       return false;
 
     JSONArray* source_keys_val = object->GetArray("source_keys");

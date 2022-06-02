@@ -9,12 +9,9 @@
         "destination": "https://d.test",
         "source_event_id": "123"
       },
-      "Attribution-Reporting-Register-Aggregatable-Source": [
-        {
-          "id": "a",
-          "key_piece": "0x159"
-        }
-      ]
+      "Attribution-Reporting-Register-Aggregatable-Source": {
+        "a": "0x159"
+      }
     }
   ],
   "triggers": [

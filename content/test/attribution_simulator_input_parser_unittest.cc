@@ -157,10 +157,9 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
         "destination": "https://c.d.test",
         "expiry": "864001"
       },
-      "Attribution-Reporting-Register-Aggregatable-Source": [{
-        "id": "a",
-        "key_piece": "0x1"
-      }]
+      "Attribution-Reporting-Register-Aggregatable-Source": {
+        "a": "0x1"
+      }
     }
   ]})json";
 
@@ -740,7 +739,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"]: must be a list)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"]: must be a dictionary)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "event",
@@ -754,7 +753,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"][0]: must be a dictionary)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"]["a"]: must be a uint128 formatted as a base-16 string)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "event",
@@ -764,38 +763,9 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
             "source_event_id": "123",
             "destination": "https://a.d.test"
           },
-          "Attribution-Reporting-Register-Aggregatable-Source": [5]
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"][0]["id"]: must be a string)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "source_type": "event",
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "Attribution-Reporting-Register-Source": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test"
-          },
-          "Attribution-Reporting-Register-Aggregatable-Source": [{"id": 5}]
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"][0]["key_piece"]: must be a uint128 formatted as a base-16 string)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "source_type": "event",
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "Attribution-Reporting-Register-Source": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test"
-          },
-          "Attribution-Reporting-Register-Aggregatable-Source": [{
-            "id": "a",
-            "key_piece": "0xG"
-          }]
+          "Attribution-Reporting-Register-Aggregatable-Source": {
+            "a": "0xG"
+          }
         }]})json",
     },
     {

@@ -47,16 +47,12 @@ JSON schema for the input of the simulator.
         "debug_key": "987"
       },
 
-      // Optional list of zero or more aggregatable keys.
-      "Attribution-Reporting-Register-Aggregatable-Source": [
-        {
-          // Required string to identify the key.
-          "id": "a",
-
-          // Required uint128 formatted as a base-16 string.
-          "key_piece": "0x1"
-        }
-      ]
+      // Optional dictionary of aggregation key identifiers and corresponding
+      // key pieces.
+      "Attribution-Reporting-Register-Aggregatable-Source": {
+          // Value is uint128 formatted as a base-16 string.
+          "a": "0x1"
+      }
     }
   ],
 

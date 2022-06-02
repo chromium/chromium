@@ -559,12 +559,8 @@ class AttributionSimulatorInputParser {
     return expiry;
   }
 
-  absl::uint128 ParseAggregatableKey(const base::Value::Dict& dict) {
-    static constexpr char kKey[] = "key_piece";
-
-    auto context = PushContext(kKey);
-
-    const std::string* s = dict.FindString(kKey);
+  absl::uint128 ParseAggregatableKey(const base::Value& key_value) {
+    const std::string* s = key_value.GetIfString();
 
     absl::uint128 value = 0;
     if (!s || !base::HexStringToUInt128(*s, &value))
@@ -573,46 +569,28 @@ class AttributionSimulatorInputParser {
     return value;
   }
 
-  std::string ParseAggregatableKeyId(const base::Value::Dict& dict) {
-    static constexpr char kKey[] = "id";
-
-    auto context = PushContext(kKey);
-
-    const std::string* s = dict.FindString(kKey);
-    if (!s)
-      *Error() << "must be a string";
-
-    return s ? *s : "";
-  }
-
   AttributionAggregatableSource ParseAggregatableSource(
       const base::Value::Dict& cfg) {
     static constexpr char kKey[] =
         "Attribution-Reporting-Register-Aggregatable-Source";
 
-    const base::Value* values = cfg.Find(kKey);
-    if (!values)
+    const base::Value* value = cfg.Find(kKey);
+    if (!value)
+      return AttributionAggregatableSource();
+
+    auto context = PushContext(kKey);
+
+    if (!EnsureDictionary(*value))
       return AttributionAggregatableSource();
 
     AttributionAggregatableSource::Keys::container_type keys;
 
-    auto context = PushContext(kKey);
-
-    ParseList(
-        *values, base::BindLambdaForTesting([&](const base::Value& value) {
-          if (!EnsureDictionary(value))
-            return;
-
-          const base::Value::Dict& dict = value.GetDict();
-
-          std::string id = ParseAggregatableKeyId(dict);
-          absl::uint128 key = ParseAggregatableKey(dict);
-
-          if (has_error())
-            return;
-
-          keys.emplace_back(std::move(id), key);
-        }));
+    for (auto [id, key_value] : value->GetDict()) {
+      auto key_context = PushContext(id);
+      absl::uint128 key = ParseAggregatableKey(key_value);
+      if (!has_error())
+        keys.emplace_back(std::move(id), key);
+    }
 
     absl::optional<AttributionAggregatableSource> aggregatable_source =
         AttributionAggregatableSource::FromKeys(std::move(keys));
@@ -674,7 +652,17 @@ class AttributionSimulatorInputParser {
               std::vector<std::string> source_keys =
                   ParseAggregatableTriggerDataSourceKeys(trigger_dict);
 
-              absl::uint128 key = ParseAggregatableKey(trigger_dict);
+              absl::uint128 key;
+              {
+                static constexpr char kKeyKeyPiece[] = "key_piece";
+                auto key_context = PushContext(kKeyKeyPiece);
+                const base::Value* key_piece = trigger_dict.Find(kKeyKeyPiece);
+                if (key_piece) {
+                  key = ParseAggregatableKey(*key_piece);
+                } else {
+                  *Error() << "must be present";
+                }
+              }
 
               AttributionFilterData filters = ParseFilterData(
                   trigger_dict, "filters",
