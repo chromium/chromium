@@ -27,6 +27,8 @@ export class EmojiGroupComponent extends PolymerElement {
       clearable: {type: Boolean, value: false},
       /** @type {boolean} */
       showClearRecents: {type: Boolean, value: false},
+      /** @private {?EmojiVariants} */
+      focusedEmoji: {type: Object, value: null},
       /** @type {string} */
       category: {
         type: String,
@@ -81,6 +83,31 @@ export class EmojiGroupComponent extends PolymerElement {
     this.showClearRecents = false;
     this.dispatchEvent(createCustomEvent(
       EMOJI_CLEAR_RECENTS_CLICK,  {category: this.category}));
+  }
+
+  /**
+   * Sets and shows tooltips for an emoji button based on a mouse/focus event.
+   * By handling the on-focus and on-mouseenter events using this function,
+   * one single paper-tool is reused for all emojis in the emoji-group.
+   *
+   * @param {MouseEvent|FocusEvent} event
+   */
+  showTooltip(event) {
+    const emoji = this.findEmojiOfEmojiButton(event.target);
+
+    // If the event is for an emoji button that is not already
+    // focused, then replace the target of paper-tooltip with the new
+    // emoji button.
+    if (emoji && this.focusedEmoji !== emoji) {
+      this.focusedEmoji = emoji;
+
+      // Set the target of paper-tooltip to the focused emoji button.
+      // Paper-tooltip will un-listen the events of the previous target and
+      // starts listening the events for the focused emoji button to hide and
+      // show the tooltip at the right time.
+      this.$.tooltip.target = event.target;
+      this.$.tooltip.show();
+    }
   }
 
   /**

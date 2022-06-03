@@ -247,13 +247,10 @@
     <div class="emoji-button-container">
       <button id="[[getEmojiButtonId(index)]]" data-index$="[[index]]"
         class$="[[getEmojiButtonClassName(item)]]"
+        on-mouseenter="showTooltip" on-focus="showTooltip"
         aria-label="[[getEmojiAriaLabel(item)]]">
         [[getDisplayEmojiForEmoji(item.base.string)]]
       </button>
-      <paper-tooltip for="[[getEmojiButtonId(index)]]"
-        fit-to-visible-bounds offset="8">
-        [[item.base.name]]
-      </paper-tooltip>
       <template is="dom-if"
         if="[[isEmojiVariantVisible(index,shownEmojiVariantIndex)]]">
         <emoji-variants
@@ -264,4 +261,7 @@
       </template>
     </div>
   </template>
+  <paper-tooltip id='tooltip' fit-to-visible-bounds offset="8">
+    [[focusedEmoji.base.name]]
+  </paper-tooltip>
 </div>
