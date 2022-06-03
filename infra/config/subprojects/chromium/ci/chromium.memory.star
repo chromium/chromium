@@ -350,6 +350,39 @@ linux_memory_builder(
     triggered_by = ["Linux MSan Builder"],
 )
 
+linux_memory_builder(
+    name = "linux-lacros-asan-lsan-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium_no_telemetry_dependencies",
+            apply_configs = [
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "lsan",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-memory-archive",
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros|asan",
+        short_name = "asan",
+    ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
+    # TODO(crbug.com/1324240) Enable when it's stable.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+)
+
 ci.builder(
     name = "Mac ASan 64 Builder",
     builder_spec = builder_config.builder_spec(

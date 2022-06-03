@@ -532,6 +532,14 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-lacros-asan-lsan-rel",
+    mirrors = [
+        "ci/linux-lacros-asan-lsan-rel",
+    ],
+    goma_jobs = goma.jobs.J150,
+)
+
+try_.builder(
     name = "linux_layout_tests_layout_ng_disabled",
     branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(

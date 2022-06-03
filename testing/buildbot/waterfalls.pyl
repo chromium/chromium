@@ -5238,6 +5238,21 @@
         ],
         'os_type': 'android',
       },
+      'linux-lacros-asan-lsan-rel': {
+        'mixins': [
+          'isolate_profile_data',
+          'linux-bionic',
+        ],
+        'additional_compile_targets': [
+          'chrome',
+          'chrome_sandbox',
+          'linux_symbols',
+          'symupload'
+        ],
+        'test_suites': {
+          'gtest_tests': 'linux_lacros_gtests',
+        },
+      },
       'linux-ubsan-vptr': {
         'mixins': [
           'linux-bionic',
