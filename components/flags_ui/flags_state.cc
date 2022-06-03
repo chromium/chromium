@@ -27,6 +27,7 @@
 #include "components/flags_ui/flags_ui_switches.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -259,6 +260,10 @@ struct FlagsState::SwitchEntry {
   // If |switch_name| is not empty, the value of the switch to set.
   std::string switch_value;
 
+  // If |variation_id| is not empty, variation id value to set.
+  // In the format of VariationsIdsProvider::ForceVariationIds().
+  std::string variation_id;
+
   SwitchEntry() : feature_state(false) {}
 };
 
@@ -296,7 +301,8 @@ void FlagsState::ConvertFlagsToSwitches(
 void FlagsState::GetSwitchesAndFeaturesFromFlags(
     FlagsStorage* flags_storage,
     std::set<std::string>* switches,
-    std::set<std::string>* features) const {
+    std::set<std::string>* features,
+    std::set<std::string>* variation_ids) const {
   std::set<std::string> enabled_entries;
   std::map<std::string, SwitchEntry> name_to_switch_map;
   GenerateFlagsToSwitchesMapping(flags_storage,
@@ -316,6 +322,9 @@ void FlagsState::GetSwitchesAndFeaturesFromFlags(
         features->insert(entry.feature_name + ":enabled");
       else
         features->insert(entry.feature_name + ":disabled");
+      if (!entry.variation_id.empty()) {
+        variation_ids->insert(entry.variation_id);
+      }
     }
   }
 }
@@ -651,12 +660,14 @@ void FlagsState::AddFeatureMapping(
     const std::string& key,
     const std::string& feature_name,
     bool feature_state,
+    const std::string& variation_id,
     std::map<std::string, SwitchEntry>* name_to_switch_map) const {
   DCHECK(!base::Contains(*name_to_switch_map, key));
 
   SwitchEntry* entry = &(*name_to_switch_map)[key];
   entry->feature_name = feature_name;
   entry->feature_state = feature_state;
+  entry->variation_id = variation_id;
 }
 
 void FlagsState::AddSwitchesToCommandLine(
@@ -672,6 +683,8 @@ void FlagsState::AddSwitchesToCommandLine(
     flags_switches_[switches::kFlagSwitchesBegin] = std::string();
   }
 
+  std::vector<std::string> variation_ids;
+
   for (const std::string& entry_name : enabled_entries) {
     const auto& entry_it = name_to_switch_map.find(entry_name);
     if (entry_it == name_to_switch_map.end()) {
@@ -682,6 +695,9 @@ void FlagsState::AddSwitchesToCommandLine(
     const SwitchEntry& entry = entry_it->second;
     if (!entry.feature_name.empty()) {
       feature_switches[entry.feature_name] = entry.feature_state;
+      if (!entry.variation_id.empty()) {
+        variation_ids.push_back(entry.variation_id);
+      }
     } else if (!entry.switch_name.empty()) {
       command_line->AppendSwitchASCII(entry.switch_name, entry.switch_value);
       flags_switches_[entry.switch_name] = entry.switch_value;
@@ -695,6 +711,10 @@ void FlagsState::AddSwitchesToCommandLine(
                                   true, command_line);
     MergeFeatureCommandLineSwitch(feature_switches, disable_features_flag_name,
                                   false, command_line);
+  }
+  if (!variation_ids.empty()) {
+    command_line->AppendSwitchASCII(variations::switches::kForceVariationIds,
+                                    base::JoinString(variation_ids, ","));
   }
 
   if (sentinels == kAddSentinels) {
@@ -834,13 +854,14 @@ void FlagsState::GenerateFlagsToSwitchesMapping(
           FeatureEntry::FeatureState state = entry.StateForOption(j);
           if (state == FeatureEntry::FeatureState::DEFAULT) {
             AddFeatureMapping(entry.NameForOption(j), std::string(), false,
-                              name_to_switch_map);
+                              std::string(), name_to_switch_map);
           } else {
             const FeatureEntry::FeatureVariation* variation =
                 entry.VariationForOption(j);
             std::string feature_name(entry.feature.feature->name);
             std::vector<std::string> params_value;
 
+            std::string variation_id;
             if (variation) {
               feature_name.append(":");
               for (int i = 0; i < variation->num_params; ++i) {
@@ -851,11 +872,14 @@ void FlagsState::GenerateFlagsToSwitchesMapping(
                 params_value.push_back(
                     param_name.append("/").append(param_value));
               }
+              if (variation->variation_id) {
+                variation_id = variation->variation_id;
+              }
             }
             AddFeatureMapping(
                 entry.NameForOption(j),
                 feature_name.append(base::JoinString(params_value, "/")),
-                state == FeatureEntry::FeatureState::ENABLED,
+                state == FeatureEntry::FeatureState::ENABLED, variation_id,
                 name_to_switch_map);
           }
         }

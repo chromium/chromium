@@ -115,9 +115,13 @@ class FlagsState {
   // switches corresponding to enabled entries and |features| with the set of
   // strings corresponding to enabled/disabled base::Feature states. Feature
   // names are suffixed with ":enabled" or ":disabled" depending on their state.
-  void GetSwitchesAndFeaturesFromFlags(FlagsStorage* flags_storage,
-                                       std::set<std::string>* switches,
-                                       std::set<std::string>* features) const;
+  // Also fills |variation_ids| with variation IDs to force based on
+  // flags_storage, in the format of VariationsIdsProvider::ForceVariationIds().
+  void GetSwitchesAndFeaturesFromFlags(
+      FlagsStorage* flags_storage,
+      std::set<std::string>* switches,
+      std::set<std::string>* features,
+      std::set<std::string>* variation_ids) const;
 
   bool IsRestartNeededToCommitChanges();
   void SetFeatureEntryEnabled(FlagsStorage* flags_storage,
@@ -190,11 +194,13 @@ class FlagsState {
       std::map<std::string, SwitchEntry>* name_to_switch_map) const;
 
   // Adds mapping to |name_to_switch_map| to toggle base::Feature |feature_name|
-  // to state |feature_state|.
+  // to state |feature_state|, along with the given |variation_id|, in the
+  // format of VariationsIdsProvider::ForceVariationIds().
   void AddFeatureMapping(
       const std::string& key,
       const std::string& feature_name,
       bool feature_state,
+      const std::string& variation_id,
       std::map<std::string, SwitchEntry>* name_to_switch_map) const;
 
   // Updates the switches in |command_line| by applying the modifications

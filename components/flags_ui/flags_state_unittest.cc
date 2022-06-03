@@ -30,6 +30,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace flags_ui {
@@ -97,7 +98,7 @@ const FeatureEntry::FeatureVariation kTestVariations2[] = {
 const FeatureEntry::FeatureVariation kTestVariations3[] = {
     {"dummy description 1", kTestVariationOther1, 1, nullptr},
     {"dummy description 2", kTestVariationOther2, 1, nullptr},
-    {"dummy description 3", kTestVariationOther3, 2, nullptr}};
+    {"dummy description 3", kTestVariationOther3, 2, "t123456"}};
 
 const char kTestVariation3Cmdline[] =
     "FeatureName3:param1/value/param%3A%2F3/value";
@@ -343,6 +344,11 @@ TEST_F(FlagsStateTest, ConvertFlagsToSwitches) {
   EXPECT_TRUE(command_line3.HasSwitch(kEnableFeatures));
   EXPECT_EQ(command_line3.GetSwitchValueASCII(kEnableFeatures),
             kTestVariation3Cmdline);
+  EXPECT_TRUE(
+      command_line3.HasSwitch(variations::switches::kForceVariationIds));
+  EXPECT_EQ(command_line3.GetSwitchValueASCII(
+                variations::switches::kForceVariationIds),
+            "t123456");
 }
 
 TEST_F(FlagsStateTest, RegisterAllFeatureVariationParameters) {

@@ -9089,8 +9089,10 @@ void RecordUMAStatistics(flags_ui::FlagsStorage* flags_storage,
                          const std::string& histogram_name) {
   std::set<std::string> switches;
   std::set<std::string> features;
+  std::set<std::string> variation_ids;
   FlagsStateSingleton::GetFlagsState()->GetSwitchesAndFeaturesFromFlags(
-      flags_storage, &switches, &features);
+      flags_storage, &switches, &features, &variation_ids);
+  // Don't report variation IDs since we don't have an UMA histogram for them.
   flags_ui::ReportAboutFlagsHistogram(histogram_name, switches, features);
 }
 
