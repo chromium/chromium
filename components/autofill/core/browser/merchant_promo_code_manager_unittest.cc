@@ -62,7 +62,7 @@ class MerchantPromoCodeManagerTest : public testing::Test {
         test::GetPromoCodeOfferData(GURL(origin));
     personal_data_manager_.get()->AddOfferDataForTest(
         std::make_unique<AutofillOfferData>(testPromoCodeOfferData));
-    return testPromoCodeOfferData.promo_code;
+    return testPromoCodeOfferData.GetPromoCode();
   }
 
   std::unique_ptr<MerchantPromoCodeManager> merchant_promo_code_manager_;

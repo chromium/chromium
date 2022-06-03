@@ -138,18 +138,18 @@ void OfferNotificationBubbleViews::InitWithPromoCodeOfferContent() {
 
   const AutofillOfferData* offer = controller_->GetOffer();
   DCHECK(offer);
-  DCHECK(!offer->promo_code.empty());
+  DCHECK(!offer->GetPromoCode().empty());
 
   promo_code_label_button_ =
       AddChildView(std::make_unique<PromoCodeLabelButton>(
           base::BindRepeating(
               &OfferNotificationBubbleViews::OnPromoCodeButtonClicked,
               base::Unretained(this)),
-          base::ASCIIToUTF16(offer->promo_code)));
+          base::ASCIIToUTF16(offer->GetPromoCode())));
 
-  if (!offer->display_strings.value_prop_text.empty()) {
+  if (!offer->GetDisplayStrings().value_prop_text.empty()) {
     auto* promo_code_value_prop = AddChildView(std::make_unique<views::Label>(
-        base::ASCIIToUTF16(offer->display_strings.value_prop_text),
+        base::ASCIIToUTF16(offer->GetDisplayStrings().value_prop_text),
         views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
     promo_code_value_prop->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     promo_code_value_prop->SetMultiLine(true);
@@ -160,7 +160,7 @@ void OfferNotificationBubbleViews::InitWithPromoCodeOfferContent() {
 void OfferNotificationBubbleViews::OnPromoCodeButtonClicked() {
   // Copy clicked promo code to clipboard.
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
-      .WriteText(base::ASCIIToUTF16(controller_->GetOffer()->promo_code));
+      .WriteText(base::ASCIIToUTF16(controller_->GetOffer()->GetPromoCode()));
 
   // Update controller and tooltip.
   controller_->OnPromoCodeButtonClicked();

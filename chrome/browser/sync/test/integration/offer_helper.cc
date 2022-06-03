@@ -26,8 +26,8 @@ SyncEntity CreateDefaultSyncCardLinkedOffer() {
 
 SyncEntity CreateSyncCardLinkedOffer(const AutofillOfferData& offer_data) {
   SyncEntity entity;
-  entity.set_name(base::NumberToString(offer_data.offer_id));
-  entity.set_id_string(base::NumberToString(offer_data.offer_id));
+  entity.set_name(base::NumberToString(offer_data.GetOfferId()));
+  entity.set_id_string(base::NumberToString(offer_data.GetOfferId()));
   entity.set_version(0);  // Will be overridden by the fake server.
   entity.set_ctime(12345);
   entity.set_mtime(12345);

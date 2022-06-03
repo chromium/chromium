@@ -27,7 +27,7 @@ void OfferNotificationInfoBarControllerImpl::ShowIfNecessary(
   infobars::ContentInfoBarManager::FromWebContents(web_contents_)
       ->AddInfoBar(std::make_unique<AutofillOfferNotificationInfoBar>(
           std::make_unique<AutofillOfferNotificationInfoBarDelegateMobile>(
-              offer->offer_details_url, *card)));
+              offer->GetOfferDetailsUrl(), *card)));
 }
 
 void OfferNotificationInfoBarControllerImpl::Dismiss() {

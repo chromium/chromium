@@ -60,7 +60,7 @@ namespace autofill {
 class AddressNormalizer;
 class AutofillAblationStudy;
 class AutofillDriver;
-struct AutofillOfferData;
+class AutofillOfferData;
 class AutofillProfile;
 class AutocompleteHistoryManager;
 class AutofillOfferManager;

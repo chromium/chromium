@@ -19,11 +19,11 @@ void ConstructCouponProto(
     coupon_db::FreeListingCouponInfoProto* coupon_info_proto =
         proto->add_free_listing_coupons();
     coupon_info_proto->set_coupon_description(
-        offer->display_strings.value_prop_text);
-    coupon_info_proto->set_coupon_code(offer->promo_code);
-    coupon_info_proto->set_coupon_id(offer->offer_id);
-    coupon_info_proto->set_expiry_time(offer->expiry.ToDoubleT());
-    std::pair<GURL, int64_t> key({origin, offer->offer_id});
+        offer->GetDisplayStrings().value_prop_text);
+    coupon_info_proto->set_coupon_code(offer->GetPromoCode());
+    coupon_info_proto->set_coupon_id(offer->GetOfferId());
+    coupon_info_proto->set_expiry_time(offer->GetExpiry().ToDoubleT());
+    std::pair<GURL, int64_t> key({origin, offer->GetOfferId()});
     if (coupon_time_map.find(key) != coupon_time_map.end()) {
       coupon_info_proto->set_last_display_time(
           coupon_time_map.at(key).ToJavaTime());
@@ -81,8 +81,8 @@ void CouponService::UpdateFreeListingCoupons(const CouponsMap& coupon_map) {
             std::make_unique<autofill::AutofillOfferData>(*coupon);
         coupon_map_[origin].emplace_back(std::move(new_coupon));
       }
-      new_time_map[{origin, coupon->offer_id}] =
-          coupon_time_map_[{origin, coupon->offer_id}];
+      new_time_map[{origin, coupon->GetOfferId()}] =
+          coupon_time_map_[{origin, coupon->GetOfferId()}];
     }
     coupon_db::CouponContentProto proto;
     ConstructCouponProto(origin, entry.second, coupon_time_map_, &proto);
@@ -112,8 +112,9 @@ base::Time CouponService::GetCouponDisplayTimestamp(
     const autofill::AutofillOfferData& offer) {
   DCHECK_EQ(offer.GetOfferType(),
             autofill::AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER);
-  for (auto origin : offer.merchant_origins) {
-    auto iter = coupon_time_map_.find(std::make_pair(origin, offer.offer_id));
+  for (auto origin : offer.GetMerchantOrigins()) {
+    auto iter =
+        coupon_time_map_.find(std::make_pair(origin, offer.GetOfferId()));
     if (iter != coupon_time_map_.end())
       return iter->second;
   }
@@ -125,14 +126,15 @@ void CouponService::RecordCouponDisplayTimestamp(
   DCHECK_EQ(offer.GetOfferType(),
             autofill::AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER);
   base::Time timestamp = base::Time::Now();
-  for (auto origin : offer.merchant_origins) {
-    auto iter = coupon_time_map_.find(std::make_pair(origin, offer.offer_id));
+  for (auto origin : offer.GetMerchantOrigins()) {
+    auto iter =
+        coupon_time_map_.find(std::make_pair(origin, offer.GetOfferId()));
     if (iter != coupon_time_map_.end()) {
       iter->second = timestamp;
       coupon_db_->LoadCoupon(
           origin, base::BindOnce(&CouponService::OnUpdateCouponTimestamp,
-                                 weak_ptr_factory_.GetWeakPtr(), offer.offer_id,
-                                 timestamp));
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 offer.GetOfferId(), timestamp));
     }
   }
 }
@@ -190,12 +192,19 @@ void CouponService::OnInitializeCouponsMap(
   for (auto pair : proto_pairs) {
     const GURL origin(GURL(pair.first));
     for (auto coupon : pair.second.free_listing_coupons()) {
-      auto offer = std::make_unique<autofill::AutofillOfferData>();
-      offer->display_strings.value_prop_text = coupon.coupon_description();
-      offer->promo_code = coupon.coupon_code();
-      offer->merchant_origins.emplace_back(origin);
-      offer->offer_id = coupon.coupon_id();
-      offer->expiry = base::Time::FromDoubleT(coupon.expiry_time());
+      int64_t offer_id = coupon.coupon_id();
+      base::Time expiry = base::Time::FromDoubleT(coupon.expiry_time());
+      std::vector<GURL> merchant_origins;
+      merchant_origins.emplace_back(origin);
+      GURL offer_details_url = GURL();
+      autofill::DisplayStrings display_strings;
+      display_strings.value_prop_text = coupon.coupon_description();
+      std::string promo_code = coupon.coupon_code();
+
+      auto offer = std::make_unique<autofill::AutofillOfferData>(
+          autofill::AutofillOfferData::FreeListingCouponOffer(
+              offer_id, expiry, merchant_origins, offer_details_url,
+              display_strings, promo_code));
       coupon_map_[origin].emplace_back(std::move(offer));
       coupon_time_map_[{origin, coupon.coupon_id()}] =
           base::Time::FromJavaTime(coupon.last_display_time());

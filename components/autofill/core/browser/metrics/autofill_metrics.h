@@ -43,9 +43,9 @@ class Autofill_CreditCardFill;
 namespace autofill {
 
 class AutofillField;
+class AutofillOfferData;
 class CreditCard;
 class FormEventLoggerBase;
-struct AutofillOfferData;
 
 // A given maximum is enforced to minimize the number of buckets generated.
 extern const int kMaxBucketsCount;

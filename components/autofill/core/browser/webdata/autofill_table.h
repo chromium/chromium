@@ -32,7 +32,7 @@ namespace autofill {
 class AutofillChange;
 class AutofillEntry;
 struct AutofillMetadata;
-struct AutofillOfferData;
+class AutofillOfferData;
 class AutofillProfile;
 class AutofillTableEncryptor;
 class AutofillTableTest;

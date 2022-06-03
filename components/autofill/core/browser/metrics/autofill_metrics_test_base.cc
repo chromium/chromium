@@ -248,17 +248,22 @@ void AutofillMetricsBaseTest::AddMaskedServerCreditCardWithOffer(
   masked_server_credit_card.SetNumber(u"9424");
   personal_data().AddServerCreditCard(masked_server_credit_card);
 
-  AutofillOfferData offer_data;
-  offer_data.offer_id = id;
-  offer_data.offer_reward_amount = offer_reward_amount;
-  if (offer_expired) {
-    offer_data.expiry = AutofillClock::Now() - base::Days(2);
-  } else {
-    offer_data.expiry = AutofillClock::Now() + base::Days(2);
-  }
-  offer_data.merchant_origins = {url};
-  offer_data.eligible_instrument_id = {
+  int64_t offer_id = id;
+  base::Time expiry = offer_expired ? AutofillClock::Now() - base::Days(2)
+                                    : AutofillClock::Now() + base::Days(2);
+  std::vector<GURL> merchant_origins = {GURL{url}};
+  GURL offer_details_url = GURL(url);
+  DisplayStrings display_strings;
+  display_strings.value_prop_text = "Get 5% off your purchase";
+  display_strings.see_details_text = "See details";
+  display_strings.usage_instructions_text =
+      "Check out with this card to activate";
+  std::vector<int64_t> eligible_instrument_id = {
       masked_server_credit_card.instrument_id()};
+
+  AutofillOfferData offer_data = AutofillOfferData::GPayCardLinkedOffer(
+      offer_id, expiry, merchant_origins, offer_details_url, display_strings,
+      eligible_instrument_id, offer_reward_amount);
   personal_data().AddAutofillOfferData(offer_data);
   personal_data().Refresh();
 }

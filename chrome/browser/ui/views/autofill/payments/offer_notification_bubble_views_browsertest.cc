@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        InvalidOfferData) {
   auto offer_data = CreateCardLinkedOfferDataWithDomains(
       {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
-  offer_data->eligible_instrument_id.clear();
+  offer_data->SetEligibleInstrumentIdForTesting({});
   personal_data()->AddOfferDataForTest(std::move(offer_data));
   personal_data()->NotifyPersonalDataObserver();
 

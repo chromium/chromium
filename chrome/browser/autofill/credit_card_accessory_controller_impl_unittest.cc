@@ -632,9 +632,9 @@ TEST_F(CreditCardAccessoryControllerTestSupportingPromoCodeOffers,
                 .AppendSimpleField(card.GetRawInfo(CREDIT_CARD_NAME_FULL))
                 .AppendSimpleField(std::u16string())
                 .AddPromoCodeInfo(
-                    base::ASCIIToUTF16(promo_code_valid.promo_code),
+                    base::ASCIIToUTF16(promo_code_valid.GetPromoCode()),
                     base::ASCIIToUTF16(
-                        promo_code_valid.display_strings.value_prop_text))
+                        promo_code_valid.GetDisplayStrings().value_prop_text))
                 .Build());
 }
 

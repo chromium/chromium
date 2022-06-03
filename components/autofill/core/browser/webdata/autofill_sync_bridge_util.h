@@ -12,7 +12,7 @@
 
 namespace autofill {
 
-struct AutofillOfferData;
+class AutofillOfferData;
 class AutofillProfile;
 class AutofillTable;
 class CreditCard;

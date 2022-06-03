@@ -13,7 +13,7 @@
 
 namespace autofill {
 
-struct AutofillOfferData;
+class AutofillOfferData;
 class PersonalDataManager;
 struct SuggestionsContext;
 

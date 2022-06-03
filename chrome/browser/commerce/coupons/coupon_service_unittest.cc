@@ -37,12 +37,14 @@ autofill::AutofillOfferData BuildCouponOfferData(const int64_t id,
                                                  const char* origin,
                                                  const char* coupon_description,
                                                  const char* coupon_code) {
-  autofill::AutofillOfferData data;
-  data.offer_id = id;
-  data.display_strings.value_prop_text = coupon_description;
-  data.promo_code = coupon_code;
-  data.merchant_origins.emplace_back(GURL(origin));
-  return data;
+  base::Time expiry;
+  std::vector<GURL> merchant_origins;
+  merchant_origins.emplace_back(origin);
+  autofill::DisplayStrings display_strings;
+  display_strings.value_prop_text = coupon_description;
+  return autofill::AutofillOfferData::FreeListingCouponOffer(
+      id, expiry, merchant_origins, /*offer_details_url=*/GURL(),
+      display_strings, coupon_code);
 }
 
 const int64_t kMockCouponIdA = 135;
@@ -169,11 +171,17 @@ class CouponServiceTest : public testing::Test {
   void SetUpCouponMap(std::vector<CouponDataStruct> coupons) {
     CouponsMap coupon_map;
     for (auto coupon : coupons) {
-      auto offer = std::make_unique<autofill::AutofillOfferData>();
-      offer->offer_id = coupon.id;
-      offer->display_strings.value_prop_text = std::move(coupon.description);
-      offer->promo_code = std::move(coupon.coupon_code);
-      offer->merchant_origins.emplace_back(GURL(coupon.origin));
+      int64_t offer_id = coupon.id;
+      base::Time expiry;
+      autofill::DisplayStrings display_strings;
+      display_strings.value_prop_text = coupon.description;
+      std::string promo_code = coupon.coupon_code;
+      std::vector<GURL> merchant_origins;
+      merchant_origins.emplace_back(GURL(coupon.origin));
+      auto offer = std::make_unique<autofill::AutofillOfferData>(
+          autofill::AutofillOfferData::FreeListingCouponOffer(
+              offer_id, expiry, merchant_origins, /*offer_details_url=*/GURL(),
+              display_strings, promo_code));
       coupon_map[GURL(coupon.origin)].emplace_back(std::move(offer));
     }
     service_->UpdateFreeListingCoupons(coupon_map);
@@ -205,8 +213,20 @@ class CouponServiceTest : public testing::Test {
   TestingProfile profile_;
   raw_ptr<CouponService> service_;
   raw_ptr<CouponDB> coupon_db_;
-  autofill::AutofillOfferData coupon_data_a_;
-  autofill::AutofillOfferData coupon_data_b_;
+  // TODO(crbug/1313126): These are only initialized here because
+  // AutofillOfferData does not have a default ctor, and are overwritten in
+  // tests. Change these to local-only or to pointers so that this throwaway
+  // initialization isn't necessary.
+  autofill::AutofillOfferData coupon_data_a_ =
+      BuildCouponOfferData(kMockCouponIdA,
+                           kMockMerchantA,
+                           kMockCouponDescriptionA,
+                           kMockCouponCodeA);
+  autofill::AutofillOfferData coupon_data_b_ =
+      BuildCouponOfferData(kMockCouponIdB,
+                           kMockMerchantB,
+                           kMockCouponDescriptionB,
+                           kMockCouponCodeB);
 };
 
 TEST_F(CouponServiceTest, TestGetCouponForUrl) {

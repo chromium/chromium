@@ -81,7 +81,7 @@ void MerchantPromoCodeManager::SendPromoCodeSuggestions(
   // assume the promo code has been filled, and don't show any suggestions.
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
     if (query_handler.prefix_ ==
-        base::ASCIIToUTF16(promo_code_offer->promo_code)) {
+        base::ASCIIToUTF16(promo_code_offer->GetPromoCode())) {
       return;
     }
   }

@@ -3957,9 +3957,9 @@ TEST_F(AutofillMetricsTest, LogStoredOfferMetrics) {
   std::vector<std::unique_ptr<AutofillOfferData>> offers;
   AutofillOfferData offer1 = test::GetCardLinkedOfferData1();
   AutofillOfferData offer2 = test::GetCardLinkedOfferData2();
-  offer2.eligible_instrument_id.emplace_back(999999);
-  offer2.eligible_instrument_id.emplace_back(888888);
-  offer2.merchant_origins.emplace_back("https://www.example3.com/");
+  offer2.SetEligibleInstrumentIdForTesting({222222, 999999, 888888});
+  offer2.SetMerchantOriginForTesting(
+      {GURL("http://www.example2.com"), GURL("https://www.example3.com/")});
   offers.push_back(std::make_unique<AutofillOfferData>(offer1));
   offers.push_back(std::make_unique<AutofillOfferData>(offer2));
 

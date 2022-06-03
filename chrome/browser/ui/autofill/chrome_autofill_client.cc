@@ -779,10 +779,10 @@ void ChromeAutofillClient::UpdateOfferNotification(
     bool notification_has_been_shown) {
   DCHECK(offer);
   CreditCard* card =
-      offer->eligible_instrument_id.empty()
+      offer->GetEligibleInstrumentIds().empty()
           ? nullptr
           : GetPersonalDataManager()->GetCreditCardByInstrumentId(
-                offer->eligible_instrument_id[0]);
+                offer->GetEligibleInstrumentIds()[0]);
 
   if (offer->IsCardLinkedOffer() && !card)
     return;

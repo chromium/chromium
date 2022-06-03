@@ -2232,9 +2232,9 @@ void AutofillMetrics::LogStoredOfferMetrics(
   for (const std::unique_ptr<AutofillOfferData>& offer : offers) {
     base::UmaHistogramCounts1000(
         "Autofill.Offer.StoredOfferRelatedMerchantCount",
-        offer->merchant_origins.size());
+        offer->GetMerchantOrigins().size());
     base::UmaHistogramCounts1000("Autofill.Offer.StoredOfferRelatedCardCount",
-                                 offer->eligible_instrument_id.size());
+                                 offer->GetEligibleInstrumentIds().size());
   }
 }
 

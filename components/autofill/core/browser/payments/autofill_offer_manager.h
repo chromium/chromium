@@ -22,7 +22,7 @@
 namespace autofill {
 
 class AutofillClient;
-struct AutofillOfferData;
+class AutofillOfferData;
 class OfferNotificationHandler;
 class PersonalDataManager;
 struct Suggestion;

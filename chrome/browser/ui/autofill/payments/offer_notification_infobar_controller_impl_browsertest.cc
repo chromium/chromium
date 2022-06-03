@@ -68,13 +68,17 @@ class OfferNotificationInfoBarControllerImplBrowserTest
     offer_notification_infobar_controller_->ShowIfNecessary(offer, &card_);
   }
 
-  AutofillOfferData CreateTestOfferWithOrigins(
-      const std::vector<GURL>& merchant_origins) {
-    // Only adding what the tests need to pass. Feel free to add more populated
-    // fields as necessary.
-    AutofillOfferData offer;
-    offer.merchant_origins = merchant_origins;
-    return offer;
+  AutofillOfferData CreateTestCardLinkedOffer(
+      const std::vector<GURL>& merchant_origins,
+      const std::vector<int64_t>& eligible_instrument_ids,
+      const std::string& offer_reward_amount) {
+    int64_t offer_id = 4444;
+    base::Time expiry = autofill::AutofillClock::Now() + base::Days(2);
+    GURL offer_details_url("https://www.google.com/");
+    return autofill::AutofillOfferData::GPayCardLinkedOffer(
+        offer_id, expiry, merchant_origins, offer_details_url,
+        autofill::DisplayStrings(), eligible_instrument_ids,
+        offer_reward_amount);
   }
 
   void VerifyInfoBarShownCount(int count) {
@@ -112,22 +116,19 @@ class OfferNotificationInfoBarControllerImplBrowserTest
 
   AutofillOfferData* SetUpOfferDataWithDomains(const GURL& url) {
     personal_data_->ClearAllServerData();
-    std::unique_ptr<AutofillOfferData> offer_data_entry =
-        std::make_unique<AutofillOfferData>();
-    offer_data_entry->offer_id = 4444;
-    offer_data_entry->offer_reward_amount = "5%";
-    offer_data_entry->expiry = AutofillClock::Now() + base::Days(2);
-    offer_data_entry->merchant_origins = {};
-    offer_data_entry->merchant_origins.emplace_back(
-        url.DeprecatedGetOriginAsURL());
-    offer_data_entry->eligible_instrument_id = {0x4444};
-    auto* offer = offer_data_entry.get();
-    personal_data_->AddOfferDataForTest(std::move(offer_data_entry));
+    std::vector<GURL> merchant_origins;
+    merchant_origins.emplace_back(url.DeprecatedGetOriginAsURL());
+    std::vector<int64_t> eligible_instrument_ids = {0x4444};
+    std::string offer_reward_amount = "5%";
+    auto offer = std::make_unique<AutofillOfferData>(CreateTestCardLinkedOffer(
+        merchant_origins, eligible_instrument_ids, offer_reward_amount));
+    auto* offer_ptr = offer.get();
+    personal_data_->AddOfferDataForTest(std::move(offer));
     auto card = std::make_unique<CreditCard>();
     card->set_instrument_id(0x4444);
     personal_data_->AddServerCreditCardForTest(std::move(card));
     personal_data_->NotifyPersonalDataObserver();
-    return offer;
+    return offer_ptr;
   }
 
   AutofillOfferManager* GetOfferManager() {
@@ -204,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationInfoBarControllerImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(OfferNotificationInfoBarControllerImplBrowserTest,
                        CrossTabStatusTracking) {
   GURL offer_url = GetInitialUrl().DeprecatedGetOriginAsURL();
-  int64_t id = SetUpOfferDataWithDomains(offer_url)->offer_id;
+  int64_t id = SetUpOfferDataWithDomains(offer_url)->GetOfferId();
 
   SetShownOffer(id);
   // Navigate to a different URL within the same domain and try to show the

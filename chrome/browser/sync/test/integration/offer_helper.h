@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_OFFER_HELPER_H_
 
 namespace autofill {
-struct AutofillOfferData;
+class AutofillOfferData;
 }  // namespace autofill
 
 namespace sync_pb {

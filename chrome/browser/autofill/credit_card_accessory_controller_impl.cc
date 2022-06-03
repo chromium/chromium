@@ -126,9 +126,9 @@ PromoCodeInfo TranslateOffer(const AutofillOfferData* data) {
   DCHECK(data);
   DCHECK(data->IsPromoCodeOffer());
 
-  std::u16string promo_code = base::ASCIIToUTF16(data->promo_code);
+  std::u16string promo_code = base::ASCIIToUTF16(data->GetPromoCode());
   std::u16string details_text =
-      base::ASCIIToUTF16(data->display_strings.value_prop_text);
+      base::ASCIIToUTF16(data->GetDisplayStrings().value_prop_text);
   PromoCodeInfo promo_code_info(promo_code, details_text);
 
   return promo_code_info;

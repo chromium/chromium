@@ -21,7 +21,7 @@ namespace autofill {
 
 class AutofillClient;
 class AutofillField;
-struct AutofillOfferData;
+class AutofillOfferData;
 class AutofillType;
 class CreditCard;
 struct FormFieldData;

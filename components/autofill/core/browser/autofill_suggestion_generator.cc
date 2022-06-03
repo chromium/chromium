@@ -186,11 +186,13 @@ AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
   std::vector<Suggestion> suggestions;
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
     // For each promo code, create a suggestion.
-    suggestions.emplace_back(base::ASCIIToUTF16(promo_code_offer->promo_code));
+    suggestions.emplace_back(
+        base::ASCIIToUTF16(promo_code_offer->GetPromoCode()));
     Suggestion* suggestion = &suggestions.back();
-    suggestion->label =
-        base::ASCIIToUTF16(promo_code_offer->display_strings.value_prop_text);
-    suggestion->backend_id = base::NumberToString(promo_code_offer->offer_id);
+    suggestion->label = base::ASCIIToUTF16(
+        promo_code_offer->GetDisplayStrings().value_prop_text);
+    suggestion->backend_id =
+        base::NumberToString(promo_code_offer->GetOfferId());
     suggestion->frontend_id = POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY;
   }
   return suggestions;

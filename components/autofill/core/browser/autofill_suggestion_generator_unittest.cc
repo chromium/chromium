@@ -407,16 +407,25 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
 TEST_F(AutofillSuggestionGeneratorTest,
        GetPromoCodeSuggestionsFromPromoCodeOffers) {
   std::vector<const AutofillOfferData*> promo_code_offers;
-  AutofillOfferData offer1;
-  offer1.promo_code = "test_promo_code_1";
-  offer1.display_strings.value_prop_text = "test_value_prop_text_1";
-  offer1.offer_id = 1;
+
+  base::Time expiry = AutofillClock::Now() + base::Days(2);
+  std::vector<GURL> merchant_origins;
+  DisplayStrings display_strings;
+  display_strings.value_prop_text = "test_value_prop_text_1";
+  std::string promo_code = "test_promo_code_1";
+  AutofillOfferData offer1 = AutofillOfferData::FreeListingCouponOffer(
+      /*offer_id=*/1, expiry, merchant_origins, /*offer_details_url=*/GURL(),
+      display_strings, promo_code);
+
   promo_code_offers.push_back(&offer1);
 
-  AutofillOfferData offer2;
-  offer2.promo_code = "test_promo_code_2";
-  offer2.display_strings.value_prop_text = "test_value_prop_text_2";
-  offer2.offer_id = 2;
+  DisplayStrings display_strings2;
+  display_strings2.value_prop_text = "test_value_prop_text_2";
+  std::string promo_code2 = "test_promo_code_2";
+  AutofillOfferData offer2 = AutofillOfferData::FreeListingCouponOffer(
+      /*offer_id=*/2, expiry, merchant_origins, /*offer_details_url=*/GURL(),
+      display_strings2, promo_code2);
+
   promo_code_offers.push_back(&offer2);
 
   std::vector<Suggestion> promo_code_suggestions =

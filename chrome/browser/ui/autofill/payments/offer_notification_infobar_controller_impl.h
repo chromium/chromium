@@ -13,7 +13,7 @@
 
 namespace autofill {
 
-struct AutofillOfferData;
+class AutofillOfferData;
 
 // Per-tab controller to control the offer notification infobar displayed on
 // mobile.

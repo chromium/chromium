@@ -2105,39 +2105,40 @@ void AutofillTable::SetAutofillOffers(
                               "VALUES (?,?,?,?,?,?,?,?)"));
 
   for (const AutofillOfferData& data : autofill_offer_data) {
-    insert_offers.BindInt64(0, data.offer_id);
-    insert_offers.BindString(1, data.offer_reward_amount);
+    insert_offers.BindInt64(0, data.GetOfferId());
+    insert_offers.BindString(1, data.GetOfferRewardAmount());
     insert_offers.BindInt64(
-        2, data.expiry.ToDeltaSinceWindowsEpoch().InMilliseconds());
-    insert_offers.BindString(3, data.offer_details_url.spec());
-    insert_offers.BindString(4, data.promo_code);
-    insert_offers.BindString(5, data.display_strings.value_prop_text);
-    insert_offers.BindString(6, data.display_strings.see_details_text);
-    insert_offers.BindString(7, data.display_strings.usage_instructions_text);
+        2, data.GetExpiry().ToDeltaSinceWindowsEpoch().InMilliseconds());
+    insert_offers.BindString(3, data.GetOfferDetailsUrl().spec());
+    insert_offers.BindString(4, data.GetPromoCode());
+    insert_offers.BindString(5, data.GetDisplayStrings().value_prop_text);
+    insert_offers.BindString(6, data.GetDisplayStrings().see_details_text);
+    insert_offers.BindString(7,
+                             data.GetDisplayStrings().usage_instructions_text);
     insert_offers.Run();
     insert_offers.Reset(true);
 
-    for (const int64_t instrument_id : data.eligible_instrument_id) {
+    for (const int64_t instrument_id : data.GetEligibleInstrumentIds()) {
       // Insert new offer_eligible_instrument values.
       sql::Statement insert_offer_eligible_instruments(
           db_->GetUniqueStatement("INSERT INTO offer_eligible_instrument("
                                   "offer_id, "       // 0
                                   "instrument_id) "  // 1
                                   "VALUES (?,?)"));
-      insert_offer_eligible_instruments.BindInt64(0, data.offer_id);
+      insert_offer_eligible_instruments.BindInt64(0, data.GetOfferId());
       insert_offer_eligible_instruments.BindInt64(1, instrument_id);
       insert_offer_eligible_instruments.Run();
       insert_offer_eligible_instruments.Reset(true);
     }
 
-    for (const GURL& merchant_origin : data.merchant_origins) {
+    for (const GURL& merchant_origin : data.GetMerchantOrigins()) {
       // Insert new offer_merchant_domain values.
       sql::Statement insert_offer_merchant_domains(
           db_->GetUniqueStatement("INSERT INTO offer_merchant_domain("
                                   "offer_id, "         // 0
                                   "merchant_domain) "  // 1
                                   "VALUES (?,?)"));
-      insert_offer_merchant_domains.BindInt64(0, data.offer_id);
+      insert_offer_merchant_domains.BindInt64(0, data.GetOfferId());
       insert_offer_merchant_domains.BindString(1, merchant_origin.spec());
       insert_offer_merchant_domains.Run();
       insert_offer_merchant_domains.Reset(true);
@@ -2164,17 +2165,19 @@ bool AutofillTable::GetAutofillOffers(
 
   while (s.Step()) {
     int index = 0;
-    std::unique_ptr<AutofillOfferData> data =
-        std::make_unique<AutofillOfferData>();
-    data->offer_id = s.ColumnInt64(index++);
-    data->offer_reward_amount = s.ColumnString(index++);
-    data->expiry = base::Time::FromDeltaSinceWindowsEpoch(
+    int64_t offer_id = s.ColumnInt64(index++);
+    std::string offer_reward_amount = s.ColumnString(index++);
+    base::Time expiry = base::Time::FromDeltaSinceWindowsEpoch(
         base::Milliseconds(s.ColumnInt64(index++)));
-    data->offer_details_url = GURL(s.ColumnString(index++));
-    data->promo_code = s.ColumnString(index++);
-    data->display_strings.value_prop_text = s.ColumnString(index++);
-    data->display_strings.see_details_text = s.ColumnString(index++);
-    data->display_strings.usage_instructions_text = s.ColumnString(index++);
+    GURL offer_details_url = GURL(s.ColumnString(index++));
+    std::string promo_code = s.ColumnString(index++);
+    std::string value_prop_text = s.ColumnString(index++);
+    std::string see_details_text = s.ColumnString(index++);
+    std::string usage_instructions_text = s.ColumnString(index++);
+    DisplayStrings display_strings = {value_prop_text, see_details_text,
+                                      usage_instructions_text};
+    std::vector<int64_t> eligible_instrument_id;
+    std::vector<GURL> merchant_origins;
 
     sql::Statement s_offer_eligible_instrument(
         db_->GetUniqueStatement("SELECT "
@@ -2182,11 +2185,11 @@ bool AutofillTable::GetAutofillOffers(
                                 "instrument_id "  // 1
                                 "FROM offer_eligible_instrument "
                                 "WHERE offer_id = ?"));
-    s_offer_eligible_instrument.BindInt64(0, data->offer_id);
+    s_offer_eligible_instrument.BindInt64(0, offer_id);
     while (s_offer_eligible_instrument.Step()) {
       const int64_t instrument_id = s_offer_eligible_instrument.ColumnInt64(1);
       if (instrument_id != 0) {
-        data->eligible_instrument_id.push_back(instrument_id);
+        eligible_instrument_id.push_back(instrument_id);
       }
     }
 
@@ -2196,16 +2199,27 @@ bool AutofillTable::GetAutofillOffers(
                                 "merchant_domain "  // 1
                                 "FROM offer_merchant_domain "
                                 "WHERE offer_id = ?"));
-    s_offer_merchant_domain.BindInt64(0, data->offer_id);
+    s_offer_merchant_domain.BindInt64(0, offer_id);
     while (s_offer_merchant_domain.Step()) {
       const std::string merchant_domain =
           s_offer_merchant_domain.ColumnString(1);
       if (!merchant_domain.empty()) {
-        data->merchant_origins.emplace_back(merchant_domain);
+        merchant_origins.emplace_back(merchant_domain);
       }
     }
-
-    autofill_offer_data->emplace_back(std::move(data));
+    if (promo_code.empty()) {
+      auto data = std::make_unique<AutofillOfferData>(
+          AutofillOfferData::GPayCardLinkedOffer(
+              offer_id, expiry, merchant_origins, offer_details_url,
+              display_strings, eligible_instrument_id, offer_reward_amount));
+      autofill_offer_data->emplace_back(std::move(data));
+    } else {
+      auto data = std::make_unique<AutofillOfferData>(
+          AutofillOfferData::FreeListingCouponOffer(
+              offer_id, expiry, merchant_origins, offer_details_url,
+              display_strings, promo_code));
+      autofill_offer_data->emplace_back(std::move(data));
+    }
   }
 
   return s.Succeeded();

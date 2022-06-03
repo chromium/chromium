@@ -423,15 +423,17 @@ IN_PROC_BROWSER_TEST_F(FetchFLCodeDiscountWorkerBrowserTest,
       coupon_service_->GetFreeListingCouponsForUrl(
           GURL("https://www.merchant1.com/cart")),
       ElementsAre(testing::AllOf(
-          testing::Field("offer_id", &autofill::AutofillOfferData::offer_id,
-                         testing::Eq(1)),
-          testing::Field("promo_code", &autofill::AutofillOfferData::promo_code,
-                         testing::Eq("SAVE$10")),
-          testing::Field("expiry", &autofill::AutofillOfferData::expiry,
-                         testing::Eq(base::Time::FromDoubleT(1635204292))),
-          testing::Field("display_strings",
-                         &autofill::AutofillOfferData::display_strings,
-                         EqualsDisplayStrings(expected_display_string)))));
+          testing::Property("offer_id",
+                            &autofill::AutofillOfferData::GetOfferId,
+                            testing::Eq(1)),
+          testing::Property("promo_code",
+                            &autofill::AutofillOfferData::GetPromoCode,
+                            testing::Eq("SAVE$10")),
+          testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
+                            testing::Eq(base::Time::FromDoubleT(1635204292))),
+          testing::Property("display_strings",
+                            &autofill::AutofillOfferData::GetDisplayStrings,
+                            EqualsDisplayStrings(expected_display_string)))));
 }
 
 IN_PROC_BROWSER_TEST_F(FetchFLCodeDiscountWorkerBrowserTest,
@@ -451,13 +453,15 @@ IN_PROC_BROWSER_TEST_F(FetchFLCodeDiscountWorkerBrowserTest,
       coupon_service_->GetFreeListingCouponsForUrl(
           GURL("https://www.merchant2.com/cart")),
       ElementsAre(testing::AllOf(
-          testing::Field("offer_id", &autofill::AutofillOfferData::offer_id,
-                         testing::Eq(1)),
-          testing::Field("promo_code", &autofill::AutofillOfferData::promo_code,
-                         testing::Eq("SAVE10")),
-          testing::Field("expiry", &autofill::AutofillOfferData::expiry,
-                         testing::Eq(base::Time::FromDoubleT(1635204292.2))),
-          testing::Field("display_strings",
-                         &autofill::AutofillOfferData::display_strings,
-                         EqualsDisplayStrings(expected_display_string)))));
+          testing::Property("offer_id",
+                            &autofill::AutofillOfferData::GetOfferId,
+                            testing::Eq(1)),
+          testing::Property("promo_code",
+                            &autofill::AutofillOfferData::GetPromoCode,
+                            testing::Eq("SAVE10")),
+          testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
+                            testing::Eq(base::Time::FromDoubleT(1635204292.2))),
+          testing::Property("display_strings",
+                            &autofill::AutofillOfferData::GetDisplayStrings,
+                            EqualsDisplayStrings(expected_display_string)))));
 }
