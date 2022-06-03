@@ -100,81 +100,51 @@ void StatusAreaWidget::Initialize() {
   DCHECK(!initialized_);
 
   // Create the child views, left to right.
-  auto overflow_button_tray =
-      std::make_unique<StatusAreaOverflowButtonTray>(shelf_);
-  overflow_button_tray_ = overflow_button_tray.get();
-  AddTrayButton(std::move(overflow_button_tray));
-
-  auto holding_space_tray = std::make_unique<HoldingSpaceTray>(shelf_);
-  holding_space_tray_ = holding_space_tray.get();
-  AddTrayButton(std::move(holding_space_tray));
-
-  auto logout_button_tray = std::make_unique<LogoutButtonTray>(shelf_);
-  logout_button_tray_ = logout_button_tray.get();
-  AddTrayButton(std::move(logout_button_tray));
-
-  auto dictation_button_tray = std::make_unique<DictationButtonTray>(shelf_);
-  dictation_button_tray_ = dictation_button_tray.get();
-  AddTrayButton(std::move(dictation_button_tray));
-
-  auto select_to_speak_tray = std::make_unique<SelectToSpeakTray>(shelf_);
-  select_to_speak_tray_ = select_to_speak_tray.get();
-  AddTrayButton(std::move(select_to_speak_tray));
-
-  auto ime_menu_tray = std::make_unique<ImeMenuTray>(shelf_);
-  ime_menu_tray_ = ime_menu_tray.get();
-  AddTrayButton(std::move(ime_menu_tray));
-
-  auto virtual_keyboard_tray = std::make_unique<VirtualKeyboardTray>(shelf_);
-  virtual_keyboard_tray_ = virtual_keyboard_tray.get();
-  AddTrayButton(std::move(virtual_keyboard_tray));
-
-  auto stop_recording_button_tray =
-      std::make_unique<StopRecordingButtonTray>(shelf_);
-  stop_recording_button_tray_ = stop_recording_button_tray.get();
-  AddTrayButton(std::move(stop_recording_button_tray));
+  overflow_button_tray_ =
+      AddTrayButton(std::make_unique<StatusAreaOverflowButtonTray>(shelf_));
+  holding_space_tray_ =
+      AddTrayButton(std::make_unique<HoldingSpaceTray>(shelf_));
+  logout_button_tray_ =
+      AddTrayButton(std::make_unique<LogoutButtonTray>(shelf_));
+  dictation_button_tray_ =
+      AddTrayButton(std::make_unique<DictationButtonTray>(shelf_));
+  select_to_speak_tray_ =
+      AddTrayButton(std::make_unique<SelectToSpeakTray>(shelf_));
+  ime_menu_tray_ = AddTrayButton(std::make_unique<ImeMenuTray>(shelf_));
+  virtual_keyboard_tray_ =
+      AddTrayButton(std::make_unique<VirtualKeyboardTray>(shelf_));
+  stop_recording_button_tray_ =
+      AddTrayButton(std::make_unique<StopRecordingButtonTray>(shelf_));
 
   if (features::IsProjectorAnnotatorEnabled()) {
-    auto projector_annotation_tray =
-        std::make_unique<ProjectorAnnotationTray>(shelf_);
-    projector_annotation_tray_ = projector_annotation_tray.get();
-    AddTrayButton(std::move(projector_annotation_tray));
+    projector_annotation_tray_ =
+        AddTrayButton(std::make_unique<ProjectorAnnotationTray>(shelf_));
   }
 
-  auto palette_tray = std::make_unique<PaletteTray>(shelf_);
-  palette_tray_ = palette_tray.get();
-  AddTrayButton(std::move(palette_tray));
+  palette_tray_ = AddTrayButton(std::make_unique<PaletteTray>(shelf_));
 
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS)) {
-    auto media_tray = std::make_unique<MediaTray>(shelf_);
-    media_tray_ = media_tray.get();
-    AddTrayButton(std::move(media_tray));
+    media_tray_ = AddTrayButton(std::make_unique<MediaTray>(shelf_));
   }
 
   if (chromeos::features::IsEcheSWAEnabled()) {
-    auto eche_tray = std::make_unique<EcheTray>(shelf_);
-    eche_tray_ = eche_tray.get();
-    AddTrayButton(std::move(eche_tray));
+    eche_tray_ = AddTrayButton(std::make_unique<EcheTray>(shelf_));
   }
 
   if (chromeos::features::IsPhoneHubEnabled()) {
-    auto phone_hub_tray = std::make_unique<PhoneHubTray>(shelf_);
-    phone_hub_tray_ = phone_hub_tray.get();
-    AddTrayButton(std::move(phone_hub_tray));
+    phone_hub_tray_ = AddTrayButton(std::make_unique<PhoneHubTray>(shelf_));
   }
 
   auto unified_system_tray = std::make_unique<UnifiedSystemTray>(shelf_);
   unified_system_tray_ = unified_system_tray.get();
   if (features::IsCalendarViewEnabled()) {
-    auto date_tray = std::make_unique<DateTray>(shelf_, unified_system_tray_);
-    date_tray_ = date_tray.get();
-    AddTrayButton(std::move(date_tray));
+    date_tray_ =
+        AddTrayButton(std::make_unique<DateTray>(shelf_, unified_system_tray_));
   }
   AddTrayButton(std::move(unified_system_tray));
 
-  auto overview_button_tray = std::make_unique<OverviewButtonTray>(shelf_);
-  overview_button_tray_ = overview_button_tray.get();
-  AddTrayButton(std::move(overview_button_tray));
+  overview_button_tray_ =
+      AddTrayButton(std::make_unique<OverviewButtonTray>(shelf_));
 
   // Each tray_button's animation will be disabled for the life time of this
   // local `animation_disablers`, which means the closures to enable the
@@ -412,7 +382,7 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
     if (used_width + tray_width > available_width) {
       show_overflow_button = true;
 
-      // Maybe remove the last tray button to make rooom for the overflow tray.
+      // Maybe remove the last tray button to make room for the overflow tray.
       int overflow_button_width =
           overflow_button_tray_->GetPreferredSize().width();
       if (previous_tray && used_width + overflow_button_width > available_width)
@@ -638,10 +608,12 @@ void StatusAreaWidget::OnScrollEvent(ui::ScrollEvent* event) {
     views::Widget::OnScrollEvent(event);
 }
 
-void StatusAreaWidget::AddTrayButton(
-    std::unique_ptr<TrayBackgroundView> tray_button) {
+template <typename TrayButtonT>
+TrayButtonT* StatusAreaWidget::AddTrayButton(
+    std::unique_ptr<TrayButtonT>&& tray_button) {
   tray_buttons_.push_back(tray_button.get());
-  status_area_widget_delegate_->AddChildView(std::move(tray_button));
+  return status_area_widget_delegate_->AddChildView(
+      std::forward<std::unique_ptr<TrayButtonT>>(tray_button));
 }
 
 StatusAreaWidget::LayoutInputs StatusAreaWidget::GetLayoutInputs() const {

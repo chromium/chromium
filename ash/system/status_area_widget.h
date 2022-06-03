@@ -213,8 +213,14 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
 
-  // Adds a new tray button to the status area.
-  void AddTrayButton(std::unique_ptr<TrayBackgroundView> tray_button);
+  // Adds a new tray button to the status area. Implementation is in source
+  // file to avoid recursive includes, and function is not used outside of the
+  // compilation unit. Template required for a type safe subclass to be
+  // returned.
+  // Any references to the method outside of this compilation unit will fail
+  // linking unless a specialization is declared in status_area_widget.cc.
+  template <typename TrayButtonT>
+  TrayButtonT* AddTrayButton(std::unique_ptr<TrayButtonT>&& tray_button);
 
   // Called when in the collapsed state to calculate and update the visibility
   // of each tray button.

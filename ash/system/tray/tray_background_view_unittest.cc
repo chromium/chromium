@@ -85,8 +85,11 @@ class TrayBackgroundViewTest : public AshTestBase {
     StatusAreaWidgetTestHelper::GetStatusAreaWidget()
         ->status_area_widget_delegate()
         ->SetLayoutManager(nullptr);
-    StatusAreaWidgetTestHelper::GetStatusAreaWidget()->AddTrayButton(
-        std::move(test_view));
+    StatusAreaWidgetTestHelper::GetStatusAreaWidget()->tray_buttons_.push_back(
+        test_view.get());
+    StatusAreaWidgetTestHelper::GetStatusAreaWidget()
+        ->status_area_widget_delegate()
+        ->AddChildView(std::move(test_view));
 
     // Set Dictation button to be visible.
     AccessibilityControllerImpl* controller =
