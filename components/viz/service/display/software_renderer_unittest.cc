@@ -25,6 +25,7 @@
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
+#include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
@@ -185,6 +186,78 @@ TEST_F(SoftwareRendererTest, SolidColorQuad) {
   EXPECT_EQ(SK_ColorCYAN, output->getColor(1, 2));
   EXPECT_EQ(SK_ColorCYAN,
             output->getColor(inner_size.width() - 1, inner_size.height() - 1));
+}
+
+TEST_F(SoftwareRendererTest, DebugBorderDrawQuad) {
+  gfx::Size rect_size(10, 10);
+  gfx::Size full_size(100, 100);
+  gfx::Rect screen_rect(full_size);
+  gfx::Rect rect_1(rect_size);
+  gfx::Rect rect_2(gfx::Point(1, 1), rect_size);
+  gfx::Rect rect_3(gfx::Point(2, 2), rect_size);
+  gfx::Rect rect_4(gfx::Point(3, 3), rect_size);
+
+  InitializeRenderer(std::make_unique<SoftwareOutputDevice>());
+
+  AggregatedRenderPassId root_render_pass_id{1};
+  auto root_render_pass = std::make_unique<AggregatedRenderPass>();
+  root_render_pass->SetNew(root_render_pass_id, screen_rect, screen_rect,
+                           gfx::Transform());
+  SharedQuadState* shared_quad_state =
+      root_render_pass->CreateAndAppendSharedQuadState();
+  shared_quad_state->SetAll(gfx::Transform(), screen_rect, screen_rect,
+                            gfx::MaskFilterInfo(), absl::nullopt, true, 1.0,
+                            SkBlendMode::kSrcOver, 0);
+
+  auto* quad_1 =
+      root_render_pass->CreateAndAppendDrawQuad<DebugBorderDrawQuad>();
+  quad_1->SetNew(shared_quad_state, rect_1, rect_1, SK_ColorCYAN, false);
+  auto* quad_2 =
+      root_render_pass->CreateAndAppendDrawQuad<DebugBorderDrawQuad>();
+  quad_2->SetNew(shared_quad_state, rect_2, rect_2, SK_ColorMAGENTA, false);
+
+  auto* quad_3 =
+      root_render_pass->CreateAndAppendDrawQuad<DebugBorderDrawQuad>();
+  quad_3->SetNew(shared_quad_state, rect_3, rect_3, SK_ColorYELLOW, false);
+
+  // Test one non-opaque color
+  SkColor semi_transparent_white = SkColorSetARGB(127, 255, 255, 255);
+  auto* quad_4 =
+      root_render_pass->CreateAndAppendDrawQuad<DebugBorderDrawQuad>();
+  quad_4->SetNew(shared_quad_state, rect_4, rect_4, semi_transparent_white,
+                 false);
+
+  AggregatedRenderPassList list;
+  list.push_back(std::move(root_render_pass));
+
+  float device_scale_factor = 1.f;
+  std::unique_ptr<SkBitmap> output =
+      DrawAndCopyOutput(&list, device_scale_factor, full_size);
+  EXPECT_EQ(screen_rect.width(), output->info().width());
+  EXPECT_EQ(screen_rect.height(), output->info().height());
+
+  // Top left corners
+  EXPECT_EQ(SK_ColorCYAN, output->getColor(0, 0));
+  EXPECT_EQ(SK_ColorMAGENTA, output->getColor(1, 1));
+  EXPECT_EQ(SK_ColorYELLOW, output->getColor(2, 2));
+  // The corners end up being more opaque due to the miter, go one to the right
+  EXPECT_EQ(semi_transparent_white, output->getColor(3, 4));
+
+  // Un-drawn pixels as the quads are just outlines
+  EXPECT_EQ(SK_ColorTRANSPARENT, output->getColor(4, 4));
+  EXPECT_EQ(SK_ColorTRANSPARENT,
+            output->getColor(rect_size.width() - 2, rect_size.height() - 2));
+
+  // The bottom rightmost pixel of these quads are not filled because of the
+  // SkPaint::kMiter_Join StrokeJoin, go one pixel to the left
+  EXPECT_EQ(SK_ColorCYAN,
+            output->getColor(rect_size.width() - 1, rect_size.height()));
+  EXPECT_EQ(SK_ColorMAGENTA,
+            output->getColor(rect_size.width(), rect_size.height() + 1));
+  EXPECT_EQ(SK_ColorYELLOW,
+            output->getColor(rect_size.width() + 1, rect_size.height() + 2));
+  EXPECT_EQ(semi_transparent_white,
+            output->getColor(rect_size.width() + 2, rect_size.height() + 3));
 }
 
 TEST_F(SoftwareRendererTest, TileQuad) {
