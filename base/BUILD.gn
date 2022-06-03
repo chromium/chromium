@@ -1430,8 +1430,6 @@ mixed_component("base") {
     "//base/third_party/double_conversion",
     "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
-    "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//build/config/compiler:compiler_buildflags",
     "//third_party/modp_b64",
   ]
@@ -1487,7 +1485,10 @@ mixed_component("base") {
     ":sanitizer_buildflags",
     ":synchronization_buildflags",
     ":tracing_buildflags",
+    "//base/allocator/partition_allocator:buildflags",
     "//base/numerics:base_numerics",
+    "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
     "//third_party/abseil-cpp:absl",
   ]
 

@@ -12,9 +12,9 @@
 
 #include <sys/mman.h>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/posix/eintr_wrapper.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"

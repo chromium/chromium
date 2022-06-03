@@ -8,7 +8,7 @@
 #include <ostream>
 #include <type_traits>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 
 namespace partition_alloc::internal::base::subtle {
 

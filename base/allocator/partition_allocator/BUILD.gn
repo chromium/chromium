@@ -4,6 +4,11 @@
 
 import("//base/allocator/allocator.gni")
 import("//base/allocator/partition_allocator/partition_alloc.gni")
+import("//build/buildflag_header.gni")
+import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/dcheck_always_on.gni")
+import("//build/config/logging.gni")
 
 # Add partition_alloc.gni and import it for partition_alloc configs.
 
@@ -265,14 +270,14 @@ target(partition_alloc_target_type, "partition_alloc") {
     # To support a trampoline for another arch, please refer to v8/src/heap/base.
   }
   public_deps = [
-    "//base:debugging_buildflags",
-    "//base:logging_buildflags",
+    ":chromecast_buildflags",
+    ":chromeos_buildflags",
+    ":debugging_buildflags",
+    ":logging_buildflags",
+    ":partition_alloc_buildflags",
     "//base:synchronization_buildflags",
     "//base:tracing_buildflags",
-    "//base/allocator:buildflags",
     "//build:branding_buildflags",
-    "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//build/config/compiler:compiler_buildflags",
   ]
 
@@ -353,14 +358,14 @@ source_set("test_support") {
     ]
   }
   public_deps = [
-    "//base:debugging_buildflags",
-    "//base:logging_buildflags",
+    ":chromecast_buildflags",
+    ":chromeos_buildflags",
+    ":debugging_buildflags",
+    ":logging_buildflags",
+    ":partition_alloc_buildflags",
     "//base:synchronization_buildflags",
     "//base:tracing_buildflags",
-    "//base/allocator:buildflags",
     "//build:branding_buildflags",
-    "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//build/config/compiler:compiler_buildflags",
   ]
   public_configs = []
@@ -384,15 +389,91 @@ source_set("test_support") {
   }
 }
 
+buildflag_header("partition_alloc_buildflags") {
+  header = "partition_alloc_buildflags.h"
+
+  _use_partition_alloc_as_malloc = use_allocator == "partition"
+  assert(use_allocator_shim || !_use_partition_alloc_as_malloc,
+         "Partition alloc requires the allocator shim")
+
+  # BackupRefPtr(BRP) build flags.
+  _use_backup_ref_ptr = use_backup_ref_ptr && use_partition_alloc && !is_nacl
+  _put_ref_count_in_previous_slot =
+      put_ref_count_in_previous_slot && _use_backup_ref_ptr
+  _enable_backup_ref_ptr_slow_checks =
+      enable_backup_ref_ptr_slow_checks && _use_backup_ref_ptr
+  _enable_dangling_raw_ptr_checks =
+      enable_dangling_raw_ptr_checks && _use_backup_ref_ptr
+
+  # MTECheckedPtr is exclusive against BRP (asserted at declaration).
+  # MTECheckedPtr requires 64-bit pointers (not available in NaCl).
+  _use_mte_checked_ptr = use_mte_checked_ptr && !is_nacl
+
+  _record_alloc_info = false
+
+  # TODO(crbug.com/1151236): Need to refactor the following buildflags.
+  # The buildflags (expect RECORD_ALLOC_INFO) are used by both chrome and
+  # partition alloc. For partition alloc,
+  # gen/base/allocator/partition_allocator/partition_alloc_buildflags.h
+  # defines and partition alloc includes the header file. For chrome,
+  # gen/base/allocator/buildflags.h defines and chrome includes.
+  flags = [
+    "USE_PARTITION_ALLOC_AS_MALLOC=$_use_partition_alloc_as_malloc",
+
+    "USE_BACKUP_REF_PTR=$_use_backup_ref_ptr",
+    "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
+    "ENABLE_DANGLING_RAW_PTR_CHECKS=$_enable_dangling_raw_ptr_checks",
+    "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
+
+    "USE_MTE_CHECKED_PTR=$_use_mte_checked_ptr",
+
+    "RECORD_ALLOC_INFO=$_record_alloc_info",
+  ]
+}
+
+buildflag_header("chromecast_buildflags") {
+  header = "chromecast_buildflags.h"
+
+  flags = [ "PA_IS_CASTOS=$is_castos" ]
+}
+
+buildflag_header("chromeos_buildflags") {
+  header = "chromeos_buildflags.h"
+
+  flags = [ "PA_IS_CHROMEOS_ASH=$is_chromeos_ash" ]
+}
+
+buildflag_header("logging_buildflags") {
+  header = "logging_buildflags.h"
+
+  flags = [ "PA_ENABLE_LOG_ERROR_NOT_REACHED=$enable_log_error_not_reached" ]
+}
+
+buildflag_header("debugging_buildflags") {
+  header = "debugging_buildflags.h"
+  header_dir = rebase_path(".", "//") + "/partition_alloc_base/debug"
+
+  # Duplicates the setup Chromium uses to define `DCHECK_IS_ON()`,
+  # but avails it as a buildflag.
+  _dcheck_is_on = is_debug || dcheck_always_on
+
+  flags = [
+    "PA_DCHECK_IS_ON=$_dcheck_is_on",
+    "PA_EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
+  ]
+}
+
+group("buildflags") {
+  public_deps = [
+    ":chromecast_buildflags",
+    ":chromeos_buildflags",
+    ":debugging_buildflags",
+    ":logging_buildflags",
+    ":partition_alloc_buildflags",
+  ]
+}
+
 # TODO(crbug.com/1151236): After making partition_alloc a standalone library,
 # move test code here. i.e. test("partition_alloc_tests") { ... } and
 # test("partition_alloc_perftests").
 
-# TODO(crbug.com/1151236): Generate partition_alloc_buildflags. The following
-# flags will be defined by the buildflags:
-#    "USE_BACKUP_REF_PTR=$_use_backup_ref_ptr",
-#    "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
-#    "ENABLE_DANGLING_RAW_PTR_CHECKS=$_enable_dangling_raw_ptr_checks",
-#    "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
-#    "USE_MTE_CHECKED_PTR=$_use_mte_checked_ptr",
-#    "RECORD_ALLOC_INFO=$_record_alloc_info",

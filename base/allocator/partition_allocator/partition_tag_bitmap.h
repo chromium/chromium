@@ -5,9 +5,9 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_TAG_BITMAP_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_TAG_BITMAP_H_
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 
 namespace partition_alloc::internal {

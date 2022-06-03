@@ -8,7 +8,7 @@
 #include <lib/fidl/cpp/binding.h>
 #include <lib/sys/cpp/component_context.h>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

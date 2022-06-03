@@ -68,12 +68,12 @@
 #include <iosfwd>
 #include <limits>
 
+#include "base/allocator/partition_allocator/chromeos_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/clamped_math.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include <zircon/types.h>
@@ -888,14 +888,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) TimeTicks
 
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(PA_IS_CHROMEOS_ASH)
   // Converts to TimeTicks the value obtained from SystemClock.uptimeMillis().
   // Note: this conversion may be non-monotonic in relation to previously
   // obtained TimeTicks::Now() values because of the truncation (to
   // milliseconds) performed by uptimeMillis().
   static TimeTicks FromUptimeMillis(int64_t uptime_millis_value);
 
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(PA_IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
   // Converts to TimeTicks the value obtained from System.nanoTime(). This

@@ -8,8 +8,8 @@
 #include <atomic>
 #include <type_traits>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"

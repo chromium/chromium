@@ -7,12 +7,13 @@
 
 #include <cstdint>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
 #define PA_STRINGIFY_IMPL(s) #s

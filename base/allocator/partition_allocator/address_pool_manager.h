@@ -8,12 +8,12 @@
 #include <bitset>
 #include <limits>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
