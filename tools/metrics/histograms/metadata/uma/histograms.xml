@@ -103,14 +103,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.CleanExitBeacon.BeaconFileConsistency"
-    enum="UmaCleanExitConsistency2" expires_after="2022-10-04">
+    enum="UmaCleanExitConsistency2" expires_after="2023-05-31">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Emitted by clients in the |kEnabledGroup| of the Extended Variations Safe
-    Mode experiment when the CleanExitBeacon is initialized. Reports the
-    combined state of distinct beacons stored the beacon file and in Local
-    State.
+    The combined state of distinct beacons stored in the beacon file and in
+    Local State. Emitted once during startup when the CleanExitBeacon is
+    initialized.
+
+    As of M102 for desktop and iOS and M103 for Android Chrome, any client may
+    emit this metric. Prior to this, the metric was emitted by only clients in
+    an enabled group that used the beacon file.
   </summary>
 </histogram>
 
@@ -148,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.CleanExitBeaconConsistency2"
-    enum="UmaCleanExitConsistency2" expires_after="2022-10-04">
+    enum="UmaCleanExitConsistency2" expires_after="2023-05-31">
   <owner>asvitkine@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -166,19 +169,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.CleanExitBeaconConsistency3"
-    enum="UmaCleanExitConsistency3" expires_after="2022-10-16">
+    enum="UmaCleanExitConsistency3" expires_after="2023-05-31">
   <owner>caitlinfischer@google.com</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Recorded when the CleanExitBeacon is initialized for clients in the Extended
-    Variations Safe Mode enabled group on Windows and iOS. Reports the combined
-    state of distinct beacons stored in the beacon file and in a
+    The combined state of distinct beacons stored in the beacon file and in a
     platform-specific location (e.g. the Windows registry or NSUserDefaults on
-    iOS). They are normally expected to be identical.
+    iOS). They are normally expected to be identical. Recorded when the
+    CleanExitBeacon is initialized on Windows and iOS.
 
     Unlike UMA.CleanExitBeaconConsistency2, this histogram excludes the Local
     State beacon.
+
+    As of M102 for desktop and iOS and M103 for Android Chrome, any client may
+    emit this metric. Prior to this, the metric was emitted by only clients in
+    an enabled group that used the beacon file.
   </summary>
 </histogram>
 
