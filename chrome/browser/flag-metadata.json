@@ -6376,7 +6376,7 @@
   },
   {
     "name": "wifi-sync-android",
-    "owners": [ "jonmann", "cvandermerwe@google.com", "chromeos-cross-device-eng@google.com" ],
+    "owners": [ "jonmann", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 97
   },
   {

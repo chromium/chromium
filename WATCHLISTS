@@ -2665,7 +2665,7 @@
     'minidump_tests': ['bsheedy@chromium.org'],
     'multidevice': ['danlee+watch-multidevice@google.com',
                     'hansberry+watch-multidevice@chromium.org',
-                    'themaxli+watch-multidevice@chromium.org'],
+                    'jonmann+watch-multidevice@chromium.org'],
     'multipaste': ['andrewxu+watch-multipaste@google.com',
                    'dmblack+watch-multipaste@google.com',
                    'newcomer+watch-multipaste@google.com'],

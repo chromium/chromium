@@ -2795,7 +2795,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Wifi.Synced.ZeroNetworksEligibleForSync.Reason"
     enum="NetworkEligibilityStatus" expires_after="2023-02-14">
-  <owner>cvandermerwe@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

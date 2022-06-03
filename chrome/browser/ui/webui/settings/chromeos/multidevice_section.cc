@@ -189,7 +189,7 @@ const std::vector<SearchConcept>& GetMultiDeviceOptedOutSearchConcepts() {
       alt_tag_index++;
     }
 
-    // TODO(cvandermerwe): Update 5 alt tag limit to 6 and remove condition
+    // TODO(b/234730982): Update 5 alt tag limit to 6 and remove condition
     if (alt_tag_index < 5 && features::IsWifiSyncAndroidEnabled()) {
       set_up_concept.alt_tag_ids[alt_tag_index] =
           IDS_OS_SETTINGS_TAG_MULTIDEVICE_WIFI_SYNC;

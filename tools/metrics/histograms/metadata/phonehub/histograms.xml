@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PhoneHub.NotificationMessageLength" units="characters"
     expires_after="2023-02-01">
-  <owner>benjshen@chromium.org</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     The message length of a mirrored PhoneHub notification, not including the
