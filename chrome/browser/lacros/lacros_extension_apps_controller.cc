@@ -37,6 +37,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "ui/base/window_open_disposition.h"
@@ -299,7 +300,8 @@ void LacrosExtensionAppsController::FinallyLaunch(
   auto params = apps::ConvertCrosapiToLaunchParams(launch_params, profile);
   params.app_id = extension->id();
 
-  if (which_type_.IsChromeApps()) {
+  if (which_type_.IsChromeApps() ||
+      extension_misc::IsQuickOfficeExtension(extension->id())) {
     OpenApplication(profile, std::move(params));
 
     // TODO(https://crbug.com/1225848): Store the resulting instance token,
@@ -341,6 +343,7 @@ void LacrosExtensionAppsController::FinallyLaunch(
 
   } else {
     NOTREACHED();
+    std::move(callback).Run(std::move(result));
   }
 }
 

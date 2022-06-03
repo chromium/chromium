@@ -321,10 +321,11 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     app->allow_uninstall = (policy->UserMayModifySettings(extension, nullptr) &&
                             !policy->MustRemainInstalled(extension, nullptr));
 
-    // Add file_handlers for Chrome Apps, or file_browser_handler for
-    // Extensions.
+    // Add file_handlers for Chrome Apps and quickoffice, or
+    // file_browser_handler for Extensions.
     base::Extend(app->intent_filters,
-                 which_type_.ChooseForChromeAppOrExtension(
+                 which_type_.ChooseIntentFilter(
+                     extension_misc::IsQuickOfficeExtension(extension->id()),
                      apps_util::CreateIntentFiltersForChromeApp,
                      apps_util::CreateIntentFiltersForExtension)(extension));
     return app;
