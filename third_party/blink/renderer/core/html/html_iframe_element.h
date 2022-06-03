@@ -61,6 +61,8 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
 
   bool Anonymous() const override { return anonymous_; }
 
+  bool IsSupportedByRegionCapture() const override { return true; }
+
  private:
   void SetCollapsed(bool) override;
 

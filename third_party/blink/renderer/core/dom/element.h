@@ -1140,6 +1140,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   bool IsDocumentElement() const;
 
+  // Not all Elements are presently supported by the Region Capture feature.
+  // Those that are override and this method and return true.
+  // TODO(crbug.com/1332641): Remove this after adding support for all subtypes.
+  virtual bool IsSupportedByRegionCapture() const { return false; }
+
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();
