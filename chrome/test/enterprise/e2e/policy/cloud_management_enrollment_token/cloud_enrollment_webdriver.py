@@ -9,15 +9,6 @@ from selenium import webdriver
 import test_util
 
 
-def getElementFromShadowRoot(driver, element, selector):
-  if element is None:
-    return None
-  else:
-    return driver.execute_script(
-        "return arguments[0].shadowRoot.querySelector(arguments[1])", element,
-        selector)
-
-
 def main(argv):
   options = webdriver.ChromeOptions()
   os.environ["CHROME_LOG_FILE"] = r"c:\temp\chrome_log.txt"
@@ -33,13 +24,10 @@ def main(argv):
     driver.find_element_by_id('reload-policies').click
     # Give the page 2 seconds to render the legend
     time.sleep(2)
-    status_box = driver.find_element_by_css_selector("status-box")
-    el = getElementFromShadowRoot(driver, status_box, "fieldset")
-
-    print(el.find_element_by_class_name('legend').text)
-    print(el.find_element_by_class_name('machine-enrollment-name').text)
-    print(el.find_element_by_class_name('machine-enrollment-token').text)
-    print(el.find_element_by_class_name('status').text)
+    print(driver.find_element_by_class_name('legend').text)
+    print(driver.find_element_by_class_name('machine-enrollment-name').text)
+    print(driver.find_element_by_class_name('machine-enrollment-token').text)
+    print(driver.find_element_by_class_name('status').text)
   except Exception as error:
     print(error)
   finally:

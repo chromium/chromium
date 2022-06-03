@@ -22,5 +22,4 @@ from .url_blocklist.url_blocklist import *
 from .url_allowlist.url_allowlist import *
 from .user_data_dir.user_data_dir import *
 from .webprotect_file_download.webprotect_file_download import *
-from .webprotect_bulk_text_entry.webprotect_bulk_text_entry import *
 from .youtube_restrict.youtube_restrict import *
