@@ -314,6 +314,7 @@ public abstract class ChromeFeatureList {
             "SyncAndroidPromosWithSingleButton";
     public static final String SYNC_ANDROID_PROMOS_WITH_TITLE = "SyncAndroidPromosWithTitle";
     public static final String CONTINUOUS_SEARCH = "ContinuousSearch";
+    public static final String CREATE_SAFEBROWSING_ON_STARTUP = "CreateSafebrowsingOnStartup";
     public static final String CRITICAL_PERSISTED_TAB_DATA = "CriticalPersistedTabData";
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
             "DarkenWebsitesCheckboxInThemesSetting";

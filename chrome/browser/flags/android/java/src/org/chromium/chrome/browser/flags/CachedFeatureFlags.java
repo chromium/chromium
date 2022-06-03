@@ -100,6 +100,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.BACK_GESTURE_REFACTOR, false)
                     .put(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION,
                             false)
+                    .put(ChromeFeatureList.CREATE_SAFEBROWSING_ON_STARTUP, false)
                     .build();
 
     /**

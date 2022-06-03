@@ -362,6 +362,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &query_tiles::features::kQueryTilesInNTP,
     &query_tiles::features::kQueryTilesSegmentation,
     &reading_list::switches::kReadLater,
+    &safe_browsing::kCreateSafebrowsingOnStartup,
     &segmentation_platform::features::kContextualPageActionsWithPriceTracking,
     &send_tab_to_self::kSendTabToSelfSigninPromo,
     &send_tab_to_self::kSendTabToSelfV2,

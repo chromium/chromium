@@ -52,6 +52,11 @@ const base::Feature kConnectorsScanningAccessToken{
 const base::Feature kConnectorsScanningReportOnlyUI{
     "ConnectorsScanningReportOnlyUI", base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_ANDROID)
+const base::Feature kCreateSafebrowsingOnStartup{
+    "CreateSafebrowsingOnStartup", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 const base::Feature kDelayedWarnings{"SafeBrowsingDelayedWarnings",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -81,6 +81,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES);
                 add(ChromeFeatureList.CCT_TOOLBAR_CUSTOMIZATIONS);
                 add(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS);
+                add(ChromeFeatureList.CREATE_SAFEBROWSING_ON_STARTUP);
                 add(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA);
                 add(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED);
                 add(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID);

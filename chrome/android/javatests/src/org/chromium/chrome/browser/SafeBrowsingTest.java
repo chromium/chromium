@@ -80,10 +80,7 @@ public final class SafeBrowsingTest {
 
     @Before
     public void setUp() {
-        // Create a new temporary instance to ensure the Class is loaded. Otherwise we will get a
-        // ClassNotFoundException when trying to instantiate during startup.
-        SafeBrowsingApiBridge.setSafeBrowsingHandlerType(
-                new MockSafeBrowsingApiHandler().getClass());
+        SafeBrowsingApiBridge.setSafeBrowsingHandlerType(MockSafeBrowsingApiHandler.class);
     }
 
     @After
@@ -108,6 +105,19 @@ public final class SafeBrowsingTest {
     @Test
     @MediumTest
     public void interstitialPage() throws Exception {
+        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        String url = mTestServer.getURL("/chrome/test/data/android/about.html");
+        MockSafeBrowsingApiHandler.addMockResponse(url, "{\"matches\":[{\"threat_type\":\"5\"}]}");
+        mActivityTestRule.startMainActivityOnBlankPage();
+
+        loadUrlNonBlocking(url);
+        waitForInterstitial(true);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.CREATE_SAFEBROWSING_ON_STARTUP)
+    public void interstitialPageWithEarlyInit() throws Exception {
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         String url = mTestServer.getURL("/chrome/test/data/android/about.html");
         MockSafeBrowsingApiHandler.addMockResponse(url, "{\"matches\":[{\"threat_type\":\"5\"}]}");
