@@ -101,6 +101,14 @@ class X509CertificateModel {
       base::StringPiece critical_label,
       base::StringPiece non_critical_label) const;
 
+  std::string ProcessSecAlgorithmSignature() const;
+  std::string ProcessSecAlgorithmSubjectPublicKey() const;
+  std::string ProcessSecAlgorithmSignatureWrap() const;
+
+  std::string ProcessSubjectPublicKeyInfo() const;
+
+  std::string ProcessRawBitsSignatureWrap() const;
+
  private:
   bool ParseExtensions(const net::der::Input& extensions_tlv);
   std::string ProcessExtension(base::StringPiece critical_label,
@@ -145,6 +153,11 @@ std::string ProcessRawBytes(const unsigned char* data, size_t data_length);
 // Format a buffer as a space separated string, with 16 bytes on each line.
 // |data_length| is the length in bits.
 std::string ProcessRawBits(const unsigned char* data, size_t data_length);
+
+// Parses |public_key_spki_der| as a DER-encoded X.509 SubjectPublicKeyInfo,
+// then formats the public key as a string for displaying. Returns an empty
+// string on error.
+std::string ProcessRawSubjectPublicKeyInfo(base::span<const uint8_t> spki_der);
 
 }  // namespace x509_certificate_model
 

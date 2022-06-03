@@ -56,7 +56,9 @@ constexpr char kDerEncodedSpkiBase64[] =
     "GVTJuPo4VToGd+ZhS7QvsY38nAYG57fMnzzs5jjMF042AzzWiMt9gGbeuqCE6LXqFuSJYPo+"
     "TLaN7pwQx68PK5pd/lv58B7jjxCIAai0BX1rV6bl/Am3EukhTSuIcQiTr5c1G4E6bKwIDAQAB";
 
-// Display-formatted version of |kDerEncodedSpkiBase64|.
+// Display-formatted version of |kDerEncodedSpkiBase64|. (The number of bits in
+// the public exponent used to be calculated by num_bytes*8, now it is the
+// actual number of used bits.)
 constexpr char kFormattedPublicKey[] = R"(Modulus (2048 bits):
   D6 76 BB AF A5 A2 68 BE 6C 96 CC 87 23 B6 C4 A4
 FE 5A 77 D7 DF B3 34 F4 98 18 BC C9 CD 37 84 9A
@@ -75,7 +77,7 @@ A3 7B A7 04 31 EB C3 CA E6 97 7F 96 FE 7C 07 B8
 E3 C4 22 00 6A 2D 01 5F 5A D5 E9 B9 7F 02 6D C4
 BA 48 53 4A E2 1C 42 24 EB E5 CD 46 E0 4E 9B 2B
 
-  Public Exponent (24 bits):
+  Public Exponent (17 bits):
   01 00 01)";
 
 // Test values for creating CertProfile for MockCertProvisioningWorker.

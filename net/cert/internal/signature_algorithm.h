@@ -39,6 +39,15 @@ enum class SignatureAlgorithmId {
   Dsa,       // DSA
 };
 
+// Parses AlgorithmIdentifier as defined by RFC 5280 section 4.1.1.2:
+//
+//     AlgorithmIdentifier  ::=  SEQUENCE  {
+//          algorithm               OBJECT IDENTIFIER,
+//          parameters              ANY DEFINED BY algorithm OPTIONAL  }
+[[nodiscard]] NET_EXPORT bool ParseAlgorithmIdentifier(const der::Input& input,
+                                                       der::Input* algorithm,
+                                                       der::Input* parameters);
+
 // Parses a HashAlgorithm as defined by RFC 5912:
 //
 //     HashAlgorithm  ::=  AlgorithmIdentifier{DIGEST-ALGORITHM,

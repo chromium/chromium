@@ -20,14 +20,18 @@
 #include "net/cert/internal/certificate_policies.h"
 #include "net/cert/internal/extended_key_usage.h"
 #include "net/cert/internal/parse_name.h"
+#include "net/cert/internal/signature_algorithm.h"
+#include "net/cert/internal/verify_signed_data.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
 #include "net/der/tag.h"
+#include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
+#include "third_party/boringssl/src/include/openssl/rsa.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace x509_certificate_model {
@@ -76,6 +80,76 @@ constexpr uint8_t kIssuerAltNameOid[] = {0x55, 0x1d, 0x12};
 // In dotted notation: 2.5.29.9
 constexpr uint8_t kSubjectDirectoryAttributesOid[] = {0x55, 0x1d, 0x09};
 
+// From RFC 3447:
+// pkcs-1    OBJECT IDENTIFIER ::= {
+//     iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) 1
+// }
+// rsaEncryption    OBJECT IDENTIFIER ::= { pkcs-1 1 }
+constexpr uint8_t kPkcs1RsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
+                                           0x0d, 0x01, 0x01, 0x01};
+// md2WithRSAEncryption       OBJECT IDENTIFIER ::= { pkcs-1 2 }
+constexpr uint8_t kPkcs1Md2WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
+                                                  0x0d, 0x01, 0x01, 0x02};
+// From RFC 2314: md4WithRSAEncryption OBJECT IDENTIFIER ::= { pkcs-1 3 }
+constexpr uint8_t kPkcs1Md4WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
+                                                  0x0d, 0x01, 0x01, 0x03};
+// md5WithRSAEncryption       OBJECT IDENTIFIER ::= { pkcs-1 4 }
+constexpr uint8_t kPkcs1Md5WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
+                                                  0x0d, 0x01, 0x01, 0x04};
+// sha1WithRSAEncryption      OBJECT IDENTIFIER ::= { pkcs-1 5 }
+constexpr uint8_t kPkcs1Sha1WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
+                                                   0x0d, 0x01, 0x01, 0x05};
+// sha256WithRSAEncryption    OBJECT IDENTIFIER ::= { pkcs-1 11 }
+constexpr uint8_t kPkcs1Sha256WithRsaEncryption[] = {
+    0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0b};
+// sha384WithRSAEncryption    OBJECT IDENTIFIER ::= { pkcs-1 12 }
+constexpr uint8_t kPkcs1Sha384WithRsaEncryption[] = {
+    0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0c};
+// sha512WithRSAEncryption    OBJECT IDENTIFIER ::= { pkcs-1 13 }
+constexpr uint8_t kPkcs1Sha512WithRsaEncryption[] = {
+    0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0d};
+// From RFC 3279:
+//   ansi-X9-62  OBJECT IDENTIFIER ::= {
+//            iso(1) member-body(2) us(840) 10045 }
+//   id-ecSigType OBJECT IDENTIFIER  ::=  {
+//        ansi-X9-62 signatures(4) }
+//   ecdsa-with-SHA1  OBJECT IDENTIFIER ::= {
+//        id-ecSigType 1 }
+constexpr uint8_t kAnsiX962EcdsaWithSha1[] = {0x2a, 0x86, 0x48, 0xce,
+                                              0x3d, 0x04, 0x01};
+// From RFC 5758:
+//    ecdsa-with-SHA256 OBJECT IDENTIFIER ::= { iso(1) member-body(2)
+//            us(840) ansi-X9-62(10045) signatures(4) ecdsa-with-SHA2(3) 2 }
+constexpr uint8_t kAnsiX962EcdsaWithSha256[] = {0x2a, 0x86, 0x48, 0xce,
+                                                0x3d, 0x04, 0x03, 0x02};
+//    ecdsa-with-SHA384 OBJECT IDENTIFIER ::= { iso(1) member-body(2)
+//            us(840) ansi-X9-62(10045) signatures(4) ecdsa-with-SHA2(3) 3 }
+constexpr uint8_t kAnsiX962EcdsaWithSha384[] = {0x2a, 0x86, 0x48, 0xce,
+                                                0x3d, 0x04, 0x03, 0x03};
+//    ecdsa-with-SHA512 OBJECT IDENTIFIER ::= { iso(1) member-body(2)
+//            us(840) ansi-X9-62(10045) signatures(4) ecdsa-with-SHA2(3) 4 }
+constexpr uint8_t kAnsiX962EcdsaWithSha512[] = {0x2a, 0x86, 0x48, 0xce,
+                                                0x3d, 0x04, 0x03, 0x04};
+// From RFC 3279:
+//    ansi-X9-62 OBJECT IDENTIFIER ::=
+//                            { iso(1) member-body(2) us(840) 10045 }
+//    id-public-key-type OBJECT IDENTIFIER  ::= { ansi-X9.62 2 }
+//    id-ecPublicKey OBJECT IDENTIFIER ::= { id-publicKeyType 1 }
+constexpr uint8_t kAnsiX962EcPublicKey[] = {0x2a, 0x86, 0x48, 0xce,
+                                            0x3d, 0x02, 0x01};
+// From RFC 5480:
+//     secp256r1 OBJECT IDENTIFIER ::= {
+//       iso(1) member-body(2) us(840) ansi-X9-62(10045) curves(3)
+//       prime(1) 7 }
+constexpr uint8_t kSecgEcSecp256r1[] = {0x2a, 0x86, 0x48, 0xce,
+                                        0x3d, 0x03, 0x01, 0x07};
+//     secp384r1 OBJECT IDENTIFIER ::= {
+//       iso(1) identified-organization(3) certicom(132) curve(0) 34 }
+constexpr uint8_t kSecgEcSecp384r1[] = {0x2b, 0x81, 0x04, 0x00, 0x22};
+//     secp521r1 OBJECT IDENTIFIER ::= {
+//       iso(1) identified-organization(3) certicom(132) curve(0) 35 }
+constexpr uint8_t kSecgEcSecp512r1[] = {0x2b, 0x81, 0x04, 0x00, 0x23};
+
 // Old Netscape OIDs. Do we still need all these?
 // #define NETSCAPE_OID 0x60, 0x86, 0x48, 0x01, 0x86, 0xf8, 0x42
 // #define NETSCAPE_CERT_EXT NETSCAPE_OID, 0x01
@@ -92,6 +166,10 @@ constexpr auto kNameStringHandling =
 std::string ProcessRawBytes(net::der::Input data) {
   return x509_certificate_model::ProcessRawBytes(data.UnsafeData(),
                                                  data.Length());
+}
+
+std::string ProcessRawBytes(base::span<const uint8_t> data) {
+  return x509_certificate_model::ProcessRawBytes(data.data(), data.size());
 }
 
 OptionalStringOrError FindAttributeOfType(
@@ -179,6 +257,36 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<net::der::Input, int>({
     {net::der::Input(net::kTypeStreetAddressOid),
      IDS_CERT_OID_AVA_STREET_ADDRESS},
     {net::der::Input(kTypePostalCode), IDS_CERT_OID_AVA_POSTAL_CODE},
+
+    // Algorithm fields:
+    {net::der::Input(kPkcs1RsaEncryption), IDS_CERT_OID_PKCS1_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Md2WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Md4WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_MD4_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Md5WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Sha1WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Sha256WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Sha384WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Sha512WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kAnsiX962EcdsaWithSha1),
+     IDS_CERT_OID_ANSIX962_ECDSA_SHA1_SIGNATURE},
+    {net::der::Input(kAnsiX962EcdsaWithSha256),
+     IDS_CERT_OID_ANSIX962_ECDSA_SHA256_SIGNATURE},
+    {net::der::Input(kAnsiX962EcdsaWithSha384),
+     IDS_CERT_OID_ANSIX962_ECDSA_SHA384_SIGNATURE},
+    {net::der::Input(kAnsiX962EcdsaWithSha512),
+     IDS_CERT_OID_ANSIX962_ECDSA_SHA512_SIGNATURE},
+    {net::der::Input(kAnsiX962EcPublicKey),
+     IDS_CERT_OID_ANSIX962_EC_PUBLIC_KEY},
+    {net::der::Input(kSecgEcSecp256r1), IDS_CERT_OID_SECG_EC_SECP256R1},
+    {net::der::Input(kSecgEcSecp384r1), IDS_CERT_OID_SECG_EC_SECP384R1},
+    {net::der::Input(kSecgEcSecp512r1), IDS_CERT_OID_SECG_EC_SECP521R1},
 
     // Extension fields (including details of extensions):
     {net::der::Input(kNetscapeCertificateTypeOid), IDS_CERT_EXT_NS_CERT_TYPE},
@@ -868,6 +976,45 @@ absl::optional<std::string> ProcessAuthorityInfoAccess(
   return rv;
 }
 
+std::string ProcessAlgorithmIdentifier(net::der::Input algorithm_tlv) {
+  net::der::Input oid;
+  net::der::Input params;
+  if (!net::ParseAlgorithmIdentifier(algorithm_tlv, &oid, &params)) {
+    return std::string();
+  }
+  return GetOidTextOrNumeric(oid);
+}
+
+bool ParseSubjectPublicKeyInfo(net::der::Input spki_tlv,
+                               net::der::Input* algorithm_tlv,
+                               net::der::Input* subject_public_key_value) {
+  net::der::Parser spki_parser(spki_tlv);
+
+  //    SubjectPublicKeyInfo  ::=  SEQUENCE  {
+  //         algorithm            AlgorithmIdentifier,
+  //         subjectPublicKey     BIT STRING  }
+  net::der::Parser sequence_parser;
+  if (!spki_parser.ReadSequence(&sequence_parser))
+    return false;
+
+  if (!sequence_parser.ReadRawTLV(algorithm_tlv))
+    return false;
+
+  if (!sequence_parser.ReadTag(net::der::kBitString, subject_public_key_value))
+    return false;
+
+  if (sequence_parser.HasMore())
+    return false;
+
+  return true;
+}
+
+std::vector<uint8_t> BIGNUMBytes(const BIGNUM* bn) {
+  std::vector<uint8_t> ret(BN_num_bytes(bn));
+  BN_bn2bin(bn, ret.data());
+  return ret;
+}
+
 }  // namespace
 
 X509CertificateModel::X509CertificateModel(
@@ -1134,6 +1281,42 @@ absl::optional<std::string> X509CertificateModel::ProcessExtensionData(
   return ProcessRawBytes(extension.value);
 }
 
+std::string X509CertificateModel::ProcessSecAlgorithmSignature() const {
+  DCHECK(parsed_successfully_);
+  return ProcessAlgorithmIdentifier(signature_algorithm_tlv_);
+}
+
+std::string X509CertificateModel::ProcessSecAlgorithmSubjectPublicKey() const {
+  DCHECK(parsed_successfully_);
+
+  net::der::Input algorithm_tlv;
+  net::der::Input unused_spk_value;
+  if (!ParseSubjectPublicKeyInfo(tbs_.spki_tlv, &algorithm_tlv,
+                                 &unused_spk_value)) {
+    return std::string();
+  }
+
+  return ProcessAlgorithmIdentifier(algorithm_tlv);
+}
+
+std::string X509CertificateModel::ProcessSecAlgorithmSignatureWrap() const {
+  DCHECK(parsed_successfully_);
+  return ProcessAlgorithmIdentifier(tbs_.signature_algorithm_tlv);
+}
+
+std::string X509CertificateModel::ProcessSubjectPublicKeyInfo() const {
+  DCHECK(parsed_successfully_);
+  std::string rv = ProcessRawSubjectPublicKeyInfo(tbs_.spki_tlv.AsSpan());
+  if (rv.empty())
+    return std::string();
+  return rv;
+}
+
+std::string X509CertificateModel::ProcessRawBitsSignatureWrap() const {
+  DCHECK(parsed_successfully_);
+  return ProcessRawBytes(signature_value_.bytes());
+}
+
 // TODO(https://crbug.com/953425): move to anonymous namespace once
 // x509_certificate_model_nss is removed.
 std::string ProcessIDN(const std::string& input) {
@@ -1197,6 +1380,43 @@ std::string ProcessRawBytes(const unsigned char* data, size_t data_length) {
 // x509_certificate_model_nss is removed.
 std::string ProcessRawBits(const unsigned char* data, size_t data_length) {
   return ProcessRawBytes(data, (data_length + 7) / 8);
+}
+
+std::string ProcessRawSubjectPublicKeyInfo(base::span<const uint8_t> spki_der) {
+  bssl::UniquePtr<EVP_PKEY> public_key;
+  if (!net::ParsePublicKey(net::der::Input(spki_der.data(), spki_der.size()),
+                           &public_key)) {
+    return std::string();
+  }
+  switch (EVP_PKEY_id(public_key.get())) {
+    case EVP_PKEY_RSA: {
+      RSA* rsa = EVP_PKEY_get0_RSA(public_key.get());
+      // EVP_PKEY_get0_RSA can only fail if the type was wrong, which was just
+      // checked in the switch.
+      DCHECK(rsa);
+      const BIGNUM* modulus = RSA_get0_n(rsa);
+      const BIGNUM* public_exponent = RSA_get0_e(rsa);
+      DCHECK(modulus);
+      DCHECK(public_exponent);
+
+      return l10n_util::GetStringFUTF8(
+          IDS_CERT_RSA_PUBLIC_KEY_DUMP_FORMAT,
+          base::NumberToString16(BN_num_bits(modulus)),
+          base::UTF8ToUTF16(ProcessRawBytes(BIGNUMBytes(modulus))),
+          base::NumberToString16(BN_num_bits(public_exponent)),
+          base::UTF8ToUTF16(ProcessRawBytes(BIGNUMBytes(public_exponent))));
+    }
+      // TODO(mattm): handle other key types? (eg EVP_PKEY_EC)
+  }
+
+  net::der::Input unused_algorithm_tlv;
+  net::der::Input subject_public_key_value;
+  if (!ParseSubjectPublicKeyInfo(
+          net::der::Input(spki_der.data(), spki_der.size()),
+          &unused_algorithm_tlv, &subject_public_key_value)) {
+    return std::string();
+  }
+  return ProcessRawBytes(subject_public_key_value);
 }
 
 }  // namespace x509_certificate_model

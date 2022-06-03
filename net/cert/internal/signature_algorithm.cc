@@ -161,43 +161,6 @@ const uint8_t kOidDsaWithSha256[] = {0x60, 0x86, 0x48, 0x01, 0x65,
 const uint8_t kOidMgf1[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
                             0x0d, 0x01, 0x01, 0x08};
 
-// RFC 5280 section 4.1.1.2 defines signatureAlgorithm as:
-//
-//     AlgorithmIdentifier  ::=  SEQUENCE  {
-//          algorithm               OBJECT IDENTIFIER,
-//          parameters              ANY DEFINED BY algorithm OPTIONAL  }
-[[nodiscard]] bool ParseAlgorithmIdentifier(const der::Input& input,
-                                            der::Input* algorithm,
-                                            der::Input* parameters) {
-  der::Parser parser(input);
-
-  der::Parser algorithm_identifier_parser;
-  if (!parser.ReadSequence(&algorithm_identifier_parser))
-    return false;
-
-  // There shouldn't be anything after the sequence. This is by definition,
-  // as the input to this function is expected to be a single
-  // AlgorithmIdentifier.
-  if (parser.HasMore())
-    return false;
-
-  if (!algorithm_identifier_parser.ReadTag(der::kOid, algorithm))
-    return false;
-
-  // Read the optional parameters to a der::Input. The parameters can be at
-  // most one TLV (for instance NULL or a sequence).
-  //
-  // Note that nothing is allowed after the single optional "parameters" TLV.
-  // This is because RFC 5912's notation for AlgorithmIdentifier doesn't
-  // explicitly list an extension point after "parameters".
-  *parameters = der::Input();
-  if (algorithm_identifier_parser.HasMore() &&
-      !algorithm_identifier_parser.ReadRawTLV(parameters)) {
-    return false;
-  }
-  return !algorithm_identifier_parser.HasMore();
-}
-
 // Returns true if |input| is empty.
 [[nodiscard]] bool IsEmpty(const der::Input& input) {
   return input.Length() == 0;
@@ -455,6 +418,38 @@ DEFINE_CERT_ERROR_ID(kUnknownAlgorithmIdentifierOid,
                      "Unknown AlgorithmIdentifier OID");
 
 }  // namespace
+
+[[nodiscard]] bool ParseAlgorithmIdentifier(const der::Input& input,
+                                            der::Input* algorithm,
+                                            der::Input* parameters) {
+  der::Parser parser(input);
+
+  der::Parser algorithm_identifier_parser;
+  if (!parser.ReadSequence(&algorithm_identifier_parser))
+    return false;
+
+  // There shouldn't be anything after the sequence. This is by definition,
+  // as the input to this function is expected to be a single
+  // AlgorithmIdentifier.
+  if (parser.HasMore())
+    return false;
+
+  if (!algorithm_identifier_parser.ReadTag(der::kOid, algorithm))
+    return false;
+
+  // Read the optional parameters to a der::Input. The parameters can be at
+  // most one TLV (for instance NULL or a sequence).
+  //
+  // Note that nothing is allowed after the single optional "parameters" TLV.
+  // This is because RFC 5912's notation for AlgorithmIdentifier doesn't
+  // explicitly list an extension point after "parameters".
+  *parameters = der::Input();
+  if (algorithm_identifier_parser.HasMore() &&
+      !algorithm_identifier_parser.ReadRawTLV(parameters)) {
+    return false;
+  }
+  return !algorithm_identifier_parser.HasMore();
+}
 
 [[nodiscard]] bool ParseHashAlgorithm(const der::Input& input,
                                       DigestAlgorithm* out) {

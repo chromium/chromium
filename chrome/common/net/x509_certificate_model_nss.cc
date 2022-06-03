@@ -227,14 +227,6 @@ string ProcessSubjectPublicKeyInfo(CERTCertificate* cert_handle) {
   return psm::ProcessSubjectPublicKeyInfo(&cert_handle->subjectPublicKeyInfo);
 }
 
-string ProcessRawSubjectPublicKeyInfo(base::span<const uint8_t> spki_der) {
-  crypto::ScopedCERTSubjectPublicKeyInfo spki =
-      crypto::DecodeSubjectPublicKeyInfoNSS(spki_der);
-  if (!spki)
-    return std::string();
-  return psm::ProcessSubjectPublicKeyInfo(spki.get());
-}
-
 string ProcessRawBitsSignatureWrap(CERTCertificate* cert_handle) {
   return ProcessRawBits(cert_handle->signatureWrap.signature.data,
                         cert_handle->signatureWrap.signature.len);

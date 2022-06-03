@@ -83,11 +83,6 @@ std::string ProcessSecAlgorithmSignatureWrap(CERTCertificate* cert_handle);
 // |cert_handle| as a string for displaying.
 std::string ProcessSubjectPublicKeyInfo(CERTCertificate* cert_handle);
 
-// Parses |public_key_spki_der| as a DER-encoded X.509 SubjectPublicKeyInfo,
-// then formats the public key as a string for displaying.
-std::string ProcessRawSubjectPublicKeyInfo(
-    base::span<const uint8_t> public_key_spki_der);
-
 std::string ProcessRawBitsSignatureWrap(CERTCertificate* cert_handle);
 
 }  // namespace x509_certificate_model

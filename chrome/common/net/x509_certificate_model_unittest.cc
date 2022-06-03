@@ -108,6 +108,37 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
   const double kGoogleParseValidTo = 1324252799;
   EXPECT_EQ(kGoogleParseValidTo, not_after.ToDoubleT());
 
+  EXPECT_EQ("PKCS #1 SHA-1 With RSA Encryption",
+            model.ProcessSecAlgorithmSignature());
+  EXPECT_EQ("PKCS #1 SHA-1 With RSA Encryption",
+            model.ProcessSecAlgorithmSignatureWrap());
+  EXPECT_EQ("PKCS #1 RSA Encryption",
+            model.ProcessSecAlgorithmSubjectPublicKey());
+  EXPECT_EQ(
+      "Modulus (1024 bits):\n"
+      "  E8 F9 86 0F 90 FA 86 D7 DF BD 72 26 B6 D7 44 02\n"
+      "83 78 73 D9 02 28 EF 88 45 39 FB 10 E8 7C AE A9\n"
+      "38 D5 75 C6 38 EB 0A 15 07 9B 83 E8 CD 82 D5 E3\n"
+      "F7 15 68 45 A1 0B 19 85 BC E2 EF 84 E7 DD F2 D7\n"
+      "B8 98 C2 A1 BB B5 C1 51 DF D4 83 02 A7 3D 06 42\n"
+      "5B E1 22 C3 DE 6B 85 5F 1C D6 DA 4E 8B D3 9B EE\n"
+      "B9 67 22 2A 1D 11 EF 79 A4 B3 37 8A F4 FE 18 FD\n"
+      "BC F9 46 23 50 97 F3 AC FC 24 46 2B 5C 3B B7 45\n"
+      "\n"
+      "  Public Exponent (17 bits):\n"
+      "  01 00 01",
+      model.ProcessSubjectPublicKeyInfo());
+  EXPECT_EQ(
+      "9F 43 CF 5B C4 50 29 B1 BF E2 B0 9A FF 6A 21 1D\n"
+      "2D 12 C3 2C 4E 5A F9 12 E2 CE B9 82 52 2D E7 1D\n"
+      "7E 1A 76 96 90 79 D1 24 52 38 79 BB 63 8D 80 97\n"
+      "7C 23 20 0F 91 4D 16 B9 EA EE F4 6D 89 CA C6 BD\n"
+      "CC 24 68 D6 43 5B CE 2A 58 BF 3C 18 E0 E0 3C 62\n"
+      "CF 96 02 2D 28 47 50 34 E1 27 BA CF 99 D1 50 FF\n"
+      "29 25 C0 36 36 15 33 52 70 BE 31 8F 9F E8 7F E7\n"
+      "11 0C 8D BF 84 A0 42 1A 80 89 B0 31 58 41 07 5F",
+      model.ProcessRawBitsSignatureWrap());
+
   auto extensions = model.GetExtensions("critical", "notcrit");
   ASSERT_EQ(4U, extensions.size());
   EXPECT_EQ("Certificate Basic Constraints", extensions[0].name);
@@ -653,3 +684,81 @@ INSTANTIATE_TEST_SUITE_P(All,
                          X509CertificateModel,
                          testing::Values(std::string(),
                                          std::string("nickname")));
+
+// TODO(https://crbug.com/953425): This test suite has "2" at the end of the
+// name to avoid conflicting with x509_certificate_model_nss_unittest. Should
+// rename the test suite in that file to X509CertificateModelNSSTest and remove
+// the 2 from here.
+TEST(X509CertificateModelTest2, ProcessRawSubjectPublicKeyInfo) {
+  // SEQUENCE {
+  //   SEQUENCE {
+  //     # rsaEncryption
+  //     OBJECT_IDENTIFIER { 1.2.840.113549.1.1.1 }
+  //     NULL {}
+  //   }
+  //   BIT_STRING {
+  //     `00`
+  //     SEQUENCE {
+  //       INTEGER {
+  //       `00e053f4f398c1143302c8a46dfeaa2af7943da66f00df3bde4c9fa3ea07d4ac`
+  //       `e55b0dd1ace0edf9c5981d352de5b349971485440fdc4cd267088801a5d8a7eb`
+  //       `93d16aa1f751e7847e522a7dbc6f0ed8dbb6a63ededcf5a4689644118502ed47`
+  //       `12dfb86071957b6287687a445609d5b4c8f1f6c946928b68e883d5d5867123c3`
+  //       `801ebf6c01c7d2a4bc406de0e3c02e3078bdaddd2566d3f5070756d7cee272c5`
+  //       `257d0ce1a76f00a8daab4b54430964a4b652382fb7cc01dd1c03270347bfdfe6`
+  //       `37b0ed18dc510bd47522df507b3ceb37391c9b6f087ba705ac8c43f7f1da5106`
+  //       `b382453ec881739eb0a5cf7696af812cac012a4a584b1dbeff1f85c227def178`
+  //       `0b`
+  //       } INTEGER { 65537 }
+  //     }
+  //   }
+  // }
+  const uint8_t spki_bytes[] = {
+      0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
+      0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00, 0x03, 0x82, 0x01, 0x0f, 0x00,
+      0x30, 0x82, 0x01, 0x0a, 0x02, 0x82, 0x01, 0x01, 0x00, 0xe0, 0x53, 0xf4,
+      0xf3, 0x98, 0xc1, 0x14, 0x33, 0x02, 0xc8, 0xa4, 0x6d, 0xfe, 0xaa, 0x2a,
+      0xf7, 0x94, 0x3d, 0xa6, 0x6f, 0x00, 0xdf, 0x3b, 0xde, 0x4c, 0x9f, 0xa3,
+      0xea, 0x07, 0xd4, 0xac, 0xe5, 0x5b, 0x0d, 0xd1, 0xac, 0xe0, 0xed, 0xf9,
+      0xc5, 0x98, 0x1d, 0x35, 0x2d, 0xe5, 0xb3, 0x49, 0x97, 0x14, 0x85, 0x44,
+      0x0f, 0xdc, 0x4c, 0xd2, 0x67, 0x08, 0x88, 0x01, 0xa5, 0xd8, 0xa7, 0xeb,
+      0x93, 0xd1, 0x6a, 0xa1, 0xf7, 0x51, 0xe7, 0x84, 0x7e, 0x52, 0x2a, 0x7d,
+      0xbc, 0x6f, 0x0e, 0xd8, 0xdb, 0xb6, 0xa6, 0x3e, 0xde, 0xdc, 0xf5, 0xa4,
+      0x68, 0x96, 0x44, 0x11, 0x85, 0x02, 0xed, 0x47, 0x12, 0xdf, 0xb8, 0x60,
+      0x71, 0x95, 0x7b, 0x62, 0x87, 0x68, 0x7a, 0x44, 0x56, 0x09, 0xd5, 0xb4,
+      0xc8, 0xf1, 0xf6, 0xc9, 0x46, 0x92, 0x8b, 0x68, 0xe8, 0x83, 0xd5, 0xd5,
+      0x86, 0x71, 0x23, 0xc3, 0x80, 0x1e, 0xbf, 0x6c, 0x01, 0xc7, 0xd2, 0xa4,
+      0xbc, 0x40, 0x6d, 0xe0, 0xe3, 0xc0, 0x2e, 0x30, 0x78, 0xbd, 0xad, 0xdd,
+      0x25, 0x66, 0xd3, 0xf5, 0x07, 0x07, 0x56, 0xd7, 0xce, 0xe2, 0x72, 0xc5,
+      0x25, 0x7d, 0x0c, 0xe1, 0xa7, 0x6f, 0x00, 0xa8, 0xda, 0xab, 0x4b, 0x54,
+      0x43, 0x09, 0x64, 0xa4, 0xb6, 0x52, 0x38, 0x2f, 0xb7, 0xcc, 0x01, 0xdd,
+      0x1c, 0x03, 0x27, 0x03, 0x47, 0xbf, 0xdf, 0xe6, 0x37, 0xb0, 0xed, 0x18,
+      0xdc, 0x51, 0x0b, 0xd4, 0x75, 0x22, 0xdf, 0x50, 0x7b, 0x3c, 0xeb, 0x37,
+      0x39, 0x1c, 0x9b, 0x6f, 0x08, 0x7b, 0xa7, 0x05, 0xac, 0x8c, 0x43, 0xf7,
+      0xf1, 0xda, 0x51, 0x06, 0xb3, 0x82, 0x45, 0x3e, 0xc8, 0x81, 0x73, 0x9e,
+      0xb0, 0xa5, 0xcf, 0x76, 0x96, 0xaf, 0x81, 0x2c, 0xac, 0x01, 0x2a, 0x4a,
+      0x58, 0x4b, 0x1d, 0xbe, 0xff, 0x1f, 0x85, 0xc2, 0x27, 0xde, 0xf1, 0x78,
+      0x0b, 0x02, 0x03, 0x01, 0x00, 0x01};
+  EXPECT_EQ(
+      "Modulus (2048 bits):\n"
+      "  E0 53 F4 F3 98 C1 14 33 02 C8 A4 6D FE AA 2A F7\n"
+      "94 3D A6 6F 00 DF 3B DE 4C 9F A3 EA 07 D4 AC E5\n"
+      "5B 0D D1 AC E0 ED F9 C5 98 1D 35 2D E5 B3 49 97\n"
+      "14 85 44 0F DC 4C D2 67 08 88 01 A5 D8 A7 EB 93\n"
+      "D1 6A A1 F7 51 E7 84 7E 52 2A 7D BC 6F 0E D8 DB\n"
+      "B6 A6 3E DE DC F5 A4 68 96 44 11 85 02 ED 47 12\n"
+      "DF B8 60 71 95 7B 62 87 68 7A 44 56 09 D5 B4 C8\n"
+      "F1 F6 C9 46 92 8B 68 E8 83 D5 D5 86 71 23 C3 80\n"
+      "1E BF 6C 01 C7 D2 A4 BC 40 6D E0 E3 C0 2E 30 78\n"
+      "BD AD DD 25 66 D3 F5 07 07 56 D7 CE E2 72 C5 25\n"
+      "7D 0C E1 A7 6F 00 A8 DA AB 4B 54 43 09 64 A4 B6\n"
+      "52 38 2F B7 CC 01 DD 1C 03 27 03 47 BF DF E6 37\n"
+      "B0 ED 18 DC 51 0B D4 75 22 DF 50 7B 3C EB 37 39\n"
+      "1C 9B 6F 08 7B A7 05 AC 8C 43 F7 F1 DA 51 06 B3\n"
+      "82 45 3E C8 81 73 9E B0 A5 CF 76 96 AF 81 2C AC\n"
+      "01 2A 4A 58 4B 1D BE FF 1F 85 C2 27 DE F1 78 0B\n"
+      "\n"
+      "  Public Exponent (17 bits):\n"
+      "  01 00 01",
+      x509_certificate_model::ProcessRawSubjectPublicKeyInfo(spki_bytes));
+}
