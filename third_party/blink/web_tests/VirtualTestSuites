@@ -60,6 +60,12 @@
     "args": ["--enable-threaded-compositing"]
   },
   {
+    "prefix": "conversions-debug-mode",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/attribution-reporting"],
+    "args": ["--conversions-debug-mode"]
+  },
+  {
     "prefix": "composite-relative-keyframes",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-transforms/animation"],
