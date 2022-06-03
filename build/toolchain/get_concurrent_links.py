@@ -58,7 +58,7 @@ def _GetTotalMemoryInBytes():
 
 
 def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
-                               secondary_per_link_gb, is_component_build):
+                               secondary_per_link_gb):
   explanation = []
   explanation.append(
       'per_link_gb={} reserve_gb={} secondary_per_link_gb={}'.format(
@@ -94,12 +94,6 @@ def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
   else:
     reason = 'RAM'
 
-  # static link see too many open files if we have many concurrent links.
-  # ref: http://b/233068481
-  if not is_component_build and num_links > 30:
-    num_links = 30
-    reason = 'nofile'
-
   explanation.append('concurrent_links={}  (reason: {})'.format(
       num_links, reason))
 
@@ -121,14 +115,12 @@ def main():
   parser.add_argument('--reserve_mem_gb', type=int, default=0)
   parser.add_argument('--secondary_mem_per_link', type=int, default=0)
   parser.add_argument('--thin-lto')
-  parser.add_argument('--is_component_build', action='store_true')
   options = parser.parse_args()
 
   primary_pool_size, secondary_pool_size, explanation = (
       _GetDefaultConcurrentLinks(options.mem_per_link_gb,
                                  options.reserve_mem_gb, options.thin_lto,
-                                 options.secondary_mem_per_link,
-                                 options.is_component_build))
+                                 options.secondary_mem_per_link))
   sys.stdout.write(
       gn_helpers.ToGNString({
           'primary_pool_size': primary_pool_size,
