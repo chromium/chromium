@@ -887,6 +887,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
   }
 }
 
+#if !BUILDFLAG(IS_IOS)
 void RecordSigninImpressionWithAccountUserActionForAccessPoint(
     AccessPoint access_point,
     bool with_account) {
@@ -1015,6 +1016,7 @@ void RecordSigninImpressionWithAccountUserActionForAccessPoint(
       break;
   }
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS)
 void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action) {

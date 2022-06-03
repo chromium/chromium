@@ -518,8 +518,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
   self.signinPromoViewVisible = YES;
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
       self.accessPoint);
-  signin_metrics::RecordSigninImpressionWithAccountUserActionForAccessPoint(
-      self.accessPoint, !!self.identity);
   const char* displayedCountPreferenceKey =
       DisplayedCountPreferenceKey(self.accessPoint);
   if (!displayedCountPreferenceKey)

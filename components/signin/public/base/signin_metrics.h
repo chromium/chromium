@@ -557,10 +557,12 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point,
 // Records |Signin_ImpressionWithAccount_From*| user action.
 void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point);
 
+#if !BUILDFLAG(IS_IOS)
 // Records |Signin_Impression{With|No}Account_From*| user action.
 void RecordSigninImpressionWithAccountUserActionForAccessPoint(
     AccessPoint access_point,
     bool with_account);
+#endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS)
 // Records |Signin.AccountConsistencyPromoAction| histogram.

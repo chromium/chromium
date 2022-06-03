@@ -238,6 +238,7 @@ TEST_F(SigninMetricsTest, RecordSigninImpressionUserAction) {
   }
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(SigninMetricsTest, RecordSigninImpressionWithAccountUserAction) {
   for (const AccessPoint& ap : kAccessPointsThatSupportPersonalizedPromos) {
     base::UserActionTester user_action_tester;
@@ -257,6 +258,7 @@ TEST_F(SigninMetricsTest, RecordSigninImpressionWithNoAccountUserAction) {
                      GetAccessPointDescription(ap)));
   }
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 }  // namespace signin_metrics
