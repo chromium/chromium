@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/input_overlay/ui/edit_mode_exit_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 
 #include "ash/style/pill_button.h"
 #include "base/bind.h"
