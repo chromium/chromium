@@ -213,7 +213,7 @@ base::LazyInstance<WorkerScriptContextSet>::DestructorAtExit
 // object. A context_id needs to be passed because each browser context can have
 // different values for default_policy_blocked/allowed_hosts.
 // (see extension_util.cc#GetBrowserContextId)
-scoped_refptr<extensions::Extension> ConvertToExtension(
+scoped_refptr<Extension> ConvertToExtension(
     mojom::ExtensionLoadedParamsPtr params,
     int context_id,
     std::string* error) {
@@ -228,12 +228,11 @@ scoped_refptr<extensions::Extension> ConvertToExtension(
   if (!extension.get())
     return extension;
 
-  const extensions::PermissionsData* permissions_data =
-      extension->permissions_data();
+  const PermissionsData* permissions_data = extension->permissions_data();
   permissions_data->SetPermissions(
-      std::make_unique<const extensions::PermissionSet>(
+      std::make_unique<const PermissionSet>(
           std::move(params->active_permissions)),
-      std::make_unique<const extensions::PermissionSet>(
+      std::make_unique<const PermissionSet>(
           std::move(params->withheld_permissions)));
   permissions_data->SetContextId(context_id);
 
@@ -349,7 +348,7 @@ WorkerScriptContextSet* Dispatcher::GetWorkerScriptContextSet() {
 
 void Dispatcher::OnRenderThreadStarted(content::RenderThread* thread) {
   blink::WebScriptController::RegisterExtension(
-      extensions::SafeBuiltins::CreateV8Extension());
+      SafeBuiltins::CreateV8Extension());
 }
 
 void Dispatcher::OnRenderFrameCreated(content::RenderFrame* render_frame) {
@@ -959,9 +958,8 @@ void Dispatcher::RegisterNativeHandlers(
       "runtime",
       std::unique_ptr<NativeHandler>(new RuntimeCustomBindings(context)));
   module_system->RegisterNativeHandler(
-      "automationInternal",
-      std::make_unique<extensions::AutomationInternalCustomBindings>(
-          context, bindings_system));
+      "automationInternal", std::make_unique<AutomationInternalCustomBindings>(
+                                context, bindings_system));
 }
 
 bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
@@ -1053,8 +1051,8 @@ void Dispatcher::LoadExtensions(
   for (auto& param : loaded_extensions) {
     std::string error;
     std::string id = param->id;
-    absl::optional<::extensions::ActivationSequence>
-        worker_activation_sequence = param->worker_activation_sequence;
+    absl::optional<ActivationSequence> worker_activation_sequence =
+        param->worker_activation_sequence;
 
     scoped_refptr<const Extension> extension =
         ConvertToExtension(std::move(param), kRendererProfileId, &error);
@@ -1235,9 +1233,8 @@ void Dispatcher::UpdateTabSpecificPermissions(const std::string& extension_id,
     return;
 
   extension->permissions_data()->UpdateTabSpecificPermissions(
-      tab_id, extensions::PermissionSet(extensions::APIPermissionSet(),
-                                        extensions::ManifestPermissionSet(),
-                                        new_hosts.Clone(), new_hosts.Clone()));
+      tab_id, PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
+                            new_hosts.Clone(), new_hosts.Clone()));
 
   if (update_origin_allowlist)
     UpdateOriginPermissions(*extension);
@@ -1385,10 +1382,8 @@ void Dispatcher::UpdatePermissions(const std::string& extension_id,
   }
 
   extension->permissions_data()->SetPermissions(
-      std::make_unique<const extensions::PermissionSet>(
-          std::move(active_permissions)),
-      std::make_unique<const extensions::PermissionSet>(
-          std::move(withheld_permissions)));
+      std::make_unique<const PermissionSet>(std::move(active_permissions)),
+      std::make_unique<const PermissionSet>(std::move(withheld_permissions)));
 
   UpdateOriginPermissions(*extension);
 

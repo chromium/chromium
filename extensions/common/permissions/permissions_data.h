@@ -258,30 +258,21 @@ class PermissionsData {
     return *withheld_permissions_unsafe_;
   }
 
-  // Returns list of hosts this extension may not interact with by policy.
+  // Returns the default list of hosts that the enterprise policy has explicitly
+  // blocked or allowed extensions to run on.
   // This should only be used for 1. Serialization when initializing renderers
   // or 2. Called from utility methods above. For all other uses, call utility
   // methods instead (e.g. CanAccessPage()).
   static URLPatternSet GetDefaultPolicyBlockedHosts(int context_id);
-
-  // Returns list of hosts this extension may interact with regardless of
-  // what is defined by policy_blocked_hosts().
-  // This should only be used for 1. Serialization when initializing renderers
-  // or 2. Called from utility methods above. For all other uses, call utility
-  // methods instead (e.g. CanAccessPage()).
   static URLPatternSet GetDefaultPolicyAllowedHosts(int context_id);
 
-  // Returns list of hosts this extension may not interact with by policy.
+  // Returns list of hosts for *this* extension that enterprise policy has
+  // explicitly blocked or allowed extensions to run on. If the extension uses
+  // the default set, this will fall back to `GetDefaultPolicy*Hosts()`.
   // This should only be used for 1. Serialization when initializing renderers
   // or 2. Called from utility methods above. For all other uses, call utility
   // methods instead (e.g. CanAccessPage()).
   URLPatternSet policy_blocked_hosts() const;
-
-  // Returns list of hosts this extension may interact with regardless of
-  // what is defined by policy_blocked_hosts().
-  // This should only be used for 1. Serialization when initializing renderers
-  // or 2. Called from utility methods above. For all other uses, call utility
-  // methods instead (e.g. CanAccessPage()).
   URLPatternSet policy_allowed_hosts() const;
 
   // Check if a specific URL is blocked by policy from extension use at runtime.
