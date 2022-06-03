@@ -853,8 +853,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             }
         }
 
-        // 3. Check if we should start the reorder mode
-        if (!mInReorderMode) {
+        // 3. Check if we should start the reorder mode. Disabling this for tab strip improvements
+        // experiments to prevent accidentally entering reorder mode when scrolling the tab strip.
+        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)
+                && !mInReorderMode) {
             final float absTotalX = Math.abs(totalX);
             final float absTotalY = Math.abs(totalY);
             if (totalY > mReorderMoveStartThreshold && absTotalX < mReorderMoveStartThreshold * 2.f
