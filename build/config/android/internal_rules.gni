@@ -876,6 +876,9 @@ template("test_runner_script") {
         invoker.test_suite,
       ]
 
+      # Test runner uses this generated wrapper script.
+      data += [ "$root_build_dir/bin/helper/${invoker.test_suite}" ]
+
       deps += [ ":${invoker.test_suite}$build_config_target_suffix" ]
       _junit_binary_build_config =
           "${target_gen_dir}/${invoker.test_suite}.build_config.json"
@@ -1779,7 +1782,11 @@ if (enable_java_templates) {
   template("filter_jar") {
     action_with_pydeps(target_name) {
       script = "//build/android/gyp/filter_zip.py"
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
+      forward_variables_from(invoker,
+                             TESTONLY_AND_VISIBILITY + [
+                                   "deps",
+                                   "data",
+                                 ])
       inputs = [ invoker.input_jar ]
       if (defined(invoker.inputs)) {
         inputs += invoker.inputs
@@ -1822,6 +1829,7 @@ if (enable_java_templates) {
     filter_jar(_filter_jar_target_name) {
       forward_variables_from(invoker,
                              [
+                               "data",
                                "jar_excluded_patterns",
                                "jar_included_patterns",
                              ])
@@ -3862,6 +3870,9 @@ if (enable_java_templates) {
                                    "jar_excluded_patterns",
                                    "jar_included_patterns",
                                  ])
+
+          # Robolectric tests require these to be on swarming.
+          data = [ _host_processed_jar_path ]
           input_jar_path = _unprocessed_jar_path
           jar_deps = _unprocessed_jar_deps + _full_classpath_deps
           output_jar_path = _host_processed_jar_path

@@ -1723,8 +1723,10 @@ class MetaBuildWrapper(object):
       cmdline += [
           vpython_exe, '../../build/android/test_wrapper/logdog_wrapper.py',
           '--target', target, '--logdog-bin-cmd',
-          '../../.task_template_packages/logdog_butler', '--store-tombstones'
+          '../../.task_template_packages/logdog_butler'
       ]
+      if test_type != 'junit_test':
+        cmdline += ['--store-tombstones']
       if clang_coverage or java_coverage:
         cmdline += ['--coverage-dir', '${ISOLATED_OUTDIR}']
     elif is_fuchsia and test_type != 'script':

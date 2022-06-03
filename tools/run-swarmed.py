@@ -115,9 +115,10 @@ def _DoSpawn(args):
     # These flags are recognized by our test runners, but do not work
     # when running custom scripts.
     runner_args += [
-        '--test-launcher-summary-output=${ISOLATED_OUTDIR}/output.json',
-        '--system-log-file=${ISOLATED_OUTDIR}/system_log'
+        '--test-launcher-summary-output=${ISOLATED_OUTDIR}/output.json'
     ]
+    if 'junit' not in args.target_name:
+      runner_args += ['--system-log-file=${ISOLATED_OUTDIR}/system_log']
   if args.gtest_filter:
     runner_args.append('--gtest_filter=' + args.gtest_filter)
   if args.gtest_repeat:
