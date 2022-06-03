@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
@@ -22,6 +23,7 @@
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto_util.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace ui {
 
@@ -286,8 +288,14 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
       explicit_primary_display_index = displays.size();
 
     const std::string name(output_info->name.begin(), output_info->name.end());
-    if (base::StartsWith(name, "eDP") || base::StartsWith(name, "LVDS"))
+    if (base::StartsWith(name, "eDP") || base::StartsWith(name, "LVDS")) {
       display::SetInternalDisplayIds({display_id});
+      // Use localized variant of "Built-in display" for internal displays.
+      // This follows the ozone DRM behavior (i.e. ChromeOS).
+      display.set_label(l10n_util::GetStringUTF8(IDS_DISPLAY_NAME_INTERNAL));
+    } else {
+      display.set_label(edid_parser.display_name());
+    }
 
     auto monitor_iter =
         output_to_monitor.find(static_cast<x11::RandR::Output>(output_id));

@@ -90,6 +90,7 @@ component("x") {
     "//ui/gfx/geometry",
     "//ui/gfx/x",
     "//ui/platform_window/common",
+    "//ui/strings:ui_strings_grit",
   ]
 
   if (is_linux || is_chromeos) {
