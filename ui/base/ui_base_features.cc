@@ -377,7 +377,13 @@ bool IsVariableRefreshRateEnabled() {
 }
 
 const base::Feature kWaylandScreenCoordinatesEnabled{
-    "WaylandScreenCoordinatesEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+  "WaylandScreenCoordinatesEnabled",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 bool IsWaylandScreenCoordinatesEnabled() {
   return base::FeatureList::IsEnabled(kWaylandScreenCoordinatesEnabled);
