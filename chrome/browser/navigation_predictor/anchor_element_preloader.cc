@@ -12,9 +12,12 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/scheme_host_port.h"
 
 const char kPreloadingAnchorElementPreloaderPreloadingTriggered[] =
     "Preloading.AnchorElementPreloader.PreloadingTriggered";
+
+AnchorElementPreloader::~AnchorElementPreloader() = default;
 
 AnchorElementPreloader::AnchorElementPreloader(
     content::RenderFrameHost* render_frame_host,
@@ -38,6 +41,13 @@ void AnchorElementPreloader::OnPointerDown(const GURL& target) {
                ->GetPrefs())) {
     return;
   }
+  url::SchemeHostPort scheme_host_port(target);
+  if (preconnected_targets_.find(scheme_host_port) !=
+      preconnected_targets_.end()) {
+    // We've already preconnected to that origin.
+    return;
+  }
+  preconnected_targets_.insert(scheme_host_port);
 
   RecordUmaPreloadedTriggered(AnchorElementPreloaderType::kPreconnect);
 

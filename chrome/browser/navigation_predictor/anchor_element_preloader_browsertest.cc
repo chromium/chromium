@@ -30,7 +30,8 @@ class AnchorElementPreloaderBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest,
       public predictors::PreconnectManager::Observer {
  public:
-  static constexpr char kFakeSearch[] = "https://www.fakesearch.com/";
+  static constexpr char kOrigin1[] = "https://www.origin1.com/";
+  static constexpr char kOrigin2[] = "https://www.origin2.com/";
 
   virtual void SetFeatures() {
     feature_list_.InitAndEnableFeature(
@@ -95,7 +96,7 @@ class AnchorElementPreloaderBrowserTest
       const GURL& url,
       const net::NetworkIsolationKey& network_isolation_key,
       bool success) override {
-    if (url != GURL(kFakeSearch)) {
+    if (url != GURL(kOrigin1) && url != GURL(kOrigin2)) {
       return;
     }
 
@@ -149,6 +150,59 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {
   EXPECT_EQ(ukm_entries.size(), 1u);
 
   EXPECT_EQ(ukm_entries[0].source_id, ukm_source_id);
+}
+
+IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, Duplicates) {
+  const GURL& url = GetTestURL("/many_anchors.html");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ukm::SourceId ukm_source_id = browser()
+                                    ->tab_strip_model()
+                                    ->GetActiveWebContents()
+                                    ->GetMainFrame()
+                                    ->GetPageUkmSourceId();
+
+  // First link with mousedown event should get preconnected.
+  SimulateMouseDownElementWithId("anchor1_origin1");
+  WaitForPreresolveCountForURL(1);
+  EXPECT_EQ(1, preresolve_count_);
+  histogram_tester()->ExpectTotalCount(
+      kPreloadingAnchorElementPreloaderPreloadingTriggered, 1);
+  histogram_tester()->ExpectUniqueSample(
+      kPreloadingAnchorElementPreloaderPreloadingTriggered,
+      AnchorElementPreloaderType::kPreconnect, 1);
+  auto ukm_entries = test_ukm_recorder()->GetEntries(
+      ukm::builders::Preloading_AnchorInteraction::kEntryName,
+      {ukm::builders::Preloading_AnchorInteraction::
+           kAnchorElementPreloaderTypeName});
+  EXPECT_EQ(ukm_entries.size(), 1u);
+  EXPECT_EQ(ukm_entries[0].source_id, ukm_source_id);
+
+  // Second mousedown event to same origin: should not trigger a preconnect.
+  SimulateMouseDownElementWithId("anchor2_origin1");
+  EXPECT_EQ(1, preresolve_count_);
+  histogram_tester()->ExpectTotalCount(
+      kPreloadingAnchorElementPreloaderPreloadingTriggered, 1);
+  ukm_entries = test_ukm_recorder()->GetEntries(
+      ukm::builders::Preloading_AnchorInteraction::kEntryName,
+      {ukm::builders::Preloading_AnchorInteraction::
+           kAnchorElementPreloaderTypeName});
+  EXPECT_EQ(ukm_entries.size(), 1u);
+
+  // Third mousedown event to a different origin: should trigger a preconnect.
+  SimulateMouseDownElementWithId("anchor1_origin2");
+  WaitForPreresolveCountForURL(2);
+  EXPECT_EQ(2, preresolve_count_);
+  histogram_tester()->ExpectTotalCount(
+      kPreloadingAnchorElementPreloaderPreloadingTriggered, 2);
+  histogram_tester()->ExpectUniqueSample(
+      kPreloadingAnchorElementPreloaderPreloadingTriggered,
+      AnchorElementPreloaderType::kPreconnect, 2);
+  ukm_entries = test_ukm_recorder()->GetEntries(
+      ukm::builders::Preloading_AnchorInteraction::kEntryName,
+      {ukm::builders::Preloading_AnchorInteraction::
+           kAnchorElementPreloaderTypeName});
+  EXPECT_EQ(ukm_entries.size(), 2u);
+  EXPECT_EQ(ukm_entries[1].source_id, ukm_source_id);
 }
 
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, InvalidHref) {
