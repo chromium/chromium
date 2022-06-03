@@ -51,70 +51,64 @@ int TopRelevance(const AutocompleteResult& result, bool search) {
       ->relevance;
 }
 
-class HistoryClustersAction : public OmniboxAction {
- public:
-  explicit HistoryClustersAction(const std::string& query)
-      : OmniboxAction(
-            OmniboxAction::LabelStrings(
-                IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
-                IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS,
-                IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
-                IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
-            GURL(base::StringPrintf(
-                "chrome://history/journeys?q=%s",
-                base::EscapeQueryParamValue(query, /*use_plus=*/false)
-                    .c_str()))) {
+}  // namespace
+
+HistoryClustersAction::HistoryClustersAction(const std::string& query)
+    : OmniboxAction(
+          OmniboxAction::LabelStrings(
+              IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
+              IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS,
+              IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
+              IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
+          GURL(base::StringPrintf(
+              "chrome://history/journeys?q=%s",
+              base::EscapeQueryParamValue(query, /*use_plus=*/false)
+                  .c_str()))) {
 #if BUILDFLAG(IS_ANDROID)
     CreateOrUpdateJavaObject(query);
 #endif
-  }
+}
 
-  void RecordActionShown(size_t position, bool executed) const override {
+void HistoryClustersAction::RecordActionShown(size_t position,
+                                              bool executed) const {
+  base::UmaHistogramExactLinear(
+      "Omnibox.ResumeJourneyShown", position,
+      AutocompleteResult::kMaxAutocompletePositionValue);
+
+  if (executed) {
     base::UmaHistogramExactLinear(
-        "Omnibox.ResumeJourneyShown", position,
+        "Omnibox.SuggestionUsed.ResumeJourney", position,
         AutocompleteResult::kMaxAutocompletePositionValue);
-
-    if (executed) {
-      base::UmaHistogramExactLinear(
-          "Omnibox.SuggestionUsed.ResumeJourney", position,
-          AutocompleteResult::kMaxAutocompletePositionValue);
-    }
-
-    base::UmaHistogramBoolean("Omnibox.SuggestionUsed.ResumeJourneyCTR",
-                              executed);
   }
 
-  int32_t GetID() const override {
-    return static_cast<int32_t>(OmniboxActionId::HISTORY_CLUSTERS);
-  }
+  base::UmaHistogramBoolean("Omnibox.SuggestionUsed.ResumeJourneyCTR",
+                            executed);
+}
+
+int32_t HistoryClustersAction::GetID() const {
+  return static_cast<int32_t>(OmniboxActionId::HISTORY_CLUSTERS);
+}
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
-  const gfx::VectorIcon& GetVectorIcon() const override {
-    return omnibox::kJourneysIcon;
-  }
+const gfx::VectorIcon& HistoryClustersAction::GetVectorIcon() const {
+  return omnibox::kJourneysIcon;
+}
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const override {
-    return j_omnibox_action_;
-  }
+base::android::ScopedJavaGlobalRef<jobject>
+HistoryClustersAction::GetJavaObject() const {
+  return j_omnibox_action_;
+}
 
-  void CreateOrUpdateJavaObject(const std::string& query) {
-    j_omnibox_action_.Reset(BuildHistoryClustersAction(
-        GetID(), strings_.hint, strings_.suggestion_contents,
-        strings_.accessibility_suffix, strings_.accessibility_hint, url_,
-        query));
-  }
+void HistoryClustersAction::CreateOrUpdateJavaObject(const std::string& query) {
+  j_omnibox_action_.Reset(BuildHistoryClustersAction(
+      GetID(), strings_.hint, strings_.suggestion_contents,
+      strings_.accessibility_suffix, strings_.accessibility_hint, url_, query));
+}
 #endif
 
- private:
-  ~HistoryClustersAction() override = default;
-#if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
-#endif
-};
-
-}  // namespace
+HistoryClustersAction::~HistoryClustersAction() = default;
 
 // Should be invoked after `AutocompleteResult::AttachPedalsToMatches()`.
 void AttachHistoryClustersActions(

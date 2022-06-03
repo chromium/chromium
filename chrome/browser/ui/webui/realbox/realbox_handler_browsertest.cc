@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -121,6 +122,13 @@ IN_PROC_BROWSER_TEST_F(RealboxHandlerPedalIconTest, PedalVectorIcons) {
         RealboxHandler::PedalVectorIconToResourceName(vector_icon);
     EXPECT_FALSE(svg_name.empty());
   }
+
+  const scoped_refptr<OmniboxAction> history_clusters_action =
+      base::MakeRefCounted<history_clusters::HistoryClustersAction>("test");
+  const gfx::VectorIcon& vector_icon = history_clusters_action->GetVectorIcon();
+  const std::string& svg_name =
+      RealboxHandler::PedalVectorIconToResourceName(vector_icon);
+  EXPECT_FALSE(svg_name.empty());
 }
 
 class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
