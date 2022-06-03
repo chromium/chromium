@@ -107,11 +107,10 @@ void PreferredAppsImpl::AddPreferredApp(
       from_publisher));
 }
 
-void PreferredAppsImpl::RemovePreferredApp(apps::mojom::AppType app_type,
-                                           const std::string& app_id) {
+void PreferredAppsImpl::RemovePreferredApp(const std::string& app_id) {
   RunAfterPreferredAppsReady(
       base::BindOnce(&PreferredAppsImpl::RemovePreferredAppImpl,
-                     weak_ptr_factory_.GetWeakPtr(), app_type, app_id));
+                     weak_ptr_factory_.GetWeakPtr(), app_id));
 }
 
 void PreferredAppsImpl::SetSupportedLinksPreference(
@@ -286,8 +285,7 @@ void PreferredAppsImpl::AddPreferredAppImpl(
                            std::move(replaced_apps));
 }
 
-void PreferredAppsImpl::RemovePreferredAppImpl(apps::mojom::AppType app_type,
-                                               const std::string& app_id) {
+void PreferredAppsImpl::RemovePreferredAppImpl(const std::string& app_id) {
   IntentFilters removed_filters = preferred_apps_list_.DeleteAppId(app_id);
   if (!removed_filters.empty()) {
     WriteToJSON(profile_dir_, preferred_apps_list_);

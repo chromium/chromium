@@ -263,7 +263,7 @@ void AppServiceMojomImpl::AddPreferredApp(
 void AppServiceMojomImpl::RemovePreferredApp(apps::mojom::AppType app_type,
                                              const std::string& app_id) {
   if (preferred_apps_impl_) {
-    preferred_apps_impl_->RemovePreferredApp(app_type, app_id);
+    preferred_apps_impl_->RemovePreferredApp(app_id);
   }
 }
 

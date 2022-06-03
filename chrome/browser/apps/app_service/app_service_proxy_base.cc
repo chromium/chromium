@@ -745,9 +745,12 @@ void AppServiceProxyBase::OnApps(std::vector<AppPtr> deltas,
     for (const auto& delta : deltas) {
       if (delta->readiness != Readiness::kUnknown &&
           !apps_util::IsInstalled(delta->readiness)) {
-        // TODO(crbug.com/1253250): Remove dependency on mojom AppService.
-        app_service_->RemovePreferredApp(
-            ConvertAppTypeToMojomAppType(delta->app_type), delta->app_id);
+        if (preferred_apps_impl_) {
+          preferred_apps_impl_->RemovePreferredApp(delta->app_id);
+        } else {
+          app_service_->RemovePreferredApp(
+              ConvertAppTypeToMojomAppType(delta->app_type), delta->app_id);
+        }
       }
     }
   }
@@ -763,7 +766,11 @@ void AppServiceProxyBase::OnApps(std::vector<apps::mojom::AppPtr> deltas,
     for (const auto& delta : deltas) {
       if (delta->readiness != apps::mojom::Readiness::kUnknown &&
           !apps_util::IsInstalled(delta->readiness)) {
-        app_service_->RemovePreferredApp(delta->app_type, delta->app_id);
+        if (preferred_apps_impl_) {
+          preferred_apps_impl_->RemovePreferredApp(delta->app_id);
+        } else {
+          app_service_->RemovePreferredApp(delta->app_type, delta->app_id);
+        }
       }
     }
   }
