@@ -33,6 +33,7 @@
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -703,11 +704,11 @@ static const char* TransitionTypeName(ui::PageTransition type) {
 Response PageHandler::GetNavigationHistory(
     int* current_index,
     std::unique_ptr<NavigationEntries>* entries) {
-  WebContentsImpl* web_contents = GetWebContents();
-  if (!web_contents)
-    return Response::InternalError();
+  Response response = AssureTopLevelActiveFrame(host_);
+  if (response.IsError())
+    return response;
 
-  NavigationController& controller = web_contents->GetController();
+  NavigationController& controller = host_->frame_tree()->controller();
   *current_index = controller.GetCurrentEntryIndex();
   *entries = std::make_unique<NavigationEntries>();
   for (int i = 0; i != controller.GetEntryCount(); ++i) {
@@ -725,11 +726,11 @@ Response PageHandler::GetNavigationHistory(
 }
 
 Response PageHandler::NavigateToHistoryEntry(int entry_id) {
-  WebContentsImpl* web_contents = GetWebContents();
-  if (!web_contents)
-    return Response::InternalError();
+  Response response = AssureTopLevelActiveFrame(host_);
+  if (response.IsError())
+    return response;
 
-  NavigationController& controller = web_contents->GetController();
+  NavigationController& controller = host_->frame_tree()->controller();
   for (int i = 0; i != controller.GetEntryCount(); ++i) {
     if (controller.GetEntryAtIndex(i)->GetUniqueID() == entry_id) {
       controller.GoToIndex(i);
@@ -745,11 +746,11 @@ static bool ReturnTrue(NavigationEntry* entry) {
 }
 
 Response PageHandler::ResetNavigationHistory() {
-  WebContentsImpl* web_contents = GetWebContents();
-  if (!web_contents)
-    return Response::InternalError();
+  Response response = AssureTopLevelActiveFrame(host_);
+  if (response.IsError())
+    return response;
 
-  NavigationController& controller = web_contents->GetController();
+  NavigationController& controller = host_->frame_tree()->controller();
   controller.DeleteNavigationEntries(base::BindRepeating(&ReturnTrue));
   return Response::Success();
 }
