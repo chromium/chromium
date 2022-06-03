@@ -9,11 +9,13 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_configuration_observer.h"
 #include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_metadata_observer.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 class PrefService;
@@ -159,6 +161,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   NetworkConfigurationHandler* network_configuration_handler_;
   NetworkConnectionHandler* network_connection_handler_;
   NetworkStateHandler* network_state_handler_;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
   PrefService* profile_pref_service_;
   PrefService* device_pref_service_;
   bool is_enterprise_managed_;

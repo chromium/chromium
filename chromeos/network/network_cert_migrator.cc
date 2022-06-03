@@ -57,8 +57,7 @@ class NetworkCertMigrator::MigrationTask
       // Defer migration of user networks to when the user certificate database
       // has finished loading.
       if (!CorrespondingCertificateDatabaseLoaded(network)) {
-        VLOG(2) << "Skipping network cert migration of network "
-                << service_path
+        VLOG(2) << "Skipping network cert migration of network " << service_path
                 << " until the corresponding certificate database is loaded.";
         continue;
       }
@@ -112,7 +111,8 @@ class NetworkCertMigrator::MigrationTask
         FindCertificateWithPkcs11Id(pkcs11_id, &real_slot_id);
     if (!cert) {
       LOG(WARNING) << "No matching cert found, removing the certificate "
-                      "configuration from network " << service_path;
+                      "configuration from network "
+                   << service_path;
       chromeos::client_cert::SetEmptyShillProperties(config_type,
                                                      result.GetDict());
       return result;
@@ -158,11 +158,8 @@ class NetworkCertMigrator::MigrationTask
                        const std::string& error_name,
                        const std::string& error_message) {
     network_handler::ShillErrorCallbackFunction(
-        "MigrationTask.SetProperties failed",
-        service_path,
-        network_handler::ErrorCallback(),
-        error_name,
-        error_message);
+        "MigrationTask.SetProperties failed", service_path,
+        network_handler::ErrorCallback(), error_name, error_message);
   }
 
  private:
@@ -182,7 +179,6 @@ class NetworkCertMigrator::MigrationTask
 NetworkCertMigrator::NetworkCertMigrator() : network_state_handler_(nullptr) {}
 
 NetworkCertMigrator::~NetworkCertMigrator() {
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
   if (NetworkCertLoader::IsInitialized())
     NetworkCertLoader::Get()->RemoveObserver(this);
 }
@@ -190,7 +186,7 @@ NetworkCertMigrator::~NetworkCertMigrator() {
 void NetworkCertMigrator::Init(NetworkStateHandler* network_state_handler) {
   DCHECK(network_state_handler);
   network_state_handler_ = network_state_handler;
-  network_state_handler_->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler_);
 
   DCHECK(NetworkCertLoader::IsInitialized());
   NetworkCertLoader::Get()->AddObserver(this);

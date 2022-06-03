@@ -8,11 +8,13 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_connection_observer.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,7 +25,6 @@ class CellularMetricsLoggerTest;
 class ESimFeatureUsageMetrics;
 class NetworkConnectionHandler;
 class NetworkState;
-class NetworkStateHandler;
 
 // Cellular network SIM types.
 enum class SimType {
@@ -363,6 +364,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   bool is_cellular_available_ = false;
 
   NetworkStateHandler* network_state_handler_ = nullptr;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   NetworkConnectionHandler* network_connection_handler_ = nullptr;
 

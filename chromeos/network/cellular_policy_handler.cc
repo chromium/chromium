@@ -76,7 +76,7 @@ void CellularPolicyHandler::Init(
   hermes_observation_.Observe(HermesManagerClient::Get());
   cellular_esim_profile_handler_observation_.Observe(
       cellular_esim_profile_handler);
-  network_state_handler_->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler_);
 }
 
 void CellularPolicyHandler::InstallESim(const std::string& smdp_address,
@@ -101,9 +101,7 @@ void CellularPolicyHandler::OnShuttingDown() {
   if (!network_state_handler_) {
     return;
   }
-  if (network_state_handler_->HasObserver(this)) {
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
-  }
+  network_state_handler_observer_.Reset();
   network_state_handler_ = nullptr;
 }
 

@@ -51,9 +51,7 @@ void CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
 
 CellularESimProfileHandlerImpl::CellularESimProfileHandlerImpl() = default;
 
-CellularESimProfileHandlerImpl::~CellularESimProfileHandlerImpl() {
-  network_state_handler()->RemoveObserver(this, FROM_HERE);
-}
+CellularESimProfileHandlerImpl::~CellularESimProfileHandlerImpl() = default;
 
 void CellularESimProfileHandlerImpl::DeviceListChanged() {
   if (!device_prefs_)
@@ -63,7 +61,7 @@ void CellularESimProfileHandlerImpl::DeviceListChanged() {
 }
 
 void CellularESimProfileHandlerImpl::InitInternal() {
-  network_state_handler()->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler());
 }
 
 std::vector<CellularESimProfile>

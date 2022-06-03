@@ -89,7 +89,7 @@ NetworkMetadataStore::NetworkMetadataStore(
     network_configuration_handler_->AddObserver(this);
   }
   if (network_state_handler_) {
-    network_state_handler_->AddObserver(this, FROM_HERE);
+    network_state_handler_observer_.Observe(network_state_handler_);
   }
   if (LoginState::IsInitialized()) {
     LoginState::Get()->AddObserver(this);
@@ -102,9 +102,6 @@ NetworkMetadataStore::~NetworkMetadataStore() {
   }
   if (network_configuration_handler_) {
     network_configuration_handler_->RemoveObserver(this);
-  }
-  if (network_state_handler_ && network_state_handler_->HasObserver(this)) {
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
   }
   if (LoginState::IsInitialized()) {
     LoginState::Get()->RemoveObserver(this);

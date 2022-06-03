@@ -136,7 +136,6 @@ void CellularMetricsLogger::RecordSimPinOperationResult(
   }
 }
 
-
 // static
 void CellularMetricsLogger::LogCellularUserInitiatedConnectionSuccessHistogram(
     CellularMetricsLogger::ConnectResult start_connect_result,
@@ -365,7 +364,7 @@ void CellularMetricsLogger::Init(
     CellularESimProfileHandler* cellular_esim_profile_handler) {
   network_state_handler_ = network_state_handler;
   cellular_esim_profile_handler_ = cellular_esim_profile_handler;
-  network_state_handler_->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler_);
 
   if (network_connection_handler) {
     network_connection_handler_ = network_connection_handler;
@@ -906,7 +905,7 @@ CellularMetricsLogger::GetConnectionInfoForCellularNetwork(
 }
 
 void CellularMetricsLogger::OnShuttingDown() {
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
+  network_state_handler_observer_.Reset();
   network_state_handler_ = nullptr;
   esim_feature_usage_metrics_.reset();
 }

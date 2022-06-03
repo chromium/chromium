@@ -11,9 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/network/network_handler_callbacks.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 namespace chromeos {
@@ -177,6 +179,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
       absl::optional<InhibitOperationResult> result);
 
   NetworkStateHandler* network_state_handler_ = nullptr;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
+
   NetworkDeviceHandler* network_device_handler_ = nullptr;
 
   State state_ = State::kIdle;

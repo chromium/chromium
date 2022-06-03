@@ -15,11 +15,13 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/network/network_configuration_observer.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -226,6 +228,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
 
   // Unowned associated Network*Handlers (global or test instance).
   NetworkStateHandler* network_state_handler_;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
   NetworkDeviceHandler* network_device_handler_;
 
   // Map of in-progress deleter instances.

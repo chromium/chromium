@@ -113,8 +113,6 @@ AutoConnectHandler::~AutoConnectHandler() {
     client_cert_resolver_->RemoveObserver(this);
   if (network_connection_handler_)
     network_connection_handler_->RemoveObserver(this);
-  if (network_state_handler_)
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
   if (managed_configuration_handler_)
     managed_configuration_handler_->RemoveObserver(this);
 }
@@ -136,8 +134,9 @@ void AutoConnectHandler::Init(
     network_connection_handler_->AddObserver(this);
 
   network_state_handler_ = network_state_handler;
-  if (network_state_handler_)
-    network_state_handler_->AddObserver(this, FROM_HERE);
+  if (network_state_handler_) {
+    network_state_handler_observer_.Observe(network_state_handler_);
+  }
 
   managed_configuration_handler_ = managed_network_configuration_handler;
   if (managed_configuration_handler_)

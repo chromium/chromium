@@ -490,7 +490,7 @@ void NetworkConfigurationHandler::NetworkListChanged() {
 }
 
 void NetworkConfigurationHandler::OnShuttingDown() {
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
+  network_state_handler_observer_.Reset();
   network_state_handler_ = nullptr;
   for (auto& observer : observers_)
     observer.OnShuttingDown();
@@ -514,7 +514,7 @@ void NetworkConfigurationHandler::Init(
   network_device_handler_ = network_device_handler;
 
   // Observer is removed in OnShuttingDown() observer override.
-  network_state_handler_->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler_);
 }
 
 void NetworkConfigurationHandler::ConfigurationFailed(

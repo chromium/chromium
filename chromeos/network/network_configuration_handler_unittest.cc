@@ -187,14 +187,13 @@ class NetworkConfigurationHandlerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
     network_state_handler_observer_ =
         std::make_unique<TestNetworkStateHandlerObserver>();
-    network_state_handler_->AddObserver(network_state_handler_observer_.get(),
-                                        FROM_HERE);
+    network_state_handler_->AddObserver(network_state_handler_observer_.get());
   }
 
   ~NetworkConfigurationHandlerTest() override {
     network_state_handler_->Shutdown();
     network_state_handler_->RemoveObserver(
-        network_state_handler_observer_.get(), FROM_HERE);
+        network_state_handler_observer_.get());
     network_state_handler_observer_.reset();
     network_configuration_handler_.reset();
     network_state_handler_.reset();

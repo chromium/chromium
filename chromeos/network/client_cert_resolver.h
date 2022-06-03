@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/network/client_cert_util.h"
@@ -25,7 +26,7 @@
 namespace base {
 class Clock;
 class Value;
-}
+}  // namespace base
 
 namespace chromeos {
 
@@ -162,6 +163,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
 
   // Unowned associated (global or test) instance.
   NetworkStateHandler* network_state_handler_;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   // Unowned associated (global or test) instance.
   ManagedNetworkConfigurationHandler* managed_network_config_handler_;

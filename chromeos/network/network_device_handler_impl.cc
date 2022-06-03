@@ -115,10 +115,7 @@ void HandleSimPinOperationFailure(
 
 NetworkDeviceHandlerImpl::NetworkDeviceHandlerImpl() = default;
 
-NetworkDeviceHandlerImpl::~NetworkDeviceHandlerImpl() {
-  if (network_state_handler_)
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
-}
+NetworkDeviceHandlerImpl::~NetworkDeviceHandlerImpl() = default;
 
 void NetworkDeviceHandlerImpl::GetDeviceProperties(
     const std::string& device_path,
@@ -288,7 +285,7 @@ void NetworkDeviceHandlerImpl::Init(
     NetworkStateHandler* network_state_handler) {
   DCHECK(network_state_handler);
   network_state_handler_ = network_state_handler;
-  network_state_handler_->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler_);
 }
 
 void NetworkDeviceHandlerImpl::ApplyCellularAllowRoamingToShill() {

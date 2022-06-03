@@ -460,11 +460,8 @@ void LogError(const std::string& service_path,
               const std::string& dbus_error_name,
               const std::string& dbus_error_message) {
   network_handler::ShillErrorCallbackFunction(
-      "ClientCertResolver.SetProperties failed",
-      service_path,
-      network_handler::ErrorCallback(),
-      dbus_error_name,
-      dbus_error_message);
+      "ClientCertResolver.SetProperties failed", service_path,
+      network_handler::ErrorCallback(), dbus_error_name, dbus_error_message);
 }
 
 bool ClientCertificatesLoaded() {
@@ -488,8 +485,6 @@ ClientCertResolver::ClientCertResolver()
 
 ClientCertResolver::~ClientCertResolver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (network_state_handler_)
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
   if (NetworkCertLoader::IsInitialized())
     NetworkCertLoader::Get()->RemoveObserver(this);
   if (managed_network_config_handler_)
@@ -502,7 +497,7 @@ void ClientCertResolver::Init(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(network_state_handler);
   network_state_handler_ = network_state_handler;
-  network_state_handler_->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler_);
 
   DCHECK(managed_network_config_handler);
   managed_network_config_handler_ = managed_network_config_handler;
@@ -603,11 +598,8 @@ void ClientCertResolver::NetworkListChanged() {
 
   NetworkStateHandler::NetworkStateList networks;
   network_state_handler_->GetNetworkListByType(
-      NetworkTypePattern::Default(),
-      true /* configured_only */,
-      false /* visible_only */,
-      0 /* no limit */,
-      &networks);
+      NetworkTypePattern::Default(), true /* configured_only */,
+      false /* visible_only */, 0 /* no limit */, &networks);
 
   NetworkStateHandler::NetworkStateList networks_to_check;
   for (const NetworkState* network : networks) {
@@ -648,11 +640,8 @@ void ClientCertResolver::OnCertificatesLoaded() {
   // Compare all networks with all certificates.
   NetworkStateHandler::NetworkStateList networks;
   network_state_handler_->GetNetworkListByType(
-      NetworkTypePattern::Default(),
-      true /* configured_only */,
-      false /* visible_only */,
-      0 /* no limit */,
-      &networks);
+      NetworkTypePattern::Default(), true /* configured_only */,
+      false /* visible_only */, 0 /* no limit */, &networks);
   ResolveNetworks(networks);
 }
 
@@ -766,11 +755,9 @@ void ClientCertResolver::ResolveNetworks(
 void ClientCertResolver::ResolvePendingNetworks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NetworkStateHandler::NetworkStateList networks;
-  network_state_handler_->GetNetworkListByType(NetworkTypePattern::Default(),
-                                               true /* configured_only */,
-                                               false /* visible_only */,
-                                               0 /* no limit */,
-                                               &networks);
+  network_state_handler_->GetNetworkListByType(
+      NetworkTypePattern::Default(), true /* configured_only */,
+      false /* visible_only */, 0 /* no limit */, &networks);
 
   NetworkStateHandler::NetworkStateList networks_to_resolve;
   for (const NetworkState* network : networks) {

@@ -10,9 +10,11 @@
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "chromeos/network/cellular_inhibitor.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "dbus/object_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,7 +23,6 @@ namespace chromeos {
 
 class CellularESimProfileHandler;
 class CellularInhibitor;
-class NetworkStateHandler;
 class NetworkState;
 
 // Prepares cellular networks for connection. Before we can connect to a
@@ -196,6 +197,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
   base::OneShotTimer timer_;
 
   NetworkStateHandler* network_state_handler_ = nullptr;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
   CellularInhibitor* cellular_inhibitor_ = nullptr;
   CellularESimProfileHandler* cellular_esim_profile_handler_ = nullptr;
 

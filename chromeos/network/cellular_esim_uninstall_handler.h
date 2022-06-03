@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
@@ -200,6 +201,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   NetworkConfigurationHandler* network_configuration_handler_ = nullptr;
   NetworkConnectionHandler* network_connection_handler_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   base::WeakPtrFactory<CellularESimUninstallHandler> weak_ptr_factory_{this};
 };

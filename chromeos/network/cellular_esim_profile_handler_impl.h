@@ -8,7 +8,9 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 class PrefService;
@@ -94,6 +96,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
 
   // Initialized to null and set once SetDevicePrefs() is called.
   PrefService* device_prefs_ = nullptr;
+
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   base::flat_set<std::string> paths_pending_auto_refresh_;
 

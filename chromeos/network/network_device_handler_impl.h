@@ -13,9 +13,11 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 namespace chromeos {
@@ -172,6 +174,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
   const DeviceState* GetWifiDeviceState();
 
   NetworkStateHandler* network_state_handler_ = nullptr;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
   bool allow_cellular_sim_lock_ = true;
   bool cellular_policy_allow_roaming_ = true;
   WifiFeatureSupport mac_addr_randomization_supported_ =

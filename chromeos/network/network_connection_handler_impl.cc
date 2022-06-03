@@ -226,8 +226,6 @@ NetworkConnectionHandlerImpl::NetworkConnectionHandlerImpl()
       certificates_loaded_(false) {}
 
 NetworkConnectionHandlerImpl::~NetworkConnectionHandlerImpl() {
-  if (network_state_handler_)
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
   if (network_cert_loader_)
     network_cert_loader_->RemoveObserver(this);
 }
@@ -252,7 +250,7 @@ void NetworkConnectionHandlerImpl::Init(
 
   if (network_state_handler) {
     network_state_handler_ = network_state_handler;
-    network_state_handler_->AddObserver(this, FROM_HERE);
+    network_state_handler_observer_.Observe(network_state_handler_);
   }
   configuration_handler_ = network_configuration_handler;
   managed_configuration_handler_ = managed_network_configuration_handler;

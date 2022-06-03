@@ -60,7 +60,7 @@ void CellularESimUninstallHandler::Init(
   network_connection_handler_ = network_connection_handler;
   network_state_handler_ = network_state_handler;
 
-  network_state_handler->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler_);
 }
 
 void CellularESimUninstallHandler::UninstallESim(
@@ -96,10 +96,8 @@ void CellularESimUninstallHandler::NetworkListChanged() {
 }
 
 void CellularESimUninstallHandler::OnShuttingDown() {
-  if (network_state_handler_) {
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
-    network_state_handler_ = nullptr;
-  }
+  network_state_handler_observer_.Reset();
+  network_state_handler_ = nullptr;
 }
 
 void CellularESimUninstallHandler::ProcessPendingUninstallRequests() {

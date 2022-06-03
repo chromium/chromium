@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -120,6 +121,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   CellularESimInstaller* cellular_esim_installer_ = nullptr;
   NetworkProfileHandler* network_profile_handler_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
   ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
   ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
       nullptr;
