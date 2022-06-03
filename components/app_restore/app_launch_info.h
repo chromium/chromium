@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "components/app_restore/tab_group_info.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
@@ -56,6 +57,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
 
   ~AppLaunchInfo();
 
+  // TODO(1326250): Remove optional wrappers around vector fields.
   std::string app_id;
   absl::optional<int32_t> window_id;
   absl::optional<int32_t> event_flag;
@@ -70,6 +72,11 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
   absl::optional<apps::mojom::IntentPtr> intent;
   absl::optional<bool> app_type_browser;
   absl::optional<std::string> app_name;
+  // For Browsers only, represents tab groups associated with this browser
+  // instance if there are any. This is only used in Desks Storage, tab groups
+  // in full restore are persistsed by sessions. This field is not converted to
+  // base::Value in base value conversions.
+  absl::optional<std::vector<TabGroupInfo>> tab_group_infos;
 };
 
 }  // namespace app_restore

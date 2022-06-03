@@ -53,6 +53,8 @@ using DeskType = ash::DeskTemplateType;
 using WindowBound = sync_pb::WorkspaceDeskSpecifics_WindowBound;
 using WindowState = sync_pb::WorkspaceDeskSpecifics_WindowState;
 using WorkspaceDeskSpecifics_App = sync_pb::WorkspaceDeskSpecifics_App;
+using SyncTabGroup = sync_pb::WorkspaceDeskSpecifics_BrowserAppWindow_TabGroup;
+using SyncTabGroupColor = sync_pb::WorkspaceDeskSpecifics_TabGroupColor;
 
 namespace {
 
@@ -89,6 +91,8 @@ constexpr char kTestUrlFormat[] = "https://www.testdomain%d.com/";
 constexpr char kTestAppNameFormat[] = "_some_prefix_%s";
 constexpr int kDefaultTemplateIndex = 1;
 constexpr int kBrowserWindowId = 1555;
+constexpr char kTestTabGroupName[] = "test_tab_group";
+constexpr char kTestTabGroupNameFormat[] = "test_tab_group_%zu";
 
 // Example app index as set in `ExampleWorkspaceDeskSpecifics`.
 constexpr int kExampleDeskBrowserAppIndex = 0;
@@ -117,7 +121,10 @@ const std::string kPolicyWithTwoTemplates =
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
     "\"url\":\"https://example.com\",\"title\":\"Example\"},{\"url\":\"https://"
     "example.com/"
-    "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"window_id\":0,"
+    "2\",\"title\":\"Example2\"}],\"tab_groups\":[{\"range_"
+    "start\":1,\"range_end\":2,\"title\":\"sample_tab_"
+    "group\",\"color\":\"GREY\",\"is_collapsed\":false}],\"active_tab_index\":"
+    "1,\"window_id\":0,"
     "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}},"
     "{\"version\":1,\"uuid\":\"" +
     base::StringPrintf(kUuidFormat, 9) +
@@ -133,11 +140,9 @@ const std::string kPolicyWithTwoTemplates =
     "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"window_id\":0,"
     "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}]";
 
-void FillExampleBrowserAppWindow(WorkspaceDeskSpecifics_App* app,
-                                 int number_of_tabs = 2) {
-  BrowserAppWindow* app_window =
-      app->mutable_app()->mutable_browser_app_window();
-
+void FillDefaultBrowserAppWindow(WorkspaceDeskSpecifics_App* app,
+                                 BrowserAppWindow* app_window,
+                                 int number_of_tabs) {
   for (int i = 0; i < number_of_tabs; ++i) {
     BrowserAppTab* tab = app_window->add_tabs();
     tab->set_url(base::StringPrintf(kTestUrlFormat, i));
@@ -156,6 +161,41 @@ void FillExampleBrowserAppWindow(WorkspaceDeskSpecifics_App* app,
   app->set_z_index(133);
   app->set_window_id(1555);
   app->set_snap_percentage(75);
+}
+
+void FillExampleBrowserAppWindow(WorkspaceDeskSpecifics_App* app,
+                                 int number_of_tabs = 2) {
+  BrowserAppWindow* app_window =
+      app->mutable_app()->mutable_browser_app_window();
+
+  FillDefaultBrowserAppWindow(app, app_window, number_of_tabs);
+
+  SyncTabGroup* tab_group = app_window->add_tab_groups();
+  tab_group->set_first_index(1);
+  tab_group->set_last_index(2);
+  tab_group->set_title(kTestTabGroupName);
+  tab_group->set_color(
+      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREEN);
+}
+
+void FillExampleBrowserAppWindow(WorkspaceDeskSpecifics_App* app,
+                                 int tab_group_first_index,
+                                 int tab_group_last_index,
+                                 const std::string& tab_group_title,
+                                 bool tab_group_is_collapsed,
+                                 SyncTabGroupColor tab_group_color) {
+  BrowserAppWindow* app_window =
+      app->mutable_app()->mutable_browser_app_window();
+
+  FillDefaultBrowserAppWindow(app, app_window, tab_group_last_index);
+
+  SyncTabGroup* tab_group = app_window->add_tab_groups();
+  tab_group->set_first_index(tab_group_first_index);
+  tab_group->set_last_index(tab_group_last_index);
+  tab_group->set_title(tab_group_title);
+  if (tab_group_is_collapsed)
+    tab_group->set_is_collapsed(tab_group_is_collapsed);
+  tab_group->set_color(tab_group_color);
 }
 
 void FillExampleProgressiveWebAppWindow(WorkspaceDeskSpecifics_App* app) {
@@ -255,6 +295,37 @@ WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
   specifics.set_desk_type(desk_type);
   Desk* desk = specifics.mutable_desk();
   FillExampleBrowserAppWindow(desk->add_apps(), number_of_tabs);
+  FillExampleArcAppWindow(desk->add_apps());
+  FillExampleChromeAppWindow(desk->add_apps());
+  FillExampleProgressiveWebAppWindow(desk->add_apps());
+  return specifics;
+}
+
+WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
+    const std::string& uuid,
+    const std::string& template_name,
+    int tab_group_first_index,
+    int tab_group_last_index,
+    const std::string& tab_group_title,
+    bool tab_group_is_collapsed,
+    SyncTabGroupColor tab_group_color) {
+  base::Time created_time = base::Time::Now();
+
+  WorkspaceDeskSpecifics specifics;
+  specifics.set_uuid(uuid);
+  specifics.set_name(template_name);
+  specifics.set_created_time_windows_epoch_micros(
+      created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  specifics.set_updated_time_windows_epoch_micros(
+      (created_time + base::Minutes(5))
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+  specifics.set_desk_type(
+      SyncDeskType::WorkspaceDeskSpecifics_DeskType_SAVE_AND_RECALL);
+  Desk* desk = specifics.mutable_desk();
+  FillExampleBrowserAppWindow(desk->add_apps(), tab_group_first_index,
+                              tab_group_last_index, tab_group_title,
+                              tab_group_is_collapsed, tab_group_color);
   FillExampleArcAppWindow(desk->add_apps());
   FillExampleChromeAppWindow(desk->add_apps());
   FillExampleProgressiveWebAppWindow(desk->add_apps());
@@ -703,6 +774,55 @@ TEST_F(DeskSyncBridgeTest, LaunchContainerConversionShouldBeLossless) {
         bridge()->ToSyncProto(desk_template.get());
 
     EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
+  }
+}
+
+TEST_F(DeskSyncBridgeTest, TabGroupInfoConversionShouldBeLossless) {
+  CreateBridge();
+
+  std::vector<SyncTabGroupColor> values = {
+      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREY,
+      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_BLUE,
+      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_RED,
+      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_YELLOW,
+      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREEN,
+      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PINK,
+      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PURPLE,
+      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_CYAN,
+      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_ORANGE};
+
+  // Iterate over colors, changing the values contained within the
+  // tab group for each iteration.
+  size_t curr_start = 0;
+  for (const auto& test_color_value : values) {
+    // We test with the color GREEN by default.
+    if (test_color_value ==
+        SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREEN) {
+      continue;
+    }
+
+    WorkspaceDeskSpecifics desk_proto = ExampleWorkspaceDeskSpecifics(
+        kTestUuid1.AsLowercaseString(), "template 1",
+        /*Set a different range for each iteration.*/
+        curr_start, curr_start + 1,
+        /*Change name for each iteration.*/
+        base::StringPrintf(kTestTabGroupNameFormat, curr_start),
+        /*Modulate between true and false for is_collapsed value on each
+           iteration.*/
+        static_cast<bool>(curr_start % 2),
+        /*Set the color to the current iteration*/
+        test_color_value);
+
+    std::unique_ptr<DeskTemplate> desk_template =
+        DeskSyncBridge::FromSyncProto(desk_proto);
+
+    WorkspaceDeskSpecifics converted_desk_proto =
+        bridge()->ToSyncProto(desk_template.get());
+
+    EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
+
+    // Shift range up by one.
+    ++curr_start;
   }
 }
 

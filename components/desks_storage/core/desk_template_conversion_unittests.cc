@@ -46,7 +46,10 @@ const std::string kValidTemplateBrowser =
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
     "\"url\":\"https://example.com/\"},{\"url\":\"https://"
     "example.com/"
-    "2\"}],\"active_tab_index\":1,\"window_id\":0,"
+    "2\"}],\"tab_groups\":[{\"first_"
+    "index\":1,\"last_index\":2,\"title\":\"sample_tab_"
+    "group\",\"color\":\"GREY\",\"is_collapsed\":false}],\"active_tab_index\":"
+    "1,\"window_id\":0,"
     "\"display_id\":\"100\",\"event_flag\":0,\"pre_minimized_window_state\":"
     "\"NORMAL\"}]}}";
 const std::string kValidTemplateChromeAndProgressive =
@@ -76,9 +79,19 @@ const std::string kTemplateWithoutType =
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
     "\"url\":\"https://example.com/\"},{\"url\":\"https://"
     "example.com/"
-    "2\"}],\"active_tab_index\":1,\"window_id\":0,"
+    "2\"}],\"tab_groups\":[{\"first_"
+    "index\":1,\"last_index\":2,\"title\":\"sample_tab_"
+    "group\",\"color\":\"GREY\",\"is_collapsed\":false}],\"active_tab_index\":"
+    "1,\"window_id\":0,"
     "\"display_id\":\"100\",\"event_flag\":0,\"pre_minimized_window_state\":"
     "\"NORMAL\"}]}}";
+const constexpr char16_t kSampleTabGroupTitle[] = u"sample_tab_group";
+
+app_restore::TabGroupInfo MakeSampleTabGroup() {
+  return app_restore::TabGroupInfo(
+      {1, 2}, tab_groups::TabGroupVisualData(
+                  kSampleTabGroupTitle, tab_groups::TabGroupColorId::kGrey));
+}
 
 }  // namespace
 
@@ -148,6 +161,8 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
   EXPECT_TRUE(ali->urls.has_value());
   EXPECT_EQ(ali->urls.value()[0].spec(), "https://example.com/");
   EXPECT_EQ(ali->urls.value()[1].spec(), "https://example.com/2");
+  EXPECT_TRUE(ali->tab_group_infos.has_value());
+  EXPECT_EQ(ali->tab_group_infos.value()[0], MakeSampleTabGroup());
   EXPECT_TRUE(wi->window_state_type.has_value());
   EXPECT_EQ(wi->window_state_type.value(), chromeos::WindowStateType::kNormal);
   EXPECT_TRUE(wi->pre_minimized_show_state_type.has_value());

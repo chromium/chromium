@@ -32,6 +32,10 @@ using SyncWindowOpenDisposition =
     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition;
 using SyncLaunchContainer = sync_pb::WorkspaceDeskSpecifics_LaunchContainer;
 
+// Converts the TabGroupColorId passed into its string equivalent
+// as defined in the k constants above.
+std::string ConvertTabGroupColorIdToString(tab_groups::TabGroupColorId color);
+
 // Converts a time field from sync protobufs to a time object.
 base::Time ProtoTimeToTime(int64_t proto_time);
 

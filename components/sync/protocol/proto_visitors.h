@@ -1314,6 +1314,7 @@ VISIT_PROTO_FIELDS(
   VISIT_REP(tabs);
   VISIT(active_tab_index);
   VISIT(show_as_app);
+  VISIT_REP(tab_groups);
 }
 
 VISIT_PROTO_FIELDS(
@@ -1354,6 +1355,15 @@ VISIT_PROTO_FIELDS(
     const sync_pb::WorkspaceDeskSpecifics::ArcApp::WindowSize& proto) {
   VISIT(width);
   VISIT(height);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::WorkspaceDeskSpecifics::BrowserAppWindow::TabGroup& proto) {
+  VISIT(first_index);
+  VISIT(last_index);
+  VISIT(title);
+  VISIT_ENUM(color);
+  VISIT(is_collapsed);
 }
 
 }  // namespace syncer

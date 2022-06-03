@@ -273,6 +273,7 @@ AppRestoreData::AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info) {
   intent = std::move(app_launch_info->intent);
   app_type_browser = std::move(app_launch_info->app_type_browser);
   app_name = std::move(app_launch_info->app_name);
+  tab_group_infos = std::move(app_launch_info->tab_group_infos);
 }
 
 AppRestoreData::~AppRestoreData() = default;
@@ -348,6 +349,9 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 
   if (status_bar_color.has_value())
     data->status_bar_color = status_bar_color.value();
+
+  if (tab_group_infos.has_value())
+    data->tab_group_infos = tab_group_infos.value();
 
   return data;
 }
@@ -529,6 +533,7 @@ std::unique_ptr<AppLaunchInfo> AppRestoreData::GetAppLaunchInfo(
     app_launch_info->intent = intent->Clone();
   app_launch_info->app_type_browser = app_type_browser;
   app_launch_info->app_name = app_name;
+  app_launch_info->tab_group_infos = tab_group_infos;
   return app_launch_info;
 }
 

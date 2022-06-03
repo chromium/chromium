@@ -65,6 +65,9 @@ using SyncWindowOpenDisposition =
 using ProgressiveWebApp = sync_pb::WorkspaceDeskSpecifics_ProgressiveWebApp;
 using ChromeApp = sync_pb::WorkspaceDeskSpecifics_ChromeApp;
 using WorkspaceDeskSpecifics_App = sync_pb::WorkspaceDeskSpecifics_App;
+using SyncTabGroup = sync_pb::WorkspaceDeskSpecifics_BrowserAppWindow_TabGroup;
+using SyncTabGroupColor = sync_pb::WorkspaceDeskSpecifics_TabGroupColor;
+using TabGroupColor = tab_groups::TabGroupColorId;
 
 namespace {
 
@@ -133,6 +136,71 @@ void FillUrlList(const BrowserAppWindow& browser_app_window,
   for (auto tab : browser_app_window.tabs()) {
     if (tab.has_url())
       out_gurls->emplace_back(tab.url());
+  }
+}
+
+// Since tab groups must have completely valid fields therefore this function
+// exists to validate that sync tab groups are entirely valid.
+bool ValidSyncTabGroup(const SyncTabGroup& sync_tab_group) {
+  return sync_tab_group.has_first_index() && sync_tab_group.has_last_index() &&
+         sync_tab_group.has_title() && sync_tab_group.has_color();
+}
+
+// Converts a sync tab group color to its tab_groups::TabGroupColorId
+// equivalent.
+TabGroupColor TabGroupColorIdFromSyncTabColor(
+    const SyncTabGroupColor& sync_color) {
+  switch (sync_color) {
+    // Default to grey if unknown.
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_UNKNOWN_COLOR:
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREY:
+      return TabGroupColor::kGrey;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_BLUE:
+      return TabGroupColor::kBlue;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_RED:
+      return TabGroupColor::kRed;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_YELLOW:
+      return TabGroupColor::kYellow;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREEN:
+      return TabGroupColor::kGreen;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PINK:
+      return TabGroupColor::kPink;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PURPLE:
+      return TabGroupColor::kPurple;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_CYAN:
+      return TabGroupColor::kCyan;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_ORANGE:
+      return TabGroupColor::kOrange;
+  };
+}
+
+// Instantiates a TabGroup from its sync equivalent.
+app_restore::TabGroupInfo FillTabGroupInfoFromProto(
+    const SyncTabGroup& sync_tab_group) {
+  // This function should never be called with a partially instantiated
+  // tab group.
+  DCHECK(ValidSyncTabGroup(sync_tab_group));
+
+  return app_restore::TabGroupInfo(
+      {static_cast<uint32_t>(sync_tab_group.first_index()),
+       static_cast<uint32_t>(sync_tab_group.last_index())},
+      tab_groups::TabGroupVisualData(
+          base::UTF8ToUTF16(sync_tab_group.title()),
+          TabGroupColorIdFromSyncTabColor(sync_tab_group.color()),
+          sync_tab_group.is_collapsed()));
+}
+
+// Fill `out_group_infos` using information found in the proto's
+// tab group structure.
+void FillTabGroupInfosFromProto(
+    const BrowserAppWindow& browser_app_window,
+    std::vector<app_restore::TabGroupInfo>* out_group_infos) {
+  for (const auto& group : browser_app_window.tab_groups()) {
+    if (!ValidSyncTabGroup(group)) {
+      continue;
+    }
+
+    out_group_infos->push_back(FillTabGroupInfoFromProto(group));
   }
 }
 
@@ -219,6 +287,12 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
       app_launch_info->urls.emplace();
       FillUrlList(app.app().browser_app_window(),
                   &app_launch_info->urls.value());
+
+      if (app.app().browser_app_window().tab_groups_size() > 0) {
+        app_launch_info->tab_group_infos.emplace();
+        FillTabGroupInfosFromProto(app.app().browser_app_window(),
+                                   &app_launch_info->tab_group_infos.value());
+      }
 
       if (app.app().browser_app_window().has_show_as_app())
         app_launch_info->app_type_browser =
@@ -322,6 +396,57 @@ WindowState FromUiWindowState(ui::WindowShowState state) {
   }
 }
 
+// Converts a sync tab group color to its tab_groups::TabGroupColorId
+// equivalent.
+SyncTabGroupColor SyncTabColorFromTabGroupColorId(
+    const TabGroupColor& sync_color) {
+  switch (sync_color) {
+    case TabGroupColor::kGrey:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREY;
+    case TabGroupColor::kBlue:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_BLUE;
+    case TabGroupColor::kRed:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_RED;
+    case TabGroupColor::kYellow:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_YELLOW;
+    case TabGroupColor::kGreen:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREEN;
+    case TabGroupColor::kPink:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PINK;
+    case TabGroupColor::kPurple:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PURPLE;
+    case TabGroupColor::kCyan:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_CYAN;
+    case TabGroupColor::kOrange:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_ORANGE;
+  };
+}
+
+void FillSyncTabGroupInfo(const app_restore::TabGroupInfo& tab_group_info,
+                          SyncTabGroup* out_sync_tab_group) {
+  out_sync_tab_group->set_first_index(tab_group_info.tab_range.start());
+  out_sync_tab_group->set_last_index(tab_group_info.tab_range.end());
+  out_sync_tab_group->set_title(
+      base::UTF16ToUTF8(tab_group_info.visual_data.title()));
+  // Save some storage space by leaving is_collapsed to default value if the
+  // tab group isn't collapsed.
+  if (tab_group_info.visual_data.is_collapsed()) {
+    out_sync_tab_group->set_is_collapsed(
+        tab_group_info.visual_data.is_collapsed());
+  }
+  out_sync_tab_group->set_color(
+      SyncTabColorFromTabGroupColorId(tab_group_info.visual_data.color()));
+}
+
+void FillBrowserAppTabGroupInfos(
+    const std::vector<app_restore::TabGroupInfo>& tab_group_infos,
+    BrowserAppWindow* out_browser_app_window) {
+  for (const auto& tab_group : tab_group_infos) {
+    SyncTabGroup* sync_tab_group = out_browser_app_window->add_tab_groups();
+    FillSyncTabGroupInfo(tab_group, sync_tab_group);
+  }
+}
+
 // Fill `out_browser_app_window` with the given GURLs as BrowserAppTabs.
 void FillBrowserAppTabs(const std::vector<GURL>& gurls,
                         BrowserAppWindow* out_browser_app_window) {
@@ -351,6 +476,11 @@ void FillBrowserAppWindow(const app_restore::AppRestoreData* app_restore_data,
   if (app_restore_data->app_type_browser.has_value()) {
     out_browser_app_window->set_show_as_app(
         app_restore_data->app_type_browser.value());
+  }
+
+  if (app_restore_data->tab_group_infos.has_value()) {
+    FillBrowserAppTabGroupInfos(app_restore_data->tab_group_infos.value(),
+                                out_browser_app_window);
   }
 }
 

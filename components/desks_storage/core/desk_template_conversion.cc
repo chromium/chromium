@@ -7,16 +7,20 @@
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/restore_data.h"
+#include "components/app_restore/tab_group_info.h"
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/protocol/proto_enum_conversions.h"
+#include "components/tab_groups/tab_group_color.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -25,6 +29,7 @@ namespace {
 using SyncWindowOpenDisposition =
     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition;
 using SyncLaunchContainer = sync_pb::WorkspaceDeskSpecifics_LaunchContainer;
+using GroupColor = tab_groups::TabGroupColorId;
 
 // JSON value keys.
 constexpr char kActiveTabIndex[] = "active_tab_index";
@@ -55,15 +60,21 @@ constexpr char kMaximumSize[] = "maximum_size";
 constexpr char kMinimumSize[] = "minimum_size";
 constexpr char kName[] = "name";
 constexpr char kPreMinimizedWindowState[] = "pre_minimized_window_state";
+constexpr char kTabRangeFirstIndex[] = "first_index";
+constexpr char kTabRangeLastIndex[] = "last_index";
 constexpr char kSizeHeight[] = "height";
 constexpr char kSizeWidth[] = "width";
 constexpr char kSnapPercentage[] = "snap_percent";
 constexpr char kTabs[] = "tabs";
+constexpr char kTabGroups[] = "tab_groups";
 constexpr char kTabUrl[] = "url";
 constexpr char kTitle[] = "title";
 constexpr char kUpdatedTime[] = "updated_time_usec";
 constexpr char kUuid[] = "uuid";
 constexpr char kVersion[] = "version";
+constexpr char kTabGroupTitleKey[] = "title";
+constexpr char kTabGroupColorKey[] = "color";
+constexpr char kTabGroupIsCollapsed[] = "is_collapsed";
 constexpr char kWindowId[] = "window_id";
 constexpr char kWindowBound[] = "window_bound";
 constexpr char kWindowBoundHeight[] = "height";
@@ -119,6 +130,12 @@ const std::set<std::string> kValidWindowStates = {kWindowStateNormal,
                                                   kWindowStatePrimarySnapped,
                                                   kWindowStateSecondarySnapped,
                                                   kZIndex};
+const std::set<std::string> kValidTabGroupColors = {
+    app_restore::kTabGroupColorUnknown, app_restore::kTabGroupColorGrey,
+    app_restore::kTabGroupColorBlue,    app_restore::kTabGroupColorRed,
+    app_restore::kTabGroupColorYellow,  app_restore::kTabGroupColorGreen,
+    app_restore::kTabGroupColorPink,    app_restore::kTabGroupColorPurple,
+    app_restore::kTabGroupColorCyan,    app_restore::kTabGroupColorOrange};
 
 // Version number.
 constexpr int kVersionNum = 1;
@@ -187,6 +204,111 @@ std::string GetJsonAppId(const base::Value& app) {
 
   // Unsupported type
   return std::string();
+}
+
+// Convert a TabGroupInfo object to a base::Value dictionary.
+base::Value ConvertTabGroupInfoToValue(
+    const app_restore::TabGroupInfo& group_info) {
+  base::Value tab_group_dict(base::Value::Type::DICTIONARY);
+
+  tab_group_dict.SetIntKey(kTabRangeFirstIndex, group_info.tab_range.start());
+  tab_group_dict.SetIntKey(kTabRangeLastIndex, group_info.tab_range.end());
+  tab_group_dict.SetStringKey(
+      kTabGroupTitleKey, base::UTF16ToUTF8(group_info.visual_data.title()));
+  tab_group_dict.SetStringKey(
+      kTabGroupColorKey,
+      app_restore::TabGroupColorToString(group_info.visual_data.color()));
+  tab_group_dict.SetBoolKey(kTabGroupIsCollapsed,
+                            group_info.visual_data.is_collapsed());
+
+  return tab_group_dict;
+}
+
+bool IsValidGroupColor(const std::string& group_color) {
+  return base::Contains(kValidTabGroupColors, group_color);
+}
+
+GroupColor ConvertGroupColorStringToGroupColor(const std::string& group_color) {
+  if (group_color == app_restore::kTabGroupColorGrey) {
+    return GroupColor::kGrey;
+  } else if (group_color == app_restore::kTabGroupColorBlue) {
+    return GroupColor::kBlue;
+  } else if (group_color == app_restore::kTabGroupColorRed) {
+    return GroupColor::kRed;
+  } else if (group_color == app_restore::kTabGroupColorYellow) {
+    return GroupColor::kYellow;
+  } else if (group_color == app_restore::kTabGroupColorGreen) {
+    return GroupColor::kGreen;
+  } else if (group_color == app_restore::kTabGroupColorPink) {
+    return GroupColor::kPink;
+  } else if (group_color == app_restore::kTabGroupColorPurple) {
+    return GroupColor::kPurple;
+  } else if (group_color == app_restore::kTabGroupColorCyan) {
+    return GroupColor::kCyan;
+  } else if (group_color == app_restore::kTabGroupColorOrange) {
+    return GroupColor::kOrange;
+    // There is no UNKNOWN equivalent in GroupColor, simply default
+    // to grey.
+  } else if (group_color == app_restore::kTabGroupColorUnknown) {
+    return GroupColor::kGrey;
+  } else {
+    NOTREACHED();
+    return GroupColor::kGrey;
+  }
+}
+
+// Constructs a GroupVisualData from value `group_visual_data` IFF all fields
+// are present and valid in the value parameter.  Returns true on success, false
+// on failure.
+bool MakeTabGroupVisualDataFromValue(
+    const base::Value& tab_group,
+    tab_groups::TabGroupVisualData* out_visual_data) {
+  std::string tab_group_title;
+  std::string group_color_string;
+  bool is_collapsed;
+  if (GetString(tab_group, kTabGroupTitleKey, &tab_group_title) &&
+      GetBool(tab_group, kTabGroupIsCollapsed, &is_collapsed) &&
+      GetString(tab_group, kTabGroupColorKey, &group_color_string) &&
+      IsValidGroupColor(group_color_string)) {
+    *out_visual_data = tab_groups::TabGroupVisualData(
+        base::UTF8ToUTF16(tab_group_title),
+        ConvertGroupColorStringToGroupColor(group_color_string), is_collapsed);
+    return true;
+  }
+
+  return false;
+}
+
+// Constructs a gfx::Range from value `group_range` IFF all fields are
+// present and valid in the value parameter.  Returns true on success, false on
+// failure.
+bool MakeTabGroupRangeFromValue(const base::Value& tab_group,
+                                gfx::Range* out_range) {
+  int32_t range_start;
+  int32_t range_end;
+  if (GetInt(tab_group, kTabRangeFirstIndex, &range_start) &&
+      GetInt(tab_group, kTabRangeLastIndex, &range_end)) {
+    *out_range = gfx::Range(range_start, range_end);
+    return true;
+  }
+
+  return false;
+}
+
+// Constructs a TabGroupInfo from `tab_group` IFF all fields are present
+// and valid in the value parameter. Returns true on success, false on failure.
+absl::optional<app_restore::TabGroupInfo> MakeTabGroupInfoFromDict(
+    const base::Value& tab_group) {
+  absl::optional<app_restore::TabGroupInfo> tab_group_info = absl::nullopt;
+
+  tab_groups::TabGroupVisualData visual_data;
+  gfx::Range range;
+  if (MakeTabGroupRangeFromValue(tab_group, &range) &&
+      MakeTabGroupVisualDataFromValue(tab_group, &visual_data)) {
+    tab_group_info.emplace(range, visual_data);
+  }
+
+  return tab_group_info;
 }
 
 // Returns true if launch container string value is valid.
@@ -324,6 +446,21 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
         std::string url;
         if (GetString(tab, kTabUrl, &url)) {
           app_launch_info->urls.value().emplace_back(url);
+        }
+      }
+    }
+
+    // Fill the tab groups
+    app_launch_info->tab_group_infos.emplace();
+    const base::Value* tab_groups =
+        app.FindKeyOfType(kTabGroups, base::Value::Type::LIST);
+    if (tab_groups) {
+      for (auto& tab : tab_groups->GetList()) {
+        absl::optional<app_restore::TabGroupInfo> tab_group =
+            MakeTabGroupInfoFromDict(tab);
+        if (tab_group.has_value()) {
+          app_launch_info->tab_group_infos->push_back(
+              std::move(tab_group.value()));
         }
       }
     }
@@ -692,6 +829,16 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
   if (app->urls.has_value())
     app_data.SetKey(kTabs, ConvertURLsToBrowserAppTabValues(app->urls.value()));
 
+  if (app->tab_group_infos.has_value()) {
+    base::Value tab_groups_value(base::Value::Type::LIST);
+
+    for (const auto& tab_group : app->tab_group_infos.value()) {
+      tab_groups_value.Append(ConvertTabGroupInfoToValue(tab_group));
+    }
+
+    app_data.SetKey(kTabGroups, std::move(tab_groups_value));
+  }
+
   if (app->active_tab_index.has_value()) {
     app_data.SetKey(kActiveTabIndex,
                     base::Value(app->active_tab_index.value()));
@@ -785,6 +932,31 @@ ash::DeskTemplateType GetDeskTypeFromString(const std::string& desk_type) {
 namespace desks_storage {
 
 namespace desk_template_conversion {
+
+// Converts the TabGroupColorId passed into its string equivalent
+// as defined in the k constants above.
+std::string ConvertTabGroupColorIdToString(GroupColor color) {
+  switch (color) {
+    case GroupColor::kGrey:
+      return app_restore::kTabGroupColorGrey;
+    case GroupColor::kBlue:
+      return app_restore::kTabGroupColorBlue;
+    case GroupColor::kRed:
+      return app_restore::kTabGroupColorRed;
+    case GroupColor::kYellow:
+      return app_restore::kTabGroupColorYellow;
+    case GroupColor::kGreen:
+      return app_restore::kTabGroupColorGreen;
+    case GroupColor::kPink:
+      return app_restore::kTabGroupColorPink;
+    case GroupColor::kPurple:
+      return app_restore::kTabGroupColorPurple;
+    case GroupColor::kCyan:
+      return app_restore::kTabGroupColorCyan;
+    case GroupColor::kOrange:
+      return app_restore::kTabGroupColorOrange;
+  }
+}
 
 // Converts a time field from sync protobufs to a time object.
 base::Time ProtoTimeToTime(int64_t proto_time) {

@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/app_restore/tab_group_info.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
@@ -81,6 +82,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   apps::mojom::WindowInfoPtr GetAppWindowInfo() const;
 
   // App launch parameters.
+  // TODO(crbug.com/1326250): Remove optional wrappers around vector fields.
   absl::optional<int32_t> event_flag;
   absl::optional<int32_t> container;
   absl::optional<int32_t> disposition;
@@ -105,6 +107,11 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   // `snap_percentage` of 60 when the display is in portrait means the height is
   // 60 percent of the work area height.
   absl::optional<uint32_t> snap_percentage;
+  // For Browsers only, represents tab groups associtated with this browser
+  // instance if there are any. This is only used in Desks Storage, tab groups
+  // in full restore are persistsed by sessions.  This field is not converted to
+  // base::value in base value conversions.
+  absl::optional<std::vector<TabGroupInfo>> tab_group_infos;
 
   // Extra ARC window's information.
   absl::optional<gfx::Size> minimum_size;

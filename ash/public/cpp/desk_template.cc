@@ -13,6 +13,27 @@
 
 namespace ash {
 
+namespace {
+
+std::string TabGroupDataToString(const app_restore::RestoreData* restore_data) {
+  std::string result = "tab groups:[";
+
+  for (const auto& app : restore_data->app_id_to_launch_list()) {
+    for (const auto& window : app.second) {
+      if (window.second->tab_group_infos.has_value()) {
+        for (const auto& tab_group : window.second->tab_group_infos.value()) {
+          result += "\n" + tab_group.ToString() + ",";
+        }
+      }
+    }
+  }
+
+  result += "]\n";
+  return result;
+}
+
+}  // namespace
+
 DeskTemplate::DeskTemplate(const std::string& uuid,
                            DeskTemplateSource source,
                            const std::string& name,
@@ -65,6 +86,8 @@ void DeskTemplate::SetDeskIndex(int desk_index) {
   desk_restore_data_->SetDeskIndex(desk_index);
 }
 
+// TODO(crbug.com/1328850): Factor out common elements between ToString and
+// ToDebugString.
 std::string DeskTemplate::ToString() const {
   std::string result =
       "Template name: " + base::UTF16ToUTF8(template_name_) + "\n";
@@ -127,8 +150,10 @@ std::string DeskTemplate::ToDebugString() const {
   // Converting to value and printing the debug string may be more
   // intensive but gives more complete information which increases
   // the utility of this function.
-  if (desk_restore_data_)
+  if (desk_restore_data_) {
     result += desk_restore_data_->ConvertToValue().DebugString();
+    result += TabGroupDataToString(desk_restore_data_.get());
+  }
   return result;
 }
 
