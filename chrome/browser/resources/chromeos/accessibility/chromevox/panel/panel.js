@@ -278,7 +278,7 @@ export class Panel extends PanelInterface {
    * @param {Event=} opt_event An optional event that triggered this.
    * @param {*=} opt_activateMenuTitle Title msg id of menu to open.
    */
-  static onOpenMenus(opt_event, opt_activateMenuTitle) {
+  static async onOpenMenus(opt_event, opt_activateMenuTitle) {
     // If the menu was already open, close it now and exit early.
     if (Panel.mode_ !== PanelMode.COLLAPSED) {
       Panel.setMode(PanelMode.COLLAPSED);
@@ -292,6 +292,7 @@ export class Panel extends PanelInterface {
       opt_event.preventDefault();
     }
 
+    await BackgroundBridge.PanelBackground.saveCurrentNode();
     Panel.setMode(PanelMode.FULLSCREEN_MENUS);
 
     const onFocusDo = async () => {
@@ -1028,6 +1029,7 @@ export class Panel extends PanelInterface {
 
     // Make sure all menus are cleared to avoid bogus output when we re-open.
     Panel.clearMenus();
+    BackgroundBridge.PanelBackground.clearSavedNode();
 
     // Make sure we're not in full-screen mode.
     Panel.setMode(PanelMode.COLLAPSED);

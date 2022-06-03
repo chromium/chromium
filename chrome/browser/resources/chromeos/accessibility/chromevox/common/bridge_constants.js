@@ -125,6 +125,7 @@ BridgeConstants = {
  * @enum {string}
  */
 BridgeActions = {
+  CLEAR_SAVED_NODE: 'clearSavedNode',
   CREATE: 'create',
   CREATE_ALL_NODE_MENU_BACKGROUNDS: 'createAllNodeMenuBackgrounds',
   CREATE_NEW_I_SEARCH: 'createNewISearch',
@@ -138,6 +139,7 @@ BridgeActions = {
   NOTIFY_EVENT_STREAM_FILTER_CHANGED: 'notifyEventStreamFilterChanged',
   PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE: 'performCustomActionOnCurrentNode',
   PERFORM_STANDARD_ACTION_ON_CURRENT_NODE: 'performStandardActionOnCurrentNode',
+  SAVE_CURRENT_NODE: 'saveCurrentNode',
   SET_RANGE_TO_I_SEARCH_NODE: 'setRangeToISearchNode',
   WAIT_FOR_PANEL_COLLAPSE: 'waitForPanelCollapse',
 };

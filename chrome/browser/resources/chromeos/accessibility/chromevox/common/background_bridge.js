@@ -195,6 +195,12 @@ BackgroundBridge.LogStore = {
 };
 
 BackgroundBridge.PanelBackground = {
+  /** @return {!Promise} */
+  async clearSavedNode() {
+    return BridgeHelper.sendMessage(
+        BridgeTargets.PANEL_BACKGROUND, BridgeActions.CLEAR_SAVED_NODE);
+  },
+
   /** @param {string=} opt_activatedMenuTitle */
   async createAllNodeMenuBackgrounds(opt_activatedMenuTitle) {
     return BridgeHelper.sendMessage(
@@ -290,6 +296,12 @@ BackgroundBridge.PanelBackground = {
     return BridgeHelper.sendMessage(
         BridgeTargets.PANEL_BACKGROUND,
         BridgeActions.PERFORM_STANDARD_ACTION_ON_CURRENT_NODE, action);
+  },
+
+  /** @return {!Promise} */
+  async saveCurrentNode() {
+    return BridgeHelper.sendMessage(
+        BridgeTargets.PANEL_BACKGROUND, BridgeActions.SAVE_CURRENT_NODE);
   },
 
   /**

@@ -21,7 +21,7 @@ export class PanelBackground {
     /** @private {ISearch} */
     this.iSearch_;
     /** @private {AutomationNode} */
-    this.nodeForActions_;
+    this.savedNode_;
   }
 
   static init() {
@@ -36,6 +36,9 @@ export class PanelBackground {
 
     PanelBackground.stateObserver_ = new PanelStateObserver();
 
+    BridgeHelper.registerHandler(
+        BridgeTargets.PANEL_BACKGROUND, BridgeActions.CLEAR_SAVED_NODE,
+        () => PanelBackground.instance.clearSavedNode_());
     BridgeHelper.registerHandler(
         BridgeTargets.PANEL_BACKGROUND,
         BridgeActions.CREATE_ALL_NODE_MENU_BACKGROUNDS,
@@ -79,6 +82,9 @@ export class PanelBackground {
         action => PanelBackground.instance.performStandardActionOnCurrentNode_(
             action));
     BridgeHelper.registerHandler(
+        BridgeTargets.PANEL_BACKGROUND, BridgeActions.SAVE_CURRENT_NODE,
+        () => PanelBackground.instance.saveCurrentNode_());
+    BridgeHelper.registerHandler(
         BridgeTargets.PANEL_BACKGROUND,
         BridgeActions.SET_RANGE_TO_I_SEARCH_NODE,
         () => PanelBackground.instance.setRangeToISearchNode_());
@@ -87,17 +93,21 @@ export class PanelBackground {
         () => PanelBackground.instance.waitForPanelCollapse_());
   }
 
+  /** @private */
+  clearSavedNode_() {
+    this.savedNode_ = null;
+  }
+
   /**
    * @param {string=} opt_activateMenuTitleId Optional string specifying the
    *     activated menu.
    * @private
    */
   createAllNodeMenuBackgrounds_(opt_activateMenuTitleId) {
-    const node = ChromeVoxState.instance.currentRange.start.node;
     for (const data of ALL_NODE_MENU_DATA) {
       const isActivatedMenu = opt_activateMenuTitleId === data.titleId;
       const menuBackground =
-          new PanelNodeMenuBackground(data, node, isActivatedMenu);
+          new PanelNodeMenuBackground(data, this.savedNode_, isActivatedMenu);
       menuBackground.populate();
     }
   }
@@ -111,7 +121,7 @@ export class PanelBackground {
     if (this.iSearch_) {
       this.iSearch_.clear();
     }
-    this.iSearch_ = new ISearch(ChromeVoxState.instance.currentRange.start);
+    this.iSearch_ = new ISearch(this.savedNode_);
     this.iSearch_.handler = this;
   }
 
@@ -132,19 +142,18 @@ export class PanelBackground {
    * @private
    */
   getActionsForCurrentNode_() {
-    this.nodeForActions_ = ChromeVoxState.instance.currentRange.start;
     const result = {
       standardActions: [],
       customActions: [],
     };
-    if (!this.nodeForActions_) {
+    if (!this.savedNode_) {
       return result;
     }
-    if (this.nodeForActions_.standardActions) {
-      result.standardActions = this.nodeForActions_.standardActions;
+    if (this.savedNode_.standardActions) {
+      result.standardActions = this.savedNode_.standardActions;
     }
-    if (this.nodeForActions_.customActions) {
-      result.customActions = this.nodeForActions_.customActions;
+    if (this.savedNode_.customActions) {
+      result.customActions = this.savedNode_.customActions;
     }
     return result;
   }
@@ -170,8 +179,8 @@ export class PanelBackground {
    * @private
    */
   performCustomActionOnCurrentNode_(actionId) {
-    if (this.nodeForActions_) {
-      this.nodeForActions_.performCustomAction(actionId);
+    if (this.savedNode_) {
+      this.savedNode_.performCustomAction(actionId);
     }
   }
 
@@ -180,8 +189,8 @@ export class PanelBackground {
    * @private
    */
   performStandardActionOnCurrentNode_(action) {
-    if (this.nodeForActions_) {
-      this.nodeForActions_.performStandardAction(action);
+    if (this.savedNode_) {
+      this.savedNode_.performStandardAction(action);
     }
   }
 
@@ -237,6 +246,11 @@ export class PanelBackground {
     o.go();
 
     ChromeVoxState.instance.setCurrentRange(cursors.Range.fromNode(node));
+  }
+
+  /** @private */
+  saveCurrentNode_() {
+    this.savedNode_ = ChromeVoxState.instance.currentRange.start.node;
   }
 
   /**
