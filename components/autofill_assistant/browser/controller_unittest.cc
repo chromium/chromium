@@ -32,6 +32,7 @@
 #include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
 #include "components/autofill_assistant/browser/service/mock_service.h"
 #include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
@@ -2371,6 +2372,24 @@ TEST_F(ControllerTest, DoesNotAttachUnavailableModelVersionOnStart) {
                          /* parameters = */ std::make_unique<ScriptParameters>(
                              base::flat_map<std::string, std::string>{
                                  {"SEND_ANNOTATE_DOM_MODEL_VERSION", "true"}}),
+                         TriggerContext::Options()));
+}
+
+TEST_F(ControllerTest, AttachesAvailableModelVersionForCommandLineSwitch) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kAutofillAssistantAnnotateDom, "true");
+
+  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion)
+      .WillOnce(RunOnceCallback<0>(123456));
+  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext(123456));
+  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  controller_->Start(GURL("https://www.example.com"),
+                     std::make_unique<TriggerContext>(
+                         /* parameters = */ std::make_unique<ScriptParameters>(
+                             base::flat_map<std::string, std::string>{}),
                          TriggerContext::Options()));
 }
 

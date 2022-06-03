@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
@@ -21,6 +22,7 @@
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/service/service_impl.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/url_utils.h"
 #include "components/autofill_assistant/browser/user_data.h"
@@ -56,6 +58,14 @@ bool ShouldSuppressKeyboardForState(AutofillAssistantState state) {
     case AutofillAssistantState::INACTIVE:
       return false;
   }
+}
+
+bool ShouldSendModelVersionInContext(const TriggerContext& trigger_context) {
+  return trigger_context.GetScriptParameters()
+             .GetSendAnnotateDomModelVersion()
+             .value_or(false) ||
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kAutofillAssistantAnnotateDom);
 }
 
 }  // namespace
@@ -437,9 +447,7 @@ void Controller::GetOrCheckScripts() {
 
 void Controller::MaybeUpdateClientContextAndGetScriptsForUrl(const GURL& url) {
   DCHECK(trigger_context_);
-  if (!trigger_context_->GetScriptParameters()
-           .GetSendAnnotateDomModelVersion()
-           .value_or(false)) {
+  if (!ShouldSendModelVersionInContext(*trigger_context_)) {
     GetScriptsForUrl(url);
     return;
   }
