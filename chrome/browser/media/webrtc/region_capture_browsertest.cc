@@ -40,6 +40,11 @@
 namespace {
 
 using content::WebContents;
+using testing::Bool;
+using testing::Combine;
+using testing::TestParamInfo;
+using testing::Values;
+using testing::WithParamInterface;
 
 // TODO(crbug.com/1247761): Add tests that verify excessive calls to
 // produceCropId() yield the empty string.
@@ -67,7 +72,7 @@ enum {
   kServerCount  // Must be last.
 };
 
-enum {
+enum Tab {
   kMainTab,
   kOtherTab,
   kTabCount  // Must be last.
@@ -102,6 +107,9 @@ struct TabInfo {
   }
 
   void StartCaptureFromEmbeddedFrame() {
+    // Bring the tab into focus. This avoids getDisplayMedia rejection.
+    browser->tab_strip_model()->ActivateTabAt(tab_strip_index);
+
     std::string script_result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         web_contents->GetMainFrame(), "startCaptureFromEmbeddedFrame();",
@@ -155,6 +163,8 @@ struct TabInfo {
 // detection of JS errors.
 class RegionCaptureBrowserTest : public WebRtcTestBase {
  public:
+  ~RegionCaptureBrowserTest() override = default;
+
   void SetUpInProcessBrowserTestFixture() override {
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();
 
@@ -215,19 +225,17 @@ class RegionCaptureBrowserTest : public WebRtcTestBase {
   // Set up all (necessary) tabs, loads iframes, and start capturing the
   // relevant tab.
   void SetUpTest(Frame capturing_entity, bool self_capture) {
-    // Main page (for self-capture).
+    // Other page (for other-tab-capture).
+    SetUpPage("/webrtc/region_capture_other_main.html",
+              servers_[kOtherPageTopLevelDocument].get(),
+              "/webrtc/region_capture_other_embedded.html",
+              servers_[kOtherPageEmbeddedDocument].get(), &tabs_[kOtherTab]);
+
+    // Main page (for self-capture). Instantiate it second to help it get focus.
     SetUpPage("/webrtc/region_capture_main.html",
               servers_[kMainPageTopLevelDocument].get(),
               "/webrtc/region_capture_embedded.html",
               servers_[kMainPageEmbeddedDocument].get(), &tabs_[kMainTab]);
-
-    if (!self_capture) {
-      // Other page (for other-tab-capture).
-      SetUpPage("/webrtc/region_capture_other_main.html",
-                servers_[kOtherPageTopLevelDocument].get(),
-                "/webrtc/region_capture_other_embedded.html",
-                servers_[kOtherPageEmbeddedDocument].get(), &tabs_[kOtherTab]);
-    }
 
     DCHECK(command_line_);
     command_line_->AppendSwitchASCII(
@@ -376,28 +384,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(tab.CropTo(""), "top-level-crop-success");
 }
 
-IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
-                       CropToRejectedIfElementInAnotherTabTopLevel) {
-  SetUpTest(Frame::kTopLevelDocument, /*self_capture=*/false);
-
-  const std::string crop_id =
-      tabs_[kOtherTab].ProduceCropId(Frame::kTopLevelDocument);
-  ASSERT_THAT(crop_id, IsValidCropId());
-
-  EXPECT_EQ(tabs_[kMainTab].CropTo(crop_id), "top-level-crop-error");
-}
-
-IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
-                       CropToRejectedIfElementInAnotherTabEmbeddedFrame) {
-  SetUpTest(Frame::kTopLevelDocument, /*self_capture=*/false);
-
-  const std::string crop_id =
-      tabs_[kOtherTab].ProduceCropId(Frame::kEmbeddedFrame);
-  ASSERT_THAT(crop_id, IsValidCropId());
-
-  EXPECT_EQ(tabs_[kMainTab].CropTo(crop_id), "top-level-crop-error");
-}
-
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, MaxCropIdsInTopLevelDocument) {
   SetUpTest(Frame::kNone, /*self_capture=*/false);
   TabInfo& tab = tabs_[kMainTab];
@@ -493,6 +479,87 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
             "embedded-new-div-success");
   EXPECT_EQ(tab.ProduceCropId(Frame::kEmbeddedFrame, element_id),
             "embedded-produce-crop-id-error");
+}
+
+// Suite of tests ensuring that only self-capture may crop, and that it may
+// only crop to targets in its own tab, but that any target in its own tab
+// is permitted.
+class RegionCaptureSelfCaptureOnlyBrowserTest
+    : public RegionCaptureBrowserTest,
+      public WithParamInterface<std::tuple<Frame, bool, Tab, Frame>> {
+ public:
+  RegionCaptureSelfCaptureOnlyBrowserTest()
+      : capturing_entity_(std::get<0>(GetParam())),
+        self_capture_(std::get<1>(GetParam())),
+        target_element_tab_(std::get<2>(GetParam())),
+        target_frame_(std::get<3>(GetParam())) {}
+  ~RegionCaptureSelfCaptureOnlyBrowserTest() override = default;
+
+ protected:
+  // The capture is done from kMainTab in all instances of this parameterized
+  // test. |capturing_entity_| controls whether the capture is initiated
+  // from the top-level document of said tab, or an embedded frame.
+  const Frame capturing_entity_;
+
+  // Whether capturing self, or capturing the other tab.
+  const bool self_capture_;
+
+  // Whether the element on whose crop-ID we'll call cropTo():
+  // * |target_element_tab_| - whether it's in kMainTab or in kOtherTab.
+  // * |target_frame_| - whether it's in the top-level or an embedded frame.
+  const Tab target_element_tab_;
+  const Frame target_frame_;  // Top-level or embedded frame.
+};
+
+std::string ParamsToString(
+    const TestParamInfo<RegionCaptureSelfCaptureOnlyBrowserTest::ParamType>&
+        info) {
+  return base::StrCat(
+      {std::get<0>(info.param) == Frame::kTopLevelDocument ? "TopLevel"
+                                                           : "EmbeddedFrame",
+       std::get<1>(info.param) ? "SelfCapturing" : "CapturingOtherTab",
+       "AndCroppingToElementIn",
+       std::get<2>(info.param) == kMainTab ? "OwnTabs" : "OtherTabs",
+       std::get<3>(info.param) == Frame::kTopLevelDocument ? "TopLevel"
+                                                           : "EmbeddedFrame"});
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    _,
+    RegionCaptureSelfCaptureOnlyBrowserTest,
+    Combine(Values(Frame::kTopLevelDocument, Frame::kEmbeddedFrame),
+            Bool(),
+            Values(kMainTab, kOtherTab),
+            Values(Frame::kTopLevelDocument, Frame::kEmbeddedFrame)),
+    ParamsToString);
+
+IN_PROC_BROWSER_TEST_P(RegionCaptureSelfCaptureOnlyBrowserTest, CropTo) {
+  SetUpTest(capturing_entity_, self_capture_);
+
+  // Prevent test false-positive - ensure that both tabs participating in the
+  // test have at least one associated crop-ID, or otherwise they would not
+  // have a CropIdWebContentsHelper.
+  // To make things even clearer, ensure both the top-level and the embedded
+  // frame have produced crop-IDs. (This should not be necessary, but is
+  // done as an extra buffer against false-positives.)
+  tabs_[kMainTab].ProduceCropId(Frame::kTopLevelDocument);
+  tabs_[kMainTab].ProduceCropId(Frame::kEmbeddedFrame);
+  tabs_[kOtherTab].ProduceCropId(Frame::kTopLevelDocument);
+  tabs_[kOtherTab].ProduceCropId(Frame::kEmbeddedFrame);
+
+  const std::string crop_id =
+      tabs_[target_element_tab_].ProduceCropId(target_frame_);
+  ASSERT_THAT(crop_id, IsValidCropId());
+
+  // Cropping only permitted if both conditions hold.
+  const bool expect_permitted =
+      (self_capture_ && target_element_tab_ == kMainTab);
+
+  const std::string expected_result = base::StrCat(
+      {capturing_entity_ == Frame::kTopLevelDocument ? "top-level" : "embedded",
+       "-", expect_permitted ? "crop-success" : "crop-error"});
+
+  EXPECT_EQ(tabs_[kMainTab].CropTo(crop_id), expected_result);
 }
 
 #endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)
