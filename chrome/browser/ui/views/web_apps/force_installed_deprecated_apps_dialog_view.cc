@@ -13,7 +13,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
@@ -24,10 +23,9 @@
 // static
 void ForceInstalledDeprecatedAppsDialogView::CreateAndShowDialog(
     extensions::ExtensionId app_id,
-    content::WebContents* web_contents,
-    base::OnceClosure launch_anyways) {
+    content::WebContents* web_contents) {
   auto delegate = std::make_unique<views::DialogDelegate>();
-  //   delegate->SetButtons(ui::DIALOG_BUTTON_OK);
+  delegate->SetButtons(ui::DIALOG_BUTTON_OK);
   delegate->SetModalType(ui::MODAL_TYPE_CHILD);
   delegate->SetShowCloseButton(false);
   delegate->SetOwnedByWidget(true);
@@ -36,16 +34,18 @@ void ForceInstalledDeprecatedAppsDialogView::CreateAndShowDialog(
       extensions::ExtensionRegistry::Get(browser_context)
           ->GetInstalledExtension(app_id);
   std::u16string app_name = base::UTF8ToUTF16(extension->name());
-  delegate->SetTitle(l10n_util::GetStringFUTF16(
-      IDS_DEPRECATED_APPS_RENDERER_TITLE_WITH_APP_NAME, app_name));
-  delegate->SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
-      l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LAUNCH_ANYWAY_LABEL));
-  delegate->SetAcceptCallback(std::move(launch_anyways));
-
+  bool is_preinstalled_app = extensions::IsPreinstalledAppId(app_id);
+  delegate->SetTitle(
+      is_preinstalled_app
+          ? l10n_util::GetStringFUTF16(
+                IDS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APPS_TITLE,
+                app_name)
+          : l10n_util::GetPluralStringFUTF16(IDS_DEPRECATED_APPS_RENDERER_TITLE,
+                                             1));
   delegate->SetContentsView(
       base::WrapUnique<ForceInstalledDeprecatedAppsDialogView>(
-          new ForceInstalledDeprecatedAppsDialogView(app_name, web_contents)));
+          new ForceInstalledDeprecatedAppsDialogView(
+              app_name, is_preinstalled_app, web_contents)));
   delegate->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   delegate->set_margins(
@@ -56,6 +56,7 @@ void ForceInstalledDeprecatedAppsDialogView::CreateAndShowDialog(
 
 ForceInstalledDeprecatedAppsDialogView::ForceInstalledDeprecatedAppsDialogView(
     std::u16string app_name,
+    bool is_preinstalled_app,
     content::WebContents* web_contents)
     : app_name_(app_name), web_contents_(web_contents) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -63,7 +64,11 @@ ForceInstalledDeprecatedAppsDialogView::ForceInstalledDeprecatedAppsDialogView(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   auto* info_label = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_FORCE_INSTALLED_DEPRECATED_APPS_CONTENT)));
+      is_preinstalled_app
+          ? l10n_util::GetStringUTF16(
+                IDS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APPS_CONTENT)
+          : l10n_util::GetStringFUTF16(
+                IDS_FORCE_INSTALLED_DEPRECATED_APPS_CONTENT, app_name_)));
   info_label->SetMultiLine(true);
   info_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
@@ -79,8 +84,8 @@ ForceInstalledDeprecatedAppsDialogView::ForceInstalledDeprecatedAppsDialogView(
             ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
       },
       web_contents_));
-  learn_more->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LEARN_MORE_AX_LABEL));
+  learn_more->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_FORCE_INSTALLED_DEPRECATED_APPS_LEARN_MORE_AX_LABEL));
   learn_more->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 

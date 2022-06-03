@@ -30,14 +30,11 @@ class TabDialogsViews : public TabDialogs {
   void ShowManagePasswordsBubble(bool user_action) override;
   void HideManagePasswordsBubble() override;
   void ShowDeprecatedAppsDialog(
-      const extensions::ExtensionId& optional_launched_extension_id,
       const std::set<extensions::ExtensionId>& deprecated_app_ids,
-      content::WebContents* web_contents,
-      base::OnceClosure launch_anyways) override;
+      content::WebContents* web_contents) override;
   void ShowForceInstalledDeprecatedAppsDialog(
       const extensions::ExtensionId& app_id,
-      content::WebContents* web_contents,
-      base::OnceClosure launch_anyways) override;
+      content::WebContents* web_contents) override;
 
  private:
   raw_ptr<content::WebContents> web_contents_;  // Weak. Owns this.
