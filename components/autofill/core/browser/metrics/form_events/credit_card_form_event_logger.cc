@@ -216,7 +216,6 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
   if (!has_logged_suggestion_filled_) {
     Log(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, form);
   } else if (logged_suggestion_filled_was_masked_server_card_) {
-    DCHECK_NE(current_authentication_flow_, UnmaskAuthFlowType::kNone);
     Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, form);
 
     // Log BetterAuth.FlowEvents.
