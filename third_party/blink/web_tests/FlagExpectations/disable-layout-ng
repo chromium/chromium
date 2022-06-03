@@ -1629,6 +1629,7 @@ crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/patternfill-repeat.html [ Fai
 crbug.com/591099 wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-contain/contain-body-t-o-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-contain/contain-body-t-o-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-contain/contain-layout-breaks-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-013.html [ Failure ]
 
 # The no-layout-ng bot compiles without proprietary codecs.

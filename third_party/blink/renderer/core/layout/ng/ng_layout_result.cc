@@ -91,7 +91,8 @@ NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
   }
   bitfields_.disable_simplified_layout = builder->disable_simplified_layout;
 
-  if (builder->ConstraintSpace().ShouldPropagateChildBreakValues()) {
+  if (builder->ConstraintSpace().ShouldPropagateChildBreakValues() &&
+      !builder->layout_object_->ShouldApplyLayoutContainment()) {
     bitfields_.initial_break_before = static_cast<unsigned>(
         builder->initial_break_before_.value_or(EBreakBetween::kAuto));
     bitfields_.final_break_after =
