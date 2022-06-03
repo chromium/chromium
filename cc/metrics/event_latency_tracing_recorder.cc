@@ -227,64 +227,67 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
   if (stage_history) {
     DCHECK(viz_breakdown);
     // Find the first compositor stage that starts at the same time or after the
-    // end of the final event dispatch stage. At least,
-    // SubmitCompositorFrameToPresentationCompositorFrame stage should match
-    // this criteria.
+    // end of the final event dispatch stage.
     auto stage_it = std::find_if(
         stage_history->begin(), stage_history->end(),
         [dispatch_timestamp](const CompositorFrameReporter::StageData& stage) {
           return stage.start_time >= dispatch_timestamp;
         });
-    DCHECK(stage_it != stage_history->end());
+    // TODO(crbug.com/1330903): Ideally, at least the start time of
+    // SubmitCompositorFrameToPresentationCompositorFrame stage should be
+    // greater than or equal to the final event dispatch timestamp, but
+    // apparently, this is not always the case (see crbug.com/1330903). Skip
+    // recording compositor stages for now until we investigate the issue.
+    if (stage_it != stage_history->end()) {
+      DCHECK(dispatch_stage ==
+                 EventMetrics::DispatchStage::kRendererCompositorFinished ||
+             dispatch_stage ==
+                 EventMetrics::DispatchStage::kRendererMainFinished);
 
-    DCHECK(dispatch_stage ==
-               EventMetrics::DispatchStage::kRendererCompositorFinished ||
-           dispatch_stage ==
-               EventMetrics::DispatchStage::kRendererMainFinished);
-
-    // Record dispatch-to-compositor stage only if it has non-zero duration.
-    if (dispatch_timestamp < stage_it->start_time) {
-      const char* d2c_breakdown_name = GetDispatchToCompositorBreakdownName(
-          dispatch_stage, stage_it->stage_type);
-      TRACE_EVENT_BEGIN(kTracingCategory,
-                        perfetto::StaticString{d2c_breakdown_name}, trace_track,
-                        dispatch_timestamp);
-      TRACE_EVENT_END(kTracingCategory, trace_track, stage_it->start_time);
-    }
-
-    // Compositor stages.
-    for (; stage_it != stage_history->end(); ++stage_it) {
-      if (stage_it->start_time >= termination_time)
-        break;
-      DCHECK_GE(stage_it->end_time, stage_it->start_time);
-      if (stage_it->start_time == stage_it->end_time)
-        continue;
-      const char* stage_name =
-          CompositorFrameReporter::GetStageName(stage_it->stage_type);
-
-      TRACE_EVENT_BEGIN(kTracingCategory, perfetto::StaticString{stage_name},
-                        trace_track, stage_it->start_time);
-
-      if (stage_it->stage_type ==
-          CompositorFrameReporter::StageType::
-              kSubmitCompositorFrameToPresentationCompositorFrame) {
-        DCHECK(viz_breakdown);
-        for (auto it = viz_breakdown->CreateIterator(true); it.IsValid();
-             it.Advance()) {
-          base::TimeTicks start_time = it.GetStartTime();
-          base::TimeTicks end_time = it.GetEndTime();
-          if (start_time >= end_time)
-            continue;
-          const char* breakdown_name =
-              CompositorFrameReporter::GetVizBreakdownName(it.GetBreakdown());
-          TRACE_EVENT_BEGIN(kTracingCategory,
-                            perfetto::StaticString{breakdown_name}, trace_track,
-                            start_time);
-          TRACE_EVENT_END(kTracingCategory, trace_track, end_time);
-        }
+      // Record dispatch-to-compositor stage only if it has non-zero duration.
+      if (dispatch_timestamp < stage_it->start_time) {
+        const char* d2c_breakdown_name = GetDispatchToCompositorBreakdownName(
+            dispatch_stage, stage_it->stage_type);
+        TRACE_EVENT_BEGIN(kTracingCategory,
+                          perfetto::StaticString{d2c_breakdown_name},
+                          trace_track, dispatch_timestamp);
+        TRACE_EVENT_END(kTracingCategory, trace_track, stage_it->start_time);
       }
 
-      TRACE_EVENT_END(kTracingCategory, trace_track, stage_it->end_time);
+      // Compositor stages.
+      for (; stage_it != stage_history->end(); ++stage_it) {
+        if (stage_it->start_time >= termination_time)
+          break;
+        DCHECK_GE(stage_it->end_time, stage_it->start_time);
+        if (stage_it->start_time == stage_it->end_time)
+          continue;
+        const char* stage_name =
+            CompositorFrameReporter::GetStageName(stage_it->stage_type);
+
+        TRACE_EVENT_BEGIN(kTracingCategory, perfetto::StaticString{stage_name},
+                          trace_track, stage_it->start_time);
+
+        if (stage_it->stage_type ==
+            CompositorFrameReporter::StageType::
+                kSubmitCompositorFrameToPresentationCompositorFrame) {
+          DCHECK(viz_breakdown);
+          for (auto it = viz_breakdown->CreateIterator(true); it.IsValid();
+               it.Advance()) {
+            base::TimeTicks start_time = it.GetStartTime();
+            base::TimeTicks end_time = it.GetEndTime();
+            if (start_time >= end_time)
+              continue;
+            const char* breakdown_name =
+                CompositorFrameReporter::GetVizBreakdownName(it.GetBreakdown());
+            TRACE_EVENT_BEGIN(kTracingCategory,
+                              perfetto::StaticString{breakdown_name},
+                              trace_track, start_time);
+            TRACE_EVENT_END(kTracingCategory, trace_track, end_time);
+          }
+        }
+
+        TRACE_EVENT_END(kTracingCategory, trace_track, stage_it->end_time);
+      }
     }
   } else {
     DCHECK(!viz_breakdown);

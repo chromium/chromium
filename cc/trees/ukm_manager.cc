@@ -330,7 +330,13 @@ void UkmManager::RecordEventLatencyUKM(
         [dispatch_timestamp](const CompositorFrameReporter::StageData& stage) {
           return stage.start_time >= dispatch_timestamp;
         });
-    DCHECK(stage_it != stage_history.end());
+    // TODO(crbug.com/1330903): Ideally, at least the start time of
+    // SubmitCompositorFrameToPresentationCompositorFrame stage should be
+    // greater than or equal to the final event dispatch timestamp, but
+    // apparently, this is not always the case (see crbug.com/1330903). Skip
+    // recording compositor stages for now until we investigate the issue.
+    if (stage_it == stage_history.end())
+      continue;
 
     switch (dispatch_stage) {
       case EventMetrics::DispatchStage::kRendererCompositorFinished:
