@@ -75,9 +75,9 @@ class EnterpriseReportingPrivateGetPersistentSecretFunction
   // Callback once the data was retrieved from the file.
   void OnDataRetrieved(scoped_refptr<base::SequencedTaskRunner> task_runner,
                        const std::string& data,
-                       long int status);
+                       int32_t status);
 
-  void SendResponse(const std::string& data, long int status);
+  void SendResponse(const std::string& data, int32_t status);
 };
 
 #endif  // !BUILDFLAG(IS_LINUX)

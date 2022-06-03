@@ -52,6 +52,20 @@ OSStatus CreateTargetAccess(NSString* service_name, SecAccessRef* access_ref) {
   return noErr;
 }
 
+// Verifies whether `keychain` is currently locked. Returns the given OSStatus
+// and, if the status is successful, sets `unlocked` to the value representing
+// whether `keychain` is currently unlocked or not.
+OSStatus VerifyKeychainUnlocked(SecKeychainRef keychain, bool* unlocked) {
+  SecKeychainStatus keychain_status;
+  OSStatus status = SecKeychainGetStatus(keychain, &keychain_status);
+  if (status != noErr) {
+    return status;
+  }
+
+  *unlocked = keychain_status & kSecUnlockStateStatus;
+  return status;
+}
+
 }  // namespace
 
 OSStatus WriteKeychainItem(const std::string& service_name,
@@ -78,6 +92,28 @@ OSStatus WriteKeychainItem(const std::string& service_name,
       kSecGenericPasswordItemClass, &attribute_list,
       static_cast<UInt32>(password.size()), password.data(), nullptr,
       access_ref.get(), nullptr);
+}
+
+OSStatus VerifyKeychainForItemUnlocked(SecKeychainItemRef item_ref,
+                                       bool* unlocked) {
+  base::ScopedCFTypeRef<SecKeychainRef> keychain;
+  OSStatus status =
+      SecKeychainItemCopyKeychain(item_ref, keychain.InitializeInto());
+  if (status != noErr) {
+    return status;
+  }
+
+  return VerifyKeychainUnlocked(keychain, unlocked);
+}
+
+OSStatus VerifyDefaultKeychainUnlocked(bool* unlocked) {
+  base::ScopedCFTypeRef<SecKeychainRef> keychain;
+  OSStatus status = SecKeychainCopyDefault(keychain.InitializeInto());
+  if (status != noErr) {
+    return status;
+  }
+
+  return VerifyKeychainUnlocked(keychain, unlocked);
 }
 
 }  // namespace extensions
