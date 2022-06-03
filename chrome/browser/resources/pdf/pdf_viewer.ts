@@ -26,7 +26,7 @@ import {MessageData, PluginController} from './controller.js';
 // <if expr="enable_ink">
 import {ContentController} from './controller.js';
 // </if>
-import {ChangePageAndXyDetail, ChangePageDetail, NavigateDetail} from './elements/viewer-bookmark.js';
+import {ChangePageAndXyDetail, ChangePageDetail, ChangePageOrigin, NavigateDetail} from './elements/viewer-bookmark.js';
 import {ViewerErrorDialogElement} from './elements/viewer-error-dialog.js';
 import {ViewerPasswordDialogElement} from './elements/viewer-password-dialog.js';
 import {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
@@ -564,9 +564,10 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @param message Message received from the plugin containing the x and y to
    *     navigate to in screen coordinates.
    */
-  private goToPageAndXY_(origin: string, page: number, message: Point) {
+  private goToPageAndXY_(
+      origin: ChangePageOrigin, page: number, message: Point) {
     this.viewport.goToPageAndXY(page, message.x, message.y);
-    if (origin === 'bookmark') {
+    if (origin === ChangePageOrigin.BOOKMARK) {
       record(UserAction.FOLLOW_BOOKMARK);
     }
   }
@@ -909,11 +910,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   private onChangePage_(e: CustomEvent<ChangePageDetail>) {
     this.viewport.goToPage(e.detail.page);
-    if (e.detail.origin === 'bookmark') {
+    if (e.detail.origin === ChangePageOrigin.BOOKMARK) {
       record(UserAction.FOLLOW_BOOKMARK);
-    } else if (e.detail.origin === 'pageSelector') {
+    } else if (e.detail.origin === ChangePageOrigin.PAGE_SELECTOR) {
       record(UserAction.PAGE_SELECTOR_NAVIGATE);
-    } else if (e.detail.origin === 'thumbnail') {
+    } else if (e.detail.origin === ChangePageOrigin.THUMBNAIL) {
       record(UserAction.THUMBNAIL_NAVIGATE);
     }
   }
