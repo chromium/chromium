@@ -441,9 +441,11 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::
 }
 
 GaiaCookieManagerService::GaiaCookieManagerService(
+    AccountTrackerService* account_tracker_service,
     ProfileOAuth2TokenService* token_service,
     SigninClient* signin_client)
-    : token_service_(token_service),
+    : account_tracker_service_(account_tracker_service),
+      token_service_(token_service),
       signin_client_(signin_client),
       external_cc_result_fetcher_(this),
       fetcher_backoff_(&kBackoffPolicy),
@@ -1008,8 +1010,8 @@ GaiaCookieManagerService::GetCookieManagerForPartition() {
 void GaiaCookieManagerService::InitializeListedAccountsIds() {
   for (gaia::ListedAccount& account : listed_accounts_) {
     DCHECK(account.id.empty());
-    account.id = AccountTrackerService::PickAccountIdForAccount(
-        signin_client_->GetPrefs(), account.gaia_id, account.email);
+    account.id = account_tracker_service_->PickAccountIdForAccount(
+        account.gaia_id, account.email);
   }
 }
 

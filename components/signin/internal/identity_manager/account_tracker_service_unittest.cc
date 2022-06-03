@@ -251,9 +251,7 @@ class AccountTrackerServiceTest : public testing::Test {
     if (force_account_id_to_email_for_legacy_tests_)
       return CoreAccountId(AccountKeyToEmail(account_key));
 
-    return AccountTrackerService::PickAccountIdForAccount(
-        &pref_service_, AccountKeyToGaiaId(account_key),
-        AccountKeyToEmail(account_key));
+    return CoreAccountId::FromGaiaId(AccountKeyToGaiaId(account_key));
   }
 
   void CheckAccountDetails(AccountKey account_key, const AccountInfo& info) {

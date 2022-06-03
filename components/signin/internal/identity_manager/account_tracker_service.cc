@@ -768,29 +768,21 @@ void AccountTrackerService::RemoveFromPrefs(const AccountInfo& account_info) {
 CoreAccountId AccountTrackerService::PickAccountIdForAccount(
     const std::string& gaia,
     const std::string& email) const {
-  return PickAccountIdForAccount(pref_service_, gaia, email);
-}
-
-// static
-CoreAccountId AccountTrackerService::PickAccountIdForAccount(
-    const PrefService* pref_service,
-    const std::string& gaia,
-    const std::string& email) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(!gaia.empty() ||
-         GetMigrationState(pref_service) == MIGRATION_NOT_STARTED);
   DCHECK(!email.empty());
-  switch (GetMigrationState(pref_service)) {
+  switch (GetMigrationState(pref_service_)) {
     case MIGRATION_NOT_STARTED:
       return CoreAccountId::FromEmail(gaia::CanonicalizeEmail(email));
     case MIGRATION_IN_PROGRESS:
     case MIGRATION_DONE:
+      DCHECK(!gaia.empty());
       return CoreAccountId::FromGaiaId(gaia);
     default:
       NOTREACHED();
       return CoreAccountId::FromString(email);
   }
 #else
+  DCHECK(!gaia.empty());
   return CoreAccountId::FromGaiaId(gaia);
 #endif
 }

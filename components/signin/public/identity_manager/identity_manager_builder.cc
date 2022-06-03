@@ -130,7 +130,8 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
           params->signin_client);
 
   auto gaia_cookie_manager_service = std::make_unique<GaiaCookieManagerService>(
-      token_service.get(), params->signin_client);
+      account_tracker_service.get(), token_service.get(),
+      params->signin_client);
 
   std::unique_ptr<PrimaryAccountManager> primary_account_manager =
       BuildPrimaryAccountManager(params->signin_client,

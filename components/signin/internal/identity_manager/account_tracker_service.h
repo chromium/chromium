@@ -99,9 +99,6 @@ class AccountTrackerService {
   // migration state.
   CoreAccountId PickAccountIdForAccount(const std::string& gaia,
                                         const std::string& email) const;
-  static CoreAccountId PickAccountIdForAccount(const PrefService* pref_service,
-                                               const std::string& gaia,
-                                               const std::string& email);
 
   // Seeds the account whose account_id is given by PickAccountIdForAccount()
   // with its corresponding gaia id and email address.  Returns the same
