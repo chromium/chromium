@@ -229,18 +229,12 @@ class PolicyFetchCoreObserver : public CloudPolicyCore::Observer {
 
   void OnCoreDisconnecting(CloudPolicyCore* core) override {
     // This is called when policy fetching fails and is used in
-    // ChromeBrowserCloudManagementController to unenroll the browser.
-#if BUILDFLAG(IS_CHROMEOS)
-    // The status must be `DM_STATUS_SERVICE_DEVICE_NOT_FOUND` since DMToken
-    // deletion is not supported in ChromeOS.
-    EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, core->client()->status());
-#else   // BUILDFLAG(IS_CHROMEOS)
-    // The status must be either `DM_STATUS_SERVICE_DEVICE_NOT_FOUND` or
+    // ChromeBrowserCloudManagementController to unenroll the browser. The
+    // status must be either `DM_STATUS_SERVICE_DEVICE_NOT_FOUND` or
     // `DM_STATUS_SERVICE_DEVICE_NEEDS_RESET` for this to happen.
     EXPECT_THAT((std::array{DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
                             DM_STATUS_SERVICE_DEVICE_NEEDS_RESET}),
                 testing::Contains(core->client()->status()));
-#endif  // BUILDFLAG(IS_CHROMEOS)
     std::move(quit_closure_).Run();
   }
 
@@ -790,14 +784,8 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
                                          storage_enabled(), 1);
   } else if (dm_token() == kDeletionDMToken) {
     EXPECT_EQ(0u, policy_map.size());
-#if BUILDFLAG(IS_CHROMEOS)
-    // The token in storage should be invalid since DMToken deletion is not
-    // supported in ChromeOS.
-    EXPECT_TRUE(token.is_invalid());
-#else   // BUILDFLAG(IS_CHROMEOS)
     // The token in storage should be empty.
     EXPECT_TRUE(token.is_empty());
-#endif  // BUILDFLAG(IS_CHROMEOS)
     histogram_tester_.ExpectUniqueSample(kUnenrollmentSuccessMetrics,
                                          storage_enabled(), 1);
   } else {

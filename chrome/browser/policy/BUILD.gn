@@ -403,7 +403,7 @@ source_set("browser_tests") {
     sources += [ "test/full_screen_allowed_policy_browsertest.cc" ]
   }
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources += [
       "cloud/chrome_browser_cloud_management_browsertest.cc",
       "cloud/chrome_browser_cloud_management_browsertest_delegate.h",
