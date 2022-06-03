@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -266,9 +267,9 @@ int TransportClientSocketPool::RequestSocket(
 
   request->net_log().BeginEvent(NetLogEventType::SOCKET_POOL);
 
-  int rv = CheckedRequestSocketInternal(
-      group_id, *request,
-      /*preconnect_done_closure=*/base::OnceClosure());
+  int rv =
+      RequestSocketInternal(group_id, *request,
+                            /*preconnect_done_closure=*/base::OnceClosure());
   if (rv != ERR_IO_PENDING) {
     if (rv == OK) {
       request->handle()->socket()->ApplySocketTag(request->socket_tag());
@@ -341,8 +342,7 @@ int TransportClientSocketPool::RequestSockets(
   for (int num_iterations_left = num_sockets;
        group->NumActiveSocketSlots() < num_sockets && num_iterations_left > 0;
        num_iterations_left--) {
-    rv = CheckedRequestSocketInternal(group_id, request,
-                                      preconnect_done_closure);
+    rv = RequestSocketInternal(group_id, request, preconnect_done_closure);
     if (rv == ERR_IO_PENDING) {
       ++pending_connect_job_count;
     }
@@ -385,6 +385,11 @@ int TransportClientSocketPool::RequestSocketInternal(
     const GroupId& group_id,
     const Request& request,
     base::OnceClosure preconnect_done_closure) {
+#if DCHECK_IS_ON()
+  DCHECK(!request_in_process_);
+  base::AutoReset<bool> auto_reset(&request_in_process_, true);
+#endif  // DCHECK_IS_ON()
+
   ClientSocketHandle* const handle = request.handle();
   const bool preconnecting = !handle;
   DCHECK_EQ(preconnecting, !!preconnect_done_closure);
@@ -489,25 +494,6 @@ int TransportClientSocketPool::RequestSocketInternal(
     RemoveGroup(group_id);
 
   return rv;
-}
-
-int TransportClientSocketPool::CheckedRequestSocketInternal(
-    const GroupId& group_id,
-    const Request& request,
-    base::OnceClosure preconnect_done_closure) {
-#if DCHECK_IS_ON()
-  DCHECK(!request_in_process_);
-  request_in_process_ = true;
-#endif  // DCHECK_IS_ON()
-
-  int ret = RequestSocketInternal(group_id, request,
-                                  std::move(preconnect_done_closure));
-
-#if DCHECK_IS_ON()
-  request_in_process_ = false;
-#endif  // DCHECK_IS_ON()
-
-  return ret;
 }
 
 bool TransportClientSocketPool::AssignIdleSocketToRequest(
@@ -1174,9 +1160,9 @@ void TransportClientSocketPool::ProcessPendingRequest(const GroupId& group_id,
     return;
   }
 
-  int rv = CheckedRequestSocketInternal(
-      group_id, *next_request,
-      /*preconnect_done_closure=*/base::OnceClosure());
+  int rv =
+      RequestSocketInternal(group_id, *next_request,
+                            /*preconnect_done_closure=*/base::OnceClosure());
   if (rv != ERR_IO_PENDING) {
     std::unique_ptr<Request> request = group->PopNextUnboundRequest();
     DCHECK(request);

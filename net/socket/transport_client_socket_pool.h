@@ -696,11 +696,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
                             const Request& request,
                             base::OnceClosure preconnect_done_closure);
 
-  // Wrapper around RequestSocketInternal that adds a reentrancy guard.
-  int CheckedRequestSocketInternal(const GroupId& group_id,
-                                   const Request& request,
-                                   base::OnceClosure preconnect_done_closure);
-
   // Assigns an idle socket for the group to the request.
   // Returns |true| if an idle socket is available, false otherwise.
   bool AssignIdleSocketToRequest(const Request& request, Group* group);
