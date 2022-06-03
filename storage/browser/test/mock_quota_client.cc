@@ -46,7 +46,8 @@ void MockQuotaClient::AddBucketsData(
 void MockQuotaClient::ModifyStorageKeyAndNotify(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType storage_type,
-    int64_t delta) {
+    int64_t delta,
+    base::OnceClosure callback) {
   auto it = std::find_if(
       bucket_data_.begin(), bucket_data_.end(),
       [storage_key, storage_type](std::pair<BucketLocator, int64_t> entry) {
@@ -61,7 +62,7 @@ void MockQuotaClient::ModifyStorageKeyAndNotify(
   // TODO(tzik): Check quota to prevent usage exceed
   quota_manager_proxy_->NotifyStorageModified(
       client_type_, storage_key, storage_type, delta, IncrementMockTime(),
-      base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
+      base::SequencedTaskRunnerHandle::Get(), std::move(callback));
 }
 
 void MockQuotaClient::ModifyBucketAndNotify(BucketId bucket_id, int64_t delta) {

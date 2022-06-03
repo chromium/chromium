@@ -3106,8 +3106,7 @@ TEST_F(QuotaManagerImplTest, DumpBucketTable) {
                            MatchesBucketTableEntry(kStorageKey, kPerm, 2)));
 }
 
-// TODO(crbug.com/1329201): Test is flaky.
-TEST_F(QuotaManagerImplTest, DISABLED_RetrieveBucketsTable) {
+TEST_F(QuotaManagerImplTest, RetrieveBucketsTable) {
   const StorageKey kStorageKey = ToStorageKey("http://example.com/");
   const std::string kSerializedStorageKey = kStorageKey.Serialize();
   const base::Time kAccessTime = base::Time::Now();
@@ -3124,6 +3123,7 @@ TEST_F(QuotaManagerImplTest, DISABLED_RetrieveBucketsTable) {
   quota_manager_impl()->NotifyStorageAccessed(kStorageKey, kTemp, kAccessTime);
   quota_manager_impl()->NotifyStorageAccessed(kStorageKey, kPerm, kAccessTime);
 
+  base::RunLoop run_loop;
   base::Time time1 = client->IncrementMockTime();
   client->ModifyStorageKeyAndNotify(ToStorageKey("http://example.com/"), kTemp,
                                     10);
@@ -3131,8 +3131,9 @@ TEST_F(QuotaManagerImplTest, DISABLED_RetrieveBucketsTable) {
                                     10);
   base::Time time2 = client->IncrementMockTime();
   client->ModifyStorageKeyAndNotify(ToStorageKey("http://example.com/"), kTemp,
-                                    10);
+                                    10, run_loop.QuitClosure());
   base::Time time3 = client->IncrementMockTime();
+  run_loop.Run();
 
   auto temp_bucket = GetBucket(kStorageKey, kDefaultBucketName, kTemp);
   auto perm_bucket = GetBucket(kStorageKey, kDefaultBucketName, kPerm);
