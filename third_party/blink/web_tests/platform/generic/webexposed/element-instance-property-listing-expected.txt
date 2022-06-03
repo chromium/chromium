@@ -931,6 +931,7 @@ html element s
 html element samp
 html element script
     property async
+    property attributionSrc
     property blocking
     property charset
     property crossOrigin

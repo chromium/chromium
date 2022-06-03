@@ -7,6 +7,11 @@ function createAttributionSrcImg(src) {
   img.attributionSrc = src;
 }
 
+function createAttributionSrcScript(src) {
+  const script = document.createElement('script');
+  script.setAttribute('attributionsrc', src);
+}
+
 function createAttributionSrcAnchor({
   id,
   url,

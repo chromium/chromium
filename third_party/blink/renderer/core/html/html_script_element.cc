@@ -31,7 +31,9 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
@@ -111,6 +113,13 @@ void HTMLScriptElement::ParseAttribute(
         !IsPotentiallyRenderBlocking()) {
       GetDocument().GetRenderBlockingResourceManager()->RemovePendingScript(
           *this);
+    }
+  } else if (params.name == html_names::kAttributionsrcAttr) {
+    const AtomicString& attribution_src_value =
+        FastGetAttribute(html_names::kAttributionsrcAttr);
+    if (!attribution_src_value.IsNull() && GetDocument().GetFrame()) {
+      GetDocument().GetFrame()->GetAttributionSrcLoader()->Register(
+          GetDocument().CompleteURL(attribution_src_value), this);
     }
   } else {
     HTMLElement::ParseAttribute(params);

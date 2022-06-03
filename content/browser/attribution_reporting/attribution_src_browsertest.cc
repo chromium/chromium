@@ -147,6 +147,42 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
   EXPECT_THAT(source_data.front()->aggregation_keys, IsEmpty());
 }
 
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered_Script) {
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("createAttributionSrcScript($1);", register_url)));
+  if (!data_host)
+    loop.Run();
+  data_host->WaitForSourceData(/*num_source_data=*/1);
+  const auto& source_data = data_host->source_data();
+
+  EXPECT_EQ(source_data.size(), 1u);
+  EXPECT_EQ(source_data.front()->source_event_id, 5UL);
+  EXPECT_EQ(source_data.front()->destination,
+            url::Origin::Create(GURL("https://d.test")));
+  EXPECT_EQ(source_data.front()->priority, 0);
+  EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
+  EXPECT_FALSE(source_data.front()->debug_key);
+  EXPECT_THAT(source_data.front()->filter_data->filter_values, IsEmpty());
+  EXPECT_THAT(source_data.front()->aggregation_keys, IsEmpty());
+}
+
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AttributionSrcAnchor_SourceRegistered) {
   SourceObserver source_observer(web_contents());

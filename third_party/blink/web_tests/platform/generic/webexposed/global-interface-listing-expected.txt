@@ -4159,6 +4159,7 @@ interface HTMLScriptElement : HTMLElement
     static method supports
     attribute @@toStringTag
     getter async
+    getter attributionSrc
     getter blocking
     getter charset
     getter crossOrigin
@@ -4174,6 +4175,7 @@ interface HTMLScriptElement : HTMLElement
     getter type
     method constructor
     setter async
+    setter attributionSrc
     setter blocking
     setter charset
     setter crossOrigin
