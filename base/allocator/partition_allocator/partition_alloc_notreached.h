@@ -5,18 +5,17 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_NOTREACHED_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_NOTREACHED_H_
 
-#include "base/allocator/partition_allocator/logging_buildflags.h"
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/logging_buildflags.h"
 
 // When PartitionAlloc is used as the default allocator, we cannot use the
 // regular (D)CHECK() macros, as they allocate internally. (c.f. //
 // base/allocator/partition_allocator/partition_alloc_check.h)
 // So PA_NOTREACHED() uses PA_DCHECK() instead of DCHECK().
 
-#if BUILDFLAG(PA_ENABLE_LOG_ERROR_NOT_REACHED)
+#if BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
 #define PA_NOTREACHED()                                                    \
   true ? ::partition_alloc::internal::logging::RawError(                   \
              __FILE__ "(" PA_STRINGIFY(__LINE__) ") PA_NOTREACHED() hit.") \
