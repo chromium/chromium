@@ -13,6 +13,10 @@
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
 #include "components/autofill_assistant/browser/public/external_script_controller.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace autofill_assistant {
 
 // Abstract interface for exported services.

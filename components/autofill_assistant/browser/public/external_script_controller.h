@@ -5,11 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_EXTERNAL_SCRIPT_CONTROLLER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_EXTERNAL_SCRIPT_CONTROLLER_H_
 
-#include "base/memory/weak_ptr.h"
-#include "components/autofill_assistant/browser/public/external_action.pb.h"
-#include "components/autofill_assistant/browser/public/runtime_observer.h"
-#include "components/autofill_assistant/browser/public/ui_state.h"
-#include "content/public/browser/web_contents.h"
+#include <string>
+
+#include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 
 namespace autofill_assistant {
 

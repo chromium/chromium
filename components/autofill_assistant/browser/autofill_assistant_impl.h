@@ -15,6 +15,7 @@
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }  // namespace content
 
 namespace autofill_assistant {
