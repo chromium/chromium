@@ -211,81 +211,16 @@
   E_CPONLY(kColorNativeSecondaryColor)
 #elif BUILDFLAG(IS_LINUX)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
-  E_CPONLY(kColorNativeButtonBackground) \
-  E_CPONLY(kColorNativeButtonBackgroundDisabled) \
-  E_CPONLY(kColorNativeButtonBorder) \
-  E_CPONLY(kColorNativeButtonForeground) \
-  E_CPONLY(kColorNativeButtonForegroundDisabled) \
-  E_CPONLY(kColorNativeButtonIcon) \
-  E_CPONLY(kColorNativeComboboxBackground) \
-  E_CPONLY(kColorNativeComboboxBackgroundHovered) \
-  E_CPONLY(kColorNativeComboboxForeground) \
-  E_CPONLY(kColorNativeComboboxForegroundHovered) \
-  E_CPONLY(kColorNativeFrameActive) \
-  E_CPONLY(kColorNativeFrameInactive) \
-  E_CPONLY(kColorNativeFrameBorder) \
+  E_CPONLY(kColorNativeButtonBorder)\
   E_CPONLY(kColorNativeHeaderButtonBorderActive) \
   E_CPONLY(kColorNativeHeaderButtonBorderInactive) \
   E_CPONLY(kColorNativeHeaderSeparatorBorderActive) \
   E_CPONLY(kColorNativeHeaderSeparatorBorderInactive) \
-  E_CPONLY(kColorNativeImageButtonForeground) \
-  E_CPONLY(kColorNativeImageButtonForegroundHovered) \
-  E_CPONLY(kColorNativeLabelBackgroundSelected) \
   E_CPONLY(kColorNativeLabelForeground) \
-  E_CPONLY(kColorNativeLabelForegroundDisabled) \
-  E_CPONLY(kColorNativeLabelForegroundSelected) \
-  E_CPONLY(kColorNativeLinkForeground) \
-  E_CPONLY(kColorNativeLinkForegroundDisabled) \
-  E_CPONLY(kColorNativeLinkForegroundHovered) \
-  E_CPONLY(kColorNativeMenuBackground) \
-  E_CPONLY(kColorNativeMenuBorder) \
-  E_CPONLY(kColorNativeMenuItemAccelerator) \
-  E_CPONLY(kColorNativeMenuItemBackgroundHovered) \
-  E_CPONLY(kColorNativeMenuItemForeground) \
-  E_CPONLY(kColorNativeMenuItemForegroundDisabled) \
-  E_CPONLY(kColorNativeMenuItemForegroundHovered) \
-  E_CPONLY(kColorNativeMenuRadio) \
-  E_CPONLY(kColorNativeMenuSeparator) \
-  E_CPONLY(kColorNativeScaleHighlightBackground) \
-  E_CPONLY(kColorNativeScaleHighlightBackgroundDisabled) \
-  E_CPONLY(kColorNativeScaleTroughBackground) \
-  E_CPONLY(kColorNativeScaleTroughBackgroundDisabled) \
-  E_CPONLY(kColorNativeScrollbarSliderBackground) \
-  E_CPONLY(kColorNativeScrollbarSliderBackgroundHovered) \
-  E_CPONLY(kColorNativeScrollbarTroughBackground) \
-  E_CPONLY(kColorNativeScrollbarTroughBackgroundHovered) \
-  E_CPONLY(kColorNativeSeparator) \
-  E_CPONLY(kColorNativeSpinner) \
-  E_CPONLY(kColorNativeSpinnerDisabled) \
-  E_CPONLY(kColorNativeStatusbarBackground) \
-  E_CPONLY(kColorNativeTabBackgroundChecked) \
-  E_CPONLY(kColorNativeTabBackgroundCheckedFocused) \
   E_CPONLY(kColorNativeTabForegroundInactiveFrameActive) \
   E_CPONLY(kColorNativeTabForegroundInactiveFrameInactive) \
-  E_CPONLY(kColorNativeTextareaBackground) \
-  E_CPONLY(kColorNativeTextareaBackgroundDisabled) \
-  E_CPONLY(kColorNativeTextareaBackgroundSelected) \
-  E_CPONLY(kColorNativeTextareaForeground) \
-  E_CPONLY(kColorNativeTextareaForegroundDisabled) \
-  E_CPONLY(kColorNativeTextareaForegroundSelected) \
-  E_CPONLY(kColorNativeTextfieldBorderUnfocused) \
-  E_CPONLY(kColorNativeTextfieldBorderFocused) \
-  E_CPONLY(kColorNativeTextfieldForegroundPlaceholder) \
-  E_CPONLY(kColorNativeToggleButtonBackgroundChecked) \
-  E_CPONLY(kColorNativeToggleButtonBackgroundUnchecked) \
-  E_CPONLY(kColorNativeToolbarBackground) \
-  E_CPONLY(kColorNativeTooltipBackground) \
-  E_CPONLY(kColorNativeTooltipForeground) \
-  E_CPONLY(kColorNativeTreeHeaderBackground) \
-  E_CPONLY(kColorNativeTreeHeaderBorder) \
-  E_CPONLY(kColorNativeTreeHeaderForeground) \
-  E_CPONLY(kColorNativeTreeNodeBackground) \
-  E_CPONLY(kColorNativeTreeNodeBackgroundSelected) \
-  E_CPONLY(kColorNativeTreeNodeBackgroundSelectedFocused) \
-  E_CPONLY(kColorNativeTreeNodeForeground) \
-  E_CPONLY(kColorNativeTreeNodeForegroundSelected) \
-  E_CPONLY(kColorNativeTreeNodeForegroundSelectedFocused) \
-  E_CPONLY(kColorNativeWindowBackground)
+  E_CPONLY(kColorNativeTextfieldBorderUnfocused)\
+  E_CPONLY(kColorNativeToolbarBackground)
 #elif BUILDFLAG(IS_WIN)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
   E_CPONLY(kColorNative3dDkShadow) \
