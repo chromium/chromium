@@ -1016,11 +1016,11 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
                            UserAgentReductionEnterprisePolicyState::kDefault);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
-                                  &build_version, &patch_version));
+                                  &build_version));
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
   EXPECT_EQ(minor_version, "0");
   EXPECT_NE(build_version, "0");
-  EXPECT_EQ(patch_version, "0");
+  // Patch version cannot be tested as it would be set in a release branch.
 
   // (1b) Policies: UserAgentReduction and MajorVersionInMinor force enabled.
   product = GetProductAndVersion(
@@ -1040,11 +1040,11 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
       UserAgentReductionEnterprisePolicyState::kForceDisabled);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
-                                  &build_version, &patch_version));
+                                  &build_version));
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
   EXPECT_EQ(minor_version, "0");
   EXPECT_NE(build_version, "0");
-  EXPECT_EQ(patch_version, "0");
+  // Patch version cannot be tested as it would be set in a release branch.
 
   // (2) Features: UserAgentReduction enabled with version and
   // MajorVersionInMinor disabled.
@@ -1085,11 +1085,11 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
       UserAgentReductionEnterprisePolicyState::kForceDisabled);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
-                                  &build_version, &patch_version));
+                                  &build_version));
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
   EXPECT_EQ(minor_version, "0");
   EXPECT_NE(build_version, "5555");
-  EXPECT_EQ(patch_version, "0");
+  // Patch version cannot be tested as it would be set in a release branch.
 
   // (3) Features: UserAgentReduction disabled and MajorVersionInMinor enabled.
   scoped_feature_list.Reset();
@@ -1104,11 +1104,11 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
                            UserAgentReductionEnterprisePolicyState::kDefault);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
-                                  &build_version, &patch_version));
+                                  &build_version));
   EXPECT_EQ(major_version, "99");
   EXPECT_EQ(minor_version, version_info::GetMajorVersionNumber());
   EXPECT_NE(build_version, "0");
-  EXPECT_EQ(patch_version, "0");
+  // Patch version cannot be tested as it would be set in a release branch.
 
   // (3b) Policies: UserAgentReduction and MajorVersionInMinor force enabled.
   product = GetProductAndVersion(
@@ -1128,11 +1128,11 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
       UserAgentReductionEnterprisePolicyState::kForceDisabled);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
-                                  &build_version, &patch_version));
+                                  &build_version));
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
   EXPECT_EQ(minor_version, "0");
   EXPECT_NE(build_version, "0");
-  EXPECT_EQ(patch_version, "0");
+  // Patch version cannot be tested as it would be set in a release branch.
 
   // (4) Features: UserAgentReduction enabled and MajorVersionInMinor disabled.
   scoped_feature_list.Reset();
@@ -1171,11 +1171,11 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
       UserAgentReductionEnterprisePolicyState::kForceDisabled);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
-                                  &build_version, &patch_version));
+                                  &build_version));
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
   EXPECT_EQ(minor_version, "0");
   EXPECT_NE(build_version, "0");
-  EXPECT_EQ(patch_version, "0");
+  // Patch version cannot be tested as it would be set in a release branch.
 
   // (5) Features: UserAgentReduction and MajorVersionInMinor enabled.
   scoped_feature_list.Reset();
@@ -1215,11 +1215,11 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
       UserAgentReductionEnterprisePolicyState::kForceDisabled);
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
                                   &major_version, &minor_version,
-                                  &build_version, &patch_version));
+                                  &build_version));
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
   EXPECT_EQ(minor_version, "0");
   EXPECT_NE(build_version, "0");
-  EXPECT_EQ(patch_version, "0");
+  // Patch version cannot be tested as it would be set in a release branch.
 }
 
 TEST_F(UserAgentUtilsTest, GetUserAgent) {
