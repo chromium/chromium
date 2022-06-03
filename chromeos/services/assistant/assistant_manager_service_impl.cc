@@ -251,8 +251,8 @@ void AssistantManagerServiceImpl::Start(const absl::optional<UserInfo>& user,
   // TODO(b/225063204): For phase 1, fallback to load libassistant.so from
   // rootfs if installabtion failed. No error handling needed.
   auto* client = chromeos::DlcserviceClient::Get();
-  if (!client) {
-    InitAssistant(user);
+  if (dlc_path_.has_value() || !client) {
+    InitAssistant(user, dlc_path_);
     return;
   }
 
@@ -270,6 +270,7 @@ void AssistantManagerServiceImpl::Stop() {
   // We cannot cleanly stop the service if it is in the process of starting up.
   DCHECK_NE(GetState(), State::STARTING);
 
+  weak_factory_.InvalidateWeakPtrs();
   SetStateAndInformObservers(State::STOPPED);
 
   media_host_->Stop();
@@ -471,15 +472,14 @@ void AssistantManagerServiceImpl::OnStateChanged(
 void AssistantManagerServiceImpl::OnInstallDlcComplete(
     const absl::optional<UserInfo>& user,
     const chromeos::DlcserviceClient::InstallResult& result) {
-  absl::optional<std::string> dlc_path;
   if (result.error == dlcservice::kErrorNone) {
     DVLOG(3) << "Installed libassistant.so from DLC";
-    dlc_path = result.root_path;
+    dlc_path_ = result.root_path;
   } else {
     DVLOG(1) << "Failed to install libassistant.so from DLC: " << result.error;
   }
 
-  InitAssistant(user, dlc_path);
+  InitAssistant(user, dlc_path_);
 }
 
 void AssistantManagerServiceImpl::InitAssistant(

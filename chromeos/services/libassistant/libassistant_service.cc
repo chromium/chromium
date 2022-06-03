@@ -76,9 +76,15 @@ class LibassistantFactoryImpl : public LibassistantFactory {
       return;
     }
 
+    if (dlc_path_ == dlc_path) {
+      DVLOG(3) << "Skip loading libassistant DLC with the same root path.";
+      return;
+    }
+    dlc_path_ = dlc_path;
+
     base::FilePath path = GetLibassisantPath(dlc_path.value());
     // Self-resets are not allowed on unique_ptr.
-    dlc_library_.reset();
+    // We should only load the DLC once.
     dlc_library_ = base::ScopedNativeLibrary(path);
     if (IsDlcLibraryValid()) {
       DVLOG(3) << "Loaded libassistant shared library from: " << path;
@@ -105,6 +111,7 @@ class LibassistantFactoryImpl : public LibassistantFactory {
   bool IsDlcLibraryValid() const { return dlc_library_.is_valid(); }
 
   assistant_client::PlatformApi* const platform_api_;
+  absl::optional<std::string> dlc_path_;
   base::ScopedNativeLibrary dlc_library_;
 };
 
