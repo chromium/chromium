@@ -101,7 +101,7 @@ void NGTextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
       text_frame_rect_.offset, text_frame_rect_.size.width, style_,
       /* inline_context */ nullptr, selection_text_decoration);
 
-  const NGTextDecorationOffset decoration_offset(style_, style_, nullptr);
+  const NGTextDecorationOffset decoration_offset(style_, style_);
   const auto& applied_text_decorations = style_.AppliedTextDecorations();
 
   // Paint text decorations except line through
