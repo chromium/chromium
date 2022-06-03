@@ -62,6 +62,7 @@ AX_EXPORT
 - (instancetype)initWithNode:(ui::AXPlatformNodeBase*)node;
 - (void)detach;
 
+@property(nonatomic, readonly) NSRect boundsInScreen;
 @property(nonatomic, readonly) ui::AXPlatformNodeBase* node;
 @property(nonatomic, readonly) ui::AXPlatformNodeDelegate* nodeDelegate;
 

@@ -1,2 +1,0 @@
-div.accessibilityFrame='NSRect: {{10, 657}, {85, 18}}'
-clipped.accessibilityFrame='NSRect: {{10, 609}, {80, 36}}'
