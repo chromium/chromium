@@ -35,7 +35,6 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -94,7 +93,7 @@ void FileReaderLoader::Start(scoped_refptr<BlobDataHandle> blob_data) {
   mojo::ScopedDataPipeProducerHandle producer_handle;
   MojoResult rv = CreateDataPipe(&options, producer_handle, consumer_handle_);
   if (rv != MOJO_RESULT_OK) {
-    Failed(FileErrorCode::kNotReadableErr, FailureType::kMojoPipeCreation);
+    Failed(FileErrorCode::kNotReadableErr);
     return;
   }
 
@@ -108,16 +107,14 @@ void FileReaderLoader::Start(scoped_refptr<BlobDataHandle> blob_data) {
     if (received_on_complete_)
       return;
     if (!received_all_data_) {
-      Failed(FileErrorCode::kNotReadableErr,
-             FailureType::kSyncDataNotAllLoaded);
+      Failed(FileErrorCode::kNotReadableErr);
       return;
     }
 
     // Wait for OnComplete
     receiver_.WaitForIncomingCall();
     if (!received_on_complete_) {
-      Failed(FileErrorCode::kNotReadableErr,
-             FailureType::kSyncOnCompleteNotReceived);
+      Failed(FileErrorCode::kNotReadableErr);
     }
   }
 }
@@ -211,13 +208,11 @@ void FileReaderLoader::Cleanup() {
   }
 }
 
-void FileReaderLoader::Failed(FileErrorCode error_code, FailureType type) {
+void FileReaderLoader::Failed(FileErrorCode error_code) {
   // If an error was already reported, don't report this error again.
   if (error_code_ != FileErrorCode::kOK)
     return;
   error_code_ = error_code;
-  base::UmaHistogramEnumeration("Storage.Blob.FileReaderLoader.FailureType",
-                                type);
   Cleanup();
   if (client_)
     client_->DidFail(error_code_);
@@ -233,7 +228,7 @@ void FileReaderLoader::OnStartLoading(uint64_t total_bytes) {
     // so to call ArrayBuffer's create function.
     // FIXME: Support reading more than the current size limit of ArrayBuffer.
     if (total_bytes > std::numeric_limits<unsigned>::max()) {
-      Failed(FileErrorCode::kNotReadableErr, FailureType::kTotalBytesTooLarge);
+      Failed(FileErrorCode::kNotReadableErr);
       return;
     }
 
@@ -241,8 +236,7 @@ void FileReaderLoader::OnStartLoading(uint64_t total_bytes) {
                                     ArrayBufferContents::kNotShared,
                                     ArrayBufferContents::kDontInitialize);
     if (!raw_data_.IsValid()) {
-      Failed(FileErrorCode::kNotReadableErr,
-             FailureType::kArrayBufferBuilderCreation);
+      Failed(FileErrorCode::kNotReadableErr);
       return;
     }
   }
@@ -275,8 +269,7 @@ void FileReaderLoader::OnReceivedData(const char* data, unsigned data_length) {
   if (bytes_loaded_ + data_length > raw_data_.DataLength()) {
     raw_data_.Reset();
     bytes_loaded_ = 0;
-    Failed(FileErrorCode::kNotReadableErr,
-           FailureType::kArrayBufferBuilderAppend);
+    Failed(FileErrorCode::kNotReadableErr);
     return;
   }
   memcpy(static_cast<char*>(raw_data_.Data()) + bytes_loaded_, data,
@@ -326,18 +319,14 @@ void FileReaderLoader::OnCalculatedSize(uint64_t total_size,
 }
 
 void FileReaderLoader::OnComplete(int32_t status, uint64_t data_length) {
-  base::UmaHistogramSparse("Storage.Blob.FileReaderLoader.ReadError",
-                           std::max(0, -net_error_));
-
   if (status != net::OK) {
     net_error_ = status;
     Failed(status == net::ERR_FILE_NOT_FOUND ? FileErrorCode::kNotFoundErr
-                                             : FileErrorCode::kNotReadableErr,
-           FailureType::kBackendReadError);
+                                             : FileErrorCode::kNotReadableErr);
     return;
   }
   if (data_length != total_bytes_) {
-    Failed(FileErrorCode::kNotReadableErr, FailureType::kReadSizesIncorrect);
+    Failed(FileErrorCode::kNotReadableErr);
     return;
   }
 
@@ -349,8 +338,7 @@ void FileReaderLoader::OnComplete(int32_t status, uint64_t data_length) {
 void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
   if (result != MOJO_RESULT_OK) {
     if (!received_all_data_) {
-      Failed(FileErrorCode::kNotReadableErr,
-             FailureType::kDataPipeNotReadableWithBytesLeft);
+      Failed(FileErrorCode::kNotReadableErr);
     }
     return;
   }
@@ -372,14 +360,12 @@ void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
     if (pipe_result == MOJO_RESULT_FAILED_PRECONDITION) {
       // Pipe closed.
       if (!received_all_data_) {
-        Failed(FileErrorCode::kNotReadableErr,
-               FailureType::kMojoPipeClosedEarly);
+        Failed(FileErrorCode::kNotReadableErr);
       }
       return;
     }
     if (pipe_result != MOJO_RESULT_OK) {
-      Failed(FileErrorCode::kNotReadableErr,
-             FailureType::kMojoPipeUnexpectedReadError);
+      Failed(FileErrorCode::kNotReadableErr);
       return;
     }
 

@@ -42049,22 +42049,6 @@ Called by update_permissions_policy_enum.py.-->
   </int>
 </enum>
 
-<enum name="FileReaderLoaderFailureType">
-  <int value="0" label="Mojo pipe creation failed"/>
-  <int value="1" label="Data incomplete after synchronous reading"/>
-  <int value="2" label="OnComplete never called after synchronous reading"/>
-  <int value="3" label="The blob's total size too large for FileReaderLoader"/>
-  <int value="4" label="Failed to create the ArrayBufferBuilder"/>
-  <int value="5" label="Failed to append to the ArrayBufferBuilder"/>
-  <int value="6"
-      label="Backend read error, see Storage.Blob.FileReaderLoader.ReadError"/>
-  <int value="7" label="The size read does not match the size reported"/>
-  <int value="8"
-      label="The data pipe is not readable and there are bytes left to read"/>
-  <int value="9" label="The data pipe closed early"/>
-  <int value="10" label="Data pipe reading failed with an unexpected error"/>
-</enum>
-
 <enum name="FileReaderSyncWorkerType">
   <int value="0" label="Other"/>
   <int value="1" label="Dedicated Worker"/>
