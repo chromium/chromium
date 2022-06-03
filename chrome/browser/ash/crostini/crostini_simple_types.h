@@ -110,6 +110,12 @@ enum class CrostiniResult {
 using CrostiniSuccessCallback =
     base::OnceCallback<void(bool success, const std::string& failure_reason)>;
 
+enum class RestartSource {
+  kOther,
+  kInstaller,
+  kMultiContainerCreation,
+};
+
 enum class InstallLinuxPackageProgressStatus {
   SUCCEEDED,
   FAILED,

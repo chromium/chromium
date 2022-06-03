@@ -302,12 +302,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.RestarterResult" enum="CrostiniResult"
-    expires_after="2022-11-20">
+    expires_after="2023-05-01">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
-    The result of a single run of CrostiniRestarter. This is recorded any time
-    the crostini restart flow is triggered except during the initial install.
+    The result of a single run of CrostiniRestarter. This is recorded every time
+    the crostini restart flow is triggered except for the initial install and
+    (from M104) multi-container creation.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.RestarterResult.Installer" enum="CrostiniResult"
+    expires_after="2023-05-01">
+  <owner>timloh@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of a single run of CrostiniRestarter. This is recorded once for
+    each restart triggered by the Crostini installer.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.RestarterResult.MultiContainerCreation"
+    enum="CrostiniResult" expires_after="2023-05-01">
+  <owner>timloh@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of a single run of CrostiniRestarter. This is recorded once for
+    each restart triggered for multi-container creation.
   </summary>
 </histogram>
 
@@ -383,7 +404,8 @@ chromium-metrics-reviews@google.com.
   <owner>clumptini@google.com</owner>
   <summary>
     Recorded each time the user completes the Crostini setup UI, recording the
-    result of the setup.
+    result of the setup. From M104, Crostini.RestartResult.Installer provides
+    more granular failures metrics.
   </summary>
 </histogram>
 

@@ -1441,6 +1441,49 @@ TEST_F(CrostiniManagerRestartTest, FailureWithMultipleRestarts) {
   EXPECT_FALSE(crostini_manager()->IsRestartPending(id3));
 }
 
+TEST_F(CrostiniManagerRestartTest, InstallHistogramEntries) {
+  // When the first request is tagged as RestartSource::kInstaller, we should
+  // log a single result to Crostini.RestarterResult.Installer and no results
+  // to Crostini.RestartResult even if there were additional requests.
+
+  vm_tools::concierge::StartVmResponse response;
+  response.set_status(vm_tools::concierge::VmStatus::VM_STATUS_FAILURE);
+  fake_concierge_client_->set_start_vm_response(response);
+
+  auto barrier_closure = base::BarrierClosure(2, run_loop()->QuitClosure());
+  auto result_callback =
+      base::BindLambdaForTesting([&barrier_closure](CrostiniResult result) {
+        EXPECT_EQ(CrostiniResult::VM_START_FAILED, result);
+        barrier_closure.Run();
+      });
+  CrostiniManager::RestartOptions options1;
+  options1.restart_source = RestartSource::kInstaller;
+  crostini_manager()->RestartCrostiniWithOptions(
+      container_id(), std::move(options1), result_callback);
+  crostini_manager()->RestartCrostini(container_id(), result_callback);
+  run_loop()->Run();
+
+  histogram_tester_.ExpectBucketCount("Crostini.RestarterResult.Installer",
+                                      CrostiniResult::VM_START_FAILED, 1);
+  histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", 0);
+
+  // Likewise for RestartSource::kMultiContainerCreation
+  base::RunLoop run_loop2;
+  barrier_closure = base::BarrierClosure(2, run_loop2.QuitClosure());
+  CrostiniManager::RestartOptions options2;
+  options2.restart_source = RestartSource::kMultiContainerCreation;
+  crostini_manager()->RestartCrostiniWithOptions(
+      container_id(), std::move(options2), result_callback);
+  crostini_manager()->RestartCrostini(container_id(), result_callback);
+  run_loop2.Run();
+
+  histogram_tester_.ExpectBucketCount(
+      "Crostini.RestarterResult.MultiContainerCreation",
+      CrostiniResult::VM_START_FAILED, 1);
+  histogram_tester_.ExpectTotalCount("Crostini.RestarterResult.Installer", 1);
+  histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", 0);
+}
+
 TEST_F(CrostiniManagerRestartTest, IsContainerRunningFalseIfVmNotStarted) {
   restart_id_ = crostini_manager()->RestartCrostini(
       container_id(),

@@ -221,9 +221,10 @@ class CrostiniManager::CrostiniRestarter
 
   void AddRequest(RestartRequest request);
 
-  // Start the restart flow. This should only be called once. This cannot be
-  // called directly from the constructor as in some cases it immediately
-  // (synchronously) fails and causes |this| to be deleted.
+  // Start the restart flow. This should called immediately following
+  // construction and only once. This cannot be called directly from the
+  // constructor as in some cases it immediately (synchronously) fails and
+  // causes |this| to be deleted.
   void Restart();
 
   // ash::VmShutdownObserver
@@ -300,7 +301,7 @@ class CrostiniManager::CrostiniRestarter
   // restart (deleting |this|), and return true.
   bool MaybeCancelCurrentOperation();
 
-  void LogRestarterResult(CrostiniResult result);
+  void LogRestarterResult(const RestartRequest& request, CrostiniResult result);
 
   base::OneShotTimer stage_timeout_timer_;
   base::TimeTicks stage_start_;
@@ -368,8 +369,8 @@ CrostiniManager::CrostiniRestarter::~CrostiniRestarter() {
   if (!requests_.empty()) {
     // This is triggered by logging out when restarts are in progress.
     LOG(WARNING) << "Destroying with outstanding requests.";
-    for (int i = 0; i < requests_.size(); i++) {
-      LogRestarterResult(CrostiniResult::NEVER_FINISHED);
+    for (const auto& request : requests_) {
+      LogRestarterResult(request, CrostiniResult::NEVER_FINISHED);
     }
   }
 }
@@ -384,13 +385,12 @@ void CrostiniManager::CrostiniRestarter::Restart() {
   }
 
   crostini_manager_->AddVmShutdownObserver(this);
-  // TODO(timloh): This is currently false for additional containers created via
-  // settings, but we probably don't want those to be bucketed in the same
-  // histograms as other non-install restarts.
   // TODO(b/205650706): It is possible to invoke a CrostiniRestarter to install
   // Crostini without using the actual installer. We should handle these better.
+  RestartSource restart_source = requests_[0].options.restart_source;
   is_initial_install_ =
-      crostini_manager_->GetCrostiniDialogStatus(DialogType::INSTALLER);
+      restart_source == RestartSource::kInstaller ||
+      restart_source == RestartSource::kMultiContainerCreation;
 
   StartStage(mojom::InstallerState::kStart);
   if (ReturnEarlyIfNeeded()) {
@@ -621,13 +621,13 @@ base::OnceClosure CrostiniManager::CrostiniRestarter::ExtractRequests(
       continue;
     }
 
+    LogRestarterResult(*it, result);
+
     crostini_manager_->RemoveRestartId(it->restart_id);
     if (it->observer)
       observer_list_.RemoveObserver(it->observer);
     callbacks.push_back(std::move(it->callback));
     requests_.erase(it);
-
-    LogRestarterResult(result);
   }
 
   return base::BindOnce(
@@ -962,13 +962,36 @@ bool CrostiniManager::CrostiniRestarter::MaybeCancelCurrentOperation() {
 }
 
 void CrostiniManager::CrostiniRestarter::LogRestarterResult(
+    const RestartRequest& request,
     CrostiniResult result) {
-  // Separate Crostini installer restarts from already-installed restarts.
-  // The installer has separate histograms in Crostini.SetupResult.
-  // TODO(timloh): The installer histograms are less granular, we might want to
-  // also log something here.
-  if (!is_initial_install_) {
-    base::UmaHistogramEnumeration("Crostini.RestarterResult", result);
+  // Log different histograms depending on the restart source. For an initial
+  // install, only log for the first request. The Crostini installer also has
+  // separate histograms in Crostini.SetupResult.
+  switch (request.options.restart_source) {
+    default:
+      NOTREACHED();
+      [[fallthrough]];
+    case RestartSource::kOther:
+      if (is_initial_install_)
+        return;
+      base::UmaHistogramEnumeration("Crostini.RestarterResult", result);
+      return;
+    case RestartSource::kInstaller:
+      if (!is_initial_install_) {
+        LOG(WARNING)
+            << "Restart request from Crostini installer was not first request.";
+      }
+      base::UmaHistogramEnumeration("Crostini.RestarterResult.Installer",
+                                    result);
+      return;
+    case RestartSource::kMultiContainerCreation:
+      if (!is_initial_install_) {
+        LOG(WARNING) << "Restart request for multi-container creation was not "
+                        "first request.";
+      }
+      base::UmaHistogramEnumeration(
+          "Crostini.RestarterResult.MultiContainerCreation", result);
+      return;
   }
 }
 

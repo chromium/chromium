@@ -213,6 +213,7 @@ void CrostiniInstaller::Install(CrostiniManager::RestartOptions options,
   }
 
   restart_options_ = std::move(options);
+  restart_options_.restart_source = RestartSource::kInstaller;
   progress_callback_ = std::move(progress_callback);
   result_callback_ = std::move(result_callback);
 

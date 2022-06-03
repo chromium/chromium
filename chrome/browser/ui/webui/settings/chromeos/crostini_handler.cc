@@ -697,6 +697,7 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
   VLOG(1) << "Creating container_id = " << container_id;
 
   crostini::CrostiniManager::RestartOptions options;
+  options.restart_source = crostini::RestartSource::kMultiContainerCreation;
   if (image_server_url.is_valid()) {
     options.image_server_url = image_server_url.spec();
     VLOG(1) << "image_server_url = " << image_server_url;

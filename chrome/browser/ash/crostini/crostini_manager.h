@@ -189,6 +189,7 @@ class CrostiniManager : public KeyedService,
   };
 
   struct RestartOptions {
+    RestartSource restart_source = RestartSource::kOther;
     bool start_vm_only = false;
     bool stop_after_lxd_available = false;
     // Paths to share with VM on startup.
