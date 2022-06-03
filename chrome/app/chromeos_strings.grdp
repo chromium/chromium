@@ -6209,27 +6209,27 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
 
   <!-- Theme Selection -->
   <message name="IDS_THEME_SELECTION_TITLE" desc="Title of the theme selection screen.">
-    Before we let you go...
+    Personalize your display theme
   </message>
   <message name="IDS_THEME_SELECTION_DESCRIPTION" desc="Description of the theme selection screen.">
-    You can adjust the schedule in Personalisation Hub, as well as set Wallpaper, Screensaver, and customize system colors.
+    Choose the theme that fits your needs. To change your theme, wallpaper, screen saver, and more, just right-click on the desktop.
   </message>
   <message name="IDS_THEME_LIGHT_LABEL" desc="Name of the light theme button">
-    Light mode
+    Light theme
   </message>
   <message name="IDS_THEME_LIGHT_DESCRIPTION" desc="Description of the light theme button">
-    Keep things light and airy.
+    Keep things bright and airy
   </message>
   <message name="IDS_THEME_DARK_LABEL" desc="Name of the dark theme button">
-    Dark mode
+    Dark theme
   </message>
   <message name="IDS_THEME_DARK_DESCRIPTION" desc="Description of the dark theme button">
-    For those low light rooms. Optimize for your battery life, too.
+    Helpful in low light and saves battery
   </message>
   <message name="IDS_THEME_AUTO_LABEL" desc="Name of the auto theme button">
-    Auto mode
+    Auto
   </message>
   <message name="IDS_THEME_AUTO_DESCRIPTION" desc="Description of the auto theme button">
-    Light mode at sunrise, and dark mode at sunset. It switches automatically for you.
+    Switch themes at sunrise and sunset
   </message>
 </grit-part>
