@@ -133,12 +133,6 @@ interface AppService {
   // Removes all preferred app setting for an |app_id|.
   RemovePreferredApp(AppType app_type, string app_id);
 
-  // Resets app identified by |app_id| as preferred app for |intent_filter|.
-  RemovePreferredAppForFilter(
-      AppType app_type,
-      string app_id,
-      IntentFilter intent_filter);
-
   // Set |app_id| as preferred app for all its supported link filters. Supported
   // link filters, which have the http/https scheme and at least one host, are
   // always enabled/disabled as a group. |all_link_filters| should contain all

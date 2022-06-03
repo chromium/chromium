@@ -267,16 +267,6 @@ void AppServiceMojomImpl::RemovePreferredApp(apps::mojom::AppType app_type,
   }
 }
 
-void AppServiceMojomImpl::RemovePreferredAppForFilter(
-    apps::mojom::AppType app_type,
-    const std::string& app_id,
-    apps::mojom::IntentFilterPtr intent_filter) {
-  if (preferred_apps_impl_) {
-    preferred_apps_impl_->RemovePreferredAppForFilter(app_type, app_id,
-                                                      std::move(intent_filter));
-  }
-}
-
 void AppServiceMojomImpl::SetSupportedLinksPreference(
     apps::mojom::AppType app_type,
     const std::string& app_id,

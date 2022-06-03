@@ -479,19 +479,6 @@ TEST_F(AppServiceMojomImplTest, PreferredApps) {
             sub0.PreferredApps().FindPreferredAppForUrl(another_filter_url));
   EXPECT_EQ(kAppId2,
             sub1.PreferredApps().FindPreferredAppForUrl(another_filter_url));
-
-  // Test that remove setting for one filter.
-  impl.RemovePreferredAppForFilter(apps::mojom::AppType::kUnknown, kAppId2,
-                                   intent_filter->Clone());
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(absl::nullopt,
-            sub0.PreferredApps().FindPreferredAppForUrl(filter_url));
-  EXPECT_EQ(absl::nullopt,
-            sub1.PreferredApps().FindPreferredAppForUrl(filter_url));
-  EXPECT_EQ(kAppId2,
-            sub0.PreferredApps().FindPreferredAppForUrl(another_filter_url));
-  EXPECT_EQ(kAppId2,
-            sub1.PreferredApps().FindPreferredAppForUrl(another_filter_url));
 }
 
 // Tests that writing a preferred app value before the PreferredAppsList is
@@ -718,19 +705,6 @@ TEST_F(AppServiceMojomImplTest, PreferredAppsOverlap) {
   EXPECT_EQ(kAppId2, sub0.PreferredApps().FindPreferredAppForUrl(filter_url_3));
   EXPECT_EQ(1U, impl.GetPreferredAppsListForTesting().GetEntrySize());
   EXPECT_EQ(1U, sub0.PreferredApps().GetEntrySize());
-
-  // Test that can remove entry with overlapped filter.
-  impl.RemovePreferredAppForFilter(apps::mojom::AppType::kArc, kAppId2,
-                                   intent_filter_1->Clone());
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(absl::nullopt,
-            sub0.PreferredApps().FindPreferredAppForUrl(filter_url_1));
-  EXPECT_EQ(absl::nullopt,
-            sub0.PreferredApps().FindPreferredAppForUrl(filter_url_2));
-  EXPECT_EQ(absl::nullopt,
-            sub0.PreferredApps().FindPreferredAppForUrl(filter_url_3));
-  EXPECT_EQ(0U, impl.GetPreferredAppsListForTesting().GetEntrySize());
-  EXPECT_EQ(0U, sub0.PreferredApps().GetEntrySize());
 }
 
 // Test that app with overlapped supported links works properly.
