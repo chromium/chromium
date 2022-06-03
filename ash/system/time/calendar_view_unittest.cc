@@ -1459,17 +1459,16 @@ TEST_F(CalendarViewAnimationTest, DISABLED_NotScrollableWhenAnimating) {
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
-// TODO(https://crbug.com/1329801): Test is flaky.
-TEST_F(CalendarViewAnimationTest, DISABLED_ResetToTodayWithAnimation) {
+TEST_F(CalendarViewAnimationTest, ResetToTodayWithAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
-  // Creates calendar view and waits for the creation animation to finish.
+  // Create calendar view and wait for the animation to finish.
   CreateCalendarView();
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
 
-  // Expect header visible before starting animation.
+  // Expect header visible before starting ResetToToday animation.
   EXPECT_EQ(1.0f, header()->layer()->opacity());
 
   // Expect header visible after resetting to today.
@@ -1478,15 +1477,13 @@ TEST_F(CalendarViewAnimationTest, DISABLED_ResetToTodayWithAnimation) {
       calendar_test_utils::kAnimationSettleDownDuration);
   EXPECT_EQ(1.0f, header()->layer()->opacity());
 
-  // Open event list by selecting a non-today date within today's month.
-  const auto* tomorrow_date_cell =
-      GetDateCell(/*month=*/current_month(), /*day=*/u"25");
-  ClickDateCell(tomorrow_date_cell);
+  // Open event list by selecting the next month's first cell.
+  const auto* date_cell = GetDateCell(/*month=*/next_month(), /*day=*/u"1");
+  ClickDateCell(date_cell);
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
 
-  // Expect header visible after opening event list and resetting to today, and
-  // expect today's date in `selected_date_`.
+  // Expect today's date in `selected_date_` after resetting to today.
   ResetToTodayWithAnimation();
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
@@ -1494,26 +1491,8 @@ TEST_F(CalendarViewAnimationTest, DISABLED_ResetToTodayWithAnimation) {
   EXPECT_EQ(calendar_utils::GetMonthDayYear(base::Time::Now()),
             calendar_utils::GetMonthDayYear(GetSelectedDate()));
 
-  // Select a date cell from another month.
-  const auto* next_month_date_cell =
-      GetDateCell(/*month=*/next_month(), /*day=*/u"24");
-  ClickDateCell(next_month_date_cell);
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
-
-  // Expect today's date in `selected_date` after resetting to today.
-  ResetToTodayWithAnimation();
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
-  EXPECT_EQ(calendar_utils::GetMonthDayYear(base::Time::Now()),
-            calendar_utils::GetMonthDayYear(GetSelectedDate()));
-
-  // Close event list.
-  CloseEventList();
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
-
   // Expect header visible after closing event list and resetting to today.
+  CloseEventList();
   ResetToTodayWithAnimation();
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
