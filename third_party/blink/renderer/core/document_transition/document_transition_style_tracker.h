@@ -164,6 +164,11 @@ class DocumentTransitionStyleTracker
     // This rect is in layout space.
     PhysicalRect visual_overflow_rect_in_layout_space;
     PhysicalRect cached_visual_overflow_rect_in_layout_space;
+
+    // The writing mode to use for the container. Note that initially this is
+    // the outgoing element's (if any) writing mode, and then switches to the
+    // incoming element's writing mode, if one exists.
+    WritingMode container_writing_mode = WritingMode::kHorizontalTb;
   };
 
   void InvalidateStyle();

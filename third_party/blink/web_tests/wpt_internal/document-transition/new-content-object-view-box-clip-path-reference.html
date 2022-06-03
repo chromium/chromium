@@ -44,13 +44,14 @@
 html::page-transition-container(target-one),
 html::page-transition-container(target-two) { animation-duration: 300s; }
 html::page-transition-outgoing-image(target-one),
-html::page-transition-outgoing-image(target-two) { animation: unset; opacity: 0; }
+html::page-transition-outgoing-image(target-two) { animation: unset; opacity: 0; height: 100%; }
 html::page-transition-incoming-image(target-one),
 html::page-transition-incoming-image(target-two) {
   animation: unset;
   opacity: 1;
   /* clip overflow, and verify inner contents only */
   overflow: hidden;
+  height: 100%;
 }
 
 html::page-transition-container(root) { animation: unset; opacity: 0; }

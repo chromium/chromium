@@ -647,12 +647,15 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
     if (auto* box = DynamicTo<LayoutBox>(layout_object))
       visual_overflow_rect_in_layout_space = ComputeVisualOverflowRect(box);
 
+    WritingMode writing_mode = layout_object->StyleRef().GetWritingMode();
+
     if (viewport_matrix == element_data->viewport_matrix &&
         border_box_size_in_css_space ==
             element_data->border_box_size_in_css_space &&
         device_pixel_ratio == element_data->device_pixel_ratio &&
         visual_overflow_rect_in_layout_space ==
-            element_data->visual_overflow_rect_in_layout_space) {
+            element_data->visual_overflow_rect_in_layout_space &&
+        writing_mode == element_data->container_writing_mode) {
       continue;
     }
 
@@ -661,6 +664,7 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
     element_data->device_pixel_ratio = device_pixel_ratio;
     element_data->visual_overflow_rect_in_layout_space =
         visual_overflow_rect_in_layout_space;
+    element_data->container_writing_mode = writing_mode;
 
     PseudoId live_content_element = HasLiveNewContent()
                                         ? kPseudoIdPageTransitionIncomingImage
@@ -872,6 +876,9 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
         element_data->cached_border_box_size_in_css_space.Width().ToInt(),
         element_data->cached_border_box_size_in_css_space.Height().ToInt()));
 
+    std::ostringstream writing_mode_stream;
+    writing_mode_stream << element_data->container_writing_mode;
+
     // ::page-transition-container styles using computed properties for each
     // element.
     builder.AppendFormat(
@@ -880,6 +887,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
           width: %dpx;
           height: %dpx;
           transform: %s;
+          writing-mode: %s;
         }
         )CSS",
         document_transition_tag.c_str(), border_box_in_css_space.width(),
@@ -888,7 +896,8 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
             element_data->viewport_matrix, 1, false)
             ->CssText()
             .Utf8()
-            .c_str());
+            .c_str(),
+        writing_mode_stream.str().c_str());
 
     float device_pixel_ratio = document_->DevicePixelRatio();
     absl::optional<String> incoming_inset = ComputeInsetDifference(

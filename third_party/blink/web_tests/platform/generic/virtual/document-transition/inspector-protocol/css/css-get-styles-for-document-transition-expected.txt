@@ -297,6 +297,10 @@ The test verifies functionality of querying style information for document-trans
                                         name : transform
                                         value : matrix(1, 0, 0, 1, 8, 8)
                                     }
+                                    [3] : {
+                                        name : writing-mode
+                                        value : horizontal-tb
+                                    }
                                 ]
                                 shorthandEntries : [
                                 ]
@@ -536,26 +540,22 @@ The test verifies functionality of querying style information for document-trans
                                         value : absolute
                                     }
                                     [1] : {
-                                        name : top
+                                        name : inset-block-start
                                         value : 0px
                                     }
                                     [2] : {
-                                        name : left
-                                        value : 0px
+                                        name : inline-size
+                                        value : 100%
                                     }
                                     [3] : {
-                                        name : width
-                                        value : 100%
+                                        name : block-size
+                                        value : auto
                                     }
                                     [4] : {
-                                        name : height
-                                        value : 100%
-                                    }
-                                    [5] : {
                                         name : mix-blend-mode
                                         value : plus-lighter
                                     }
-                                    [6] : {
+                                    [5] : {
                                         name : will-change
                                         value : opacity
                                     }
@@ -774,26 +774,22 @@ The test verifies functionality of querying style information for document-trans
                                         value : absolute
                                     }
                                     [1] : {
-                                        name : top
+                                        name : inset-block-start
                                         value : 0px
                                     }
                                     [2] : {
-                                        name : left
-                                        value : 0px
+                                        name : inline-size
+                                        value : 100%
                                     }
                                     [3] : {
-                                        name : width
-                                        value : 100%
+                                        name : block-size
+                                        value : auto
                                     }
                                     [4] : {
-                                        name : height
-                                        value : 100%
-                                    }
-                                    [5] : {
                                         name : mix-blend-mode
                                         value : plus-lighter
                                     }
-                                    [6] : {
+                                    [5] : {
                                         name : will-change
                                         value : opacity
                                     }
@@ -1012,26 +1008,22 @@ The test verifies functionality of querying style information for document-trans
                                         value : absolute
                                     }
                                     [1] : {
-                                        name : top
+                                        name : inset-block-start
                                         value : 0px
                                     }
                                     [2] : {
-                                        name : left
-                                        value : 0px
+                                        name : inline-size
+                                        value : 100%
                                     }
                                     [3] : {
-                                        name : width
-                                        value : 100%
+                                        name : block-size
+                                        value : auto
                                     }
                                     [4] : {
-                                        name : height
-                                        value : 100%
-                                    }
-                                    [5] : {
                                         name : mix-blend-mode
                                         value : plus-lighter
                                     }
-                                    [6] : {
+                                    [5] : {
                                         name : will-change
                                         value : opacity
                                     }
@@ -1148,26 +1140,22 @@ The test verifies functionality of querying style information for document-trans
                                         value : absolute
                                     }
                                     [1] : {
-                                        name : top
+                                        name : inset-block-start
                                         value : 0px
                                     }
                                     [2] : {
-                                        name : left
-                                        value : 0px
+                                        name : inline-size
+                                        value : 100%
                                     }
                                     [3] : {
-                                        name : width
-                                        value : 100%
+                                        name : block-size
+                                        value : auto
                                     }
                                     [4] : {
-                                        name : height
-                                        value : 100%
-                                    }
-                                    [5] : {
                                         name : mix-blend-mode
                                         value : plus-lighter
                                     }
-                                    [6] : {
+                                    [5] : {
                                         name : will-change
                                         value : opacity
                                     }
@@ -1576,26 +1564,22 @@ Dumping styles for : ::page-transition-outgoing-image{
                                 value : absolute
                             }
                             [1] : {
-                                name : top
+                                name : inset-block-start
                                 value : 0px
                             }
                             [2] : {
-                                name : left
-                                value : 0px
+                                name : inline-size
+                                value : 100%
                             }
                             [3] : {
-                                name : width
-                                value : 100%
+                                name : block-size
+                                value : auto
                             }
                             [4] : {
-                                name : height
-                                value : 100%
-                            }
-                            [5] : {
                                 name : mix-blend-mode
                                 value : plus-lighter
                             }
-                            [6] : {
+                            [5] : {
                                 name : will-change
                                 value : opacity
                             }
@@ -1817,26 +1801,22 @@ Dumping styles for : ::page-transition-incoming-image{
                                 value : absolute
                             }
                             [1] : {
-                                name : top
+                                name : inset-block-start
                                 value : 0px
                             }
                             [2] : {
-                                name : left
-                                value : 0px
+                                name : inline-size
+                                value : 100%
                             }
                             [3] : {
-                                name : width
-                                value : 100%
+                                name : block-size
+                                value : auto
                             }
                             [4] : {
-                                name : height
-                                value : 100%
-                            }
-                            [5] : {
                                 name : mix-blend-mode
                                 value : plus-lighter
                             }
-                            [6] : {
+                            [5] : {
                                 name : will-change
                                 value : opacity
                             }
@@ -2009,6 +1989,10 @@ Dumping styles for : ::page-transition-container{
                             [2] : {
                                 name : transform
                                 value : matrix(1, 0, 0, 1, 8, 8)
+                            }
+                            [3] : {
+                                name : writing-mode
+                                value : horizontal-tb
                             }
                         ]
                         shorthandEntries : [
@@ -2192,26 +2176,22 @@ Dumping styles for : ::page-transition-outgoing-image{
                                 value : absolute
                             }
                             [1] : {
-                                name : top
+                                name : inset-block-start
                                 value : 0px
                             }
                             [2] : {
-                                name : left
-                                value : 0px
+                                name : inline-size
+                                value : 100%
                             }
                             [3] : {
-                                name : width
-                                value : 100%
+                                name : block-size
+                                value : auto
                             }
                             [4] : {
-                                name : height
-                                value : 100%
-                            }
-                            [5] : {
                                 name : mix-blend-mode
                                 value : plus-lighter
                             }
-                            [6] : {
+                            [5] : {
                                 name : will-change
                                 value : opacity
                             }
@@ -2433,26 +2413,22 @@ Dumping styles for : ::page-transition-incoming-image{
                                 value : absolute
                             }
                             [1] : {
-                                name : top
+                                name : inset-block-start
                                 value : 0px
                             }
                             [2] : {
-                                name : left
-                                value : 0px
+                                name : inline-size
+                                value : 100%
                             }
                             [3] : {
-                                name : width
-                                value : 100%
+                                name : block-size
+                                value : auto
                             }
                             [4] : {
-                                name : height
-                                value : 100%
-                            }
-                            [5] : {
                                 name : mix-blend-mode
                                 value : plus-lighter
                             }
-                            [6] : {
+                            [5] : {
                                 name : will-change
                                 value : opacity
                             }

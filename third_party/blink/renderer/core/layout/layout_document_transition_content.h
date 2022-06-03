@@ -25,6 +25,11 @@ class CORE_EXPORT LayoutDocumentTransitionContent : public LayoutReplaced {
   }
   void OnIntrinsicSizeUpdated(const LayoutSize& intrinsic_size);
 
+  bool IsDocumentTransitionContent() const override {
+    NOT_DESTROYED();
+    return true;
+  }
+
  protected:
   PaintLayerType LayerTypeRequired() const override;
   void IntrinsicSizeChanged() override { NOT_DESTROYED(); }
@@ -33,6 +38,13 @@ class CORE_EXPORT LayoutDocumentTransitionContent : public LayoutReplaced {
 
  private:
   scoped_refptr<cc::DocumentTransitionContentLayer> layer_;
+};
+
+template <>
+struct DowncastTraits<LayoutDocumentTransitionContent> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsDocumentTransitionContent();
+  }
 };
 
 }  // namespace blink

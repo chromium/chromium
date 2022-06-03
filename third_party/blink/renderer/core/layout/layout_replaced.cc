@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_document_transition_content.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
@@ -172,7 +173,8 @@ static inline bool LayoutObjectHasIntrinsicAspectRatio(
     const LayoutObject* layout_object) {
   DCHECK(layout_object);
   return layout_object->IsImage() || layout_object->IsCanvas() ||
-         IsA<LayoutVideo>(layout_object);
+         IsA<LayoutVideo>(layout_object) ||
+         IsA<LayoutDocumentTransitionContent>(layout_object);
 }
 
 void LayoutReplaced::RecalcVisualOverflow() {

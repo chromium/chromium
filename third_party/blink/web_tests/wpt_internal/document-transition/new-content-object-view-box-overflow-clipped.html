@@ -41,8 +41,9 @@ html::page-transition-incoming-image(target) {
 
   /* clip overflow, and verify inner contents only */
   overflow: hidden;
+  height: 100%;
 }
-html::page-transition-outgoing-image(target) { animation: unset; opacity: 0; }
+html::page-transition-outgoing-image(target) { animation: unset; opacity: 0; height: 100%; }
 
 html::page-transition-container(root) { animation: unset; opacity: 0; }
 html::page-transition { background: lightpink; }

@@ -1061,6 +1061,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return false;
   }
 
+  virtual bool IsDocumentTransitionContent() const {
+    NOT_DESTROYED();
+    return false;
+  }
+
   virtual bool IsInlineBlockOrInlineTable() const {
     NOT_DESTROYED();
     return false;
