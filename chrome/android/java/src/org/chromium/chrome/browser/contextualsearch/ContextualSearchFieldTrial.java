@@ -47,7 +47,6 @@ public class ContextualSearchFieldTrial {
     // Cached values to avoid repeated and redundant JNI operations.
     private static Boolean sEnabled;
     private static Boolean[] sSwitches = new Boolean[ContextualSearchSwitch.NUM_ENTRIES];
-    private static Integer[] sSettings = new Integer[ContextualSearchSetting.NUM_ENTRIES];
 
     // SWITCHES
     // TODO(donnd): remove all supporting code once short-lived data collection is done.
@@ -169,7 +168,10 @@ public class ContextualSearchFieldTrial {
         int IS_PAGE_CONTENT_NOTIFICATION_DISABLED = 16;
         /** Whether logging for Machine Learning is disabled. */
         int IS_UKM_RANKER_LOGGING_DISABLED = 17;
-        /** Whether or not ML-based Tap suppression is enabled. */
+        /**
+         * @deprecated
+         * Whether or not ML-based Tap suppression is enabled.
+         */
         int IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED = 18;
         /**
          * @deprecated
@@ -216,69 +218,8 @@ public class ContextualSearchFieldTrial {
             "disable_send_url" // IS_SEND_BASE_PAGE_URL_DISABLED
     };
 
-    @IntDef({ContextualSearchSetting.MANDATORY_PROMO_LIMIT,
-            ContextualSearchSetting.SCREEN_TOP_SUPPRESSION_DPS,
-            ContextualSearchSetting.MINIMUM_SELECTION_LENGTH,
-            ContextualSearchSetting.WAIT_AFTER_TAP_DELAY_MS,
-            ContextualSearchSetting.TAP_DURATION_THRESHOLD_MS,
-            ContextualSearchSetting.RECENT_SCROLL_DURATION_MS})
-    @Retention(RetentionPolicy.SOURCE)
-    /**
-     * These are integer Setting values that are backed by a Variation Param.
-     * Values are used for indexing ContextualSearchSwitchStrings - should start from 0 and can't
-     * have gaps.
-     */
-    @interface ContextualSearchSetting {
-        /**
-         * @deprecated
-         * The number of times the Promo should be seen before it becomes mandatory.
-         */
-        int MANDATORY_PROMO_LIMIT = 0;
-        /**
-         * @deprecated
-         * A Y value limit that will suppress a Tap near the top of the screen.
-         * (any Y value less than the limit will suppress the Tap trigger).
-         */
-        int SCREEN_TOP_SUPPRESSION_DPS = 1;
-        /** The minimum valid selection length. */
-        int MINIMUM_SELECTION_LENGTH = 2;
-        /**
-         * An amount to delay after a Tap gesture is recognized, in case some user gesture
-         * immediately follows that would prevent the UI from showing.
-         * The classic example is a scroll, which might be a signal that the previous tap was
-         * accidental.
-         */
-        int WAIT_AFTER_TAP_DELAY_MS = 3;
-        /**
-         * @deprecated
-         * A threshold for the duration of a tap gesture for categorization as brief or
-         * lengthy (the maximum amount of time in milliseconds for a tap gesture that's still
-         * considered a very brief duration tap).
-         */
-        int TAP_DURATION_THRESHOLD_MS = 4;
-        /**
-         * The duration to use for suppressing Taps after a recent scroll, or {@code 0} if no
-         * suppression is configured (the period of time after a scroll when tap triggering is
-         * suppressed).
-         */
-        int RECENT_SCROLL_DURATION_MS = 5;
-
-        int NUM_ENTRIES = 6;
-    }
-
-    // Indexed by ContextualSearchSetting
-    private static final String[] ContextualSearchSettingNames = {
-            "mandatory_promo_limit", // MANDATORY_PROMO_LIMIT
-            "screen_top_suppression_dps", // SCREEN_TOP_SUPPRESSION_DPS
-            "minimum_selection_length", // MINIMUM_SELECTION_LENGTH
-            "wait_after_tap_delay_ms", // WAIT_AFTER_TAP_DELAY_MS
-            "tap_duration_threshold_ms", // TAP_DURATION_THRESHOLD_MS
-            "recent_scroll_duration_ms" // RECENT_SCROLL_DURATION_MS
-    };
-
     private ContextualSearchFieldTrial() {
         assert ContextualSearchSwitchNames.length == ContextualSearchSwitch.NUM_ENTRIES;
-        assert ContextualSearchSettingNames.length == ContextualSearchSetting.NUM_ENTRIES;
     }
 
     /**
@@ -305,13 +246,6 @@ public class ContextualSearchFieldTrial {
             }
         }
         return sSwitches[value].booleanValue();
-    }
-
-    static int getValue(@ContextualSearchSetting int value) {
-        if (sSettings[value] == null) {
-            sSettings[value] = getIntParamValueOrDefault(ContextualSearchSettingNames[value], 0);
-        }
-        return sSettings[value].intValue();
     }
 
     /**
@@ -415,30 +349,5 @@ public class ContextualSearchFieldTrial {
         }
         return TextUtils.equals(ENABLED_VALUE,
                 VariationsAssociatedData.getVariationParamValue(FIELD_TRIAL_NAME, paramName));
-    }
-
-    /**
-     * Returns an integer value for a Finch parameter, or the default value if no parameter
-     * exists in the current configuration.  Also checks for a command-line switch with the same
-     * name.
-     * @param paramName The name of the Finch parameter (or command-line switch) to get a value
-     *                  for.
-     * @param defaultValue The default value to return when there's no param or switch.
-     * @return An integer value -- either the param or the default.
-     */
-    private static int getIntParamValueOrDefault(String paramName, int defaultValue) {
-        String value = CommandLine.getInstance().getSwitchValue(paramName);
-        if (TextUtils.isEmpty(value)) {
-            value = VariationsAssociatedData.getVariationParamValue(FIELD_TRIAL_NAME, paramName);
-        }
-        if (!TextUtils.isEmpty(value)) {
-            try {
-                return Integer.parseInt(value);
-            } catch (NumberFormatException e) {
-                return defaultValue;
-            }
-        }
-
-        return defaultValue;
     }
 }

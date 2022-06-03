@@ -14,8 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -161,10 +159,6 @@ public class ContextualSearchSelectionController {
         mTabSupplier = tabSupplier;
         mPxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
         mContainsWordPattern = Pattern.compile(CONTAINS_WORD_PATTERN);
-        // TODO(donnd): remove when behind-the-flag bug fixed (crbug.com/786589).
-        Log.i(TAG, "Tap suppression enabled: %s",
-                ContextualSearchFieldTrial.getSwitch(
-                        ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED));
     }
 
     /**
@@ -533,27 +527,6 @@ public class ContextualSearchSelectionController {
      * @return Whether the selection is valid.
      */
     private boolean validateSelectionSuppression(String selection) {
-        boolean isValid = isValidSelection(selection);
-
-        if (mSelectionType == SelectionType.TAP) {
-            int minSelectionLength = ContextualSearchFieldTrial.getValue(
-                    ContextualSearchSetting.MINIMUM_SELECTION_LENGTH);
-            if (selection.length() < minSelectionLength) {
-                isValid = false;
-                ContextualSearchUma.logSelectionLengthSuppression(true);
-            } else if (minSelectionLength > 0) {
-                ContextualSearchUma.logSelectionLengthSuppression(false);
-            }
-        }
-
-        return isValid;
-    }
-
-    /** Determines if the given selection is valid or not.
-     * @param selection The selection portion of the context.
-     * @return whether the given selection is considered a valid target for a search.
-     */
-    private boolean isValidSelection(String selection) {
         return isValidSelection(selection, getSelectionPopupController());
     }
 

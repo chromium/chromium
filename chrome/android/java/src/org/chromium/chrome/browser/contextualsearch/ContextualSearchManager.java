@@ -22,7 +22,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
@@ -37,7 +36,6 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelCoordinator;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
@@ -1517,28 +1515,7 @@ public class ContextualSearchManager
     public void handleNonSuppressedTap(long tapTimeNanoseconds) {
         if (isSuppressed()) return;
 
-        // If there's a wait-after-tap experiment then we may want to delay a bit longer for
-        // the user to take an action like scrolling that will reset our internal state.
-        long delayBeforeFinishingWorkMs = 0;
-        if (ContextualSearchFieldTrial.getValue(ContextualSearchSetting.WAIT_AFTER_TAP_DELAY_MS) > 0
-                && tapTimeNanoseconds > 0) {
-            delayBeforeFinishingWorkMs = ContextualSearchFieldTrial.getValue(
-                                                 ContextualSearchSetting.WAIT_AFTER_TAP_DELAY_MS)
-                    - (System.nanoTime() - tapTimeNanoseconds)
-                            / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-        }
-
-        // Finish work on the current state, either immediately or with a delay.
-        if (delayBeforeFinishingWorkMs <= 0) {
-            finishSuppressionDecision();
-        } else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    finishSuppressionDecision();
-                }
-            }, delayBeforeFinishingWorkMs);
-        }
+        finishSuppressionDecision();
     }
 
     /**

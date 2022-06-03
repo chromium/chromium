@@ -461,15 +461,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Log whether the UX was suppressed due to the selection length.
-     * @param wasSuppressed Whether showing the UX was suppressed due to selection length.
-     */
-    public static void logSelectionLengthSuppression(boolean wasSuppressed) {
-        RecordHistogram.recordBooleanHistogram(
-                "Search.ContextualSearchSelectionLengthSuppression", wasSuppressed);
-    }
-
-    /**
      * Logs whether results were seen and whether any tap suppression heuristics were satisfied.
      * @param wasSearchContentViewSeen If the panel was opened.
      * @param wasAnySuppressionHeuristicSatisfied Whether any of the implemented suppression
