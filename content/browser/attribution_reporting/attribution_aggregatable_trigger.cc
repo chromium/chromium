@@ -41,11 +41,8 @@ AttributionAggregatableTriggerData::FromMojo(
     return absl::nullopt;
 
   return AttributionAggregatableTriggerData(
-      mojo->key,
-      base::flat_set<std::string>(
-          std::make_move_iterator(mojo->source_keys.begin()),
-          std::make_move_iterator(mojo->source_keys.end())),
-      std::move(*filters), std::move(*not_filters));
+      mojo->key, std::move(mojo->source_keys), std::move(*filters),
+      std::move(*not_filters));
 }
 
 // static
