@@ -105,5 +105,9 @@ bool IsPasswordSyncEnabled(syncer::SyncService* sync_service) {
              syncer::UserSelectableType::kPasswords);
 }
 
+bool CannotUseUPMDueToPersistentSyncError(syncer::SyncService* sync_service) {
+  return !sync_service || sync_service->GetAuthError().IsPersistentError();
+}
+
 }  // namespace sync_util
 }  // namespace password_manager

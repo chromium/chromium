@@ -104,6 +104,9 @@ class PasswordManagerSettingsServiceAndroidImpl
   // Cached value of the password sync setting.
   bool is_password_sync_enabled_ = false;
 
+  // Cached value of the persistent sync error state.
+  bool sync_has_persistent_error_ = false;
+
   // True if settings were requested from the backend after password sync
   // setting was changed, and the fetch is still in progress.
   bool fetch_after_sync_status_change_in_progress_ = false;

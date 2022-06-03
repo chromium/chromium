@@ -17,6 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/password_manager/core/browser/field_info_table.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -653,7 +654,7 @@ bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackend() {
     return false;
 
   // Check for sync service errors if sync service is already initialized.
-  if (sync_service_ && sync_service_->GetAuthError().IsPersistentError())
+  if (sync_util::CannotUseUPMDueToPersistentSyncError(sync_service_))
     return false;
 
   if (!base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerAndroid))
