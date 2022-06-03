@@ -330,7 +330,6 @@ class CORE_EXPORT MediaQueryExpNode
   virtual void SerializeTo(StringBuilder&) const = 0;
   virtual void CollectExpressions(HeapVector<MediaQueryExp>&) const = 0;
   virtual FeatureFlags CollectFeatureFlags() const = 0;
-  virtual const MediaQueryExpNode* Copy() const = 0;
 
   // These helper functions return nullptr if any argument is nullptr.
   static const MediaQueryExpNode* Not(const MediaQueryExpNode*);
@@ -354,7 +353,6 @@ class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
   void SerializeTo(StringBuilder&) const override;
   void CollectExpressions(HeapVector<MediaQueryExp>&) const override;
   FeatureFlags CollectFeatureFlags() const override;
-  const MediaQueryExpNode* Copy() const override;
 
  private:
   MediaQueryExp exp_;
@@ -383,7 +381,6 @@ class CORE_EXPORT MediaQueryNestedExpNode : public MediaQueryUnaryExpNode {
 
   Type GetType() const override { return Type::kNested; }
   void SerializeTo(StringBuilder&) const override;
-  const MediaQueryExpNode* Copy() const override;
 };
 
 class CORE_EXPORT MediaQueryFunctionExpNode : public MediaQueryUnaryExpNode {
@@ -394,7 +391,6 @@ class CORE_EXPORT MediaQueryFunctionExpNode : public MediaQueryUnaryExpNode {
 
   Type GetType() const override { return Type::kFunction; }
   void SerializeTo(StringBuilder&) const override;
-  const MediaQueryExpNode* Copy() const override;
 
  private:
   AtomicString name_;
@@ -407,7 +403,6 @@ class CORE_EXPORT MediaQueryNotExpNode : public MediaQueryUnaryExpNode {
 
   Type GetType() const override { return Type::kNot; }
   void SerializeTo(StringBuilder&) const override;
-  const MediaQueryExpNode* Copy() const override;
 };
 
 class CORE_EXPORT MediaQueryCompoundExpNode : public MediaQueryExpNode {
@@ -438,7 +433,6 @@ class CORE_EXPORT MediaQueryAndExpNode : public MediaQueryCompoundExpNode {
 
   Type GetType() const override { return Type::kAnd; }
   void SerializeTo(StringBuilder&) const override;
-  const MediaQueryExpNode* Copy() const override;
 };
 
 class CORE_EXPORT MediaQueryOrExpNode : public MediaQueryCompoundExpNode {
@@ -449,7 +443,6 @@ class CORE_EXPORT MediaQueryOrExpNode : public MediaQueryCompoundExpNode {
 
   Type GetType() const override { return Type::kOr; }
   void SerializeTo(StringBuilder&) const override;
-  const MediaQueryExpNode* Copy() const override;
 };
 
 class CORE_EXPORT MediaQueryUnknownExpNode : public MediaQueryExpNode {
@@ -460,7 +453,6 @@ class CORE_EXPORT MediaQueryUnknownExpNode : public MediaQueryExpNode {
   void SerializeTo(StringBuilder&) const override;
   void CollectExpressions(HeapVector<MediaQueryExp>&) const override;
   FeatureFlags CollectFeatureFlags() const override;
-  const MediaQueryExpNode* Copy() const override;
 
  private:
   String string_;

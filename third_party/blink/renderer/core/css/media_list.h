@@ -57,9 +57,11 @@ class CORE_EXPORT MediaQuerySet : public GarbageCollected<MediaQuerySet> {
   bool Add(const String&, const ExecutionContext*);
   bool Remove(const String&, const ExecutionContext*);
 
-  void AddMediaQuery(MediaQuery*);
+  void AddMediaQuery(const MediaQuery*);
 
-  const HeapVector<Member<MediaQuery>>& QueryVector() const { return queries_; }
+  const HeapVector<Member<const MediaQuery>>& QueryVector() const {
+    return queries_;
+  }
 
   String MediaText() const;
   bool HasUnknown() const;
@@ -69,7 +71,7 @@ class CORE_EXPORT MediaQuerySet : public GarbageCollected<MediaQuerySet> {
   }
 
  private:
-  HeapVector<Member<MediaQuery>> queries_;
+  HeapVector<Member<const MediaQuery>> queries_;
 };
 
 class MediaList final : public ScriptWrappable {

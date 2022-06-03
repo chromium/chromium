@@ -36,7 +36,7 @@ ContainerQuery::ContainerQuery(ContainerSelector selector,
     : selector_(std::move(selector)), query_(query) {}
 
 ContainerQuery::ContainerQuery(const ContainerQuery& other)
-    : selector_(other.selector_), query_(other.query_->Copy()) {}
+    : selector_(other.selector_), query_(other.query_) {}
 
 String ContainerQuery::ToString() const {
   return query_->Serialize();

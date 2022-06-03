@@ -63,8 +63,6 @@ class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
   bool operator==(const MediaQuery& other) const;
   String CssText() const;
 
-  MediaQuery* Copy() const { return MakeGarbageCollected<MediaQuery>(*this); }
-
  private:
   MediaQuery& operator=(const MediaQuery&) = delete;
   bool BehaveAsNotAll() const;

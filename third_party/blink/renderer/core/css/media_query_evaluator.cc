@@ -155,7 +155,7 @@ bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set) const {
 
 bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set,
                                Results results) const {
-  const HeapVector<Member<MediaQuery>>& queries = query_set.QueryVector();
+  const HeapVector<Member<const MediaQuery>>& queries = query_set.QueryVector();
   if (!queries.size())
     return true;  // Empty query list evaluates to true.
 

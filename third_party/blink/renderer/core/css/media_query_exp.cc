@@ -667,10 +667,6 @@ void MediaQueryFeatureExpNode::Trace(Visitor* visitor) const {
   MediaQueryExpNode::Trace(visitor);
 }
 
-const MediaQueryExpNode* MediaQueryFeatureExpNode::Copy() const {
-  return MakeGarbageCollected<MediaQueryFeatureExpNode>(exp_);
-}
-
 void MediaQueryUnaryExpNode::Trace(Visitor* visitor) const {
   visitor->Trace(operand_);
   MediaQueryExpNode::Trace(visitor);
@@ -692,10 +688,6 @@ void MediaQueryNestedExpNode::SerializeTo(StringBuilder& builder) const {
   builder.Append(")");
 }
 
-const MediaQueryExpNode* MediaQueryNestedExpNode::Copy() const {
-  return MakeGarbageCollected<MediaQueryNestedExpNode>(Operand().Copy());
-}
-
 void MediaQueryFunctionExpNode::SerializeTo(StringBuilder& builder) const {
   builder.Append(name_);
   builder.Append("(");
@@ -703,18 +695,9 @@ void MediaQueryFunctionExpNode::SerializeTo(StringBuilder& builder) const {
   builder.Append(")");
 }
 
-const MediaQueryExpNode* MediaQueryFunctionExpNode::Copy() const {
-  return MakeGarbageCollected<MediaQueryFunctionExpNode>(Operand().Copy(),
-                                                         name_);
-}
-
 void MediaQueryNotExpNode::SerializeTo(StringBuilder& builder) const {
   builder.Append("not ");
   Operand().SerializeTo(builder);
-}
-
-const MediaQueryExpNode* MediaQueryNotExpNode::Copy() const {
-  return MakeGarbageCollected<MediaQueryNotExpNode>(Operand().Copy());
 }
 
 void MediaQueryCompoundExpNode::Trace(Visitor* visitor) const {
@@ -740,20 +723,10 @@ void MediaQueryAndExpNode::SerializeTo(StringBuilder& builder) const {
   Right().SerializeTo(builder);
 }
 
-const MediaQueryExpNode* MediaQueryAndExpNode::Copy() const {
-  return MakeGarbageCollected<MediaQueryAndExpNode>(Left().Copy(),
-                                                    Right().Copy());
-}
-
 void MediaQueryOrExpNode::SerializeTo(StringBuilder& builder) const {
   Left().SerializeTo(builder);
   builder.Append(" or ");
   Right().SerializeTo(builder);
-}
-
-const MediaQueryExpNode* MediaQueryOrExpNode::Copy() const {
-  return MakeGarbageCollected<MediaQueryOrExpNode>(Left().Copy(),
-                                                   Right().Copy());
 }
 
 void MediaQueryUnknownExpNode::SerializeTo(StringBuilder& builder) const {
@@ -766,10 +739,6 @@ void MediaQueryUnknownExpNode::CollectExpressions(
 MediaQueryExpNode::FeatureFlags MediaQueryUnknownExpNode::CollectFeatureFlags()
     const {
   return kFeatureUnknown;
-}
-
-const MediaQueryExpNode* MediaQueryUnknownExpNode::Copy() const {
-  return MakeGarbageCollected<MediaQueryUnknownExpNode>(string_);
 }
 
 }  // namespace blink

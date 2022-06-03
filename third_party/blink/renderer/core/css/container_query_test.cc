@@ -306,8 +306,8 @@ TEST_F(ContainerQueryTest, RuleCopy) {
   // The ContainerQuery should be copied.
   EXPECT_NE(&container->GetContainerQuery(), &copy->GetContainerQuery());
 
-  // The inner MediaQueryExpNode should be copied.
-  EXPECT_NE(&GetInnerQuery(container->GetContainerQuery()),
+  // The inner MediaQueryExpNode is immutable, and does not need to be copied.
+  EXPECT_EQ(&GetInnerQuery(container->GetContainerQuery()),
             &GetInnerQuery(copy->GetContainerQuery()));
 }
 

@@ -55,11 +55,7 @@ namespace blink {
 
 MediaQuerySet::MediaQuerySet() = default;
 
-MediaQuerySet::MediaQuerySet(const MediaQuerySet& o)
-    : queries_(o.queries_.size()) {
-  for (unsigned i = 0; i < queries_.size(); ++i)
-    queries_[i] = o.queries_[i]->Copy();
-}
+MediaQuerySet::MediaQuerySet(const MediaQuerySet&) = default;
 
 MediaQuerySet* MediaQuerySet::Create(
     const String& media_string,
@@ -96,14 +92,14 @@ bool MediaQuerySet::Add(const String& query_string,
   if (result->queries_.size() != 1)
     return false;
 
-  MediaQuery* new_query = result->queries_[0].Get();
+  const MediaQuery* new_query = result->queries_[0].Get();
   // TODO(keishi) Changed DCHECK to CHECK for crbug.com/699269 diagnosis
   CHECK(new_query);
 
   // If comparing with any of the media queries in the collection of media
   // queries returns true terminate these steps.
   for (wtf_size_t i = 0; i < queries_.size(); ++i) {
-    MediaQuery& query = *queries_[i];
+    const MediaQuery& query = *queries_[i];
     if (query == *new_query)
       return false;
   }
@@ -123,7 +119,7 @@ bool MediaQuerySet::Remove(const String& query_string_to_remove,
   if (result->queries_.size() != 1)
     return true;
 
-  MediaQuery* new_query = result->queries_[0];
+  const MediaQuery* new_query = result->queries_[0];
   // TODO(keishi) Changed DCHECK to CHECK for crbug.com/699269 diagnosis
   CHECK(new_query);
 
@@ -131,7 +127,7 @@ bool MediaQuerySet::Remove(const String& query_string_to_remove,
   // comparing with the media query returns true.
   bool found = false;
   for (wtf_size_t i = 0; i < queries_.size(); ++i) {
-    MediaQuery& query = *queries_[i];
+    const MediaQuery& query = *queries_[i];
     if (query == *new_query) {
       queries_.EraseAt(i);
       --i;
@@ -142,7 +138,7 @@ bool MediaQuerySet::Remove(const String& query_string_to_remove,
   return found;
 }
 
-void MediaQuerySet::AddMediaQuery(MediaQuery* media_query) {
+void MediaQuerySet::AddMediaQuery(const MediaQuery* media_query) {
   // TODO(keishi) Changed DCHECK to CHECK for crbug.com/699269 diagnosis
   CHECK(media_query);
   queries_.push_back(media_query);
@@ -197,7 +193,8 @@ void MediaList::setMediaText(const ExecutionContext* execution_context,
 }
 
 String MediaList::item(unsigned index) const {
-  const HeapVector<Member<MediaQuery>>& queries = media_queries_->QueryVector();
+  const HeapVector<Member<const MediaQuery>>& queries =
+      media_queries_->QueryVector();
   if (index < queries.size())
     return queries[index]->CssText();
   return String();

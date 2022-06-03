@@ -86,7 +86,7 @@ MediaQuery::MediaQuery(RestrictorType restrictor,
 MediaQuery::MediaQuery(const MediaQuery& o)
     : restrictor_(o.restrictor_),
       media_type_(o.media_type_),
-      exp_node_(o.exp_node_ ? o.exp_node_->Copy() : nullptr),
+      exp_node_(o.exp_node_),
       serialization_cache_(o.serialization_cache_),
       has_unknown_(o.has_unknown_) {}
 
