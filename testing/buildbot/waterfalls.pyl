@@ -2940,7 +2940,7 @@
         ],
         'os_type': 'android',
         'gtest_args': [
-          '--enable-features=PartitionAllocBackupRefPtr',
+          '--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer',
         ],
       },
       'android-backuprefptr-arm64-fyi-rel': {
@@ -2954,7 +2954,7 @@
         ],
         'os_type': 'android',
         'gtest_args': [
-          '--enable-features=PartitionAllocBackupRefPtr',
+          '--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer',
         ],
       },
       'android-code-coverage': {
@@ -3755,7 +3755,7 @@
           'x86-64',
         ],
         'gtest_args': [
-          '--enable-features=PartitionAllocBackupRefPtr',
+          '--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer',
         ],
       },
       'win-backuprefptr-x86-fyi-rel': {
@@ -3767,7 +3767,7 @@
           'x86-64',
         ],
         'gtest_args': [
-          '--enable-features=PartitionAllocBackupRefPtr',
+          '--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer',
         ],
       },
       'win-fieldtrial-rel': {
