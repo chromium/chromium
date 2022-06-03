@@ -9,14 +9,17 @@
 #include <memory>
 #include <utility>
 
+#include "base/atomic_sequence_num.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/stack_container.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/common/scoped_defer_task_posting.h"
@@ -522,6 +525,7 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueueFromMainThread(
     sequence_manager_->WillQueueTask(&pending_task, name_);
     MaybeReportIpcTaskQueuedFromMainThread(pending_task, name_);
   }
+  RecordTaskDelay(pending_task.delayed_run_time - lazy_now->Now());
   main_thread_only().delayed_incoming_queue.push(std::move(pending_task));
   UpdateWakeUp(lazy_now);
 
@@ -568,6 +572,18 @@ void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
                                                &lazy_now, false);
   }
   TraceQueueSize();
+}
+
+void TaskQueueImpl::RecordTaskDelay(TimeDelta delay) {
+  // This logic minimizes the performance overhead of emitting a histogram.
+  static AtomicSequenceNumber sample_id_;
+  static constexpr int kBatchSize = 10000;
+  static const int kOffset = RandInt(0, kBatchSize - 1);
+
+  if ((sample_id_.GetNext() - kOffset) % kBatchSize == 0) {
+    UMA_HISTOGRAM_LONG_TIMES("Scheduler.TaskQueueImpl.PostDelayedTaskDelay",
+                             delay);
+  }
 }
 
 void TaskQueueImpl::ReloadEmptyImmediateWorkQueue() {
