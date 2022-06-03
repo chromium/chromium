@@ -70,27 +70,88 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
   error = aom_codec_control(codec.get(), AOME_SET_CPUUSED, 10);
   DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AOME_SET_CPUUSED";
 
+  error = aom_codec_control(codec.get(), AV1E_SET_AQ_MODE, 3);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_AQ_MODE";
+
   if (config_.g_threads > 1) {
     error = aom_codec_control(codec.get(), AV1E_SET_ROW_MT, 1);
     DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ROW_MT";
   }
 
-  // The param for the tile column/row controls are log2 values so 0 is ok.
-  int log2_tiles = std::min(static_cast<int>(config_.g_threads >> 1), 6);
-
-  error = aom_codec_control(codec.get(), AV1E_SET_TILE_COLUMNS, log2_tiles);
+  // The param for the tile column control is a log2 value so 0 is ok.
+  error =
+      aom_codec_control(codec.get(), AV1E_SET_TILE_COLUMNS,
+                        std::min(static_cast<int>(config_.g_threads >> 1), 6));
   DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_TILE_COLUMNS";
 
-  error = aom_codec_control(codec.get(), AV1E_SET_TILE_ROWS, log2_tiles);
-  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_TILE_ROWS";
+  // TODO(joedow): Experiment with AV1E_SET_TILE_ROWS. Note that the total
+  // number of COLUMNS and ROWS should add up to, at most, config_.g_threads.
 
-  // TODO(joedow): Set AV1E_SET_TUNE_CONTENT to AOM_CONTENT_SCREEN once the
-  // performance is more acceptable. Selecting AOM_CONTENT_SCREEN over
-  // AOM_CONTENT_DEFAULT increased the amount of latency during encoding by 15ms
-  // per frame during my testing.
+  // These make realtime encoder faster.
+  error =
+      aom_codec_control(codec.get(), AV1E_SET_TUNE_CONTENT, AOM_CONTENT_SCREEN);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AOM_CONTENT_SCREEN";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_PALETTE, 1);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ENABLE_PALETTE";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_INTRABC, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ENABLE_INTRABC";
 
-  error = aom_codec_control(codec.get(), AV1E_SET_AQ_MODE, 3);
-  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_AQ_MODE";
+  // These default to on but should not be used for real-time encoding.
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_TPL_MODEL, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ENABLE_TPL_MODEL";
+  error = aom_codec_control(codec.get(), AV1E_SET_DELTAQ_MODE, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_DELTAQ_MODE";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_ORDER_HINT, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ENABLE_ORDER_HINT";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_OBMC, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ENABLE_OBMC";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_WARPED_MOTION, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK)
+      << "Failed to set AV1E_SET_ENABLE_WARPED_MOTION";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_GLOBAL_MOTION, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK)
+      << "Failed to set AV1E_SET_ENABLE_GLOBAL_MOTION";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_REF_FRAME_MVS, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK)
+      << "Failed to set AV1E_SET_ENABLE_REF_FRAME_MVS";
+
+  // These should significantly speed up key frame encoding.
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_CFL_INTRA, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ENABLE_CFL_INTRA";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_SMOOTH_INTRA, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK)
+      << "Failed to set AV1E_SET_ENABLE_SMOOTH_INTRA";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_ANGLE_DELTA, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ENABLE_ANGLE_DELTA";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_FILTER_INTRA, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK)
+      << "Failed to set AV1E_SET_ENABLE_FILTER_INTRA";
+  error = aom_codec_control(codec.get(), AV1E_SET_INTRA_DEFAULT_TX_ONLY, 1);
+  DCHECK_EQ(error, AOM_CODEC_OK)
+      << "Failed to set AV1E_SET_INTRA_DEFAULT_TX_ONLY";
+
+  // Misc. quality settings.
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_CDEF, 1);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ENABLE_CDEF";
+  error = aom_codec_control(codec.get(), AV1E_SET_NOISE_SENSITIVITY, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_NOISE_SENSITIVITY";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_PAETH_INTRA, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ENABLE_PAETH_INTRA";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_QM, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ENABLE_QM";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_RECT_PARTITIONS, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK)
+      << "Failed to set AV1E_SET_ENABLE_RECT_PARTITIONS";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_RESTORATION, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ENABLE_RESTORATION";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_SMOOTH_INTERINTRA, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK)
+      << "Failed to set AV1E_SET_ENABLE_SMOOTH_INTERINTRA";
+  error = aom_codec_control(codec.get(), AV1E_SET_ENABLE_TX64, 0);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ENABLE_TX64";
+  error = aom_codec_control(codec.get(), AV1E_SET_MAX_REFERENCE_FRAMES, 3);
+  DCHECK_EQ(error, AOM_CODEC_OK)
+      << "Failed to set AV1E_SET_MAX_REFERENCE_FRAMES";
 
   codec_ = std::move(codec);
   return true;
@@ -174,8 +235,11 @@ void WebrtcVideoEncoderAV1::ConfigureCodecParams() {
   config_.rc_max_quantizer = 0;
   config_.rc_min_quantizer = 0;
   config_.rc_dropframe_thresh = 0;
-  config_.rc_undershoot_pct = 100;
-  config_.rc_overshoot_pct = 15;
+  config_.rc_undershoot_pct = 50;
+  config_.rc_overshoot_pct = 50;
+  config_.rc_buf_initial_sz = 600;
+  config_.rc_buf_optimal_sz = 600;
+  config_.rc_buf_sz = 1000;
   config_.rc_end_usage = AOM_CBR;
   config_.rc_target_bitrate = 1024;  // 1024 Kbps = 1Mbps.
 }

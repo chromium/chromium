@@ -402,7 +402,6 @@ WebrtcVideoEncoderWrapper::ReturnEncodedFrame(
 #endif
   } else if (frame.codec == webrtc::kVideoCodecAV1) {
     // TODO(joedow): Set codec specific params for AV1 here.
-    NOTIMPLEMENTED();
   } else {
     NOTREACHED();
   }
