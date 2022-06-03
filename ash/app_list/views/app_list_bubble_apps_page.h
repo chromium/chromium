@@ -80,9 +80,9 @@ class ASH_EXPORT AppListBubbleAppsPage
   // Starts the launcher show animation.
   void AnimateShowLauncher(bool is_side_shelf);
 
-  // Starts the launcher hide animation. None of the child views animate, but
+  // Prepares for launcher hide animation. None of the child views animate, but
   // this disables the scroll view gradient mask to improve performance.
-  void AnimateHideLauncher();
+  void PrepareForHideLauncher();
 
   // Starts the animation for showing the apps page, coming from another page.
   void AnimateShowPage();

@@ -1471,6 +1471,10 @@ bool AppListControllerImpl::ShouldDismissImmediately() {
   if (should_dismiss_immediately_)
     return true;
 
+  if (features::IsProductivityLauncherEnabled())
+    return false;
+
+  // Dismiss immediately if the peeking launcher is below the shelf's top edge.
   DCHECK(Shell::HasInstance());
   const int ideal_shelf_y =
       Shelf::ForWindow(

@@ -363,6 +363,17 @@ void AppListBubbleView::StartHideAnimation(
   // Ensure any in-progress animations have their cleanup callbacks called.
   AbortAllAnimations();
 
+  if (current_page_ == AppListBubblePage::kApps)
+    apps_page_->PrepareForHideLauncher();
+
+  const gfx::Rect target_bounds = layer()->GetTargetBounds();
+
+  if (view_delegate_->ShouldDismissImmediately()) {
+    // Don't animate, just clean up.
+    OnHideAnimationEnded(target_bounds);
+    return;
+  }
+
   ui::AnimationThroughputReporter reporter(
       layer()->GetAnimator(),
       metrics_util::ForSmoothness(base::BindRepeating([](int value) {
@@ -383,12 +394,8 @@ void AppListBubbleView::StartHideAnimation(
   // Opacity: 100% → 0%
   // Duration: 100ms
   // Ease: Linear
-  const gfx::Rect target_bounds = layer()->GetTargetBounds();
   const gfx::Rect final_bounds =
       GetShowHideAnimationBounds(is_side_shelf, target_bounds);
-
-  if (current_page_ == AppListBubblePage::kApps)
-    apps_page_->AnimateHideLauncher();
 
   views::AnimationBuilder()
       .OnEnded(base::BindOnce(&AppListBubbleView::OnHideAnimationEnded,

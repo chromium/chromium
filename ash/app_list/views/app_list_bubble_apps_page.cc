@@ -320,7 +320,7 @@ void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
                           weak_factory_.GetWeakPtr()));
 }
 
-void AppListBubbleAppsPage::AnimateHideLauncher() {
+void AppListBubbleAppsPage::PrepareForHideLauncher() {
   // Remove the gradient mask from the scroll view to improve performance.
   gradient_helper_.reset();
 }

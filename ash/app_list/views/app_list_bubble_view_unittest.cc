@@ -43,6 +43,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -485,6 +486,37 @@ TEST_F(AppListBubbleViewTest, HideAnimationsRecordsSmoothnessHistogram) {
   // Smoothness was recorded.
   histograms.ExpectTotalCount(
       "Apps.ClamshellLauncher.AnimationSmoothness.Close", 1);
+}
+
+TEST_F(AppListBubbleViewTest, AssistantScreenshotClosesBubbleWithoutAnimation) {
+  SimulateAssistantEnabled();
+  AddAppItems(5);
+
+  // Show the app list without animation.
+  ShowAppList();
+
+  // Switch to the assistant page.
+  LeftClickOn(GetSearchBoxView()->assistant_button());
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Simulate the app list being closed by taking a screenshot with assistant.
+  // This makes AppListControllerImpl::ShouldDismissImmediately() return true.
+  AssistantUiController::Get()->ToggleUi(
+      absl::nullopt, chromeos::assistant::AssistantExitPoint::kScreenshot);
+
+  // The bubble dismissed immediately so it is not animating.
+  ui::Layer* bubble_layer = GetAppListTestHelper()->GetBubbleView()->layer();
+  ASSERT_TRUE(bubble_layer);
+  EXPECT_FALSE(IsAnimatingProperty(
+      bubble_layer, ui::LayerAnimationElement::AnimatableProperty::BOUNDS));
+  EXPECT_FALSE(IsAnimatingProperty(
+      bubble_layer, ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+
+  // App list is closed.
+  EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible());
 }
 
 TEST_F(AppListBubbleViewTest, ShutdownDuringHideAnimationDoesNotCrash) {
