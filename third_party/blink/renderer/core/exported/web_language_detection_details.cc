@@ -68,7 +68,10 @@ String GetLanguageCode(const String& language) {
 
   Vector<String> language_codes;
   language.Split("-", language_codes);
-  return language_codes[0];
+  // Split function default is not allowed empty entry which cause potentical
+  // crash when |langauge_codes| may be empty (for example, if |language| is
+  // '-').
+  return language_codes.IsEmpty() ? "" : language_codes[0];
 }
 
 void MatchTargetLanguageWithAcceptLanguages(
