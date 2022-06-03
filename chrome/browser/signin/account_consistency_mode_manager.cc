@@ -194,7 +194,7 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
-    VLOG(1) << "Desktop Identity Consistency disabled as sign-in to Chrome"
+    VLOG(1) << "Desktop Identity Consistency disabled as sign-in to Chrome "
                "is not allowed";
     return AccountConsistencyMethod::kDisabled;
   }
