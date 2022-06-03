@@ -299,9 +299,9 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeRelativeSelector(
   std::unique_ptr<CSSParserSelector> selector =
       std::make_unique<CSSParserSelector>();
   selector->SetMatch(CSSSelector::kPseudoClass);
-  selector->UpdatePseudoType("-internal-relative-leftmost", *context_,
+  selector->UpdatePseudoType("-internal-relative-anchor", *context_,
                              false /*has_arguments*/, context_->Mode());
-  DCHECK_EQ(selector->GetPseudoType(), CSSSelector::kPseudoRelativeLeftmost);
+  DCHECK_EQ(selector->GetPseudoType(), CSSSelector::kPseudoRelativeAnchor);
 
   CSSSelector::RelationType combinator = ConsumeCombinator(range);
   switch (combinator) {

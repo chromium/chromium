@@ -110,13 +110,13 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   //   - Argument selector conditions
   //     - Starts with descendant combinator.
   //   - E.g. ':has(.a)', ':has(.a ~ .b)', ':has(.a ~ .b > .c)'
-  //   - Traverse all descendants of the :has scope element.
+  //   - Traverse all descendants of the :has() anchor element.
   // Case 2:  (kChild, 0, max)
   //   - Argument selector conditions
   //     - Starts with child combinator.
   //     - At least one descendant combinator.
   //   - E.g. ':has(> .a .b)', ':has(> .a ~ .b .c)', ':has(> .a + .b .c)'
-  //   - Traverse all descendants of the :has scope element.
+  //   - Traverse all descendants of the :has() anchor element.
   // Case 3:  (kChild, 0, n)
   //   - Argument selector conditions
   //     - Starts with child combinator.
@@ -125,50 +125,50 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   //   - E.g.
   //     - ':has(> .a)'            : (kChild, 0, 1)
   //     - ':has(> .a ~ .b > .c)'  : (kChild, 0, 2)
-  //   - Traverse the depth n descendants of the :has scope element.
+  //   - Traverse the depth n descendants of the :has() anchor element.
   // Case 4:  (kIndirectAdjacent, max, max)
   //   - Argument selector conditions
-  //     - Starts with subsequent-sibling combinator.
+  //     - Starts with indirect adjacent combinator.
   //     - At least one descendant combinator.
   //   - E.g. ':has(~ .a .b)', ':has(~ .a + .b > .c ~ .d .e)'
-  //   - Traverse all the subsequent sibling subtrees of the :has scope element.
-  //     (all subsequent siblings and it's descendants)
+  //   - Traverse all the subsequent sibling subtrees of the :has() anchor
+  //     element. (all subsequent siblings and its descendants)
   // Case 5:  (kIndirectAdjacent, max, 0)
   //   - Argument selector conditions
-  //     - Starts with subsequent-sibling combinator.
+  //     - Starts with indirect adjacent combinator.
   //     - No descendant/child combinator.
   //   - E.g. ':has(~ .a)', ':has(~ .a + .b ~ .c)'
-  //   - Traverse all subsequent siblings of the :has scope element.
+  //   - Traverse all subsequent siblings of the :has() anchor element.
   // Case 6:  (kIndirectAdjacent, max, n)
   //   - Argument selector conditions
-  //     - Starts with subsequent-sibling combinator.
+  //     - Starts with indirect adjacent combinator.
   //     - n number of child combinator. (n > 0)
   //     - No descendant combinator.
   //   - E.g.
   //     - ':has(~ .a > .b)'                 : (kIndirectAdjacent, max, 1)
   //     - ':has(~ .a + .b > .c ~ .d > .e)'  : (kIndirectAdjacent, max, 2)
   //   - Traverse depth n elements of all subsequent sibling subtree of the
-  //     :has scope element.
+  //     :has() anchor element.
   // Case 7:  (kDirectAdjacent, max, max)
   //   - Argument selector conditions
-  //     - Starts with next-sibling combinator.
-  //     - At least one subsequent-sibling combinator to the left of every
+  //     - Starts with direct adjacent combinator.
+  //     - At least one indirect adjacent combinator to the left of every
   //       descendant or child combinator.
   //     - At least 1 descendant combinator.
   //   - E.g. ':has(+ .a ~ .b .c)', ':has(+ .a ~ .b > .c + .d .e)'
-  //   - Traverse all the subsequent sibling subtrees of the :has scope element.
-  //     (all subsequent siblings and it's descendants)
+  //   - Traverse all the subsequent sibling subtrees of the :has() anchor
+  //     element. (all subsequent siblings and its descendants)
   // Case 8:  (kDirectAdjacent, max, 0)
   //   - Argument selector conditions
-  //     - Starts with next-sibling combinator.
-  //     - At least one subsequent-sibling combinator.
+  //     - Starts with direct adjacent combinator.
+  //     - At least one indirect adjacent combinator.
   //     - No descendant/child combinator.
   //   - E.g. ':has(+ .a ~ .b)', ':has(+ .a + .b ~ .c)'
-  //   - Traverse all subsequent siblings of the :has scope element.
+  //   - Traverse all subsequent siblings of the :has() anchor element.
   // Case 9:  (kDirectAdjacent, max, n)
   //   - Argument selector conditions
-  //     - Starts with next-sibling combinator.
-  //     - At least one subsequent-sibling combinator to the left of every
+  //     - Starts with direct adjacent combinator.
+  //     - At least one indirect adjacent combinator to the left of every
   //       descendant or child combinator.
   //     - n number of child combinator. (n > 0)
   //     - No descendant combinator.
@@ -176,36 +176,36 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   //     - ':has(+ .a ~ .b > .c)'            : (kDirectAdjacent, max, 1)
   //     - ':has(+ .a ~ .b > .c + .d >.e)'   : (kDirectAdjacent, max, 2)
   //   - Traverse depth n elements of all subsequent sibling subtree of the
-  //     :has scope element.
+  //     :has() anchor element.
   // Case 10:  (kDirectAdjacent, n, max)
   //   - Argument selector conditions
-  //     - Starts with next-sibling combinator.
-  //     - n number of next-sibling combinator to the left of the leftmost
+  //     - Starts with direct adjacent combinator.
+  //     - n number of direct adjacent combinator to the left of the leftmost
   //       child(or descendant) combinator. (n > 0)
-  //     - No subsequent-sibling combinator to the left of the leftmost child
+  //     - No indirect adjacent combinator to the left of the leftmost child
   //       (or descendant) combinator.
   //     - At least 1 descendant combinator.
   //   - E.g.
   //     - ':has(+ .a .b)'            : (kDirectAdjacent, 1, max)
   //     - ':has(+ .a > .b + .c .d)'  : (kDirectAdjacent, 1, max)
   //     - ':has(+ .a + .b > .c .d)'  : (kDirectAdjacent, 2, max)
-  //   - Traverse the distance n sibling subtree of the :has scope element.
-  //     (sibling element at distance n, and it's descendants).
+  //   - Traverse the distance n sibling subtree of the :has() anchor element.
+  //     (sibling element at distance n, and its descendants).
   // Case 11:  (kDirectAdjacent, n, 0)
   //   - Argument selector conditions
-  //     - Starts with next-sibling combinator.
-  //     - n number of next-sibling combinator. (n > 0)
-  //     - No child/descendant/subsequent-sibling combinator.
+  //     - Starts with direct adjacent combinator.
+  //     - n number of direct adjacent combinator. (n > 0)
+  //     - No child/descendant/indirect-adjacent combinator.
   //   - E.g.
   //     - ':has(+ .a)'            : (kDirectAdjacent, 1, 0)
   //     - ':has(+ .a + .b + .c)'  : (kDirectAdjacent, 3, 0)
-  //   - Traverse the distance n sibling element of the :has scope element.
+  //   - Traverse the distance n sibling element of the :has() anchor element.
   // Case 12:  (kDirectAdjacent, n, m)
   //   - Argument selector conditions
-  //     - Starts with next-sibling combinator.
-  //     - n number of next-sibling combinator to the left of the leftmost
+  //     - Starts with direct adjacent combinator.
+  //     - n number of direct adjacent combinator to the left of the leftmost
   //       child combinator. (n > 0)
-  //     - No subsequent-sibling combinator to the left of the leftmost child
+  //     - No indirect adjacent combinator to the left of the leftmost child
   //       combinator.
   //     - n number of child combinator. (n > 0)
   //     - No descendant combinator.
@@ -213,8 +213,8 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   //     - ':has(+ .a > .b)'                 : (kDirectAdjacent, 1, 1)
   //     - ':has(+ .a + .b > .c ~ .d > .e)'  : (kDirectAdjacent, 2, 2)
   //   - Traverse the depth m elements of the distance n sibling subtree of
-  //     the :has scope element. (elements at depth m of the descendant subtree
-  //     of the sibling element at distance n)
+  //     the :has() anchor element. (elements at depth m of the descendant
+  //     subtree of the sibling element at distance n)
   CSSSelector::RelationType leftmost_relation_{CSSSelector::kSubSelector};
   int adjacent_distance_limit_;
   int depth_limit_;
@@ -228,44 +228,44 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   const CSSSelector* has_argument_;
 };
 
-// Subtree traversal iterator class for ':has' argument checking. To solve the
+// Subtree traversal iterator class for :has() argument checking. To solve the
 // following issues, this traversal uses the reversed DOM tree order, and
 // provides a functionality to limit the traversal depth.
 //
 // 1. Cache 'Matched' and 'NotMatched' candidate elements while checking the
-// ':has()' argument selector.
+//    :has() argument selector.
 //
 // SelectorChecker::CheckPseudoHas() can get all 'Matched' candidates (elements
-// that can be a subject of the :has() pseudo class) while checking the ':has()'
-// argument selector on an element in the traversal range. And when it found the
+// that can be a :has() anchor element) while checking the :has() argument
+// selector on an element in the traversal range. And when it found the
 // elements, it caches those as 'Matched' candidates.
 // By following the reversed DOM tree order, we can get these two advantages.
 // - Maximize the number of 'Matched' candidates that can be cached while
 //   checking :has() argument selector.
-// - Can cache 'NotMatched' candidates (elements that cannot be a subject of
-//   the :has() pseudo class) in case of these 4 traversal scope types:
+// - Can cache 'NotMatched' candidates (elements that cannot be a :has() anchor
+//   element) in case of these 4 traversal scope types:
 //   - kSubtree
 //   - kAllNextSiblings
 //   - kOneNextSiblingSubtree
 //   - kAllNextSiblingSubtrees
 //   While traversing, we can cache an element as 'NotMatched' if the element is
 //   not cached as 'Matched' because it must be cached as 'Matched' previously
-//   if it is a subject of the :has() pseudo class. (Reversed DOM tree order
-//   guarantees that all the descendants, next siblings and next sibling
-//   subtrees were already traversed)
+//   if it is a :has() anchor element. (Reversed DOM tree order guarantees that
+//   all the descendants, next siblings and next sibling subtrees were already
+//   traversed)
 //
 // 2. Prevent unnecessary subtree traversal when it can be limited with
-// child combinator or direct sibling combinator.
+//    child combinator or direct adjacent combinator.
 //
-// We can limit the tree traversal range when we count the leftmost
-// combinators of a ':has' argument selector. For example, when we have
-// 'div:has(> .a > .b)', instead of traversing all the descendants
-// of div element, we can limit the traversal only for the elements at
-// depth 2 of the div element. When we have 'div:has(+ .a > .b)',
-// we can limit the traversal only for the child elements of the direct
-// adjacent sibling of the div element. To implement this, we need a
-// way to limit the traversal depth and a way to check whether the
-// iterator is currently at the fixed depth or not.
+// We can limit the tree traversal range when we count the leftmost combinators
+// of a :has() argument selector. For example, when we check ':has(> .a > .b)'
+// on an element, instead of traversing all the descendants of the :has() anchor
+// element, we can limit the traversal only for the elements at depth 2 of the
+// :has() anchor element. When we check ':has(+ .a > .b)', we can limit the
+// traversal only for the child elements of the direct adjacent sibling of the
+// :has() anchor element. To implement this, we need a way to limit the
+// traversal depth and a way to check whether the iterator is currently at the
+// fixed depth or not.
 class CORE_EXPORT CheckPseudoHasArgumentTraversalIterator {
   STACK_ALLOCATED();
 
@@ -276,12 +276,12 @@ class CORE_EXPORT CheckPseudoHasArgumentTraversalIterator {
   Element* CurrentElement() const { return current_element_; }
   bool AtEnd() const { return !current_element_; }
   inline int CurrentDepth() const { return current_depth_; }
-  inline Element* ScopeElement() const { return has_scope_element_; }
+  inline Element* ScopeElement() const { return has_anchor_element_; }
 
  private:
   inline Element* LastWithin(Element*);
 
-  Element* const has_scope_element_;
+  Element* const has_anchor_element_;
   int depth_limit_;
   Element* last_element_{nullptr};
   Element* sibling_at_fixed_distance_{nullptr};

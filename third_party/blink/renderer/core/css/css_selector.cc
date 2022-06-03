@@ -134,7 +134,7 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
           return MaximumSpecificity(SelectorList());
         case kPseudoHas:
           return MaximumSpecificity(SelectorList());
-        case kPseudoRelativeLeftmost:
+        case kPseudoRelativeAnchor:
           return 0;
         // FIXME: PseudoAny should base the specificity on the sub-selectors.
         // See http://lists.w3.org/Archives/Public/www-style/2010Sep/0530.html
@@ -347,7 +347,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoModal:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoHas:
-    case kPseudoRelativeLeftmost:
+    case kPseudoRelativeAnchor:
       return kPseudoIdNone;
   }
 
@@ -374,7 +374,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
      CSSSelector::kPseudoWebKitCustomElement},
     {"-internal-modal", CSSSelector::kPseudoModal},
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
-    {"-internal-relative-leftmost", CSSSelector::kPseudoRelativeLeftmost},
+    {"-internal-relative-anchor", CSSSelector::kPseudoRelativeAnchor},
     {"-internal-selector-fragment-anchor",
      CSSSelector::kPseudoSelectorFragmentAnchor},
     {"-internal-shadow-host-has-appearance",
@@ -751,7 +751,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoPlaying:
     case kPseudoReadOnly:
     case kPseudoReadWrite:
-    case kPseudoRelativeLeftmost:
+    case kPseudoRelativeAnchor:
     case kPseudoRequired:
     case kPseudoRoot:
     case kPseudoScope:
@@ -899,7 +899,7 @@ const CSSSelector* CSSSelector::SerializeCompound(
         case kPseudoIs:
         case kPseudoWhere:
           break;
-        case kPseudoRelativeLeftmost:
+        case kPseudoRelativeAnchor:
           NOTREACHED();
           return nullptr;
         default:

@@ -290,12 +290,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoSpellingError,
     kPseudoGrammarError,
     kPseudoHas,
-
-    // TODO(blee@igalia.com) Need to clarify the :scope dependency in relative
-    // selector definition.
-    // - spec : https://www.w3.org/TR/selectors-4/#relative
-    // - csswg issue : https://github.com/w3c/csswg-drafts/issues/6399
-    kPseudoRelativeLeftmost,
+    kPseudoRelativeAnchor,
 
     // The following selectors are used to target pseudo elements created for
     // DocumentTransition.

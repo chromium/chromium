@@ -911,7 +911,7 @@ void RuleFeatureSet::CollectValuesInHasArgument(
 
     bool value_added = false;
     const CSSSelector* simple = relative_selector;
-    while (simple->GetPseudoType() != CSSSelector::kPseudoRelativeLeftmost) {
+    while (simple->GetPseudoType() != CSSSelector::kPseudoRelativeAnchor) {
       value_added |= AddValueOfSimpleSelectorInHasArgument(*simple);
 
       if (simple->Relation() != CSSSelector::kSubSelector) {

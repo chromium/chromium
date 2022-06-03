@@ -1363,8 +1363,8 @@ TEST_F(CheckPseudoHasCacheScopeContextTest,
                {"#div14", kNotCached, kNotYetChecked}});
 
   // ':has(.a .b)' does not match #div1211 but this caches possibly matched
-  // elements because argument selector matching can cross over the :has()
-  // scope element.
+  // elements because argument selector checking can cross over the :has()
+  // anchor element.
   TestMatches(document, "div1211", ":has(.a .b)",
               /* expected_match_result */ false,
               /* expected_result_cache_count */ 8,
@@ -1383,8 +1383,8 @@ TEST_F(CheckPseudoHasCacheScopeContextTest,
                {"#div14", kNotCached, kNotYetChecked}});
 
   // ':has(.a .b)' does not match #div13 but this caches possibly matched
-  // elements because argument selector matching can cross over the :has()
-  // scope element.
+  // elements because argument selector checking can cross over the :has()
+  // anchor element.
   TestMatches(document, "div13", ":has(.a .b)",
               /* expected_match_result */ false,
               /* expected_result_cache_count */ 6,
