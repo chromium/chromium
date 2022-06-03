@@ -468,7 +468,7 @@ TEST_F(OopPixelTest, DrawRecordPaintFilterTranslatedBounds) {
   // green, but its record bounds are configured to clip it to the bottom right
   // quarter of the output.
   PaintFlags internal_flags;
-  internal_flags.setColor4f(SkColors::kGreen);
+  internal_flags.setColor(SkColors::kGreen);
   sk_sp<PaintOpBuffer> filter_buffer(new PaintOpBuffer);
   filter_buffer->push<DrawRectOp>(
       SkRect::MakeLTRB(output_size.width() / 2.f, 0.f, output_size.width(),
@@ -617,7 +617,7 @@ TEST_F(OopPixelTest, DrawRecordShaderTranslatedTileRect) {
   // tiling starts from the origin, so starting at 2,1 in the offset_rect
   // below cuts off part of that, leaving two green i's.
   PaintFlags internal_flags;
-  internal_flags.setColor4f(SkColors::kGreen);
+  internal_flags.setColor(SkColors::kGreen);
   sk_sp<PaintOpBuffer> shader_buffer(new PaintOpBuffer);
   shader_buffer->push<DrawRectOp>(SkRect::MakeXYWH(x_offset, y_offset, 1, 2),
                                   internal_flags);
@@ -1514,7 +1514,7 @@ TEST_F(OopPixelTest, DrawRectColorSpace) {
   display_item_list->StartPaint();
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
-  flags.setColor4f(SkColors::kGreen);
+  flags.setColor(SkColors::kGreen);
   display_item_list->push<DrawRectOp>(
       gfx::RectToSkRect(gfx::Rect(options.resource_size)), flags);
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
@@ -1872,7 +1872,7 @@ class OopTextBlobPixelTest
 
     PaintFlags text_flags;
     text_flags.setStyle(PaintFlags::kFill_Style);
-    text_flags.setColor4f(SkColors::kGreen);
+    text_flags.setColor(SkColors::kGreen);
     if (filter && (strategy == TextBlobStrategy::kDirect ||
                    strategy == TextBlobStrategy::kDrawRecord)) {
       // If there's a filter, the only PaintFlags that are available for these
@@ -2048,7 +2048,7 @@ TEST_F(OopPixelTest, DrawTextMultipleRasterCHROMIUM) {
   display_item_list->StartPaint();
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
-  flags.setColor4f(SkColors::kGreen);
+  flags.setColor(SkColors::kGreen);
   display_item_list->push<DrawTextBlobOp>(BuildTextBlob(sk_typeface_1), 0.0f,
                                           kTextBlobY, flags);
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
@@ -2089,7 +2089,7 @@ TEST_F(OopPixelTest, DrawTextBlobPersistentShaderCache) {
   display_item_list->StartPaint();
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
-  flags.setColor4f(SkColors::kGreen);
+  flags.setColor(SkColors::kGreen);
   display_item_list->push<DrawTextBlobOp>(BuildTextBlob(), 0.0f, kTextBlobY,
                                           flags);
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
@@ -2391,11 +2391,11 @@ class OopPathPixelTest : public OopPixelTest,
     display_item_list->push<DrawColorOp>(SkColors::kWhite, SkBlendMode::kSrc);
     PaintFlags flags;
     flags.setStyle(PaintFlags::kFill_Style);
-    flags.setColor4f(SkColors::kGreen);
+    flags.setColor(SkColors::kGreen);
     SkPath path;
     path.addCircle(20, 20, 10);
     display_item_list->push<DrawPathOp>(path, flags);
-    flags.setColor4f(SkColors::kBlue);
+    flags.setColor(SkColors::kBlue);
     display_item_list->push<DrawRectOp>(SkRect::MakeWH(10, 10), flags);
     display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
     display_item_list->Finalize();
@@ -2427,7 +2427,7 @@ TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
   shader_record->push<DrawColorOp>(SkColors::kWhite, SkBlendMode::kSrc);
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
-  flags.setColor4f(SkColors::kGreen);
+  flags.setColor(SkColors::kGreen);
   shader_record->push<DrawRectOp>(rect, flags);
   auto shader = PaintShader::MakePaintRecord(
       shader_record, rect, SkTileMode::kRepeat, SkTileMode::kRepeat, nullptr);

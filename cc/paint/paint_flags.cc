@@ -144,7 +144,7 @@ SkPaint PaintFlags::ToSkPaint() const {
   paint.setColorFilter(color_filter_);
   if (image_filter_)
     paint.setImageFilter(image_filter_->cached_sk_filter_);
-  paint.setColor4f(color_);
+  paint.setColor(color_);
   paint.setStrokeWidth(width_);
   paint.setStrokeMiter(miter_limit_);
   paint.setBlendMode(getBlendMode());

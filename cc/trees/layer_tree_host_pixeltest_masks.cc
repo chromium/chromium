@@ -70,7 +70,7 @@ class MaskContentLayerClient : public ContentLayerClient {
     PaintFlags flags;
     flags.setStyle(PaintFlags::kStroke_Style);
     flags.setStrokeWidth(SkIntToScalar(2));
-    flags.setColor4f(SkColors::kWhite);
+    flags.setColor(SkColors::kWhite);
 
     gfx::Rect inset_rect(bounds_);
     while (!inset_rect.IsEmpty()) {
@@ -792,7 +792,7 @@ class LayerTreeHostMaskAsBlendingPixelTest
     display_list->StartPaint();
     display_list->push<DrawColorOp>(color_even, SkBlendMode::kSrc);
     PaintFlags flags;
-    flags.setColor4f(color_odd);
+    flags.setColor(color_odd);
     for (int j = 0; j < (bounds.height() + kGridSize - 1) / kGridSize; j++) {
       for (int i = 0; i < (bounds.width() + kGridSize - 1) / kGridSize; i++) {
         bool is_odd_grid = (i ^ j) & 1;
