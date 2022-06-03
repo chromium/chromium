@@ -11,6 +11,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gtk/gtk_util.h"
 
 namespace gtk {
@@ -21,6 +22,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
     return;
 
   ui::ColorMixer& mixer = provider->AddMixer();
+
   const std::string header_selector =
       key.frame_type == ui::ColorProviderManager::FrameType::kChromium
           ? "#headerbar.header-bar.titlebar"
@@ -228,6 +230,152 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       "GtkTreeView#treeview.view "
       "GtkTreeView#treeview.view.cell:selected:focus GtkLabel#label")};
   mixer[ui::kColorNativeWindowBackground] = {GetBgColor("")};
+
+  // Core colors
+  mixer[ui::kColorAccent] = {ui::kColorNativeTreeNodeBackgroundSelectedFocused};
+  mixer[ui::kColorAlertHighSeverity] = {SelectBasedOnDarkInput(
+      ui::kColorPrimaryBackground, gfx::kGoogleRed300, gfx::kGoogleRed600)};
+  mixer[ui::kColorAlertLowSeverity] = {SelectBasedOnDarkInput(
+      ui::kColorPrimaryBackground, gfx::kGoogleGreen300, gfx::kGoogleGreen700)};
+  mixer[ui::kColorAlertMediumSeverity] = {
+      SelectBasedOnDarkInput(ui::kColorPrimaryBackground, gfx::kGoogleYellow300,
+                             gfx::kGoogleYellow700)};
+  mixer[ui::kColorDisabledForeground] = {
+      ui::kColorNativeLabelForegroundDisabled};
+  mixer[ui::kColorItemHighlight] = {ui::kColorNativeTextfieldBorderFocused};
+  mixer[ui::kColorItemSelectionBackground] = {ui::kColorAccent};
+  mixer[ui::kColorMenuSelectionBackground] = {
+      ui::kColorNativeMenuItemBackgroundHovered};
+  mixer[ui::kColorMidground] = {ui::kColorNativeSeparator};
+  mixer[ui::kColorPrimaryBackground] = {ui::kColorNativeWindowBackground};
+  mixer[ui::kColorPrimaryForeground] = {ui::kColorNativeLabelForeground};
+  mixer[ui::kColorSecondaryForeground] = {
+      ui::kColorNativeLabelForegroundDisabled};
+  mixer[ui::kColorTextSelectionBackground] = {
+      ui::kColorNativeLabelBackgroundSelected};
+  mixer[ui::kColorTextSelectionForeground] = {
+      ui::kColorNativeLabelForegroundSelected};
+
+  // UI element colors
+  mixer[ui::kColorAvatarHeaderArt] =
+      AlphaBlend(ui::kColorPrimaryForeground, ui::kColorPrimaryBackground,
+                 gfx::kGoogleGreyAlpha300);
+  mixer[ui::kColorAvatarIconGuest] =
+      DeriveDefaultIconColor(ui::kColorPrimaryForeground);
+  mixer[ui::kColorButtonBackground] = {ui::kColorNativeButtonBackground};
+  mixer[ui::kColorButtonBackgroundProminentDisabled] = {
+      ui::kColorNativeButtonBackgroundDisabled};
+  mixer[ui::kColorButtonBorder] = {ui::kColorNativeButtonBorder};
+  mixer[ui::kColorButtonBorderDisabled] = {
+      ui::kColorNativeButtonBackgroundDisabled};
+  mixer[ui::kColorButtonForeground] = {ui::kColorNativeButtonForeground};
+  mixer[ui::kColorButtonForegroundChecked] = {ui::kColorAccent};
+  mixer[ui::kColorButtonForegroundDisabled] = {
+      ui::kColorNativeButtonForegroundDisabled};
+  mixer[ui::kColorButtonForegroundProminent] = {
+      ui::kColorNativeTreeNodeForegroundSelectedFocused};
+  mixer[ui::kColorButtonForegroundUnchecked] = {ui::kColorButtonForeground};
+  mixer[ui::kColorDialogForeground] = {ui::kColorPrimaryForeground};
+  mixer[ui::kColorDropdownBackground] = {ui::kColorNativeComboboxBackground};
+  mixer[ui::kColorDropdownBackgroundSelected] = {
+      ui::kColorNativeComboboxBackgroundHovered};
+  mixer[ui::kColorDropdownForeground] = {ui::kColorNativeComboboxForeground};
+  mixer[ui::kColorDropdownForegroundSelected] = {
+      ui::kColorNativeComboboxForegroundHovered};
+  mixer[ui::kColorFrameActive] = {ui::kColorNativeFrameActive};
+  mixer[ui::kColorFrameInactive] = {ui::kColorNativeFrameInactive};
+  mixer[ui::kColorFocusableBorderUnfocused] = {
+      ui::kColorNativeTextfieldBorderUnfocused};
+  mixer[ui::kColorHelpIconActive] = {
+      ui::kColorNativeImageButtonForegroundHovered};
+  mixer[ui::kColorIcon] = {ui::kColorNativeButtonIcon};
+  mixer[ui::kColorHelpIconInactive] = {ui::kColorNativeImageButtonForeground};
+  mixer[ui::kColorLinkForeground] = {ui::kColorNativeLinkForeground};
+  mixer[ui::kColorLinkForegroundDisabled] = {
+      ui::kColorNativeLinkForegroundDisabled};
+  mixer[ui::kColorLinkForegroundPressed] = {
+      ui::kColorNativeLinkForegroundHovered};
+  mixer[ui::kColorMenuBackground] = {ui::kColorNativeMenuBackground};
+  mixer[ui::kColorMenuBorder] = {ui::kColorNativeMenuBorder};
+  mixer[ui::kColorMenuDropmarker] = {ui::kColorMenuItemForeground};
+  mixer[ui::kColorMenuIcon] = {ui::kColorNativeMenuRadio};
+  mixer[ui::kColorMenuItemBackgroundHighlighted] = {ui::kColorMenuBackground};
+  mixer[ui::kColorMenuItemForeground] = {ui::kColorNativeMenuItemForeground};
+  mixer[ui::kColorMenuItemForegroundHighlighted] = {
+      ui::kColorMenuItemForeground};
+  mixer[ui::kColorMenuItemForegroundDisabled] = {
+      ui::kColorNativeMenuItemForegroundDisabled};
+  mixer[ui::kColorMenuItemForegroundSecondary] = {
+      ui::kColorNativeMenuItemAccelerator};
+  mixer[ui::kColorMenuItemForegroundSelected] = {
+      ui::kColorNativeMenuItemForegroundHovered};
+  mixer[ui::kColorMenuSeparator] = {ui::kColorNativeMenuSeparator};
+  mixer[ui::kColorNotificationInputForeground] = {
+      ui::kColorNativeTreeNodeForegroundSelectedFocused};
+  mixer[ui::kColorOverlayScrollbarFill] = {
+      ui::kColorNativeScrollbarSliderBackground};
+  mixer[ui::kColorOverlayScrollbarFillHovered] = {
+      ui::kColorNativeScrollbarSliderBackgroundHovered};
+  mixer[ui::kColorOverlayScrollbarStroke] = {
+      ui::kColorNativeScrollbarTroughBackground};
+  mixer[ui::kColorOverlayScrollbarStrokeHovered] = {
+      ui::kColorNativeScrollbarTroughBackgroundHovered};
+  mixer[ui::kColorSliderThumb] = {ui::kColorNativeScaleHighlightBackground};
+  mixer[ui::kColorSliderThumbMinimal] = {
+      ui::kColorNativeScaleHighlightBackgroundDisabled};
+  mixer[ui::kColorSliderTrack] = {ui::kColorNativeScaleTroughBackground};
+  mixer[ui::kColorSliderTrackMinimal] = {
+      ui::kColorNativeScaleTroughBackgroundDisabled};
+  mixer[ui::kColorSyncInfoBackground] = {ui::kColorNativeStatusbarBackground};
+  mixer[ui::kColorTabBackgroundHighlighted] = {
+      ui::kColorNativeTabBackgroundChecked};
+  mixer[ui::kColorTabBackgroundHighlightedFocused] = {
+      ui::kColorNativeTabBackgroundCheckedFocused};
+  mixer[ui::kColorTabContentSeparator] = {ui::kColorNativeFrameBorder};
+  mixer[ui::kColorTabForegroundSelected] = {ui::kColorPrimaryForeground};
+  mixer[ui::kColorTableBackground] = {ui::kColorTreeBackground};
+  mixer[ui::kColorTableBackgroundAlternate] = {ui::kColorTreeBackground};
+  mixer[ui::kColorTableBackgroundSelectedUnfocused] = {
+      ui::kColorTreeNodeBackgroundSelectedUnfocused};
+  mixer[ui::kColorTableForeground] = {ui::kColorTreeNodeForeground};
+  mixer[ui::kColorTableForegroundSelectedFocused] = {
+      ui::kColorTreeNodeForegroundSelectedFocused};
+  mixer[ui::kColorTableForegroundSelectedUnfocused] = {
+      ui::kColorTreeNodeForegroundSelectedUnfocused};
+  mixer[ui::kColorTableGroupingIndicator] = {ui::kColorTableForeground};
+  mixer[ui::kColorTableHeaderBackground] = {
+      ui::kColorNativeTreeHeaderBackground};
+  mixer[ui::kColorTableHeaderForeground] = {
+      ui::kColorNativeTreeHeaderForeground};
+  mixer[ui::kColorTableHeaderSeparator] = {ui::kColorNativeTreeHeaderBorder};
+  mixer[ui::kColorTextfieldBackground] = {ui::kColorNativeTextareaBackground};
+  mixer[ui::kColorTextfieldBackgroundDisabled] = {
+      ui::kColorNativeTextareaBackgroundDisabled};
+  mixer[ui::kColorTextfieldForeground] = {ui::kColorNativeTextareaForeground};
+  mixer[ui::kColorTextfieldForegroundDisabled] = {
+      ui::kColorNativeTextareaForegroundDisabled};
+  mixer[ui::kColorTextfieldForegroundPlaceholder] = {
+      ui::kColorNativeTextfieldForegroundPlaceholder};
+  mixer[ui::kColorTextfieldSelectionBackground] = {
+      ui::kColorNativeTextareaBackgroundSelected};
+  mixer[ui::kColorTextfieldSelectionForeground] = {
+      ui::kColorNativeTextareaForegroundSelected};
+  mixer[ui::kColorThrobber] = {ui::kColorNativeSpinner};
+  mixer[ui::kColorThrobberPreconnect] = {ui::kColorNativeSpinnerDisabled};
+  mixer[ui::kColorToggleButtonTrackOff] = {
+      ui::kColorNativeToggleButtonBackgroundUnchecked};
+  mixer[ui::kColorToggleButtonTrackOn] = {
+      ui::kColorNativeToggleButtonBackgroundChecked};
+  mixer[ui::kColorTooltipBackground] = {ui::kColorNativeTooltipBackground};
+  mixer[ui::kColorTooltipForeground] = {ui::kColorNativeTooltipForeground};
+  mixer[ui::kColorTreeBackground] = {ui::kColorNativeTreeNodeBackground};
+  mixer[ui::kColorTreeNodeForeground] = {ui::kColorNativeTreeNodeForeground};
+  mixer[ui::kColorTreeNodeForegroundSelectedFocused] = {
+      ui::kColorNativeTreeNodeForegroundSelectedFocused};
+  mixer[ui::kColorTreeNodeBackgroundSelectedUnfocused] = {
+      ui::kColorNativeTreeNodeBackgroundSelected};
+  mixer[ui::kColorTreeNodeForegroundSelectedUnfocused] = {
+      ui::kColorNativeTreeNodeForegroundSelected};
 }
 
 }  // namespace gtk
