@@ -2223,7 +2223,9 @@ int HttpCache::Transaction::DoTruncateCachedData() {
     return OK;
   net_log_.BeginEvent(NetLogEventType::HTTP_CACHE_WRITE_DATA);
   // Truncate the stream.
-  return WriteToEntry(kResponseContentIndex, 0, nullptr, 0, io_callback_);
+  return entry_->disk_entry->WriteData(kResponseContentIndex, /*offset=*/0,
+                                       /*buf=*/nullptr, /*buf_len=*/0,
+                                       io_callback_, /*truncate=*/true);
 }
 
 int HttpCache::Transaction::DoTruncateCachedDataComplete(int result) {
@@ -3366,25 +3368,6 @@ int HttpCache::Transaction::DoSetupEntryForRead() {
 
   TransitionToState(STATE_FINISH_HEADERS);
   return OK;
-}
-
-int HttpCache::Transaction::WriteToEntry(int index,
-                                         int offset,
-                                         IOBuffer* data,
-                                         int data_len,
-                                         CompletionOnceCallback callback) {
-  if (!entry_)
-    return data_len;
-
-  int rv = 0;
-  if (!partial_ || !data_len) {
-    rv = entry_->disk_entry->WriteData(index, offset, data, data_len,
-                                       std::move(callback), true);
-  } else {
-    rv = partial_->CacheWrite(entry_->disk_entry, data, data_len,
-                              std::move(callback));
-  }
-  return rv;
 }
 
 int HttpCache::Transaction::WriteResponseInfoToEntry(

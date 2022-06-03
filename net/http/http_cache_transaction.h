@@ -466,15 +466,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Fixes the response headers to match expectations for a HEAD request.
   void FixHeadersForHead();
 
-  // Called to write data to the cache entry.  If the write fails, then the
-  // cache entry is destroyed.  Future calls to this function will just do
-  // nothing without side-effect.  Returns a network error code.
-  int WriteToEntry(int index,
-                   int offset,
-                   IOBuffer* data,
-                   int data_len,
-                   CompletionOnceCallback callback);
-
   // Called to write a response to the cache entry. |truncated| indicates if the
   // entry should be marked as incomplete.
   int WriteResponseInfoToEntry(const HttpResponseInfo& response,
