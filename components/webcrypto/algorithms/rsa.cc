@@ -463,22 +463,14 @@ Status RsaHashedAlgorithm::ExportKeyPkcs8(const blink::WebCryptoKey& key,
                                           std::vector<uint8_t>* buffer) const {
   if (key.GetType() != blink::kWebCryptoKeyTypePrivate)
     return Status::ErrorUnexpectedKeyType();
-  // This relies on the fact that PKCS8 formatted data was already
-  // associated with the key during its creation (used by
-  // structured clone).
-  *buffer = GetSerializedKeyData(key);
-  return Status::Success();
+  return ExportPKeyPkcs8(GetEVP_PKEY(key), buffer);
 }
 
 Status RsaHashedAlgorithm::ExportKeySpki(const blink::WebCryptoKey& key,
                                          std::vector<uint8_t>* buffer) const {
   if (key.GetType() != blink::kWebCryptoKeyTypePublic)
     return Status::ErrorUnexpectedKeyType();
-  // This relies on the fact that SPKI formatted data was already
-  // associated with the key during its creation (used by
-  // structured clone).
-  *buffer = GetSerializedKeyData(key);
-  return Status::Success();
+  return ExportPKeySpki(GetEVP_PKEY(key), buffer);
 }
 
 Status RsaHashedAlgorithm::ExportKeyJwk(const blink::WebCryptoKey& key,

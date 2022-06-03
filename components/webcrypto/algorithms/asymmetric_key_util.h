@@ -16,6 +16,12 @@ namespace webcrypto {
 
 class Status;
 
+// Exports an EVP_PKEY public key to the SPKI format.
+Status ExportPKeySpki(EVP_PKEY* key, std::vector<uint8_t>* buffer);
+
+// Exports an EVP_PKEY private key to the PKCS8 format.
+Status ExportPKeyPkcs8(EVP_PKEY* key, std::vector<uint8_t>* buffer);
+
 // Creates a WebCrypto public key given an EVP_PKEY. This step includes
 // exporting the key to SPKI format, for use by serialization later.
 Status CreateWebCryptoPublicKey(bssl::UniquePtr<EVP_PKEY> public_key,

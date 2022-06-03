@@ -4,6 +4,8 @@
 
 #include "components/webcrypto/algorithm_implementation.h"
 
+#include "base/notreached.h"
+#include "components/webcrypto/algorithms/asymmetric_key_util.h"
 #include "components/webcrypto/blink_key_handle.h"
 #include "components/webcrypto/status.h"
 
@@ -94,8 +96,31 @@ Status AlgorithmImplementation::ExportKey(blink::WebCryptoKeyFormat format,
 Status AlgorithmImplementation::SerializeKeyForClone(
     const blink::WebCryptoKey& key,
     blink::WebVector<uint8_t>* key_data) const {
-  *key_data = GetSerializedKeyData(key);
-  return Status::Success();
+  switch (key.GetType()) {
+    case blink::kWebCryptoKeyTypeSecret:
+      *key_data = GetSymmetricKeyData(key);
+      return Status::Success();
+
+    case blink::kWebCryptoKeyTypePublic: {
+      std::vector<uint8_t> vec;
+      Status status = ExportPKeySpki(GetEVP_PKEY(key), &vec);
+      if (status.IsSuccess()) {
+        *key_data = vec;
+      }
+      return status;
+    }
+
+    case blink::kWebCryptoKeyTypePrivate: {
+      std::vector<uint8_t> vec;
+      Status status = ExportPKeyPkcs8(GetEVP_PKEY(key), &vec);
+      if (status.IsSuccess()) {
+        *key_data = vec;
+      }
+      return status;
+    }
+  }
+  NOTREACHED();
+  return Status::ErrorUnexpected();
 }
 
 Status AlgorithmImplementation::DeserializeKeyForClone(

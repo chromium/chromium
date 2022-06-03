@@ -33,26 +33,15 @@ const std::vector<uint8_t>& GetSymmetricKeyData(const blink::WebCryptoKey& key);
 // (RSA, EC, etc).
 EVP_PKEY* GetEVP_PKEY(const blink::WebCryptoKey& key);
 
-// Returns a reference to the serialized key data. This reference is owned by
-// |key|. This function can be called for any key type.
-const std::vector<uint8_t>& GetSerializedKeyData(
-    const blink::WebCryptoKey& key);
-
 // Creates a symmetric key handle that can be passed to Blink. The caller takes
 // ownership of the returned pointer.
 blink::WebCryptoKeyHandle* CreateSymmetricKeyHandle(
     base::span<const uint8_t> key_bytes);
 
 // Creates an asymmetric key handle that can be passed to Blink. The caller
-// takes
-// ownership of the returned pointer.
-//
-// TODO(eroman): This should _move_ input serialized_key_data rather than
-// create a copy, since all the callers are passing in vectors that are later
-// thrown away anyway.
+// takes ownership of the returned pointer.
 blink::WebCryptoKeyHandle* CreateAsymmetricKeyHandle(
-    bssl::UniquePtr<EVP_PKEY> pkey,
-    const std::vector<uint8_t>& serialized_key_data);
+    bssl::UniquePtr<EVP_PKEY> pkey);
 
 }  // namespace webcrypto
 
