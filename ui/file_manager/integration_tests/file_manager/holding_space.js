@@ -5,7 +5,7 @@
 import {getCaller, pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {navigateWithDirectoryTree, openEntryChoosingWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {waitForDialog} from './file_dialog.js';
 
 /**
@@ -43,8 +43,9 @@ testcase.holdingSpaceWelcomeBanner = async () => {
  * using the new banners framework.
  */
 testcase.holdingSpaceWelcomeBannerWillShowForModalDialogs = async () => {
-  // Open Save as dialog.
-  chrome.fileSystem.chooseEntry({type: 'saveFile'}, entry => {});
+  // Open Save as dialog in the foreground window.
+  await openEntryChoosingWindow({type: 'saveFile'});
+
   const appId = await waitForDialog();
 
   // Ensure the Holding space welcome banner is the only banner prioritised.
