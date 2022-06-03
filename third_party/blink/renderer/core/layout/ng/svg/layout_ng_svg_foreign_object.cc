@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_foreign_object.h"
 
-#include "third_party/blink/renderer/core/svg_element_type_helpers.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
+#include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
+#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 
 namespace blink {
 
@@ -75,6 +77,68 @@ bool LayoutNGSVGForeignObject::CreatesNewFormattingContext() const {
   // This is the root of a foreign object. Don't let anything inside it escape
   // to our ancestors.
   return true;
+}
+
+void LayoutNGSVGForeignObject::UpdateBlockLayout(bool relayout_children) {
+  NOT_DESTROYED();
+  DCHECK(NeedsLayout());
+
+  auto* foreign = To<SVGForeignObjectElement>(GetElement());
+
+  // Update our transform before layout, in case any of our descendants rely on
+  // the transform being somewhat accurate.  The |needs_transform_update_| flag
+  // will be cleared after layout has been performed.
+  // TODO(fs): Remove this. AFAICS in all cases where descendants compute some
+  // form of CTM, they stop at their nearest ancestor LayoutSVGRoot, and thus
+  // will not care about (reach) this value.
+  if (needs_transform_update_) {
+    local_transform_ =
+        foreign->CalculateTransform(SVGElement::kIncludeMotionTransform);
+  }
+
+  LayoutRect old_frame_rect = FrameRect();
+
+  // Resolve the viewport in the local coordinate space - this does not include
+  // zoom.
+  SVGLengthContext length_context(foreign);
+  const ComputedStyle& style = StyleRef();
+  gfx::Vector2dF origin =
+      length_context.ResolveLengthPair(style.X(), style.Y(), style);
+  gfx::Vector2dF size =
+      length_context.ResolveLengthPair(style.Width(), style.Height(), style);
+  // SetRect() will clamp negative width/height to zero.
+  viewport_.SetRect(origin.x(), origin.y(), size.x(), size.y());
+
+  // Use the zoomed version of the viewport as the location, because we will
+  // interpose a transform that "unzooms" the effective zoom to let the children
+  // of the foreign object exist with their specified zoom.
+  gfx::PointF zoomed_location =
+      gfx::ScalePoint(viewport_.origin(), style.EffectiveZoom());
+
+  // Set box origin to the foreignObject x/y translation, so positioned objects
+  // in XHTML content get correct positions. A regular LayoutBoxModelObject
+  // would pull this information from ComputedStyle - in SVG those properties
+  // are ignored for non <svg> elements, so we mimic what happens when
+  // specifying them through CSS.
+  SetLocation(LayoutPoint(zoomed_location));
+
+  UpdateNGBlockLayout();
+  DCHECK(!NeedsLayout());
+  const bool bounds_changed = old_frame_rect != FrameRect();
+
+  // Invalidate all resources of this client if our reference box changed.
+  if (EverHadLayout() && bounds_changed)
+    SVGResourceInvalidator(*this).InvalidateEffects();
+
+  bool update_parent_boundaries = bounds_changed;
+  if (UpdateTransformAfterLayout(bounds_changed))
+    update_parent_boundaries = true;
+
+  // Notify ancestor about our bounds changing.
+  if (update_parent_boundaries)
+    LayoutSVGBlock::SetNeedsBoundariesUpdate();
+
+  DCHECK(!needs_transform_update_);
 }
 
 }  // namespace blink

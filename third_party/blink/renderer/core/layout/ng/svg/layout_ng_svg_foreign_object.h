@@ -38,6 +38,9 @@ class LayoutNGSVGForeignObject final
   PaintLayerType LayerTypeRequired() const override;
   bool CreatesNewFormattingContext() const override;
 
+  // LayoutBlock override:
+  void UpdateBlockLayout(bool relayout_children) override;
+
   // The resolved viewport in the regular SVG coordinate space (after any
   // 'transform' has been applied but without zoom-adjustment).
   gfx::RectF viewport_;
