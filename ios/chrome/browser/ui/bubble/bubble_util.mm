@@ -52,11 +52,14 @@ CGFloat LeadingDistance(CGPoint anchorPoint,
       NOTREACHED() << "Invalid bubble alignment " << alignment;
       break;
   }
+  CGFloat leadingDistance;
   if (isRTL) {
-    return boundingWidth - (anchorPoint.x + leadingOffset);
+    leadingDistance = boundingWidth - (anchorPoint.x + leadingOffset);
   } else {
-    return anchorPoint.x - leadingOffset;
+    leadingDistance = anchorPoint.x - leadingOffset;
   }
+  // Round down the leading distance.
+  return floor(leadingDistance);
 }
 
 // Calculate the y-coordinate of the bubble's origin based on |anchorPoint|, the
@@ -74,7 +77,8 @@ CGFloat OriginY(CGPoint anchorPoint,
     DCHECK_EQ(arrowDirection, BubbleArrowDirectionDown);
     originY = anchorPoint.y - bubbleHeight;
   }
-  return originY;
+  // Round down the origin Y.
+  return floor(originY);
 }
 
 // Calculate the maximum width of the bubble such that it stays within its
@@ -124,7 +128,8 @@ CGFloat BubbleMaxWidth(CGFloat anchorPointX,
       NOTREACHED() << "Invalid bubble alignment " << alignment;
       break;
   }
-  return MIN(maxWidth, kBubbleMaxWidth);
+  // Round up the width.
+  return ceil(MIN(maxWidth, kBubbleMaxWidth));
 }
 
 // Calculate the maximum height of the bubble such that it stays within its
@@ -148,7 +153,8 @@ CGFloat BubbleMaxHeight(CGFloat anchorPointY,
       NOTREACHED() << "Invalid bubble direction " << direction;
       break;
   }
-  return maxHeight;
+  // Round up the height.
+  return ceil(maxHeight);
 }
 
 }  // namespace
