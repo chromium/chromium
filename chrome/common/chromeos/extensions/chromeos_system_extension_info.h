@@ -12,6 +12,7 @@ namespace chromeos {
 
 namespace switches {
 
+extern const char kTelemetryExtensionManufacturerOverrideForTesting[];
 extern const char kTelemetryExtensionPwaOriginOverrideForTesting[];
 
 }  // namespace switches
@@ -22,7 +23,7 @@ struct ChromeOSSystemExtensionInfo {
   ChromeOSSystemExtensionInfo(const ChromeOSSystemExtensionInfo& other);
   ~ChromeOSSystemExtensionInfo();
 
-  const std::string manufacturer;
+  std::string manufacturer;
   std::string pwa_origin;
 };
 

@@ -31,18 +31,39 @@ TEST(ChromeOSSystemExtensionInfo, HPExtension) {
   EXPECT_EQ("https://hpcs-appschr.hpcloud.hp.com/*", extension_info.pwa_origin);
 }
 
-TEST(ChromeOSSystemExtensionInfo, PwaOriginOverride) {
+TEST(ChromeOSSystemExtensionInfo, ManufacturerOverride) {
+  constexpr char kManufacturerOverride[] = "TEST_OEM";
+
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      chromeos::switches::kTelemetryExtensionPwaOriginOverrideForTesting,
-      "*://pwa.website.com/*");
+      chromeos::switches::kTelemetryExtensionManufacturerOverrideForTesting,
+      kManufacturerOverride);
 
   const auto google_extension_info = chromeos::GetChromeOSExtensionInfoForId(
       "gogonhoemckpdpadfnjnpgbjpbjnodgc");
-  EXPECT_EQ("*://pwa.website.com/*", google_extension_info.pwa_origin);
+  EXPECT_EQ("*://www.google.com/*", google_extension_info.pwa_origin);
+  EXPECT_EQ(kManufacturerOverride, google_extension_info.manufacturer);
+
+  const auto hp_extension_info = chromeos::GetChromeOSExtensionInfoForId(
+      "alnedpmllcfpgldkagbfbjkloonjlfjb");
+  EXPECT_EQ("https://hpcs-appschr.hpcloud.hp.com/*",
+            hp_extension_info.pwa_origin);
+  EXPECT_EQ(kManufacturerOverride, hp_extension_info.manufacturer);
+}
+
+TEST(ChromeOSSystemExtensionInfo, PwaOriginOverride) {
+  constexpr char kPwaOriginOverride[] = "*://pwa.website.com/*";
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      chromeos::switches::kTelemetryExtensionPwaOriginOverrideForTesting,
+      kPwaOriginOverride);
+
+  const auto google_extension_info = chromeos::GetChromeOSExtensionInfoForId(
+      "gogonhoemckpdpadfnjnpgbjpbjnodgc");
+  EXPECT_EQ(kPwaOriginOverride, google_extension_info.pwa_origin);
   EXPECT_EQ("HP", google_extension_info.manufacturer);
 
   const auto hp_extension_info = chromeos::GetChromeOSExtensionInfoForId(
       "alnedpmllcfpgldkagbfbjkloonjlfjb");
-  EXPECT_EQ("*://pwa.website.com/*", hp_extension_info.pwa_origin);
+  EXPECT_EQ(kPwaOriginOverride, hp_extension_info.pwa_origin);
   EXPECT_EQ("HP", hp_extension_info.manufacturer);
 }
