@@ -193,6 +193,7 @@ static const MimeInfo kSecondaryMappings[] = {
     {"application/gzip", "gz,tgz"},
     {"application/javascript", "js"},
     {"application/json", "json"},  // Per http://www.ietf.org/rfc/rfc4627.txt.
+    {"application/msword", "doc,dot"},
     {"application/octet-stream", "bin,exe,com"},
     {"application/pdf", "pdf"},
     {"application/pkcs7-mime", "p7m,p7c,p7z"},
@@ -206,6 +207,8 @@ static const MimeInfo kSecondaryMappings[] = {
     {"application/vnd.ms-excel", "xls"},
     {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
      "xlsx"},
+    {"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+     "docx"},
     {"application/x-gzip", "gz,tgz"},
     {"application/x-mpegurl", "m3u8"},
     {"application/x-shockwave-flash", "swf,swl"},
