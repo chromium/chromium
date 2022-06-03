@@ -434,11 +434,11 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     WaitForLoadStop(kNewProfileUrl);
 
     // Fake clicking the "Next"/"Sign in" button.
-    base::ListValue args;
+    base::Value::List args;
     args.Append(/*color=*/static_cast<int>(kProfileColor));
-    args.Append(/*gaiaId=*/base::Value(base::Value::Type::STRING));
+    args.Append(/*gaiaId=*/std::string());
     web_contents()->GetWebUI()->ProcessWebUIMessage(
-        kNewProfileUrl, "selectAccountLacros", args);
+        kNewProfileUrl, "selectAccountLacros", std::move(args));
 
     // Wait for the Ash UI to show up.
     FakeAccountManagerUI* fake_ui = GetFakeAccountManagerUI();

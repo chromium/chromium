@@ -90,7 +90,7 @@ void WebUIImpl::SetProperty(const std::string& name, const std::string& value) {
   remote_->SetProperty(name, value);
 }
 
-void WebUIImpl::Send(const std::string& message, base::Value args) {
+void WebUIImpl::Send(const std::string& message, base::Value::List args) {
   const GURL& source_url = frame_host_->GetLastCommittedURL();
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
           frame_host_->GetProcess()->GetID()) ||
@@ -109,7 +109,7 @@ void WebUIImpl::Send(const std::string& message, base::Value args) {
     return;
   }
 
-  ProcessWebUIMessage(source_url, message, base::Value::AsListValue(args));
+  ProcessWebUIMessage(source_url, message, std::move(args));
 }
 
 void WebUIImpl::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
@@ -272,22 +272,24 @@ void WebUIImpl::RegisterDeprecatedMessageCallback(
 
 void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,
                                     const std::string& message,
-                                    const base::ListValue& args) {
+                                    base::Value::List args) {
   if (controller_->OverrideHandleWebUIMessage(source_url, message, args))
     return;
 
   auto callback_pair = message_callbacks_.find(message);
   if (callback_pair != message_callbacks_.end()) {
     // Forward this message and content on.
-    callback_pair->second.Run(args.GetList());
+    callback_pair->second.Run(args);
     return;
   }
 
   // Look up the deprecated callback for this message.
   auto deprecated_callback_pair = deprecated_message_callbacks_.find(message);
   if (deprecated_callback_pair != deprecated_message_callbacks_.end()) {
+    base::Value value(std::move(args));
+    const base::ListValue& list_value = base::Value::AsListValue(value);
     // Forward this message and content on.
-    deprecated_callback_pair->second.Run(&args);
+    deprecated_callback_pair->second.Run(&list_value);
     return;
   }
 

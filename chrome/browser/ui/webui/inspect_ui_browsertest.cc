@@ -43,7 +43,7 @@ class InspectUITest : public WebUIBrowserTest {
 
     // Fake clicking the "Inspect Native UI" button.
     web_ui->ProcessWebUIMessage(GURL(), "launch-ui-devtools",
-                                base::ListValue());
+                                base::Value::List());
 
     new_tab_observer.Wait();
     EXPECT_EQ(2, browser()->tab_strip_model()->count());

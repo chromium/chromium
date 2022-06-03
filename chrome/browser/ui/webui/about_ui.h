@@ -60,7 +60,7 @@ class AboutUI : public content::WebUIController {
 #if BUILDFLAG(IS_CHROMEOS)
   bool OverrideHandleWebUIMessage(const GURL& source_url,
                                   const std::string& message,
-                                  const base::ListValue& args) override;
+                                  const base::Value::List& args) override;
 #endif
 };
 

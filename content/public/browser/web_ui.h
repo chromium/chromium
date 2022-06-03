@@ -105,7 +105,7 @@ class CONTENT_EXPORT WebUI {
   // then later wants to undo that, or to route it to a different WebUI object.
   virtual void ProcessWebUIMessage(const GURL& source_url,
                                    const std::string& message,
-                                   const base::ListValue& args) = 0;
+                                   base::Value::List args) = 0;
 
   // Returns true if this WebUI can currently call JavaScript.
   virtual bool CanCallJavascript() = 0;

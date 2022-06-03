@@ -777,7 +777,7 @@ AboutUI::AboutUI(content::WebUI* web_ui, const std::string& name)
 
 bool AboutUI::OverrideHandleWebUIMessage(const GURL& source_url,
                                          const std::string& message,
-                                         const base::ListValue& args) {
+                                         const base::Value::List& args) {
   if (message != "crosUrlAboutRedirect")
     return false;
 

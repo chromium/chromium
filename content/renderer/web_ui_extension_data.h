@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/values.h"
 #include "content/common/web_ui.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
@@ -37,8 +38,7 @@ class WebUIExtensionData
   // exists in the |variable_map_|.
   std::string GetValue(const std::string& key) const;
 
-  void SendMessage(const std::string& message,
-                   std::unique_ptr<base::ListValue> args);
+  void SendMessage(const std::string& message, base::Value::List args);
 
  private:
   // Use Create() instead.
