@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/reputation/safety_tip_message_delegate.h"
+#include "chrome/browser/reputation/safety_tip_message_delegate_android.h"
 
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -12,13 +12,13 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-SafetyTipMessageDelegate::SafetyTipMessageDelegate() = default;
+SafetyTipMessageDelegateAndroid::SafetyTipMessageDelegateAndroid() = default;
 
-SafetyTipMessageDelegate::~SafetyTipMessageDelegate() {
+SafetyTipMessageDelegateAndroid::~SafetyTipMessageDelegateAndroid() {
   DismissInternal();
 }
 
-void SafetyTipMessageDelegate::DisplaySafetyTipPrompt(
+void SafetyTipMessageDelegateAndroid::DisplaySafetyTipPrompt(
     security_state::SafetyTipStatus safety_tip_status,
     const GURL& suggested_url,
     content::WebContents* web_contents,
@@ -31,9 +31,9 @@ void SafetyTipMessageDelegate::DisplaySafetyTipPrompt(
   close_callback_ = std::move(close_callback);
   message_ = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::SAFETY_TIP,
-      base::BindOnce(&SafetyTipMessageDelegate::HandleLeaveSiteClick,
+      base::BindOnce(&SafetyTipMessageDelegateAndroid::HandleLeaveSiteClick,
                      base::Unretained(this)),
-      base::BindOnce(&SafetyTipMessageDelegate::HandleDismissCallback,
+      base::BindOnce(&SafetyTipMessageDelegateAndroid::HandleDismissCallback,
                      base::Unretained(this)));
   message_->SetTitle(GetSafetyTipTitle(safety_tip_status, suggested_url));
 
@@ -51,7 +51,8 @@ void SafetyTipMessageDelegate::DisplaySafetyTipPrompt(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK));
 
   message_->SetSecondaryActionCallback(base::BindRepeating(
-      &SafetyTipMessageDelegate::HandleLearnMoreClick, base::Unretained(this)));
+      &SafetyTipMessageDelegateAndroid::HandleLearnMoreClick,
+      base::Unretained(this)));
 
   // 60s
   message_->SetDuration(60000);
@@ -61,7 +62,7 @@ void SafetyTipMessageDelegate::DisplaySafetyTipPrompt(
       messages::MessagePriority::kUrgent);
 }
 
-void SafetyTipMessageDelegate::HandleLeaveSiteClick() {
+void SafetyTipMessageDelegateAndroid::HandleLeaveSiteClick() {
   action_taken_ = SafetyTipInteraction::kLeaveSite;
   auto url = safety_tip_status_ == security_state::SafetyTipStatus::kLookalike
                  ? suggested_url_
@@ -69,11 +70,11 @@ void SafetyTipMessageDelegate::HandleLeaveSiteClick() {
   LeaveSiteFromSafetyTip(web_contents_, url);
 }
 
-void SafetyTipMessageDelegate::HandleLearnMoreClick() {
+void SafetyTipMessageDelegateAndroid::HandleLearnMoreClick() {
   OpenHelpCenterFromSafetyTip(web_contents_);
 }
 
-void SafetyTipMessageDelegate::HandleDismissCallback(
+void SafetyTipMessageDelegateAndroid::HandleDismissCallback(
     messages::DismissReason dismiss_reason) {
   if (dismiss_reason == messages::DismissReason::GESTURE) {
     action_taken_ = SafetyTipInteraction::kDismissWithClose;
@@ -86,7 +87,7 @@ void SafetyTipMessageDelegate::HandleDismissCallback(
   web_contents_ = nullptr;
 }
 
-void SafetyTipMessageDelegate::DismissInternal() {
+void SafetyTipMessageDelegateAndroid::DismissInternal() {
   if (message_) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
         message_.get(), messages::DismissReason::UNKNOWN);

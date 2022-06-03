@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_REPUTATION_SAFETY_TIP_MESSAGE_DELEGATE_H_
-#define CHROME_BROWSER_REPUTATION_SAFETY_TIP_MESSAGE_DELEGATE_H_
+#ifndef CHROME_BROWSER_REPUTATION_SAFETY_TIP_MESSAGE_DELEGATE_ANDROID_H_
+#define CHROME_BROWSER_REPUTATION_SAFETY_TIP_MESSAGE_DELEGATE_ANDROID_H_
 
 #include <memory>
 
@@ -19,10 +19,10 @@ class WebContents;
 }  // namespace content
 
 // Message delegate to show a safety tip message on Android.
-class SafetyTipMessageDelegate {
+class SafetyTipMessageDelegateAndroid {
  public:
-  SafetyTipMessageDelegate();
-  ~SafetyTipMessageDelegate();
+  SafetyTipMessageDelegateAndroid();
+  ~SafetyTipMessageDelegateAndroid();
 
   void DisplaySafetyTipPrompt(
       security_state::SafetyTipStatus safety_tip_status,
@@ -31,7 +31,7 @@ class SafetyTipMessageDelegate {
       base::OnceCallback<void(SafetyTipInteraction)> close_callback);
 
  private:
-  friend class SafetyTipMessageDelegateTest;
+  friend class SafetyTipMessageDelegateAndroidTest;
 
   void HandleLeaveSiteClick();
   void HandleLearnMoreClick();
@@ -52,4 +52,4 @@ class SafetyTipMessageDelegate {
   base::OnceCallback<void(SafetyTipInteraction)> close_callback_;
 };
 
-#endif  // CHROME_BROWSER_REPUTATION_SAFETY_TIP_MESSAGE_DELEGATE_H_
+#endif  // CHROME_BROWSER_REPUTATION_SAFETY_TIP_MESSAGE_DELEGATE_ANDROID_H_

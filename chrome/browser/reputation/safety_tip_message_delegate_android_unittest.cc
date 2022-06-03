@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/reputation/safety_tip_message_delegate.h"
+#include "chrome/browser/reputation/safety_tip_message_delegate_android.h"
 
 #include "base/test/mock_callback.h"
 #include "chrome/browser/android/android_theme_resources.h"
@@ -37,9 +37,10 @@ class TestNavigationDelegate : public content::WebContentsDelegate {
   int opened_ = 0;
 };
 
-class SafetyTipMessageDelegateTest : public ChromeRenderViewHostTestHarness {
+class SafetyTipMessageDelegateAndroidTest
+    : public ChromeRenderViewHostTestHarness {
  public:
-  SafetyTipMessageDelegateTest() = default;
+  SafetyTipMessageDelegateAndroidTest() = default;
 
  protected:
   void SetUp() override;
@@ -62,24 +63,24 @@ class SafetyTipMessageDelegateTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  SafetyTipMessageDelegate delegate_;
+  SafetyTipMessageDelegateAndroid delegate_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   TestNavigationDelegate mock_web_contents_delegate_;
 };
 
-void SafetyTipMessageDelegateTest::SetUp() {
+void SafetyTipMessageDelegateAndroidTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
   NavigateAndCommit(GURL(kDefaultUrl));
 }
 
-void SafetyTipMessageDelegateTest::TearDown() {
+void SafetyTipMessageDelegateAndroidTest::TearDown() {
   messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
   ChromeRenderViewHostTestHarness::TearDown();
 }
 
-void SafetyTipMessageDelegateTest::EnqueueMessage(
+void SafetyTipMessageDelegateAndroidTest::EnqueueMessage(
     base::OnceCallback<void(SafetyTipInteraction)> close_callback,
     bool enqueue_expected,
     security_state::SafetyTipStatus safety_tip_status) {
@@ -93,7 +94,7 @@ void SafetyTipMessageDelegateTest::EnqueueMessage(
                                    web_contents(), std::move(close_callback));
 }
 
-void SafetyTipMessageDelegateTest::DismissMessage() {
+void SafetyTipMessageDelegateAndroidTest::DismissMessage() {
   EXPECT_CALL(message_dispatcher_bridge_, DismissMessage)
       .WillOnce([](messages::MessageWrapper* message,
                    messages::DismissReason dismiss_reason) {
@@ -104,16 +105,16 @@ void SafetyTipMessageDelegateTest::DismissMessage() {
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
-void SafetyTipMessageDelegateTest::TriggerPrimaryButtonClick() {
+void SafetyTipMessageDelegateAndroidTest::TriggerPrimaryButtonClick() {
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
 }
 
-void SafetyTipMessageDelegateTest::TriggerSecondaryButtonClick() {
+void SafetyTipMessageDelegateAndroidTest::TriggerSecondaryButtonClick() {
   GetMessageWrapper()->HandleSecondaryActionClick(
       base::android::AttachCurrentThread());
 }
 
-TEST_F(SafetyTipMessageDelegateTest, DismissOnNoAction) {
+TEST_F(SafetyTipMessageDelegateAndroidTest, DismissOnNoAction) {
   base::MockOnceCallback<void(SafetyTipInteraction)> mock_callback_receiver;
   EnqueueMessage(mock_callback_receiver.Get(), true,
                  security_state::SafetyTipStatus::kBadReputation);
@@ -121,7 +122,7 @@ TEST_F(SafetyTipMessageDelegateTest, DismissOnNoAction) {
   DismissMessage();
 }
 
-TEST_F(SafetyTipMessageDelegateTest, DoNotReplaceCurrentMessage) {
+TEST_F(SafetyTipMessageDelegateAndroidTest, DoNotReplaceCurrentMessage) {
   base::MockOnceCallback<void(SafetyTipInteraction)> mock_callback_receiver;
   EnqueueMessage(mock_callback_receiver.Get(), true,
                  security_state::SafetyTipStatus::kBadReputation);
@@ -134,7 +135,7 @@ TEST_F(SafetyTipMessageDelegateTest, DoNotReplaceCurrentMessage) {
   DismissMessage();
 }
 
-TEST_F(SafetyTipMessageDelegateTest, PrimaryActionCallback) {
+TEST_F(SafetyTipMessageDelegateAndroidTest, PrimaryActionCallback) {
   base::MockOnceCallback<void(SafetyTipInteraction)> mock_callback_receiver;
   EnqueueMessage(mock_callback_receiver.Get(), true,
                  security_state::SafetyTipStatus::kBadReputation);
@@ -146,7 +147,7 @@ TEST_F(SafetyTipMessageDelegateTest, PrimaryActionCallback) {
   DismissMessage();
 }
 
-TEST_F(SafetyTipMessageDelegateTest, SecondaryActionCallback) {
+TEST_F(SafetyTipMessageDelegateAndroidTest, SecondaryActionCallback) {
   base::MockOnceCallback<void(SafetyTipInteraction)> mock_callback_receiver;
   EnqueueMessage(mock_callback_receiver.Get(), true,
                  security_state::SafetyTipStatus::kBadReputation);
@@ -158,7 +159,8 @@ TEST_F(SafetyTipMessageDelegateTest, SecondaryActionCallback) {
   DismissMessage();
 }
 
-TEST_F(SafetyTipMessageDelegateTest, MessagePropertyValuesBadReputation) {
+TEST_F(SafetyTipMessageDelegateAndroidTest,
+       MessagePropertyValuesBadReputation) {
   base::MockOnceCallback<void(SafetyTipInteraction)> mock_callback_receiver;
   security_state::SafetyTipStatus status =
       security_state::SafetyTipStatus::kBadReputation;
@@ -181,7 +183,7 @@ TEST_F(SafetyTipMessageDelegateTest, MessagePropertyValuesBadReputation) {
   DismissMessage();
 }
 
-TEST_F(SafetyTipMessageDelegateTest, MessagePropertyValuesLookAlike) {
+TEST_F(SafetyTipMessageDelegateAndroidTest, MessagePropertyValuesLookAlike) {
   base::MockOnceCallback<void(SafetyTipInteraction)> mock_callback_receiver;
   security_state::SafetyTipStatus status =
       security_state::SafetyTipStatus::kLookalike;

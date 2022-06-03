@@ -23,7 +23,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/reputation/safety_tip_message_delegate.h"
+#include "chrome/browser/reputation/safety_tip_message_delegate_android.h"
 #endif
 
 class Profile;
@@ -120,7 +120,7 @@ class ReputationWebContentsObserver
   base::OnceClosure safety_tip_close_callback_for_testing_;
 
 #if BUILDFLAG(IS_ANDROID)
-  SafetyTipMessageDelegate delegate_;
+  SafetyTipMessageDelegateAndroid delegate_;
 #endif
 
   std::unique_ptr<DigitalAssetLinkCrossValidator> digital_asset_link_validator_;
