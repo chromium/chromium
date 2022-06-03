@@ -10,20 +10,15 @@
 <script src="resources/grid-definitions-parsing-utils.js"></script>
 <script src="resources/grid-tracks-length.js"></script>
 
-<div id="wideAutoFitGridFewRepetitionsMinSize" class="grid lotsOfAutoRepeatWithAutoFitCols minSizeWideGrid min-content">
-    <div>Item1</div>
-    <div>Item2</div>
-    <div class="lastColumn">Item3</div>
-</div>
+<div id="handMadeAutoFillCols" class="grid wideGrid handMadeMoreThanThousandAutoFillCols"></div>
 
 <script>
 
 test(function() {
-     var autoFitCols = testElement("wideAutoFitGridFewRepetitionsMinSize", "grid-template-columns", 5033170);
+     var autoFillGrid = testElement("handMadeAutoFillCols", "grid-template-columns", 4601597);
 
-     /* Check that clamping auto repetitions does not reduce the amount of the other tracks. */
-     assert_equals(autoFitCols[5033170 - 1], "1px");
-     assert_equals(autoFitCols[5033170 - 2], "1px");
-}, "Test that we don't get more than kGridMaxTracks repetitions even on very wide grids with gaps and min-width.");
+     assert_equals(autoFillGrid[4601597 - 1], "999px");
+     assert_equals(autoFillGrid[0], "10px");
+}, "Test that we don't crash when there are more than kGridMaxTracks columns in the auto repeat <track-list>.");
 
 </script>

@@ -11,27 +11,16 @@
 <script src="resources/grid-tracks-length.js"></script>
 
 <div id="autoFillGrid" class="grid tallGrid lotsOfFixedRepeatWithAutoFillRows"></div>
-<div id="autoFitGrid" class="grid tallGrid lotsOfFixedRepeatWithAutoFitRows">
-    <div>Item1</div>
-    <div>Item2</div>
-    <div class="lastRow">Item3</div>
-</div>
 
 <script>
 
 test(function() {
      var autoFillGrid = testElement("autoFillGrid", "grid-template-rows", 3570505);
-     var autoFitGrid = testElement("autoFitGrid", "grid-template-rows", 5034005);
 
      assert_equals(autoFillGrid[3570505 - 1], "1px");
      assert_equals(autoFillGrid[3570505 - 2], "1px");
      assert_equals(autoFillGrid[0], "10px");
      assert_equals(autoFillGrid[1], "2px");
-
-     assert_equals(autoFitGrid[5034005 - 1], "1px");
-     assert_equals(autoFitGrid[5034005 - 2], "1px");
-     assert_equals(autoFitGrid[0], "10px");
-     assert_equals(autoFitGrid[1], "2px");
 }, "Test that we don't get more than kGridMaxTracks repetitions even on very tall grids (normal tracks clamped).");
 
 </script>
