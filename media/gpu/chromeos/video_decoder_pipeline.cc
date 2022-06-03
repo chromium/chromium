@@ -79,7 +79,8 @@ VideoDecoderMixin::VideoDecoderMixin(
     std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client)
-    : decoder_task_runner_(std::move(decoder_task_runner)),
+    : media_log_(std::move(media_log)),
+      decoder_task_runner_(std::move(decoder_task_runner)),
       client_(std::move(client)) {}
 
 VideoDecoderMixin::~VideoDecoderMixin() = default;
