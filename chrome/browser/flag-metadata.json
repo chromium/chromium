@@ -4018,6 +4018,16 @@
     "expiry_milestone": 106
   },
   {
+    "name": "media-app-photos-integration-image",
+    "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
+    "expiry_milestone": 107
+  },
+  {
+    "name": "media-app-photos-integration-video",
+    "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
+    "expiry_milestone": 107
+  },
+  {
     "name": "media-router-cast-allow-all-ips",
     "owners": [ "mfoltz" ],
     // This flag is used by users with unusual network configurations to allow

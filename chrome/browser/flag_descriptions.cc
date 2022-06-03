@@ -5216,6 +5216,16 @@ const char kMediaAppHandlesPdfName[] = "Media App Handles PDF";
 const char kMediaAppHandlesPdfDescription[] =
     "Enables opening PDF files by default in chrome://media-app";
 
+const char kMediaAppPhotosIntegrationImageName[] =
+    "Media App Photos Integration (Image)";
+const char kMediaAppPhotosIntegrationImageDescription[] =
+    "Within Gallery, enable finding more editing tools for images in Photos";
+
+const char kMediaAppPhotosIntegrationVideoName[] =
+    "Media App Photos Integration (Video)";
+const char kMediaAppPhotosIntegrationVideoDescription[] =
+    "Within Gallery, enable finding editing tools for videos in Photos";
+
 const char kMeteredShowToggleName[] = "Show Metered Toggle";
 const char kMeteredShowToggleDescription[] =
     "Shows a Metered toggle in the Network settings UI for WiFI and Cellular. "

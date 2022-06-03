@@ -995,6 +995,16 @@ const base::Feature kManagedDeviceUIRedesign{"ManagedDeviceUIRedesign",
 const base::Feature kMediaAppHandlesPdf{"MediaAppHandlesPdf",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Within the ChromeOS media app, reveals the button to edit the current image
+// in Photos.
+const base::Feature kMediaAppPhotosIntegrationImage{
+    "MediaAppPhotosIntegrationImage", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Within the ChromeOS media app, reveals the button to edit the current video
+// in Photos.
+const base::Feature kMediaAppPhotosIntegrationVideo{
+    "MediaAppPhotosIntegrationVideo", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature to continuously log PSI memory pressure data to UMA.
 const base::Feature kMemoryPressureMetricsDetail{
     "MemoryPressureMetricsDetail", base::FEATURE_ENABLED_BY_DEFAULT};

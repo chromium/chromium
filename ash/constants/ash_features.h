@@ -397,6 +397,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kManagedDeviceUIRedesign;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kMediaAppHandlesPdf;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kMediaAppPhotosIntegrationImage;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kMediaAppPhotosIntegrationVideo;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMemoryPressureMetricsDetail;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<int> kMemoryPressureMetricsDetailLogPeriod;

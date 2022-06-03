@@ -57,6 +57,12 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("colorThemes",
                      chromeos::features::IsDarkLightModeEnabled());
   source->AddBoolean("photosAvailable", photosInstalled);
+  source->AddBoolean("photosIntegrationImage",
+                     base::FeatureList::IsEnabled(
+                         chromeos::features::kMediaAppPhotosIntegrationImage));
+  source->AddBoolean("photosIntegrationVideo",
+                     base::FeatureList::IsEnabled(
+                         chromeos::features::kMediaAppPhotosIntegrationVideo));
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);

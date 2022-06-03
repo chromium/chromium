@@ -57086,6 +57086,7 @@ from previous Chrome versions.
   <int value="-535662704" label="BundledConnectionHelp:enabled"/>
   <int value="-535208779" label="enable-native-cups"/>
   <int value="-534722229" label="LauncherNudgeShortInterval:enabled"/>
+  <int value="-534525820" label="MediaAppPhotosIntegrationImage:enabled"/>
   <int value="-534470003" label="OmniboxOnDeviceHeadProviderIncognito:enabled"/>
   <int value="-534221085" label="LazyImageLoading:disabled"/>
   <int value="-533552313"
@@ -58019,6 +58020,7 @@ from previous Chrome versions.
   <int value="89758831" label="FontAccessChooser:enabled"/>
   <int value="89785725"
       label="DataReductionProxyEnabledWithNetworkService:disabled"/>
+  <int value="89934221" label="MediaAppPhotosIntegrationImage:disabled"/>
   <int value="90551098" label="UseWallpaperStagingUrl:enabled"/>
   <int value="91916443" label="ManagedConfiguration:disabled"/>
   <int value="91938915" label="enable-suggestions-service"/>
@@ -59310,6 +59312,7 @@ from previous Chrome versions.
   <int value="948085015" label="WebFilterInterstitialRefresh:disabled"/>
   <int value="948351976" label="WallpaperWebUI:disabled"/>
   <int value="948521531" label="StylusHandwriting:disabled"/>
+  <int value="951111587" label="MediaAppPhotosIntegrationVideo:disabled"/>
   <int value="952558794" label="enable-remote-assistance"/>
   <int value="955340765" label="ChromeHomeOptOutSnackbar:enabled"/>
   <int value="955425932" label="EnterpriseReportingInChromeOS:enabled"/>
@@ -59804,6 +59807,7 @@ from previous Chrome versions.
   <int value="1266886673" label="delay-reload-stop-button-change"/>
   <int value="1268470658" label="disable-android-password-link"/>
   <int value="1268678442" label="KerberosSettingsSection:disabled"/>
+  <int value="1269216922" label="MediaAppPhotosIntegrationVideo:enabled"/>
   <int value="1269940659" label="EnumerateAudioDevices:enabled"/>
   <int value="1269952439" label="AndroidAIAFetching:disabled"/>
   <int value="1271871811" label="LegacyTLSEnforced:enabled"/>
