@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/notreached.h"
@@ -217,11 +218,10 @@ ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
       allow_pinning_(allow_pinning),
       requests_access_{
           nullptr, nullptr, nullptr,
-          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_REQUESTS_ACCESS_SECTION_TITLE,
-          extensions::SitePermissionsHelper::SiteInteraction::kPending},
-      has_access_{nullptr, nullptr, nullptr,
-                  IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_HAS_ACCESS_SECTION_TITLE,
-                  extensions::SitePermissionsHelper::SiteInteraction::kActive} {
+          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_REQUESTS_ACCESS_SECTION_TITLE},
+      has_access_{
+          nullptr, nullptr, nullptr,
+          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_HAS_ACCESS_SECTION_TITLE} {
   views::Builder<ExtensionsTabbedMenuView>(this)
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
@@ -683,10 +683,18 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessMenuItems(
       continue;
     }
 
+    DCHECK(section);
+    auto* new_section = GetSectionForSiteInteraction(
+        item->view_controller()->GetSiteInteraction(GetActiveWebContents()));
+
+    // Remove item when it is no section at all.
+    if (!new_section) {
+      section->items->RemoveChildViewT(item);
+      return;
+    }
+
     // Reorder item when it is in the same section.
-    auto site_interaction =
-        item->view_controller()->GetSiteInteraction(GetActiveWebContents());
-    if (site_interaction == section->site_interaction) {
+    if (new_section == section) {
       item->Update();
       int new_index =
           FindIndex(section->items, item->view_controller()->GetActionName());
@@ -694,14 +702,9 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessMenuItems(
       return;
     }
 
-    // Remove item when it is in a different section or no section at all.
+    // Re insert item when it is in the incorrect section.
     std::unique_ptr<SiteAccessMenuItemView> item_to_move =
         section->items->RemoveChildViewT(item);
-    auto* new_section = GetSectionForSiteInteraction(site_interaction);
-    if (!new_section)
-      return;
-
-    // Re insert item to the correct section.
     item_to_move->Update();
     InsertSiteAccessItem(std::move(item_to_move), new_section);
   }

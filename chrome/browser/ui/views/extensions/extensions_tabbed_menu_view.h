@@ -139,9 +139,6 @@ class ExtensionsTabbedMenuView
     // The id of the string to use for the section heading. Does not include the
     // current site string.
     const int header_string_id;
-
-    // The site interaction that this section is handling.
-    const extensions::SitePermissionsHelper::SiteInteraction site_interaction;
   };
 
   // Initially creates the tabs.
