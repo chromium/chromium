@@ -8,6 +8,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 export function getDefaultInitialSettings(isPdf: boolean = false):
@@ -343,4 +344,47 @@ export function selectOption(
   select.value = option;
   select.dispatchEvent(new CustomEvent('change'));
   return eventToPromise('process-select-change', section);
+}
+
+// Fake MediaQueryList used in mocking response of |window.matchMedia|.
+export class FakeMediaQueryList extends EventTarget implements MediaQueryList {
+  private listener_: ((e: MediaQueryListEvent) => any)|null = null;
+  private matches_: boolean = false;
+  private media_: string;
+
+  constructor(media: string) {
+    super();
+    this.media_ = media;
+  }
+
+  addListener(listener: (e: MediaQueryListEvent) => any) {
+    this.listener_ = listener;
+  }
+
+  removeListener(listener: (e: MediaQueryListEvent) => any) {
+    assertEquals(listener, this.listener_);
+    this.listener_ = null;
+  }
+
+  onchange() {
+    if (this.listener_) {
+      this.listener_(new MediaQueryListEvent(
+          'change', {media: this.media_, matches: this.matches_}));
+    }
+  }
+
+  get media(): string {
+    return this.media_;
+  }
+
+  get matches(): boolean {
+    return this.matches_;
+  }
+
+  set matches(matches: boolean) {
+    if (this.matches_ !== matches) {
+      this.matches_ = matches;
+      this.onchange();
+    }
+  }
 }

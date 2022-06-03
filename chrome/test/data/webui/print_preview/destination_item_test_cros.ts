@@ -5,11 +5,12 @@
 import {Destination, DestinationOrigin, NativeLayerCrosImpl, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerCrosStub} from './native_layer_cros_stub.js';
+import {FakeMediaQueryList} from './print_preview_test_utils.js';
 
 const destination_item_test_cros = {
   suiteName: 'DestinationItemTestCros',
@@ -26,6 +27,10 @@ suite(destination_item_test_cros.suiteName, function() {
   let listItem: PrintPreviewDestinationListItemElement;
 
   let nativeLayerCros: NativeLayerCrosStub;
+
+  let mockController: MockController;
+
+  let fakePrefersColorSchemeMediaQueryList: FakeMediaQueryList;
 
   function setNativeLayerPrinterStatusMap() {
     [{
@@ -49,7 +54,22 @@ suite(destination_item_test_cros.suiteName, function() {
                 status.printerId, status));
   }
 
+  // Mocks calls to window.matchMedia, returning false by default.
+  function configureMatchMediaMock() {
+    mockController = new MockController();
+    const matchMediaMock =
+        mockController.createFunctionMock(window, 'matchMedia');
+    fakePrefersColorSchemeMediaQueryList =
+        new FakeMediaQueryList('(prefers-color-scheme: dark)');
+    matchMediaMock.returnValue = fakePrefersColorSchemeMediaQueryList;
+    assertFalse(window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+
   setup(function() {
+    // Mock configuration needs to happen before element added to UI to
+    // ensure iron-media-query uses mock.
+    configureMatchMediaMock();
+
     document.body.innerHTML = `
           <print-preview-destination-list-item id="listItem">
           </print-preview-destination-list-item>`;
@@ -65,6 +85,10 @@ suite(destination_item_test_cros.suiteName, function() {
     listItem.destination = new Destination(
         'One', DestinationOrigin.CROS, 'Destination One', {description: 'ABC'});
     flush();
+  });
+
+  teardown(function() {
+    mockController.reset();
   });
 
   test(

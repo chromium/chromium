@@ -4,13 +4,13 @@
 
 import {Destination, DestinationOrigin, NativeLayerCrosImpl, NativeLayerImpl, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationDropdownCrosElement, PrintPreviewDestinationSelectCrosElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerCrosStub} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
-import {getGoogleDriveDestination, getSaveAsPdfDestination} from './print_preview_test_utils.js';
+import {FakeMediaQueryList, getGoogleDriveDestination, getSaveAsPdfDestination} from './print_preview_test_utils.js';
 
 const printer_status_test_cros = {
   suiteName: 'PrinterStatusTestCros',
@@ -29,6 +29,10 @@ suite(printer_status_test_cros.suiteName, function() {
   let destinationSelect: PrintPreviewDestinationSelectCrosElement;
 
   let nativeLayerCros: NativeLayerCrosStub;
+
+  let mockController: MockController;
+
+  let fakePrefersColorSchemeMediaQueryList: FakeMediaQueryList;
 
   function setNativeLayerPrinterStatusMap() {
     [{
@@ -142,8 +146,20 @@ suite(printer_status_test_cros.suiteName, function() {
         escapeForwardSlahes(key)}`)!.querySelector('iron-icon')!.icon!;
   }
 
+  // Mocks calls to window.matchMedia, returning false by default.
+  function configureMatchMediaMock() {
+    mockController = new MockController();
+    const matchMediaMock =
+        mockController.createFunctionMock(window, 'matchMedia');
+    fakePrefersColorSchemeMediaQueryList =
+        new FakeMediaQueryList('(prefers-color-scheme: dark)');
+    matchMediaMock.returnValue = fakePrefersColorSchemeMediaQueryList;
+    assertFalse(window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+
   setup(function() {
     document.body.innerHTML = '';
+    configureMatchMediaMock();
 
     // Stub out native layer.
     NativeLayerImpl.setInstance(new NativeLayerStub());
@@ -154,6 +170,10 @@ suite(printer_status_test_cros.suiteName, function() {
     destinationSelect =
         document.createElement('print-preview-destination-select-cros');
     document.body.appendChild(destinationSelect);
+  });
+
+  teardown(function() {
+    mockController.reset();
   });
 
   test(
