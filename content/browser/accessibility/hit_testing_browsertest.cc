@@ -738,15 +738,9 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
 }
 
 // Timeouts on Linux. TODO(crbug.com/1083805): Enable this test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CachingAsyncHitTestMissesElement_WithPinchZoom \
-  DISABLED_CachingAsyncHitTestMissesElement_WithPinchZoom
-#else
-#define MAYBE_CachingAsyncHitTestMissesElement_WithPinchZoom \
-  CachingAsyncHitTestMissesElement_WithPinchZoom
-#endif
-IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
-                       MAYBE_CachingAsyncHitTestMissesElement_WithPinchZoom) {
+IN_PROC_BROWSER_TEST_P(
+    AccessibilityHitTestingBrowserTest,
+    DISABLED_CachingAsyncHitTestMissesElement_WithPinchZoom) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
