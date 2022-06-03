@@ -153,225 +153,134 @@ bool ContactTypeHintMatchesFieldType(const std::string& token,
   return false;
 }
 
-// Returns the Chrome Autofill-supported field type corresponding to the given
-// |autocomplete_attribute_value|, if there is one, in the context of the given
-// |field|.  Chrome Autofill supports a subset of the field types listed at
-// http://is.gd/whatwg_autocomplete
+// Rationalizes the HTML `type` of `field`, based on the fields properties. At
+// the moment only `max_length` is considered. For example, a max_length of 4
+// might indicate a 4 digit year.
+// In case no rationalization rule applies, the original type is returned.
+HtmlFieldType RationalizeAutocompleteType(HtmlFieldType type,
+                                          const AutofillField& field) {
+  // (original-type, max-length) -> new-type
+  static constexpr auto rules =
+      base::MakeFixedFlatMap<std::pair<HtmlFieldType, uint64_t>, HtmlFieldType>(
+          {
+              {{HTML_TYPE_ADDITIONAL_NAME, 1},
+               HTML_TYPE_ADDITIONAL_NAME_INITIAL},
+              {{HTML_TYPE_CREDIT_CARD_EXP, 5},
+               HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+              {{HTML_TYPE_CREDIT_CARD_EXP, 7},
+               HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+              {{HTML_TYPE_CREDIT_CARD_EXP_YEAR, 2},
+               HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR},
+              {{HTML_TYPE_CREDIT_CARD_EXP_YEAR, 4},
+               HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR},
+          });
+
+  auto* it = rules.find(std::make_pair(type, field.max_length));
+  return it == rules.end() ? type : it->second;
+}
+
+// Chrome Autofill supports a subset of the field types listed at
+// http://is.gd/whatwg_autocomplete. Returns the corresponding HtmlFieldType, if
+// `value` matches any of them.
+absl::optional<HtmlFieldType> ParseStandardizedAutocompleteAttribute(
+    base::StringPiece value) {
+  static constexpr auto standardized_attributes =
+      base::MakeFixedFlatMap<base::StringPiece, HtmlFieldType>({
+          {"additional-name", HTML_TYPE_ADDITIONAL_NAME},
+          {"address-level1", HTML_TYPE_ADDRESS_LEVEL1},
+          {"address-level2", HTML_TYPE_ADDRESS_LEVEL2},
+          {"address-level3", HTML_TYPE_ADDRESS_LEVEL3},
+          {"address-line1", HTML_TYPE_ADDRESS_LINE1},
+          {"address-line2", HTML_TYPE_ADDRESS_LINE2},
+          {"address-line3", HTML_TYPE_ADDRESS_LINE3},
+          {"cc-csc", HTML_TYPE_CREDIT_CARD_VERIFICATION_CODE},
+          {"cc-exp", HTML_TYPE_CREDIT_CARD_EXP},
+          {"cc-exp-month", HTML_TYPE_CREDIT_CARD_EXP_MONTH},
+          {"cc-exp-year", HTML_TYPE_CREDIT_CARD_EXP_YEAR},
+          {"cc-family-name", HTML_TYPE_CREDIT_CARD_NAME_LAST},
+          {"cc-given-name", HTML_TYPE_CREDIT_CARD_NAME_FIRST},
+          {"cc-name", HTML_TYPE_CREDIT_CARD_NAME_FULL},
+          {"cc-number", HTML_TYPE_CREDIT_CARD_NUMBER},
+          {"cc-type", HTML_TYPE_CREDIT_CARD_TYPE},
+          {"country", HTML_TYPE_COUNTRY_CODE},
+          {"country-name", HTML_TYPE_COUNTRY_NAME},
+          {"email", HTML_TYPE_EMAIL},
+          {"family-name", HTML_TYPE_FAMILY_NAME},
+          {"given-name", HTML_TYPE_GIVEN_NAME},
+          {"honorific-prefix", HTML_TYPE_HONORIFIC_PREFIX},
+          {"name", HTML_TYPE_NAME},
+          {"one-time-code", HTML_TYPE_ONE_TIME_CODE},
+          {"organization", HTML_TYPE_ORGANIZATION},
+          {"postal-code", HTML_TYPE_POSTAL_CODE},
+          {"street-address", HTML_TYPE_STREET_ADDRESS},
+          {"tel-area-code", HTML_TYPE_TEL_AREA_CODE},
+          {"tel-country-code", HTML_TYPE_TEL_COUNTRY_CODE},
+          {"tel-extension", HTML_TYPE_TEL_EXTENSION},
+          {"tel", HTML_TYPE_TEL},
+          {"tel-local", HTML_TYPE_TEL_LOCAL},
+          {"tel-local-prefix", HTML_TYPE_TEL_LOCAL_PREFIX},
+          {"tel-local-suffix", HTML_TYPE_TEL_LOCAL_SUFFIX},
+          {"tel-national", HTML_TYPE_TEL_NATIONAL},
+          {"transaction-amount", HTML_TYPE_TRANSACTION_AMOUNT},
+          {"transaction-currency", HTML_TYPE_TRANSACTION_CURRENCY},
+      });
+
+  auto* it = standardized_attributes.find(value);
+  return it != standardized_attributes.end()
+             ? absl::optional<HtmlFieldType>(it->second)
+             : absl::nullopt;
+}
+
+// Tries mapping a non-standardized html autocomplete `value` to an
+// HtmlFieldType.
+absl::optional<HtmlFieldType> ParseAutocompleteAttributeExtensions(
+    base::StringPiece value) {
+  static constexpr auto extensions =
+      base::MakeFixedFlatMap<base::StringPiece, HtmlFieldType>({
+          {"address", HTML_TYPE_STREET_ADDRESS},
+          {"company", HTML_TYPE_ORGANIZATION},
+          {"coupon-code", HTML_TYPE_MERCHANT_PROMO_CODE},
+          {"first-name", HTML_TYPE_GIVEN_NAME},
+          {"gift-code", HTML_TYPE_MERCHANT_PROMO_CODE},
+          {"locality", HTML_TYPE_ADDRESS_LEVEL2},
+          {"promo-code", HTML_TYPE_MERCHANT_PROMO_CODE},
+          {"promotional-code", HTML_TYPE_MERCHANT_PROMO_CODE},
+          {"promotion-code", HTML_TYPE_MERCHANT_PROMO_CODE},
+          {"region", HTML_TYPE_ADDRESS_LEVEL1},
+          {"tel-ext", HTML_TYPE_TEL_EXTENSION},
+          {"upi", HTML_TYPE_UPI_VPA},
+          {"upi-vpa", HTML_TYPE_UPI_VPA},
+          {"username", HTML_TYPE_EMAIL},
+      });
+
+  auto* it = extensions.find(value);
+  return it != extensions.end() ? absl::optional<HtmlFieldType>(it->second)
+                                : absl::nullopt;
+}
+
+// Returns the Chrome Autofill-supported field type corresponding to a given
+// autocomplete `value`, if there is one, in the context of the given
+// `field`.
 HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
-    const std::string& autocomplete_attribute_value,
+    std::string value,
     const AutofillField& field) {
-  if (autocomplete_attribute_value == "")
+  if (value.empty())
     return HTML_TYPE_UNSPECIFIED;
 
-  if (autocomplete_attribute_value == "name")
-    return HTML_TYPE_NAME;
+  // We are lenient and accept '_' instead of '-' as a separator. E.g.
+  // "given_name" is treated like "given-name".
+  base::ReplaceChars(value, "_", "-", &value);
+  // We accept e.g. "phone-country" instead of "tel-country".
+  if (base::StartsWith(value, "phone"))
+    base::ReplaceFirstSubstringAfterOffset(&value, 0, "phone", "tel");
 
-  if (autocomplete_attribute_value == "honorific-prefix")
-    return HTML_TYPE_HONORIFIC_PREFIX;
+  absl::optional<HtmlFieldType> type =
+      ParseStandardizedAutocompleteAttribute(value);
+  if (!type.has_value())
+    type = ParseAutocompleteAttributeExtensions(value);
 
-  if (autocomplete_attribute_value == "given-name" ||
-      autocomplete_attribute_value == "given_name" ||
-      autocomplete_attribute_value == "first-name" ||
-      autocomplete_attribute_value == "first_name")
-    return HTML_TYPE_GIVEN_NAME;
-
-  if (autocomplete_attribute_value == "additional-name" ||
-      autocomplete_attribute_value == "additional_name") {
-    if (field.max_length == 1)
-      return HTML_TYPE_ADDITIONAL_NAME_INITIAL;
-    return HTML_TYPE_ADDITIONAL_NAME;
-  }
-
-  if (autocomplete_attribute_value == "family-name" ||
-      autocomplete_attribute_value == "family_name")
-    return HTML_TYPE_FAMILY_NAME;
-
-  if (autocomplete_attribute_value == "organization" ||
-      autocomplete_attribute_value == "company")
-    return HTML_TYPE_ORGANIZATION;
-
-  if (autocomplete_attribute_value == "street-address" ||
-      autocomplete_attribute_value == "street_address" ||
-      autocomplete_attribute_value == "address")
-    return HTML_TYPE_STREET_ADDRESS;
-
-  if (autocomplete_attribute_value == "address-line1" ||
-      autocomplete_attribute_value == "address_line1")
-    return HTML_TYPE_ADDRESS_LINE1;
-
-  if (autocomplete_attribute_value == "address-line2" ||
-      autocomplete_attribute_value == "address_line2")
-    return HTML_TYPE_ADDRESS_LINE2;
-
-  if (autocomplete_attribute_value == "address-line3" ||
-      autocomplete_attribute_value == "address_line3")
-    return HTML_TYPE_ADDRESS_LINE3;
-
-  // TODO(estade): remove support for "locality" and "region".
-  if (autocomplete_attribute_value == "locality")
-    return HTML_TYPE_ADDRESS_LEVEL2;
-
-  if (autocomplete_attribute_value == "region")
-    return HTML_TYPE_ADDRESS_LEVEL1;
-
-  if (autocomplete_attribute_value == "address-level1" ||
-      autocomplete_attribute_value == "address_level1")
-    return HTML_TYPE_ADDRESS_LEVEL1;
-
-  if (autocomplete_attribute_value == "address-level2" ||
-      autocomplete_attribute_value == "address_level2")
-    return HTML_TYPE_ADDRESS_LEVEL2;
-
-  if (autocomplete_attribute_value == "address-level3" ||
-      autocomplete_attribute_value == "address_level3")
-    return HTML_TYPE_ADDRESS_LEVEL3;
-
-  if (autocomplete_attribute_value == "country")
-    return HTML_TYPE_COUNTRY_CODE;
-
-  if (autocomplete_attribute_value == "country-name" ||
-      autocomplete_attribute_value == "country_name")
-    return HTML_TYPE_COUNTRY_NAME;
-
-  if (autocomplete_attribute_value == "postal-code" ||
-      autocomplete_attribute_value == "postal_code")
-    return HTML_TYPE_POSTAL_CODE;
-
-  // content_switches.h isn't accessible from here, hence we have
-  // to copy the string literal. This should be removed soon anyway.
-  if (autocomplete_attribute_value == "address" &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          "enable-experimental-web-platform-features")) {
-    return HTML_TYPE_FULL_ADDRESS;
-  }
-
-  if (autocomplete_attribute_value == "cc-name" ||
-      autocomplete_attribute_value == "cc_name")
-    return HTML_TYPE_CREDIT_CARD_NAME_FULL;
-
-  if (autocomplete_attribute_value == "cc-given-name" ||
-      autocomplete_attribute_value == "cc_given_name")
-    return HTML_TYPE_CREDIT_CARD_NAME_FIRST;
-
-  if (autocomplete_attribute_value == "cc-family-name" ||
-      autocomplete_attribute_value == "cc_family_name")
-    return HTML_TYPE_CREDIT_CARD_NAME_LAST;
-
-  if (autocomplete_attribute_value == "cc-number" ||
-      autocomplete_attribute_value == "cc_number")
-    return HTML_TYPE_CREDIT_CARD_NUMBER;
-
-  if (autocomplete_attribute_value == "cc-exp" ||
-      autocomplete_attribute_value == "cc_exp") {
-    if (field.max_length == 5)
-      return HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR;
-    if (field.max_length == 7)
-      return HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
-    return HTML_TYPE_CREDIT_CARD_EXP;
-  }
-
-  if (autocomplete_attribute_value == "cc-exp-month" ||
-      autocomplete_attribute_value == "cc_exp_month")
-    return HTML_TYPE_CREDIT_CARD_EXP_MONTH;
-
-  if (autocomplete_attribute_value == "cc-exp-year" ||
-      autocomplete_attribute_value == "cc_exp_year") {
-    if (field.max_length == 2)
-      return HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR;
-    if (field.max_length == 4)
-      return HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR;
-    return HTML_TYPE_CREDIT_CARD_EXP_YEAR;
-  }
-
-  if (autocomplete_attribute_value == "cc-csc" ||
-      autocomplete_attribute_value == "cc_csc")
-    return HTML_TYPE_CREDIT_CARD_VERIFICATION_CODE;
-
-  if (autocomplete_attribute_value == "cc-type" ||
-      autocomplete_attribute_value == "cc_type")
-    return HTML_TYPE_CREDIT_CARD_TYPE;
-
-  if (autocomplete_attribute_value == "transaction-amount" ||
-      autocomplete_attribute_value == "transaction_amount")
-    return HTML_TYPE_TRANSACTION_AMOUNT;
-
-  if (autocomplete_attribute_value == "transaction-currency" ||
-      autocomplete_attribute_value == "transaction_currency")
-    return HTML_TYPE_TRANSACTION_CURRENCY;
-
-  if (autocomplete_attribute_value == "tel" ||
-      autocomplete_attribute_value == "phone")
-    return HTML_TYPE_TEL;
-
-  if (autocomplete_attribute_value == "tel-country-code" ||
-      autocomplete_attribute_value == "phone-country-code" ||
-      autocomplete_attribute_value == "tel_country_code" ||
-      autocomplete_attribute_value == "phone_country_code")
-    return HTML_TYPE_TEL_COUNTRY_CODE;
-
-  if (autocomplete_attribute_value == "tel-national" ||
-      autocomplete_attribute_value == "phone-national" ||
-      autocomplete_attribute_value == "tel_national" ||
-      autocomplete_attribute_value == "phone_national")
-    return HTML_TYPE_TEL_NATIONAL;
-
-  if (autocomplete_attribute_value == "tel-area-code" ||
-      autocomplete_attribute_value == "phone-area-code" ||
-      autocomplete_attribute_value == "tel_area_code" ||
-      autocomplete_attribute_value == "phone_area_code")
-    return HTML_TYPE_TEL_AREA_CODE;
-
-  if (autocomplete_attribute_value == "tel-local" ||
-      autocomplete_attribute_value == "phone-local" ||
-      autocomplete_attribute_value == "tel_local" ||
-      autocomplete_attribute_value == "phone_local")
-    return HTML_TYPE_TEL_LOCAL;
-
-  if (autocomplete_attribute_value == "tel-local-prefix" ||
-      autocomplete_attribute_value == "phone-local-prefix" ||
-      autocomplete_attribute_value == "tel_local_prefix" ||
-      autocomplete_attribute_value == "phone_local_prefix")
-    return HTML_TYPE_TEL_LOCAL_PREFIX;
-
-  if (autocomplete_attribute_value == "tel-local-suffix" ||
-      autocomplete_attribute_value == "phone-local-suffix" ||
-      autocomplete_attribute_value == "tel_local_suffix" ||
-      autocomplete_attribute_value == "phone_local_suffix")
-    return HTML_TYPE_TEL_LOCAL_SUFFIX;
-
-  if (autocomplete_attribute_value == "tel-extension" ||
-      autocomplete_attribute_value == "phone-extension" ||
-      autocomplete_attribute_value == "phone-ext" ||
-      autocomplete_attribute_value == "tel_extension" ||
-      autocomplete_attribute_value == "phone_extension" ||
-      autocomplete_attribute_value == "phone_ext")
-    return HTML_TYPE_TEL_EXTENSION;
-
-  if (autocomplete_attribute_value == "email" ||
-      autocomplete_attribute_value == "username")
-    return HTML_TYPE_EMAIL;
-
-  if (autocomplete_attribute_value == "upi-vpa" ||
-      autocomplete_attribute_value == "upi_vpa" ||
-      autocomplete_attribute_value == "upi")
-    return HTML_TYPE_UPI_VPA;
-
-  if (autocomplete_attribute_value == "one-time-code")
-    return HTML_TYPE_ONE_TIME_CODE;
-
-  if (autocomplete_attribute_value == "promo-code" ||
-      autocomplete_attribute_value == "promo_code" ||
-      autocomplete_attribute_value == "promotion-code" ||
-      autocomplete_attribute_value == "promotion_code" ||
-      autocomplete_attribute_value == "promotional-code" ||
-      autocomplete_attribute_value == "promotional_code" ||
-      autocomplete_attribute_value == "coupon-code" ||
-      autocomplete_attribute_value == "coupon_code" ||
-      autocomplete_attribute_value == "gift-code" ||
-      autocomplete_attribute_value == "gift_code")
-    return HTML_TYPE_MERCHANT_PROMO_CODE;
-
-  return HTML_TYPE_UNRECOGNIZED;
+  return type.has_value() ? RationalizeAutocompleteType(type.value(), field)
+                          : HTML_TYPE_UNRECOGNIZED;
 }
 
 std::ostream& operator<<(std::ostream& out,
