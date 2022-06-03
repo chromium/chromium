@@ -89,7 +89,7 @@ export class Earcons extends AbstractEarcons {
    * @private
    */
   updateShouldPanForDevices_(devices) {
-    this.shouldPan_ = !devices.some((device) => {
+    this.shouldPan_ = !devices.some(device => {
       return device.isActive &&
           device.deviceType === chrome.audio.DeviceType.INTERNAL_SPEAKER;
     });

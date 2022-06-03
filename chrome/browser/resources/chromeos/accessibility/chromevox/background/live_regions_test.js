@@ -193,7 +193,7 @@ TEST_F('ChromeVoxLiveRegionsTest', 'FocusThenLiveRegion', async function() {
   mockFeedback.call(this.simulateUserInteraction.bind(this))
       .call(go.doDefault.bind(go))
       .expectSpeech('Focus')
-      .expectSpeech((candidate) => {
+      .expectSpeech(candidate => {
         return candidate.text === 'Live' &&
             (candidate.queueMode === QueueMode.CATEGORY_FLUSH ||
              candidate.queueMode === QueueMode.QUEUE);

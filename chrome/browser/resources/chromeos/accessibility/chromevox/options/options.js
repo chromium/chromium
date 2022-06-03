@@ -112,7 +112,7 @@ export class OptionsPage {
       }
     });
 
-    $('openTtsSettings').addEventListener('click', (evt) => {
+    $('openTtsSettings').addEventListener('click', evt => {
       chrome.accessibilityPrivate.openSettingsSubpage(
           'manageAccessibility/tts');
     });
@@ -147,7 +147,7 @@ export class OptionsPage {
     document.addEventListener('click', OptionsPage.eventListener, false);
     document.addEventListener('keydown', OptionsPage.eventListener, false);
 
-    window.addEventListener('storage', (event) => {
+    window.addEventListener('storage', event => {
       if (event.key === 'speakTextUnderMouse') {
         chrome.accessibilityPrivate.enableMouseEvents(
             event.newValue === String(true));
@@ -195,7 +195,7 @@ export class OptionsPage {
       OptionsPage.bluetoothBrailleDisplayUI.attach(bluetoothBraille);
     }
 
-    $('usePitchChanges').addEventListener('click', (evt) => {
+    $('usePitchChanges').addEventListener('click', evt => {
       // The capitalStrategy pref depends on the value of usePitchChanges.
       // When usePitchChanges is toggled, we should update the preference value
       // and options for capitalStrategy.
@@ -286,7 +286,7 @@ export class OptionsPage {
           return 0;
         });
         addVoiceOption(Msgs.getMsg('system_voice'), constants.SYSTEM_VOICE);
-        voices.forEach((voice) => {
+        voices.forEach(voice => {
           addVoiceOption(voice.voiceName, voice.voiceName);
         });
       });

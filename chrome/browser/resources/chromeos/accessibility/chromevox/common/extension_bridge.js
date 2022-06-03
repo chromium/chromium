@@ -134,7 +134,7 @@ export class ExtensionBridge {
   initBackground_() {
     this.id_ = 0;
     chrome.extension.onConnect.addListener(
-        (port) => this.backgroundOnConnectHandler_(port));
+        port => this.backgroundOnConnectHandler_(port));
   }
 
   /**
@@ -150,7 +150,7 @@ export class ExtensionBridge {
     this.portCache_.push(port);
 
     port.onMessage.addListener(
-        (message) => this.backgroundOnMessage_(message, port));
+        message => this.backgroundOnMessage_(message, port));
 
     port.onDisconnect.addListener(() => this.backgroundOnDisconnect_(port));
   }
@@ -168,7 +168,7 @@ export class ExtensionBridge {
       return;
     }
 
-    this.messageListeners_.forEach((listener) => listener(message, port));
+    this.messageListeners_.forEach(listener => listener(message, port));
   }
 
   /**
@@ -219,7 +219,7 @@ export class ExtensionBridge {
       this.gotPongFromBackgroundPage_(request[ExtensionBridge.PONG_MSG]);
     } else {
       this.messageListeners_.forEach(
-          (listener) => listener(request, this.backgroundPort_));
+          listener => listener(request, this.backgroundPort_));
     }
     sendResponse({});
   }
@@ -235,7 +235,7 @@ export class ExtensionBridge {
       return;
     }
     this.backgroundPort_.onMessage.addListener(
-        (message) => this.contentOnPortMessage_(message));
+        message => this.contentOnPortMessage_(message));
     this.backgroundPort_.onDisconnect.addListener(
         () => this.contentOnDisconnect_());
   }
@@ -345,7 +345,7 @@ export class ExtensionBridge {
    * @private
    */
   sendBackgroundToContentScript_(message) {
-    this.portCache_.forEach((port) => port.postMessage(message));
+    this.portCache_.forEach(port => port.postMessage(message));
   }
 }
 

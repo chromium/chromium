@@ -25,7 +25,7 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
 
     ChromeVox.tts.addCapturingEventListener(this);
 
-    chrome.automation.getDesktop((node) => {
+    chrome.automation.getDesktop(node => {
       this.node_ = node;
 
       this.addListener_(

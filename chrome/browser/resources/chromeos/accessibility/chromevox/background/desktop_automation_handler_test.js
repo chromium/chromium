@@ -89,7 +89,7 @@ TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'TaskManagerTableView',
     function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedDesktop((desktop) => {
+      this.runWithLoadedDesktop(desktop => {
         mockFeedback
             .call(() => {
               EventGenerator.sendKeyPress(KeyCode.ESCAPE, {search: true});

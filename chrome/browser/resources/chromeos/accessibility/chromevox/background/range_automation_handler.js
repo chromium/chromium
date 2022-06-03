@@ -142,8 +142,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
       let maybeControlledBy = evt.target;
       while (maybeControlledBy) {
         if (maybeControlledBy.controlledBy &&
-            maybeControlledBy.controlledBy.find(
-                (n) => Boolean(n.autoComplete))) {
+            maybeControlledBy.controlledBy.find(n => Boolean(n.autoComplete))) {
           clearTimeout(this.delayedAttributeOutputId_);
           this.delayedAttributeOutputId_ = setTimeout(() => {
             this.lastAttributeOutput_.go();
@@ -239,8 +238,8 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     const endRect = cur.end.node.location;
 
     const found =
-        oldFocusBounds.some((rect) => this.areRectsEqual_(rect, startRect)) &&
-        oldFocusBounds.some((rect) => this.areRectsEqual_(rect, endRect));
+        oldFocusBounds.some(rect => this.areRectsEqual_(rect, startRect)) &&
+        oldFocusBounds.some(rect => this.areRectsEqual_(rect, endRect));
     if (found) {
       return;
     }

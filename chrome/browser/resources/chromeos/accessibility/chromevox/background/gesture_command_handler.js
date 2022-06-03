@@ -127,7 +127,7 @@ GestureCommandHandler.init_ = function() {
   GestureCommandHandler.pointerHandler_ = new PointerHandler();
 
   GestureInterface.granularityGetter = () => GestureCommandHandler.granularity;
-  GestureInterface.granularitySetter = (granularity) =>
+  GestureInterface.granularitySetter = granularity =>
       GestureCommandHandler.granularity = granularity;
 };
 

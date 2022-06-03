@@ -36,7 +36,7 @@ FakeEditor = class {
     this.uncommittedText_ = '';
     /** @private {?Array<number>} */
     this.extraCells_ = [];
-    port.postMessage = (message) => this.handleMessage_(message);
+    port.postMessage = message => this.handleMessage_(message);
   }
 
   /**

@@ -14,7 +14,7 @@ var chrome = {};
 chrome.brailleDisplayPrivate = {};
 /** Fake chrome.bluetooth object. */
 chrome.bluetooth = {};
-chrome.bluetooth.getDevices = (devices) => {};
+chrome.bluetooth.getDevices = devices => {};
 chrome.bluetooth.onDeviceAdded = new FakeChromeEvent();
 chrome.bluetooth.onDeviceChanged = new FakeChromeEvent();
 chrome.bluetooth.onDeviceRemoved = new FakeChromeEvent();
@@ -92,7 +92,7 @@ TEST_F(
 TEST_F(
     'ChromeVoxBluetoothBrailleDisplayManagerWebUITest',
     'DisconnectPreviousPreferredOnConnectNewPreferred', function() {
-      chrome.bluetoothPrivate.connect = this.newCallback((address) => {
+      chrome.bluetoothPrivate.connect = this.newCallback(address => {
         assertEquals('abcd', address);
       });
       chrome.bluetoothPrivate.disconnectAll =
@@ -121,7 +121,7 @@ SYNC_TEST_F(
       const listener = new FakeBluetoothBrailleDisplayManagerListener();
       manager.addListener(listener);
       let devices = [];
-      chrome.bluetooth.getDevices = (callback) => callback(devices);
+      chrome.bluetooth.getDevices = callback => callback(devices);
 
       // No devices have been added, removed, or changed.
       manager.handleDevicesChanged();
@@ -157,14 +157,14 @@ TEST_F(
     'ChromeVoxBluetoothBrailleDisplayManagerWebUITest',
     'ConnectPreferredTriggersBrlttyUpdate', function() {
       chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress =
-          this.newCallback((address) => {
+          this.newCallback(address => {
             assertEquals('abcd', address);
           });
 
       localStorage['preferredBrailleDisplayAddress'] = 'abcd';
       const manager = new BluetoothBrailleDisplayManager();
       let devices = [];
-      chrome.bluetooth.getDevices = (callback) => callback(devices);
+      chrome.bluetooth.getDevices = callback => callback(devices);
 
       // No devices.
       manager.handleDevicesChanged();
@@ -187,7 +187,7 @@ TEST_F(
     'ForgetPreferredTriggersBrlttyUpdate', function() {
       chrome.bluetoothPrivate.forgetDevice = this.newCallback();
       chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress =
-          this.newCallback((address) => {
+          this.newCallback(address => {
             assertEquals('', address);
           });
 
@@ -203,7 +203,7 @@ TEST_F(
     'DisconnectPreferredTriggersBrlttyUpdate', function() {
       chrome.bluetoothPrivate.disconnectAll = this.newCallback();
       chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress =
-          this.newCallback((address) => {
+          this.newCallback(address => {
             assertEquals('', address);
           });
 

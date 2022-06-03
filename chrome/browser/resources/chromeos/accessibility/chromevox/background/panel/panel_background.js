@@ -39,7 +39,7 @@ export class PanelBackground {
     BridgeHelper.registerHandler(
         BridgeTargets.PANEL_BACKGROUND,
         BridgeActions.CREATE_ALL_NODE_MENU_BACKGROUNDS,
-        (opt_activateMenuTitle) =>
+        opt_activateMenuTitle =>
             PanelBackground.instance.createAllNodeMenuBackgrounds_(
                 opt_activateMenuTitle));
     BridgeHelper.registerHandler(
@@ -66,20 +66,18 @@ export class PanelBackground {
                 searchStr, dir, opt_nextObject));
     BridgeHelper.registerHandler(
         BridgeTargets.PANEL_BACKGROUND, BridgeActions.NODE_MENU_CALLBACK,
-        (callbackNodeIndex) =>
+        callbackNodeIndex =>
             PanelNodeMenuBackground.focusNodeCallback(callbackNodeIndex));
     BridgeHelper.registerHandler(
         BridgeTargets.PANEL_BACKGROUND,
         BridgeActions.PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE,
-        (actionId) =>
-            PanelBackground.instance.performCustomActionOnCurrentNode_(
-                actionId));
+        actionId => PanelBackground.instance.performCustomActionOnCurrentNode_(
+            actionId));
     BridgeHelper.registerHandler(
         BridgeTargets.PANEL_BACKGROUND,
         BridgeActions.PERFORM_STANDARD_ACTION_ON_CURRENT_NODE,
-        (action) =>
-            PanelBackground.instance.performStandardActionOnCurrentNode_(
-                action));
+        action => PanelBackground.instance.performStandardActionOnCurrentNode_(
+            action));
     BridgeHelper.registerHandler(
         BridgeTargets.PANEL_BACKGROUND,
         BridgeActions.SET_RANGE_TO_I_SEARCH_NODE,
@@ -249,7 +247,7 @@ export class PanelBackground {
     return new Promise(async resolve => {
       const desktop = await new Promise(chrome.automation.getDesktop);
       // Watch for a focus event outside the panel.
-      const onFocus = (event) => {
+      const onFocus = event => {
         if (event.target.docUrl.contains('chromevox/panel')) {
           return;
         }

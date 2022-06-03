@@ -81,9 +81,9 @@ export class ChromeVoxBackground {
     // Inject the content script into all running tabs allowed by the
     // manifest. This block is still necessary because the extension system
     // doesn't re-inject content scripts into already running tabs.
-    chrome.windows.getAll({'populate': true}, (windows) => {
+    chrome.windows.getAll({'populate': true}, windows => {
       for (let i = 0; i < windows.length; i++) {
-        const tabs = windows[i].tabs.filter((tab) => matchesRe.test(tab.url));
+        const tabs = windows[i].tabs.filter(tab => matchesRe.test(tab.url));
         this.injectChromeVoxIntoTabs(tabs);
       }
     });
@@ -170,7 +170,7 @@ export class ChromeVoxBackground {
          * A helper function which executes code.
          * @param {string} code The code to execute.
          */
-        const executeScript = (code) => {
+        const executeScript = code => {
           chrome.tabs.executeScript(tab.id, {code, 'allFrames': true}, () => {
             if (!chrome.extension.lastError) {
               return;

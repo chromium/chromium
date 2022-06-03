@@ -29,7 +29,7 @@ ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
       const desktop =
           await new Promise(resolve => chrome.automation.getDesktop(resolve));
       desktop.addEventListener(
-          EventType.LOAD_COMPLETE, (evt) => {
+          EventType.LOAD_COMPLETE, evt => {
             if (evt.target.docUrl.indexOf('options/options.html') === -1 ||
                 !evt.target.docLoaded) {
               return;

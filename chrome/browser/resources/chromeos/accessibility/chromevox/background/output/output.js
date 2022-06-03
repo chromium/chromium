@@ -1356,12 +1356,12 @@ export class Output {
     const root = node;
     const walker = new AutomationTreeWalker(node, Dir.FORWARD, {
       visit: AutomationPredicate.leafOrStaticText,
-      leaf: (n) => {
+      leaf: n => {
         // The root might be a leaf itself, but we still want to descend
         // into it.
         return n !== root && AutomationPredicate.leafOrStaticText(n);
       },
-      root: (r) => r === root
+      root: r => r === root
     });
     const outputStrings = [];
     while (walker.next().node) {
@@ -2081,7 +2081,7 @@ export class Output {
       this.ancestry_(node, prevNode, type, buff, ruleStr, {preferEnd: true});
     }
 
-    range.start.node.boundsForRange(rangeStart, rangeEnd, (loc) => {
+    range.start.node.boundsForRange(rangeStart, rangeEnd, loc => {
       if (loc) {
         this.locations_.push(loc);
       }
@@ -2228,13 +2228,13 @@ export class Output {
       }
 
       const isWithinVirtualKeyboard = AutomationUtil.getAncestors(node).find(
-          (n) => n.role === RoleType.KEYBOARD);
+          n => n.role === RoleType.KEYBOARD);
       if (AutomationPredicate.clickable(node) && !isWithinVirtualKeyboard) {
         ret.push({msgId: 'hint_double_tap'});
       }
 
       const enteredVirtualKeyboard =
-          uniqueAncestors.find((n) => n.role === RoleType.KEYBOARD);
+          uniqueAncestors.find(n => n.role === RoleType.KEYBOARD);
       if (enteredVirtualKeyboard) {
         ret.push({msgId: 'hint_touch_type'});
       }

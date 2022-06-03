@@ -100,7 +100,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
     this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
     this.addListener_(EventType.FOCUS_AFTER_MENU_CLOSE, this.onMenuEnd);
-    this.addListener_(EventType.MENU_START, (event) => {
+    this.addListener_(EventType.MENU_START, event => {
       Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
       this.onEventDefault(event);
     });
@@ -637,7 +637,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     // editable leading to braille output routing to the editable.
     this.textEditHandler_ = null;
 
-    chrome.automation.getFocus((focus) => {
+    chrome.automation.getFocus(focus => {
       const target = evt.target;
 
       // Desktop tabs get "selection" when there's a focused webview during
@@ -800,7 +800,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
          voxTarget.root.role !== RoleType.DESKTOP &&
          !AutomationUtil.isDescendantOf(target, voxTarget) &&
          !AutomationUtil.getAncestors(voxTarget.root)
-              .find((n) => n.role === RoleType.KEYBOARD))) {
+              .find(n => n.role === RoleType.KEYBOARD))) {
       return false;
     }
 

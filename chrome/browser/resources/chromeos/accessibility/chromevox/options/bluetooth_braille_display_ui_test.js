@@ -65,7 +65,7 @@ SYNC_TEST_F(
       // Fake out getDevice using |display| as the backing source which changes
       // below.
       chrome.bluetooth.getDevice = (address, callback) => {
-        const display = displays.find((display) => display.address === address);
+        const display = displays.find(display => display.address === address);
         assertNotNullNorUndefined(display);
         callback(display);
       };
@@ -96,7 +96,7 @@ SYNC_TEST_F(
       // Fake out getDevice using |display| as the backing source which changes
       // below.
       chrome.bluetooth.getDevice = (address, callback) => {
-        const display = displays.find((display) => display.address === address);
+        const display = displays.find(display => display.address === address);
         assertNotNullNorUndefined(display);
         callback(display);
       };
@@ -210,7 +210,7 @@ TEST_F('ChromeVoxBluetoothBrailleDisplayUITest', 'ClickControls', function() {
   // Fake out getDevice using |display| as the backing source which changes
   // below.
   chrome.bluetooth.getDevice = (address, callback) => {
-    const display = displays.find((display) => display.address === address);
+    const display = displays.find(display => display.address === address);
     assertNotNullNorUndefined(display);
     callback(display);
   };

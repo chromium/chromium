@@ -60,7 +60,7 @@ export class BluetoothBrailleDisplayUI {
     controls.appendChild(displaySelect);
     displaySelect.setAttribute(
         'aria-labelledby', 'bluetoothBrailleSelectLabel');
-    displaySelect.addEventListener('change', (evt) => {
+    displaySelect.addEventListener('change', evt => {
       this.updateControls_();
     });
 
@@ -100,12 +100,12 @@ export class BluetoothBrailleDisplayUI {
     // Remove any displays that were removed.
     for (let i = 0; i < this.displaySelect_.children.length; i++) {
       const domDisplay = this.displaySelect_.children[i];
-      if (!displays.find((display) => domDisplay.id === display.address)) {
+      if (!displays.find(display => domDisplay.id === display.address)) {
         domDisplay.remove();
       }
     }
 
-    displays.forEach((display) => {
+    displays.forEach(display => {
       // Check if the element already exists.
       let displayContainer =
           this.displaySelect_.querySelector('#' + CSS.escape(display.address));
@@ -145,7 +145,7 @@ export class BluetoothBrailleDisplayUI {
     form.appendChild(pincodeField);
 
     let timeoutId = -1;
-    form.addEventListener('submit', (evt) => {
+    form.addEventListener('submit', evt => {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
@@ -184,7 +184,7 @@ export class BluetoothBrailleDisplayUI {
       return;
     }
 
-    chrome.bluetooth.getDevice(sel.id, (display) => {
+    chrome.bluetooth.getDevice(sel.id, display => {
       // Record metrics if the display is connected for the first time either
       // via a click of the Connect button or re-connection by selection via the
       // select.

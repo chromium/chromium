@@ -82,7 +82,7 @@ export class Background extends ChromeVoxState {
     chrome.clipboard.onClipboardDataChanged.addListener(() => {
       this.onClipboardDataChanged_();
     });
-    document.addEventListener('copy', (event) => {
+    document.addEventListener('copy', event => {
       this.onClipboardCopyEvent_(event);
     });
 
@@ -102,11 +102,11 @@ export class Background extends ChromeVoxState {
     RangeAutomationHandler.init();
 
     chrome.accessibilityPrivate.onAnnounceForAccessibility.addListener(
-        (announceText) => {
+        announceText => {
           ChromeVox.tts.speak(announceText.join(' '), QueueMode.FLUSH);
         });
     chrome.accessibilityPrivate.onCustomSpokenFeedbackToggled.addListener(
-        (enabled) => this.talkBackEnabled_ = enabled);
+        enabled => this.talkBackEnabled_ = enabled);
     chrome.accessibilityPrivate.onShowChromeVoxTutorial.addListener(() => {
       (new PanelCommand(PanelCommandType.TUTORIAL)).send();
     });
@@ -403,11 +403,11 @@ export class Background extends ChromeVoxState {
           AutomationUtil.getUniqueAncestors(prevRange.start.node, start);
 
       entered
-          .filter((f) => {
+          .filter(f => {
             return f.role === RoleType.PLUGIN_OBJECT ||
                 f.role === RoleType.IFRAME;
           })
-          .forEach((container) => {
+          .forEach(container => {
             if (!container.state[StateType.FOCUSED]) {
               container.focus();
             }
@@ -418,8 +418,7 @@ export class Background extends ChromeVoxState {
       return;
     }
 
-    const isFocusableLinkOrControl = (node) =>
-        node.state[StateType.FOCUSABLE] &&
+    const isFocusableLinkOrControl = node => node.state[StateType.FOCUSABLE] &&
         AutomationPredicate.linkOrControl(node);
 
     // Next, try to focus the start or end node.

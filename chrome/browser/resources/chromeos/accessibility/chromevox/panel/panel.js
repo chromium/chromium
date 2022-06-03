@@ -33,7 +33,7 @@ export class Panel extends PanelInterface {
     /** @type {string} */
     Panel.sessionState = '';
 
-    const updateSessionState = (sessionState) => {
+    const updateSessionState = sessionState => {
       Panel.sessionState = sessionState;
       $('options').disabled = sessionState !== 'IN_SESSION';
     };
@@ -382,7 +382,7 @@ export class Panel extends PanelInterface {
       // Insert items from the bindings into the menus.
       const sawBindingSet = {};
       const gestures = Object.keys(GestureCommandData.GESTURE_COMMAND_MAP);
-      sortedBindings.forEach((binding) => {
+      sortedBindings.forEach(binding => {
         const command = binding.command;
         if (sawBindingSet[command]) {
           return;
@@ -1043,7 +1043,7 @@ export class Panel extends PanelInterface {
 
   /** Open the tutorial. */
   static onTutorial() {
-    chrome.chromeosInfoPrivate.isTabletModeEnabled((enabled) => {
+    chrome.chromeosInfoPrivate.isTabletModeEnabled(enabled => {
       // Use tablet mode to decide the medium for the tutorial.
       const medium = enabled ? constants.InteractionMedium.TOUCH :
                                constants.InteractionMedium.KEYBOARD;
@@ -1097,12 +1097,12 @@ export class Panel extends PanelInterface {
     // Add listeners. These are custom events fired from custom components.
     const backgroundPage = chrome.extension.getBackgroundPage();
 
-    $('chromevox-tutorial').addEventListener('closetutorial', async (evt) => {
+    $('chromevox-tutorial').addEventListener('closetutorial', async evt => {
       // Ensure UserActionMonitor is destroyed before closing tutorial.
       await BackgroundBridge.UserActionMonitor.destroy();
       Panel.onCloseTutorial();
     });
-    $('chromevox-tutorial').addEventListener('requestspeech', (evt) => {
+    $('chromevox-tutorial').addEventListener('requestspeech', evt => {
       /**
        * @type {{
        * text: string,
@@ -1122,7 +1122,7 @@ export class Panel extends PanelInterface {
       cvox.tts.speak(text, queueMode, properties);
     });
     $('chromevox-tutorial')
-        .addEventListener('startinteractivemode', async (evt) => {
+        .addEventListener('startinteractivemode', async evt => {
           const actions = evt.detail.actions;
           await BackgroundBridge.UserActionMonitor.create(actions);
           await BackgroundBridge.UserActionMonitor.destroy();
@@ -1131,24 +1131,24 @@ export class Panel extends PanelInterface {
           }
         });
     $('chromevox-tutorial')
-        .addEventListener('stopinteractivemode', async (evt) => {
+        .addEventListener('stopinteractivemode', async evt => {
           await BackgroundBridge.UserActionMonitor.destroy();
         });
-    $('chromevox-tutorial').addEventListener('requestfullydescribe', (evt) => {
+    $('chromevox-tutorial').addEventListener('requestfullydescribe', evt => {
       BackgroundBridge.CommandHandler.onCommand('fullyDescribe');
     });
-    $('chromevox-tutorial').addEventListener('requestearcon', (evt) => {
+    $('chromevox-tutorial').addEventListener('requestearcon', evt => {
       const earconId = evt.detail.earconId;
       backgroundPage['ChromeVox']['earcons']['playEarcon'](earconId);
     });
-    $('chromevox-tutorial').addEventListener('cancelearcon', (evt) => {
+    $('chromevox-tutorial').addEventListener('cancelearcon', evt => {
       const earconId = evt.detail.earconId;
       backgroundPage['ChromeVox']['earcons']['cancelEarcon'](earconId);
     });
     $('chromevox-tutorial').addEventListener('readyfortesting', () => {
       Panel.tutorialReadyForTesting_ = true;
     });
-    $('chromevox-tutorial').addEventListener('openUrl', async (evt) => {
+    $('chromevox-tutorial').addEventListener('openUrl', async evt => {
       const url = evt.detail.url;
       // Ensure UserActionMonitor is destroyed before closing tutorial.
       await BackgroundBridge.UserActionMonitor.destroy();
@@ -1270,7 +1270,7 @@ function $(id) {
 
 BridgeHelper.registerHandler(
     BridgeConstants.Panel.TARGET, BridgeConstants.Panel.Action.ADD_MENU_ITEM,
-    (itemData) => Panel.addNodeMenuItem(itemData));
+    itemData => Panel.addNodeMenuItem(itemData));
 BridgeHelper.registerHandler(
     BridgeConstants.Panel.TARGET,
     BridgeConstants.Panel.Action.ON_CURRENT_RANGE_CHANGED,

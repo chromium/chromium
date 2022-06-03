@@ -71,7 +71,7 @@ OutputFormatParser = class {
    */
   parse(format) {
     const formatTrees = OutputFormatTree.parseFormat(format);
-    formatTrees.forEach((tree) => {
+    formatTrees.forEach(tree => {
       // Obtain the operator token.
       let token = tree.value;
 

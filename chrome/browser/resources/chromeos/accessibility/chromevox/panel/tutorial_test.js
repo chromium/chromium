@@ -657,7 +657,7 @@ TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', async function() {
   };
 
   // A helper to make assertions on four variables of interest.
-  const makeAssertions = (expectedVars) => {
+  const makeAssertions = expectedVars => {
     assertEquals(expectedVars.createdCount, userActionMonitorCreatedCount);
     assertEquals(expectedVars.destroyedCount, userActionMonitorDestroyedCount);
     assertEquals(expectedVars.interactiveMode, tutorial.interactiveMode_);

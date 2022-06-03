@@ -253,7 +253,7 @@ export class CommandHandler extends CommandHandlerInterface {
           // If this is the first time, show a confirmation dialog.
           chrome.accessibilityPrivate.showConfirmationDialog(
               Msgs.getMsg('toggle_screen_title'),
-              Msgs.getMsg('toggle_screen_description'), (confirmed) => {
+              Msgs.getMsg('toggle_screen_description'), confirmed => {
                 if (confirmed) {
                   sessionStorage.setItem('darkScreen', 'true');
                   localStorage['acceptToggleScreen'] = true;
@@ -275,11 +275,11 @@ export class CommandHandler extends CommandHandlerInterface {
         return false;
       case 'enableChromeVoxArcSupportForCurrentApp':
         chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp(
-            true, (response) => {});
+            true, response => {});
         break;
       case 'disableChromeVoxArcSupportForCurrentApp':
         chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp(
-            false, (response) => {
+            false, response => {
               if (response ===
                   chrome.accessibilityPrivate.SetNativeChromeVoxResponse
                       .TALKBACK_NOT_INSTALLED) {
@@ -1534,23 +1534,23 @@ export class CommandHandler extends CommandHandlerInterface {
    * Performs global initialization.
    */
   init() {
-    ChromeVoxKbHandler.commandHandler = (command) => this.onCommand(command);
+    ChromeVoxKbHandler.commandHandler = command => this.onCommand(command);
 
     chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-language-detection', (enabled) => {
+        'enable-experimental-accessibility-language-detection', enabled => {
           if (enabled) {
             this.languageLoggingEnabled_ = true;
           }
         });
     chrome.commandLinePrivate.hasSwitch(
         'enable-experimental-accessibility-language-detection-dynamic',
-        (enabled) => {
+        enabled => {
           if (enabled) {
             this.languageLoggingEnabled_ = true;
           }
         });
 
-    chrome.chromeosInfoPrivate.get(['sessionType'], (result) => {
+    chrome.chromeosInfoPrivate.get(['sessionType'], result => {
       /** @type {boolean} */
       this.isKioskSession_ = result['sessionType'] ===
           chrome.chromeosInfoPrivate.SessionType.KIOSK;
@@ -1563,4 +1563,4 @@ CommandHandlerInterface.instance = new CommandHandler();
 BridgeHelper.registerHandler(
     BridgeConstants.CommandHandler.TARGET,
     BridgeConstants.CommandHandler.Action.ON_COMMAND,
-    (command) => CommandHandlerInterface.instance.onCommand(command));
+    command => CommandHandlerInterface.instance.onCommand(command));

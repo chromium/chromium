@@ -350,7 +350,7 @@ UserActionMonitor.instance;
 
 BridgeHelper.registerHandler(
     BridgeTargets.USER_ACTION_MONITOR, BridgeActions.CREATE,
-    (actions) =>
+    actions =>
         new Promise(resolve => UserActionMonitor.create(actions, resolve)));
 BridgeHelper.registerHandler(
     BridgeTargets.USER_ACTION_MONITOR, BridgeActions.DESTROY,

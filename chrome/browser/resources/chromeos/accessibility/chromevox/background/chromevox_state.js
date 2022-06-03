@@ -153,5 +153,4 @@ BridgeHelper.registerHandler(
 BridgeHelper.registerHandler(
     BridgeConstants.ChromeVoxState.TARGET,
     BridgeConstants.ChromeVoxState.Action.UPDATE_PUNCTUATION_ECHO,
-    (echo) =>
-        ChromeVoxState.instance.backgroundTts.updatePunctuationEcho(echo));
+    echo => ChromeVoxState.instance.backgroundTts.updatePunctuationEcho(echo));

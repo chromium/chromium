@@ -73,8 +73,8 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     for (const key in modifiers) {
       keyEvent[key] = modifiers[key];
     }
-    keyEvent.preventDefault = _ => {};
-    keyEvent.stopPropagation = _ => {};
+    keyEvent.preventDefault = () => {};
+    keyEvent.stopPropagation = () => {};
     return keyEvent;
   }
 

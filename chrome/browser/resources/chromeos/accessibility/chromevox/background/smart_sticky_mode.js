@@ -167,7 +167,7 @@ export class SmartStickyMode {
       while (!found && focus) {
         if (focus.activeDescendantFor && focus.activeDescendantFor.length) {
           found = focus.activeDescendantFor.find(
-              (n) => n.state[chrome.automation.StateType.EDITABLE]);
+              n => n.state[chrome.automation.StateType.EDITABLE]);
         }
 
         if (found) {
@@ -176,7 +176,7 @@ export class SmartStickyMode {
 
         if (focus.controlledBy && focus.controlledBy.length) {
           found = focus.controlledBy.find(
-              (n) => n.state[chrome.automation.StateType.EDITABLE]);
+              n => n.state[chrome.automation.StateType.EDITABLE]);
         }
 
         if (found) {

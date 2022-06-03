@@ -9,4 +9,4 @@ goog = {};
 goog.provide = () => {};
 goog.require = () => {};
 goog.addDependency = () => {};
-goog.isDef = (val) => val !== undefined;
+goog.isDef = val => val !== undefined;

@@ -34,13 +34,13 @@ export class PointerHandler extends BaseAutomationHandler {
     /** @private {!Date} */
     this.lastHoverRequested_ = new Date();
 
-    chrome.automation.getDesktop((desktop) => {
+    chrome.automation.getDesktop(desktop => {
       this.node_ = desktop;
       this.addListener_(EventType.MOUSE_MOVED, this.onMouseMove);
 
       // This is needed for ARC++ and Lacros. They send mouse move and hit test
       // respectively. Each responds with hover.
-      this.addListener_(EventType.HOVER, (evt) => {
+      this.addListener_(EventType.HOVER, evt => {
         if (this.expectingHoverCount_ === 0) {
           return;
         }
@@ -63,7 +63,7 @@ export class PointerHandler extends BaseAutomationHandler {
       chrome.accessibilityPrivate.enableMouseEvents(true);
     }
 
-    chrome.chromeosInfoPrivate.get(['deviceType'], (result) => {
+    chrome.chromeosInfoPrivate.get(['deviceType'], result => {
       this.isChromebox_ = result['deviceType'] ===
           chrome.chromeosInfoPrivate.DeviceType.CHROMEBOX;
     });
@@ -90,7 +90,7 @@ export class PointerHandler extends BaseAutomationHandler {
     }
 
     const actOnNode = specificNode ? specificNode : this.node_;
-    actOnNode.hitTestWithReply(this.mouseX_, this.mouseY_, (target) => {
+    actOnNode.hitTestWithReply(this.mouseX_, this.mouseY_, target => {
       this.handleHitTestResult(target);
     });
   }

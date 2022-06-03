@@ -161,7 +161,7 @@ TEST_F('ChromeVoxPanelTest', 'SearchMenu', async function() {
 
 // TODO(crbug.com/1088438): flaky crashes.
 TEST_F('ChromeVoxPanelTest', 'DISABLED_Gestures', async function() {
-  const doGestureAsync = async (gesture) => {
+  const doGestureAsync = async gesture => {
     doGesture(gesture)();
   };
   await this.runWithLoadedTree(`<button>Cancel</button><button>OK</button>`);

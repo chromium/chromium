@@ -25,7 +25,7 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
     /** @private {AutomationNode|undefined} */
     this.previousActiveDescendant_;
 
-    chrome.automation.getDesktop((desktop) => {
+    chrome.automation.getDesktop(desktop => {
       desktop.addEventListener(EventType.FOCUS, this.onFocus.bind(this), false);
     });
   }

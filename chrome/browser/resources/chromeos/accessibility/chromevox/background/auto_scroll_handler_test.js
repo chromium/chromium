@@ -50,10 +50,10 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
       `;
     return await this.runWithFakeScrollable(site, {
       numChildrenBeforeScroll_: -1,
-      beforeScroll: (list) => {
+      beforeScroll: list => {
         this.numChildrenBeforeScroll_ = list.children.length;
       },
-      scrollFinished: (list) =>
+      scrollFinished: list =>
           list.children.length !== this.numChildrenBeforeScroll_
     });
   }
@@ -90,10 +90,10 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
       `;
     return await this.runWithFakeScrollable(site, {
       childrenBeforeScroll_: [],
-      beforeScroll: (list) => {
+      beforeScroll: list => {
         this.childrenBeforeScroll_ = list.children;
       },
-      scrollFinished: (list) => list.children.length === 2 &&
+      scrollFinished: list => list.children.length === 2 &&
           list.children[0] !== this.childrenBeforeScroll_[0] &&
           list.children[1] !== this.childrenBeforeScroll_[1]
     });
@@ -146,9 +146,9 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
     };
 
     // Create a fake scrollForward and scrollBackward actions.
-    const fakeScrollFunc = (cb) => {
+    const fakeScrollFunc = cb => {
       scrolledPredicate.beforeScroll(list);
-      const listener = (ev) => {
+      const listener = ev => {
         if (!scrolledPredicate.scrollFinished(list)) {
           return;
         }
@@ -232,7 +232,7 @@ TEST_F(
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithFakeArcSimpleScrollable();
       const list = root.find({role: RoleType.LIST});
-      list.scrollForward = (callback) => callback(false);
+      list.scrollForward = callback => callback(false);
 
       mockFeedback.expectSpeech('1st item')
           .call(doCmd('nextObject'))

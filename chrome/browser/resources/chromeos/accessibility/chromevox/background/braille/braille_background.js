@@ -162,7 +162,7 @@ BrailleBackground.instance_ = null;
 BridgeHelper.registerHandler(
     BridgeConstants.BrailleBackground.TARGET,
     BridgeConstants.BrailleBackground.Action.BACK_TRANSLATE,
-    (cells) => new Promise(resolve => {
+    cells => new Promise(resolve => {
       BrailleBackground.instance.getTranslatorManager()
           .getDefaultTranslator()
           .backTranslate(cells, resolve);
@@ -171,5 +171,5 @@ BridgeHelper.registerHandler(
 BridgeHelper.registerHandler(
     BridgeConstants.BrailleBackground.TARGET,
     BridgeConstants.BrailleBackground.Action.REFRESH_BRAILLE_TABLE,
-    (brailleTable) => BrailleBackground.instance.getTranslatorManager().refresh(
+    brailleTable => BrailleBackground.instance.getTranslatorManager().refresh(
         brailleTable));

@@ -39,11 +39,11 @@ ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxNextE2ETest {
     this.DISPLAY_ROW_SIZE = 1;
     this.DISPLAY_COLUMN_SIZE = 12;
 
-    chrome.brailleDisplayPrivate.getDisplayState = (callback) => {
+    chrome.brailleDisplayPrivate.getDisplayState = callback => {
       callback(this.displayState);
     };
     this.writtenCells = [];
-    chrome.brailleDisplayPrivate.writeDots = (cells) => {
+    chrome.brailleDisplayPrivate.writeDots = cells => {
       this.writtenCells.push(cells);
     };
     chrome.brailleDisplayPrivate.onDisplayStateChanged = new FakeChromeEvent();
