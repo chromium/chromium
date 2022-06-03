@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -452,6 +453,10 @@ class WizardController : public OobeUI::Observer {
 
   void NotifyScreenChanged();
 
+  // Tries to switch to the screen which was shown before the current screen.
+  // Returns `true` if the screen switched.
+  bool MaybeSetToPreviousScreen();
+
   // Returns auto enrollment controller (lazily initializes one if it doesn't
   // exist already).
   AutoEnrollmentController* GetAutoEnrollmentController();
@@ -464,15 +469,17 @@ class WizardController : public OobeUI::Observer {
 
   std::unique_ptr<AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ScreenManager> screen_manager_;
+
+  // The `BaseScreen*` here point to the objects owned by the `screen_manager_`.
+  // So it should be safe to store the pointers.
+  base::flat_map<BaseScreen*, BaseScreen*> previous_screens_;
+
   WizardContext* wizard_context_;
 
   static bool skip_enrollment_prompts_for_testing_;
 
   // Screen that's currently active.
   BaseScreen* current_screen_ = nullptr;
-
-  // Screen that was active before, or nullptr for login screen.
-  BaseScreen* previous_screen_ = nullptr;
 
   // True if full OOBE flow should be shown.
   bool is_out_of_box_ = false;

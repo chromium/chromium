@@ -29,6 +29,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -402,6 +403,8 @@ WizardController::WizardController(WizardContext* wizard_context)
 WizardController::~WizardController() {
   for (ScreenObserver& obs : screen_observers_)
     obs.OnShutdown();
+
+  previous_screens_.clear();
   screen_manager_.reset();
 }
 
@@ -465,7 +468,10 @@ void WizardController::Init(OobeScreenId first_screen) {
 }
 
 void WizardController::OnDestroyingOobeUI() {
+  previous_screens_.clear();
   // Reset screens, they should not access handlers anymore.
+  // TODO(https://crbug.com/1309022): This should probably be removed when all
+  // the screen/handlers migrated to the new patterns.
   screen_manager_->Shutdown();
   oobe_ui_observation_.Reset();
 }
@@ -815,12 +821,22 @@ void WizardController::ShowSignInFatalErrorScreen(
 
 void WizardController::OnSignInFatalErrorScreenExit() {
   OnScreenExit(SignInFatalErrorView::kScreenId, kDefaultExitReason);
+  if (base::Contains(previous_screens_, current_screen_) &&
+      previous_screens_[current_screen_]->screen_id() ==
+          SamlConfirmPasswordView::kScreenId) {
+    // If the last screen user have visited before reaching SignInFatalError
+    // screen was SamlConfirmPassword screen we should not go back there because
+    // the context is lost at this point. We should go to the Gaia screen
+    // instead.
+    previous_screens_[current_screen_] = GetScreen(GaiaView::kScreenId);
+    GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
+  }
+
   // It's possible to get on the SignInFatalError screen both from the user pods
   // and from the Gaia sign-in screen. The screen exits when user presses
   // "try again". Go to the previous screen if it is set. Otherwise go to the
   // login screen with pods.
-  if (previous_screen_) {
-    SetCurrentScreen(previous_screen_);
+  if (MaybeSetToPreviousScreen()) {
     return;
   }
   ShowLoginScreen();
@@ -1196,10 +1212,8 @@ void WizardController::OnOsInstallScreenExit() {
     LoginDisplayHost::default_host()->HideOobeDialog();
     return;
   }
-  if (previous_screen_) {
-    SetCurrentScreen(previous_screen_);
-    return;
-  }
+  const bool did_advance = MaybeSetToPreviousScreen();
+  DCHECK(did_advance);
 }
 
 void WizardController::OnOsTrialScreenExit(OsTrialScreen::Result result) {
@@ -1250,9 +1264,9 @@ void WizardController::OnGuestTosScreenExit(GuestTosScreen::Result result) {
           chromeos::SigninSpecifics());
       break;
     case GuestTosScreen::Result::BACK:
-      if (previous_screen_)
-        SetCurrentScreen(previous_screen_);
-      else if (LoginDisplayHost::default_host()->HasUserPods())
+      if (MaybeSetToPreviousScreen())
+        break;
+      if (LoginDisplayHost::default_host()->HasUserPods())
         LoginDisplayHost::default_host()->HideOobeDialog();
       break;
     case GuestTosScreen::Result::CANCEL:
@@ -1790,16 +1804,22 @@ void WizardController::OnChangedMetricsReportingState(bool enabled) {
 }
 
 void WizardController::OnDeviceModificationCanceled() {
+  BaseScreen* previous_screen = nullptr;
+  if (base::Contains(previous_screens_, current_screen_))
+    previous_screen = previous_screens_[current_screen_];
+
   current_screen_->Hide();
   current_screen_ = nullptr;
-  if (previous_screen_) {
-    if (IsSigninScreen(previous_screen_->screen_id())) {
+
+  if (previous_screen) {
+    if (IsSigninScreen(previous_screen->screen_id())) {
       ShowLoginScreen();
     } else {
-      SetCurrentScreen(previous_screen_);
+      SetCurrentScreen(previous_screen);
     }
     return;
   }
+
   ShowPackagedLicenseScreen();
 }
 
@@ -1992,20 +2012,22 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   if (current_screen_ == new_current || GetOobeUI() == nullptr)
     return;
 
-  if (current_screen_) {
-    current_screen_->Hide();
+  if (new_current) {
+    // Check if we didn't come here via the previous screen logic.
+    if (current_screen_ &&
+        (!base::Contains(previous_screens_, current_screen_) ||
+         previous_screens_[current_screen_] != new_current)) {
+      previous_screens_[new_current] = current_screen_;
+    } else {
+      previous_screens_.erase(new_current);
+    }
   }
 
-  // If the last screen user have visited before reaching SignInFatalError
-  // screen was SamlConfirmPassword screen. Then 'previous_screen_' shouldn't be
-  // saved to send the user back to the Login Screen not to SamlConfirmPassword
-  // screen.
-  if (current_screen_ &&
-      current_screen_->screen_id() != SamlConfirmPasswordView::kScreenId) {
-    previous_screen_ = current_screen_;
-  } else {
-    previous_screen_ = nullptr;
+  if (current_screen_) {
+    current_screen_->Hide();
+    previous_screens_.erase(current_screen_);
   }
+
   current_screen_ = new_current;
 
   if (!current_screen_) {
@@ -2506,6 +2528,15 @@ void WizardController::ShowEnrollmentScreenIfEligible() {
   if (!has_users && !enterprise_managed) {
     AdvanceToScreen(EnrollmentScreenView::kScreenId);
   }
+}
+
+bool WizardController::MaybeSetToPreviousScreen() {
+  DCHECK(current_screen_);
+  if (!base::Contains(previous_screens_, current_screen_))
+    return false;
+  auto* old_current_screen = current_screen_;
+  SetCurrentScreen(previous_screens_[current_screen_]);
+  return old_current_screen != current_screen_;
 }
 
 void WizardController::NotifyScreenChanged() {
