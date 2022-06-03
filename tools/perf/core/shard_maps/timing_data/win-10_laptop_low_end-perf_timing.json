@@ -1588,23 +1588,7 @@
         "name": "blink_perf.webgpu_fast_call/binding-draw.html"
     },
     {
-        "duration": "40.0",
-        "name": "desktop_ui/download_shelf:1file"
-    },
-    {
-        "duration": "48.0",
-        "name": "desktop_ui/download_shelf:5file"
-    },
-    {
-        "duration": "37.0",
-        "name": "desktop_ui/download_shelf:measure_memory"
-    },
-    {
-        "duration": "68.0",
-        "name": "desktop_ui/download_shelf:top10:loading"
-    },
-    {
-        "duration": "31.0",
+        "duration": "30.0",
         "name": "desktop_ui/new_tab_page:loading"
     },
     {

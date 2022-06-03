@@ -182,8 +182,6 @@ extern const base::Feature kUnifiedSidePanel;
 
 extern const base::Feature kWebUIBubblePerProfilePersistence;
 
-extern const base::Feature kWebUIDownloadShelf;
-
 extern const base::Feature kWebUITabStrip;
 
 // Controls whether the context menu is shown on a touch press or a touch

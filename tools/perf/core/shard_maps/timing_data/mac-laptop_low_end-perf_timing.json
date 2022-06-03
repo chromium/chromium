@@ -1628,38 +1628,6 @@
         "name": "blink_perf.webgpu_fast_call/binding-draw.html"
     },
     {
-        "duration": "37.0",
-        "name": "desktop_ui/download_shelf:1file"
-    },
-    {
-        "duration": "33.0",
-        "name": "desktop_ui/download_shelf:5file"
-    },
-    {
-        "duration": "31.0",
-        "name": "desktop_ui/download_shelf:measure_memory"
-    },
-    {
-        "duration": "54.0",
-        "name": "desktop_ui/download_shelf:top10:loading"
-    },
-    {
-        "duration": "34.0",
-        "name": "desktop_ui/download_shelf_webui:1file"
-    },
-    {
-        "duration": "37.0",
-        "name": "desktop_ui/download_shelf_webui:5file"
-    },
-    {
-        "duration": "31.0",
-        "name": "desktop_ui/download_shelf_webui:measure_memory"
-    },
-    {
-        "duration": "47.0",
-        "name": "desktop_ui/download_shelf_webui:top10:loading"
-    },
-    {
         "duration": "24.0",
         "name": "desktop_ui/new_tab_page:loading"
     },

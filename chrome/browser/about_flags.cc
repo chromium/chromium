@@ -8006,12 +8006,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kEnableInputInDiagnosticsApp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(TOOLKIT_VIEWS)
-    {"download-shelf-webui", flag_descriptions::kDownloadShelfWebUI,
-     flag_descriptions::kDownloadShelfWebUIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kWebUIDownloadShelf)},
-#endif  // defined(TOOLKIT_VIEWS)
-
     {"playback-speed-button", flag_descriptions::kPlaybackSpeedButtonName,
      flag_descriptions::kPlaybackSpeedButtonDescription, kOsAll,
      FEATURE_VALUE_TYPE(media::kPlaybackSpeedButton)},

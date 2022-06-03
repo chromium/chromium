@@ -29,7 +29,6 @@ group("resources") {
       "bookmarks:resources",
       "browsing_topics:resources",
       "commander:resources",
-      "download_shelf:resources",
       "downloads:resources",
       "feed:resources",
       "feedback_webui:resources",

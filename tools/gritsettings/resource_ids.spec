@@ -301,10 +301,6 @@
   "chrome/browser/test_dummy/internal/android/resources/resources.grd": {
     "includes": [2100],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/download_shelf/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
-    "includes": [2120],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/webui_gallery/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [2130],

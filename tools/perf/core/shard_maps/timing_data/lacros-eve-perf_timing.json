@@ -1580,38 +1580,6 @@
         "name": "blink_perf.webgl_fast_call/binding-typed-array-uniforms.html"
     },
     {
-        "duration": "3.0",
-        "name": "desktop_ui/download_shelf:1file"
-    },
-    {
-        "duration": "3.0",
-        "name": "desktop_ui/download_shelf:5file"
-    },
-    {
-        "duration": "3.0",
-        "name": "desktop_ui/download_shelf:measure_memory"
-    },
-    {
-        "duration": "3.0",
-        "name": "desktop_ui/download_shelf:top10:loading"
-    },
-    {
-        "duration": "3.0",
-        "name": "desktop_ui/download_shelf_webui:1file"
-    },
-    {
-        "duration": "3.0",
-        "name": "desktop_ui/download_shelf_webui:5file"
-    },
-    {
-        "duration": "3.0",
-        "name": "desktop_ui/download_shelf_webui:measure_memory"
-    },
-    {
-        "duration": "3.0",
-        "name": "desktop_ui/download_shelf_webui:top10:loading"
-    },
-    {
         "duration": "74.0",
         "name": "desktop_ui/new_tab_page:loading"
     },

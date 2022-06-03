@@ -97,7 +97,6 @@
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/browser/ui/views/download/download_in_progress_dialog_view.h"
 #include "chrome/browser/ui/views/download/download_shelf_view.h"
-#include "chrome/browser/ui/views/download/download_shelf_web_view.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -2505,13 +2504,8 @@ DownloadShelf* BrowserView::GetDownloadShelf() {
     return nullptr;
   }
   if (!download_shelf_) {
-    if (base::FeatureList::IsEnabled(features::kWebUIDownloadShelf)) {
-      download_shelf_ = AddChildView(
-          std::make_unique<DownloadShelfWebView>(browser_.get(), this));
-    } else {
-      download_shelf_ = AddChildView(
-          std::make_unique<DownloadShelfView>(browser_.get(), this));
-    }
+    download_shelf_ =
+        AddChildView(std::make_unique<DownloadShelfView>(browser_.get(), this));
     GetBrowserViewLayout()->set_download_shelf(download_shelf_->GetView());
   }
   return download_shelf_;
