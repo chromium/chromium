@@ -169,7 +169,7 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
                                            ax::mojom::Event::kLoadComplete);
     GURL html_data_url("data:text/html," + html);
     EXPECT_TRUE(NavigateToURL(shell(), html_data_url));
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
   GetManager()->SetFocus(*target);
   GetManager()->DoDefaultAction(*target);
-  waiter2.WaitForNotification();
+  ASSERT_TRUE(waiter2.WaitForNotification());
 
   BrowserAccessibility* focus = GetManager()->GetFocus();
   EXPECT_EQ(focus->GetId(), target->GetId());
