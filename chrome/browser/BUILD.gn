@@ -3885,6 +3885,8 @@ static_library("browser") {
       "metrics/power/battery_level_provider.h",
       "metrics/power/power_metrics.cc",
       "metrics/power/power_metrics.h",
+      "metrics/power/power_metrics_constants.cc",
+      "metrics/power/power_metrics_constants.h",
       "metrics/power/power_metrics_reporter.cc",
       "metrics/power/power_metrics_reporter.h",
       "metrics/power/process_metrics_recorder_util.cc",

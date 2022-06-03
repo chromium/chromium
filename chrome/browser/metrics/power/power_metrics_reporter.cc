@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/metrics/power/power_metrics.h"
+#include "chrome/browser/metrics/power/power_metrics_constants.h"
 #include "chrome/browser/metrics/power/process_metrics_recorder_util.h"
 #include "chrome/browser/metrics/power/process_monitor.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
@@ -162,11 +163,12 @@ void PowerMetricsReporter::StartNextLongInterval() {
   // On Mac, set the timer for 10 seconds before the end of the long interval to
   // start the short interval.
   interval_timer_.Start(
-      FROM_HERE, kLongIntervalDuration - kShortIntervalDuration,
+      FROM_HERE,
+      kLongPowerMetricsIntervalDuration - kShortPowerMetricsIntervalDuration,
       base::BindOnce(&PowerMetricsReporter::OnShortIntervalBegin,
                      base::Unretained(this)));
 #else
-  interval_timer_.Start(FROM_HERE, kLongIntervalDuration,
+  interval_timer_.Start(FROM_HERE, kLongPowerMetricsIntervalDuration,
                         base::BindOnce(&PowerMetricsReporter::OnLongIntervalEnd,
                                        base::Unretained(this)));
 #endif
@@ -179,7 +181,7 @@ void PowerMetricsReporter::OnShortIntervalBegin() {
   coalition_resource_usage_provider_->StartShortInterval();
 
   interval_timer_.Start(
-      FROM_HERE, kShortIntervalDuration,
+      FROM_HERE, kShortPowerMetricsIntervalDuration,
       base::BindRepeating(&PowerMetricsReporter::OnLongIntervalEnd,
                           base::Unretained(this)));
 }
@@ -269,14 +271,15 @@ void PowerMetricsReporter::ReportMetrics(
   ReportUKMs(long_interval_data, aggregated_process_metrics, interval_duration,
              battery_discharge);
 
-  // Ratio by which the time elapsed can deviate from |kLongIntervalDuration|
-  // without invalidating this sample.
+  // Ratio by which the time elapsed can deviate from
+  // |kLongPowerMetricsIntervalDuration| without invalidating this sample.
   // TODO(pmonette): Change to DCHECK after ensuring this never triggers.
-  CHECK_GE(interval_duration, kLongIntervalDuration);
+  CHECK_GE(interval_duration, kLongPowerMetricsIntervalDuration);
   constexpr double kTolerableTimeElapsedRatio = 0.10;
   if (battery_discharge.mode == BatteryDischargeMode::kDischarging &&
-      !IsWithinTolerance(interval_duration, kLongIntervalDuration,
-                         kLongIntervalDuration * kTolerableTimeElapsedRatio)) {
+      !IsWithinTolerance(
+          interval_duration, kLongPowerMetricsIntervalDuration,
+          kLongPowerMetricsIntervalDuration * kTolerableTimeElapsedRatio)) {
     battery_discharge.mode = BatteryDischargeMode::kInvalidInterval;
   }
   ReportBatteryHistograms(interval_duration, battery_discharge,

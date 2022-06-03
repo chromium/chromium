@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/metrics/power/power_metrics_constants.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -51,6 +52,7 @@ std::unique_ptr<base::ProcessMetrics> CreateProcessMetrics(
 #endif
 }
 
+// Samples the process metrics the ProcessMonitor cares about.
 ProcessMonitor::Metrics SampleMetrics(base::ProcessMetrics& process_metrics) {
   ProcessMonitor::Metrics metrics;
 
@@ -71,6 +73,21 @@ ProcessMonitor::Metrics SampleMetrics(base::ProcessMetrics& process_metrics) {
 #endif
 
   return metrics;
+}
+
+// Scales every metrics by |factor|.
+void ScaleMetrics(ProcessMonitor::Metrics* metrics, double factor) {
+  metrics->cpu_usage *= factor;
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_AIX)
+  metrics->idle_wakeups *= factor;
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  metrics->package_idle_wakeups *= factor;
+  metrics->energy_impact *= factor;
+#endif
 }
 
 MonitoredProcessType GetMonitoredProcessTypeForRenderProcess(
@@ -128,7 +145,13 @@ ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
 
 ProcessInfo::ProcessInfo(MonitoredProcessType type,
                          std::unique_ptr<base::ProcessMetrics> process_metrics)
-    : type(type), process_metrics(std::move(process_metrics)) {}
+    : type(type),
+      process_metrics(std::move(process_metrics)),
+      first_sample_time(base::TimeTicks::Now()) {
+  // Do an initial call to SampleMetrics() so that the next one returns
+  // meaningful data.
+  SampleMetrics(*this->process_metrics);
+}
 ProcessInfo::~ProcessInfo() = default;
 
 ProcessMonitor::Metrics::Metrics() = default;
@@ -148,9 +171,6 @@ ProcessMonitor::ProcessMonitor()
   DCHECK(content::RenderProcessHost::AllHostsIterator().IsAtEnd());
 
   content::BrowserChildProcessObserver::Add(this);
-
-  // TODO(pmonette): Do an initial call to SampleMetrics() so that the next one
-  //                 returns meaningful data.
 }
 
 ProcessMonitor::~ProcessMonitor() {
@@ -170,11 +190,27 @@ void ProcessMonitor::SampleAllProcesses(Observer* observer) {
   for (auto& [_, process_info] : browser_child_process_infos_)
     process_infos.push_back(&process_info);
 
+  const base::TimeTicks now = base::TimeTicks::Now();
+
   // Aggregate all metrics into a single sum, but also per their process type.
   Metrics aggregated_metrics;
   std::array<Metrics, MonitoredProcessType::kCount> per_type_metrics;
   for (auto* process_info : process_infos) {
     Metrics metrics = SampleMetrics(*process_info->process_metrics);
+
+    // If this is the first interval calculated for this process, then the
+    // metrics values must be scaled down over the
+    // |kLongPowerMetricsIntervalDuration|.
+    if (process_info->first_sample_time.has_value()) {
+      // Scale the amount.
+      auto first_interval_duration = now - *process_info->first_sample_time;
+      ScaleMetrics(&metrics,
+                   first_interval_duration / kLongPowerMetricsIntervalDuration);
+
+      // No longer the first interval after this one.
+      process_info->first_sample_time = absl::nullopt;
+    }
+
     aggregated_metrics += metrics;
     per_type_metrics[process_info->type] += metrics;
   }
@@ -189,6 +225,7 @@ void ProcessMonitor::SampleAllProcesses(Observer* observer) {
 
 void ProcessMonitor::OnRenderProcessHostCreated(
     content::RenderProcessHost* render_process_host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // If the host is reused after the process exited, it is possible to get a
   // second created notification for the same host.
   if (!render_process_host_observations_.IsObservingSource(render_process_host))
@@ -213,14 +250,12 @@ void ProcessMonitor::RenderProcessReady(
                       render_process_host->GetProcess().Handle())))
           .second;
   DCHECK(inserted);
-
-  // TODO(pmonette): Do an initial call to SampleMetrics() so that the next one
-  //                 returns meaningful data.
 }
 
 void ProcessMonitor::RenderProcessExited(
     content::RenderProcessHost* render_process_host,
     const content::ChildProcessTerminationInfo& info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = render_process_infos_.find(render_process_host);
   if (it == render_process_infos_.end()) {
     // This process was never ready.
@@ -231,11 +266,13 @@ void ProcessMonitor::RenderProcessExited(
 
 void ProcessMonitor::RenderProcessHostDestroyed(
     content::RenderProcessHost* render_process_host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   render_process_host_observations_.RemoveObservation(render_process_host);
 }
 
 void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
     const content::ChildProcessData& data) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(IS_WIN)
   // Cannot gather process metrics for elevated process as browser has no
   // access to them.
@@ -256,13 +293,11 @@ void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
                        type, CreateProcessMetrics(data.GetProcess().Handle())))
           .second;
   DCHECK(inserted);
-
-  // TODO(pmonette): Do an initial call to SampleMetrics() so that the next one
-  //                 returns meaningful data.
 }
 
 void ProcessMonitor::BrowserChildProcessHostDisconnected(
     const content::ChildProcessData& data) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(IS_WIN)
   // Cannot gather process metrics for elevated process as browser has no
   // access to them.

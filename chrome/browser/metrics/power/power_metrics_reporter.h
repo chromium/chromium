@@ -47,10 +47,6 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   using CoalitionResourceUsageRate = power_metrics::CoalitionResourceUsageRate;
 #endif  // BUILDFLAG(IS_MAC)
 
-  // The duration of the short and long intervals.
-  static constexpr base::TimeDelta kShortIntervalDuration = base::Seconds(10);
-  static constexpr base::TimeDelta kLongIntervalDuration = base::Minutes(2);
-
   // Use the default arguments in production. In tests, use arguments to provide
   // mocks. |(short|long)_usage_scenario_data_store| are queried to determine
   // the scenario for short and long reporting intervals. They must outlive the

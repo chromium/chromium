@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/metrics/power/power_metrics_constants.h"
 #include "chrome/browser/metrics/power/process_monitor.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -232,7 +233,7 @@ TEST_F(PowerMetricsReporterUnitTest, LongIntervalHistograms) {
   interval_data.time_capturing_video = base::Seconds(1);
   long_data_store_.SetIntervalDataToReturn(interval_data);
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kLongIntervalDuration);
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
   const char* kScenarioSuffix = ".VideoCapture";
   const std::vector<const char*> suffixes({"", kScenarioSuffix});
@@ -258,15 +259,15 @@ TEST_F(PowerMetricsReporterUnitTest, ResourceCoalitionHistograms_EndToEnd) {
   coalition_resource_usage_provider_->SetCoalitionResourceUsage(
       std::move(cru1));
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kLongIntervalDuration -
-                                  PowerMetricsReporter::kShortIntervalDuration);
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration -
+                                  kShortPowerMetricsIntervalDuration);
 
   auto cru2 = std::make_unique<coalition_resource_usage>();
   cru2->cpu_time = base::Seconds(6).InNanoseconds();
   coalition_resource_usage_provider_->SetCoalitionResourceUsage(
       std::move(cru2));
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kShortIntervalDuration);
+  task_environment_.FastForwardBy(kShortPowerMetricsIntervalDuration);
 
   const char* kScenarioSuffix = ".VideoCapture";
   const std::vector<const char*> suffixes({"", kScenarioSuffix});
@@ -286,7 +287,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooLate) {
       1, 1, 0.48, true, base::TimeTicks::Now()});
 
   const base::TimeDelta kTooLate =
-      PowerMetricsReporter::kLongIntervalDuration * kTolerablePositiveDrift +
+      kLongPowerMetricsIntervalDuration * kTolerablePositiveDrift +
       base::Microseconds(1);
   process_monitor_.ForceSampleAllProcessesIn(power_metrics_reporter_.get(),
                                              &task_environment_, kTooLate);
@@ -307,7 +308,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsLate) {
   ;
 
   const base::TimeDelta kLate =
-      PowerMetricsReporter::kLongIntervalDuration * kTolerablePositiveDrift -
+      kLongPowerMetricsIntervalDuration * kTolerablePositiveDrift -
       base::Microseconds(1);
   process_monitor_.ForceSampleAllProcessesIn(power_metrics_reporter_.get(),
                                              &task_environment_, kLate);
@@ -360,7 +361,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   fake_interval_data.sleep_events = 0;
   long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kLongIntervalDuration);
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
@@ -379,7 +380,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       static_cast<int64_t>(BatteryDischargeMode::kDischarging));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kCPUTimeMsName,
-      PowerMetricsReporter::kLongIntervalDuration.InSeconds() * 1000 *
+      kLongPowerMetricsIntervalDuration.InSeconds() * 1000 *
           fake_metrics.cpu_usage);
 #if BUILDFLAG(IS_MAC)
   test_ukm_recorder_.ExpectEntryMetric(entries[0], UkmEntry::kIdleWakeUpsName,
@@ -423,7 +424,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
           fake_interval_data.time_playing_video_in_visible_tab));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kIntervalDurationSecondsName,
-      PowerMetricsReporter::kLongIntervalDuration.InSeconds());
+      kLongPowerMetricsIntervalDuration.InSeconds());
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kTimeSinceInteractionWithBrowserSecondsName,
       PowerMetricsReporter::GetBucketForSampleForTesting(
@@ -476,8 +477,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBrowserShuttingDown) {
     EXPECT_TRUE(browser_shutdown::HasShutdownStarted());
 
     // Advance time while `HasShutdownStarted` has been overridden.
-    task_environment_.FastForwardBy(
-        PowerMetricsReporter::kLongIntervalDuration);
+    task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
   }
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
@@ -506,7 +506,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsPluggedIn) {
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kLongIntervalDuration);
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
@@ -535,7 +535,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateChanges) {
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kLongIntervalDuration);
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
@@ -563,7 +563,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kLongIntervalDuration);
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
@@ -592,7 +592,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kLongIntervalDuration);
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
@@ -625,7 +625,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsMacFullyCharged) {
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kLongIntervalDuration);
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
@@ -658,7 +658,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kLongIntervalDuration);
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
@@ -689,7 +689,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoTab) {
       ukm::kInvalidSourceId;
   long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kLongIntervalDuration);
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
@@ -710,10 +710,10 @@ TEST_F(PowerMetricsReporterUnitTest, DurationsLongerThanIntervalAreCapped) {
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.time_playing_video_full_screen_single_monitor =
-      PowerMetricsReporter::kLongIntervalDuration * 100;
+      kLongPowerMetricsIntervalDuration * 100;
   long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kLongIntervalDuration);
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
@@ -722,10 +722,10 @@ TEST_F(PowerMetricsReporterUnitTest, DurationsLongerThanIntervalAreCapped) {
   EXPECT_EQ(entries[0]->source_id, ukm::kInvalidSourceId);
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kFullscreenVideoSingleMonitorSecondsName,
-      // Every value greater than |PowerMetricsReporter::kLongIntervalDuration|
+      // Every value greater than |kLongPowerMetricsIntervalDuration|
       // should fall in the same overflow bucket.
       PowerMetricsReporter::GetBucketForSampleForTesting(
-          PowerMetricsReporter::kLongIntervalDuration * 2));
+          kLongPowerMetricsIntervalDuration * 2));
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsWithSleepEvent) {
@@ -738,7 +738,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsWithSleepEvent) {
   fake_interval_data.sleep_events = 1;
   long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kLongIntervalDuration);
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
@@ -767,15 +767,15 @@ TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_EndToEnd) {
   cru1->cpu_time = base::Seconds(4).InNanoseconds();
   coalition_resource_usage_provider_->SetCoalitionResourceUsage(
       std::move(cru1));
-  task_environment_.FastForwardBy(PowerMetricsReporter::kLongIntervalDuration -
-                                  PowerMetricsReporter::kShortIntervalDuration);
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration -
+                                  kShortPowerMetricsIntervalDuration);
 
   auto cru2 = std::make_unique<coalition_resource_usage>();
   cru2->cpu_time = base::Seconds(10).InNanoseconds();
   coalition_resource_usage_provider_->SetCoalitionResourceUsage(
       std::move(cru2));
 
-  task_environment_.FastForwardBy(PowerMetricsReporter::kShortIntervalDuration);
+  task_environment_.FastForwardBy(kShortPowerMetricsIntervalDuration);
 
   histogram_tester_.ExpectUniqueSample(
       "PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 6000, 1);

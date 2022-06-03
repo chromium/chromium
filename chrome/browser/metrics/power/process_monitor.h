@@ -17,6 +17,7 @@
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/common/process_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ProcessMetrics;
@@ -41,6 +42,13 @@ struct ProcessInfo {
 
   MonitoredProcessType type;
   std::unique_ptr<base::ProcessMetrics> process_metrics;
+  // The time at which the first process sample was taken (i.e. When the
+  // constructor is called). Used to distribute the calculated resource usage of
+  // the first interval over the full kLongIntervalDuration. Set to nullopt
+  // after the metrics for the first interval is calculated because the
+  // subsequent intervals will always take the full duration of
+  // kLongIntervalDuration.
+  absl::optional<base::TimeTicks> first_sample_time;
 };
 
 // ProcessMonitor is a tool which allows the sampling of power-related metrics
