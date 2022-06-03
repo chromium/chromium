@@ -876,6 +876,7 @@ if (!is_ios) {
         "autofill_assistant/browser/js_flow_executor_impl_browsertest.cc",
         "autofill_assistant/browser/mock_script_executor_delegate.cc",
         "autofill_assistant/browser/mock_script_executor_delegate.h",
+        "autofill_assistant/browser/script_executor_browsertest.cc",
         "autofill_assistant/browser/service/mock_service.cc",
         "autofill_assistant/browser/service/mock_service.h",
         "autofill_assistant/browser/web/batch_element_checker_browsertest.cc",
