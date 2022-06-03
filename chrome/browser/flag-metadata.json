@@ -5432,6 +5432,11 @@
     "expiry_milestone": 101
   },
   {
+    "name": "shared-highlighting-manager",
+    "owners": ["jeffreycohen", "kristipark", "cheickcisse@google.com"],
+    "expiry_milestone": 108
+  },
+  {
     "name": "shared-highlighting-refined-blocklist",
     "owners": ["jeffreycohen", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 108

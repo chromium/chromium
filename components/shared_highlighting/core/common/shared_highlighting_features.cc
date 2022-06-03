@@ -33,6 +33,9 @@ const base::Feature kSharedHighlightingRefinedMaxContextWords{
     "SharedHighlightingRefinedMaxContextWords",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSharedHighlightingManager{
+    "SharedHighlightingManager", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kSharedHighlightingRefinedMaxContextWordsName[] =
     "SharedHighlightingRefinedMaxContextWords";
 

@@ -1659,6 +1659,9 @@ extern const char kEnableVulkanDescription[];
 extern const char kSharedHighlightingAmpName[];
 extern const char kSharedHighlightingAmpDescription[];
 
+extern const char kSharedHighlightingManagerName[];
+extern const char kSharedHighlightingManagerDescription[];
+
 extern const char kSharedHighlightingRefinedBlocklistName[];
 extern const char kSharedHighlightingRefinedBlocklistDescription[];
 
