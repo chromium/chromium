@@ -44,6 +44,7 @@ class ExtractIOTask : public IOTask {
   // must be under the |parent_folder| directory, and the resulting extraction
   // will be created there.
   ExtractIOTask(std::vector<storage::FileSystemURL> source_urls,
+                std::string password,
                 storage::FileSystemURL parent_folder,
                 Profile* profile,
                 scoped_refptr<storage::FileSystemContext> file_system_context);
@@ -84,6 +85,9 @@ class ExtractIOTask : public IOTask {
   // URLs of the files that have archives in them for extraction.
   const std::vector<storage::FileSystemURL> source_urls_;
 
+  // Password for decrypting encrypted source_urls_ (one only).
+  const std::string password_;
+
   // Parent folder of the files in 'source_urls_'.
   const storage::FileSystemURL parent_folder_;
 
@@ -99,6 +103,9 @@ class ExtractIOTask : public IOTask {
 
   // Counter of the number of archives needing extracted size retrieved.
   size_t sizingCount_;
+
+  // Boolean set to true if we find archives that are encrypted.
+  bool have_encrypted_content_ = false;
 
   // Counter of the number of archives needing extraction.
   size_t extractCount_;

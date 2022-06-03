@@ -29,10 +29,12 @@ void RecordUmaExtractStatus(ExtractStatus status) {
 
 ExtractIOTask::ExtractIOTask(
     std::vector<storage::FileSystemURL> source_urls,
+    std::string password,
     storage::FileSystemURL parent_folder,
     Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context)
     : source_urls_(std::move(source_urls)),
+      password_(std::move(password)),
       parent_folder_(std::move(parent_folder)),
       profile_(profile),
       file_system_context_(std::move(file_system_context)) {
@@ -111,7 +113,7 @@ void ExtractIOTask::ExtractIntoNewDirectory(
     bool created_ok) {
   if (created_ok) {
     unzip::mojom::UnzipOptionsPtr options =
-        unzip::mojom::UnzipOptions::New("auto", "");
+        unzip::mojom::UnzipOptions::New("auto", password_);
     unzip::Unzip(
         unzip::LaunchUnzipper(), source_file, destination_directory,
         std::move(options),
@@ -188,6 +190,11 @@ void ExtractIOTask::GotFreeDiskSpace(int64_t free_space) {
     Complete();
     return;
   }
+  if (have_encrypted_content_ && password_.empty()) {
+    progress_.state = State::kNeedPassword;
+    Complete();
+    return;
+  }
 
   speedometer_.SetTotalBytes(progress_.total_bytes);
   ExtractAllSources();
@@ -198,6 +205,7 @@ void ExtractIOTask::ZipInfoCallback(unzip::mojom::InfoPtr info) {
   if (info->size_is_valid) {
     progress_.total_bytes += info->size;
   }
+  have_encrypted_content_ = have_encrypted_content_ || info->is_encrypted;
   if (--sizingCount_ == 0) {
     // After getting the size of all the ZIPs, check if we have
     // enough available disk space, and if so, extract them.

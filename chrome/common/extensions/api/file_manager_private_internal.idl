@@ -15,6 +15,7 @@ namespace fileManagerPrivateInternal {
   };
   dictionary IOTaskParams {
     DOMString? destinationFolderUrl;
+    DOMString? password;
   };
 
   callback SimpleCallback = void();

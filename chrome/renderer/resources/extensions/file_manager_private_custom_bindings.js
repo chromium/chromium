@@ -382,6 +382,9 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
           newParams.destinationFolderUrl =
               getEntryURL(params.destinationFolder);
         }
+        if (params.password) {
+          newParams.password = params.password;
+        }
         fileManagerPrivateInternal.startIOTask(type, urls, newParams, callback);
       });
 });

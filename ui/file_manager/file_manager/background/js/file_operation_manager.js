@@ -28,6 +28,12 @@ import {volumeManagerFactory} from './volume_manager_factory.js';
 export class FileOperationManagerImpl {
   constructor() {
     /**
+     * TODO(crbug.com/953256) Add closure annotation.
+     * @private
+     */
+    this.fileManager_ = null;
+
+    /**
      * @private {VolumeManager}
      */
     this.volumeManager_ = null;
@@ -67,6 +73,16 @@ export class FileOperationManagerImpl {
      * @const
      */
     this.trash_ = new Trash();
+  }
+
+  /**
+   * Store a reference to our owning File Manager.
+   * @param {Object} fileManager reference to the 'foreground' app.
+   */
+  setFileManager(fileManager) {
+    if (window.isSWA) {
+      this.fileManager_ = fileManager;
+    }
   }
 
   /**
@@ -667,6 +683,31 @@ export class FileOperationManagerImpl {
       this.pendingCopyTasks_.push(zipTask);
       this.serviceAllTasks_();
     });
+  }
+
+  /**
+   * Notifies File Manager that an extraction operation has finished.
+   *
+   * @param {number} taskId The unique task id for the IO operation.
+   * @suppress {missingProperties}
+   */
+  notifyExtractDone(taskId) {
+    if (window.isSWA) {
+      // TODO(crbug.com/953256) Add closure annotation.
+      this.fileManager_.taskController.deleteExtractTaskDetails(taskId);
+    }
+  }
+
+  /**
+   * Called when an IOTask finished with a NEED_PASSWORD status.
+   * Delegate it to the task controller to deal with it.
+   *
+   * @param {number} taskId The unique task id for the IO operation.
+   * @suppress {missingProperties}
+   */
+  handleMissingPassword(taskId) {
+    // TODO(crbug.com/953256) Add closure annotation.
+    this.fileManager_.taskController.handleMissingPassword(taskId);
   }
 
   /**

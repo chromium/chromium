@@ -109,6 +109,9 @@ export class MockFileOperationManager extends EventTarget {
   emptyTrash() {}
   zipSelection() {}
   cancelZip() {}
+  setFileManager() {}
+  notifyExtractDone() {}
+  handleMissingPassword() {}
   /** @return {!Promise<!FileEntry>} */
   async writeFile(file, destination) {
     throw new Error('Not implemented');

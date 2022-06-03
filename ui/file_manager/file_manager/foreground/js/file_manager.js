@@ -1013,6 +1013,9 @@ export class FileManager extends EventTarget {
     }
     this.fileOperationManager_ =
         this.fileBrowserBackground_.fileOperationManager;
+    if (window.isSWA) {
+      this.fileOperationManager_.setFileManager(this);
+    }
     this.mediaImportHandler_ = this.fileBrowserBackground_.mediaImportHandler;
     this.mediaScanner_ = this.fileBrowserBackground_.mediaScanner;
     this.historyLoader_ = this.fileBrowserBackground_.historyLoader;

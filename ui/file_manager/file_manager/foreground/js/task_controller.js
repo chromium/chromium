@@ -6,6 +6,7 @@ import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/
 import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+import {startIOTask} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {strf, util} from '../../common/js/util.js';
 import {Crostini} from '../../externs/background/crostini.js';
@@ -148,6 +149,12 @@ export class TaskController {
      * @private {!Array<!Entry>}
      */
     this.tasksEntries_ = [];
+
+    /**
+     * Map used to track extract IOTasks in progress.
+     * @private @const {Map}
+     */
+    this.extractTasks_ = new Map();
 
     /**
      * Selected entries from the last time onSelectionChanged_ was called.
@@ -509,5 +516,58 @@ export class TaskController {
     this.getEntryFileTasks(entry).then(tasks => {
       tasks.executeDefault();
     });
+  }
+
+  /**
+   * Stores the task ID and parameters for an extract archive task.
+   */
+  storeExtractTaskDetails(taskId, selectionEntries, parameters) {
+    this.extractTasks_.set(
+        taskId, {'entries': selectionEntries, 'params': parameters});
+  }
+
+  /**
+   * Removes information about an extract archive task.
+   */
+  deleteExtractTaskDetails(taskId) {
+    this.extractTasks_.delete(taskId);
+  }
+
+  async startGetPasswordThenExtractTask(selectionEntries, params) {
+    /** @type {?string} */ let password = null;
+    // Ask for password.
+    try {
+      password = await this.ui_.passwordDialog.askForPassword(
+          selectionEntries[0].fullPath, password);
+    } catch (error) {
+      console.warn('User cancelled password fetch ', error);
+      return;
+    }
+
+    params['password'] = password;
+    let taskId;
+    try {
+      taskId = await startIOTask(
+          chrome.fileManagerPrivate.IOTaskType.EXTRACT, selectionEntries,
+          params);
+      this.storeExtractTaskDetails(taskId, selectionEntries, params);
+    } catch (e) {
+      console.warn('Error getting extract taskID', e);
+    }
+  }
+
+  /**
+   * If an extract operation has finished due to missing password,
+   * see if we have the operation stored and if so, pop up a password
+   * dialog and try to restart another IO operation for it.
+   */
+  handleMissingPassword(taskId) {
+    const existingOperation = this.extractTasks_.get(taskId);
+    if (existingOperation) {
+      this.startGetPasswordThenExtractTask(
+          existingOperation['entries'], existingOperation['params']);
+    }
+    // Remove the failed operation reference since it's finished.
+    this.deleteExtractTaskDetails(taskId);
   }
 }

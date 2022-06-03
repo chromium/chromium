@@ -352,6 +352,7 @@ enum IOTaskState {
   in_progress,
   success,
   error,
+  need_password,
   cancelled
 };
 
@@ -940,6 +941,9 @@ dictionary IOTaskParams {
   // Destination folder for tasks that require one. Not required by |delete|
   // task.
   [instanceof=DirectoryEntry] object? destinationFolder;
+
+  // Password used for unpacking encrypted archives.
+  DOMString? password;
 };
 
 // IO Task Progress status, see file_manager::io_task::ProgressStatus.

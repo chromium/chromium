@@ -14,6 +14,12 @@ import {VolumeManager} from '../volume_manager.js';
  */
 export class FileOperationManager extends EventTarget {
   /**
+   * Store a reference to our owning File Manager.
+   * @param {Object} fileManager reference to the 'foreground' app.
+   */
+  setFileManager(fileManager) {}
+
+  /**
    * Says if there are any tasks in the queue.
    * @return {boolean} True, if there are any tasks.
    */
@@ -89,6 +95,21 @@ export class FileOperationManager extends EventTarget {
    * @param {!DirectoryEntry} dirEntry The directory containing the selection.
    */
   zipSelection(selectionEntries, dirEntry) {}
+
+  /**
+   * Notifies File Manager that an extraction operation has finished.
+   *
+   * @param {number} taskId The unique task id for the IO operation.
+   */
+  notifyExtractDone(taskId) {}
+
+  /**
+   * Called when an IOTask finished with a NEED_PASSWORD status.
+   * Delegate it to the task controller to deal with it.
+   *
+   * @param {number} taskId The unique task id for the IO operation.
+   */
+  handleMissingPassword(taskId) {}
 
   /**
    * Writes file to destination dir.

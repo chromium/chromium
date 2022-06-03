@@ -311,6 +311,7 @@ chrome.fileManagerPrivate.IOTaskState = {
   IN_PROGRESS: 'in_progress',
   SUCCESS: 'success',
   ERROR: 'error',
+  NEED_PASSWORD: 'need_password',
   CANCELLED: 'cancelled',
 };
 
@@ -684,6 +685,7 @@ chrome.fileManagerPrivate.GetVolumeRootOptions;
 /**
  * @typedef {{
  *   destinationFolder: (DirectoryEntry|undefined),
+ *   password: (string|undefined),
  * }}
  */
 chrome.fileManagerPrivate.IOTaskParams;

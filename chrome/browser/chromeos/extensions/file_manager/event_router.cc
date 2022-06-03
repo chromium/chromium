@@ -175,6 +175,8 @@ file_manager_private::IOTaskState GetIOTaskState(
       return file_manager_private::IO_TASK_STATE_SUCCESS;
     case file_manager::io_task::State::kError:
       return file_manager_private::IO_TASK_STATE_ERROR;
+    case file_manager::io_task::State::kNeedPassword:
+      return file_manager_private::IO_TASK_STATE_NEED_PASSWORD;
     case file_manager::io_task::State::kCancelled:
       return file_manager_private::IO_TASK_STATE_CANCELLED;
     default:
