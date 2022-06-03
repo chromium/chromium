@@ -20,6 +20,8 @@ namespace {
 
 struct DiacriticsTestCase {
   char longpress_char;
+  std::u16string surrounding_text;
+  std::u16string invalid_surrounding_text;
   std::vector<std::u16string> candidates;
 };
 
@@ -66,6 +68,40 @@ TEST_P(LongpressDiacriticsSuggesterTest, SuggestsOnTrySuggest) {
   EXPECT_EQ(suggestion_handler.GetSuggestionText(),
             Join(GetParam().candidates));
   EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest,
+       ShouldOnlyReturnTrueForFirstTextChangeEvent) {
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+
+  EXPECT_TRUE(suggester.TrySuggestWithSurroundingText(
+      GetParam().surrounding_text, GetParam().surrounding_text.size(),
+      GetParam().surrounding_text.size()));
+  // This cursor position hasn't changed, so the text is still valid. However
+  // it should return false because it is the second on change event.
+  EXPECT_FALSE(suggester.TrySuggestWithSurroundingText(
+      GetParam().surrounding_text + u"somechanges",
+      GetParam().surrounding_text.size(), GetParam().surrounding_text.size()));
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest,
+       ShouldReturnFalseForInvalidTextChangeEvent) {
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+
+  EXPECT_FALSE(suggester.TrySuggestWithSurroundingText(
+      GetParam().invalid_surrounding_text,
+      GetParam().invalid_surrounding_text.size(),
+      GetParam().invalid_surrounding_text.size()));
 }
 
 TEST_P(LongpressDiacriticsSuggesterTest, DoesNotSuggestForInvalidKeyChar) {
@@ -361,12 +397,12 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     LongpressDiacriticsSuggesterTest,
     testing::ValuesIn<DiacriticsTestCase>(
-        {{'a', {u"à", u"á", u"â", u"ã", u"ã", u"ä", u"å", u"ā"}},
-         {'A', {u"À", u"Á", u"Â", u"Ã", u"Ä", u"Å", u"Æ", u"Ā"}},
-         {'c', {u"ç"}},
-         {'C', {u"Ç"}},
-         {'e', {u"è", u"é", u"ê", u"ë", u"ē"}},
-         {'E', {u"È", u"É", u"Ê", u"Ë", u"Ē"}}}),
+        {{'a', u"ca", u"caf", {u"à", u"á", u"â", u"ã", u"ã", u"ä", u"å", u"ā"}},
+         {'A', u"cA", u"cAf", {u"À", u"Á", u"Â", u"Ã", u"Ä", u"Å", u"Æ", u"Ā"}},
+         {'c', u"c", u"ca", {u"ç"}},
+         {'C', u"C", u"Ca", {u"Ç"}},
+         {'e', u"soufle", u"soufles", {u"è", u"é", u"ê", u"ë", u"ē"}},
+         {'E', u"SOUFLE", u"SOUFLES", {u"È", u"É", u"Ê", u"Ë", u"Ē"}}}),
     [](const testing::TestParamInfo<
         LongpressDiacriticsSuggesterTest::ParamType>& info) {
       return std::string(1, info.param.longpress_char);
