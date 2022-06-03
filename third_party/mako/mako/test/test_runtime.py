@@ -1,12 +1,10 @@
 """Assorted runtime unit tests
 """
-import unittest
-
 from mako import runtime
-from test import eq_
+from mako.testing.assertions import eq_
 
 
-class ContextTest(unittest.TestCase):
+class ContextTest:
     def test_locals_kwargs(self):
         c = runtime.Context(None, foo="bar")
         eq_(c.kwargs, {"foo": "bar"})

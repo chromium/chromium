@@ -1,23 +1,21 @@
 import time
-import unittest
 
 from mako import lookup
 from mako.cache import CacheImpl
 from mako.cache import register_plugin
-from mako.compat import py27
-from mako.ext import beaker_cache
 from mako.lookup import TemplateLookup
 from mako.template import Template
-from test import eq_
-from test import module_base
-from test import TemplateTest
-from test.util import result_lines
-
-if beaker_cache.has_beaker:
-    import beaker
+from mako.testing.assertions import eq_
+from mako.testing.config import config
+from mako.testing.exclusions import requires_beaker
+from mako.testing.exclusions import requires_dogpile_cache
+from mako.testing.helpers import result_lines
 
 
-class SimpleBackend(object):
+module_base = str(config.module_base)
+
+
+class SimpleBackend:
     def __init__(self):
         self.cache = {}
 
@@ -33,9 +31,9 @@ class SimpleBackend(object):
     def get_or_create(self, key, creation_function, **kw):
         if key in self.cache:
             return self.cache[key]
-        else:
-            self.cache[key] = value = creation_function()
-            return value
+
+        self.cache[key] = value = creation_function()
+        return value
 
 
 class MockCacheImpl(CacheImpl):
@@ -81,7 +79,7 @@ class MockCacheImpl(CacheImpl):
 register_plugin("mock", __name__, "MockCacheImpl")
 
 
-class CacheTest(TemplateTest):
+class CacheTest:
 
     real_backend = "simple"
 
@@ -601,7 +599,7 @@ class CacheTest(TemplateTest):
         assert m.kwargs["context"].get("x") == "bar"
 
 
-class RealBackendTest(object):
+class RealBackendMixin:
     def test_cache_uses_current_context(self):
         t = Template(
             """
@@ -644,23 +642,17 @@ class RealBackendTest(object):
         eq_(r3, ["short term 6", "long term 5", "none 7"])
 
 
-class BeakerCacheTest(RealBackendTest, CacheTest):
+@requires_beaker
+class BeakerCacheTest(RealBackendMixin, CacheTest):
     real_backend = "beaker"
-
-    def setUp(self):
-        if not beaker_cache.has_beaker:
-            raise unittest.SkipTest("Beaker is required for these tests.")
-        if not py27:
-            raise unittest.SkipTest("newer beakers not working w/ py26")
 
     def _install_mock_cache(self, template, implname=None):
         template.cache_args["manager"] = self._regions()
-        impl = super(BeakerCacheTest, self)._install_mock_cache(
-            template, implname
-        )
-        return impl
+        return super()._install_mock_cache(template, implname)
 
     def _regions(self):
+        import beaker
+
         return beaker.cache.CacheManager(
             cache_regions={
                 "short": {"expire": 1, "type": "memory"},
@@ -669,24 +661,14 @@ class BeakerCacheTest(RealBackendTest, CacheTest):
         )
 
 
-class DogpileCacheTest(RealBackendTest, CacheTest):
+@requires_dogpile_cache
+class DogpileCacheTest(RealBackendMixin, CacheTest):
     real_backend = "dogpile.cache"
-
-    def setUp(self):
-        try:
-            import dogpile.cache  # noqa
-        except ImportError:
-            raise unittest.SkipTest(
-                "dogpile.cache is required to run these tests"
-            )
 
     def _install_mock_cache(self, template, implname=None):
         template.cache_args["regions"] = self._regions()
         template.cache_args.setdefault("region", "short")
-        impl = super(DogpileCacheTest, self)._install_mock_cache(
-            template, implname
-        )
-        return impl
+        return super()._install_mock_cache(template, implname)
 
     def _regions(self):
         from dogpile.cache import make_region

@@ -1,5 +1,3 @@
-import unittest
-
 from mako.util import LRUCache
 
 
@@ -11,7 +9,7 @@ class item:
         return "item id %d" % self.id
 
 
-class LRUTest(unittest.TestCase):
+class LRUTest:
     def testlru(self):
         l = LRUCache(10, threshold=0.2)
 

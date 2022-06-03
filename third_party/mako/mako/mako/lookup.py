@@ -1,5 +1,5 @@
 # mako/lookup.py
-# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2021 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -8,18 +8,14 @@ import os
 import posixpath
 import re
 import stat
+import threading
 
 from mako import exceptions
 from mako import util
 from mako.template import Template
 
-try:
-    import threading
-except:
-    import dummy_threading as threading
 
-
-class TemplateCollection(object):
+class TemplateCollection:
 
     """Represent a collection of :class:`.Template` objects,
     identifiable via URI.
@@ -34,7 +30,7 @@ class TemplateCollection(object):
     :class:`.TemplateCollection` is an abstract class,
     with the usual default implementation being :class:`.TemplateLookup`.
 
-     """
+    """
 
     def has_template(self, uri):
         """Return ``True`` if this :class:`.TemplateLookup` is
@@ -68,7 +64,7 @@ class TemplateCollection(object):
 
     def filename_to_uri(self, uri, filename):
         """Convert the given ``filename`` to a URI relative to
-           this :class:`.TemplateCollection`."""
+        this :class:`.TemplateCollection`."""
 
         return uri
 
@@ -161,8 +157,6 @@ class TemplateLookup(TemplateCollection):
         collection_size=-1,
         format_exceptions=False,
         error_handler=None,
-        disable_unicode=False,
-        bytestring_passthrough=False,
         output_encoding=None,
         encoding_errors="strict",
         cache_args=None,
@@ -207,8 +201,6 @@ class TemplateLookup(TemplateCollection):
             "format_exceptions": format_exceptions,
             "error_handler": error_handler,
             "include_error_handler": include_error_handler,
-            "disable_unicode": disable_unicode,
-            "bytestring_passthrough": bytestring_passthrough,
             "output_encoding": output_encoding,
             "cache_impl": cache_impl,
             "encoding_errors": encoding_errors,
@@ -249,7 +241,7 @@ class TemplateLookup(TemplateCollection):
                 return self._check(uri, self._collection[uri])
             else:
                 return self._collection[uri]
-        except KeyError:
+        except KeyError as e:
             u = re.sub(r"^\/+", "", uri)
             for dir_ in self.directories:
                 # make sure the path seperators are posix - os.altsep is empty
@@ -260,8 +252,8 @@ class TemplateLookup(TemplateCollection):
                     return self._load(srcfile, uri)
             else:
                 raise exceptions.TopLevelLookupException(
-                    "Cant locate template for uri %r" % uri
-                )
+                    "Can't locate template for uri %r" % uri
+                ) from e
 
     def adjust_uri(self, uri, relativeto):
         """Adjust the given ``uri`` based on the given relative URI."""
@@ -270,20 +262,19 @@ class TemplateLookup(TemplateCollection):
         if key in self._uri_cache:
             return self._uri_cache[key]
 
-        if uri[0] != "/":
-            if relativeto is not None:
-                v = self._uri_cache[key] = posixpath.join(
-                    posixpath.dirname(relativeto), uri
-                )
-            else:
-                v = self._uri_cache[key] = "/" + uri
-        else:
+        if uri[0] == "/":
             v = self._uri_cache[key] = uri
+        elif relativeto is not None:
+            v = self._uri_cache[key] = posixpath.join(
+                posixpath.dirname(relativeto), uri
+            )
+        else:
+            v = self._uri_cache[key] = "/" + uri
         return v
 
     def filename_to_uri(self, filename):
         """Convert the given ``filename`` to a URI relative to
-           this :class:`.TemplateCollection`."""
+        this :class:`.TemplateCollection`."""
 
         try:
             return self._uri_cache[filename]
@@ -294,7 +285,7 @@ class TemplateLookup(TemplateCollection):
 
     def _relativeize(self, filename):
         """Return the portion of a filename that is 'relative'
-           to the directories in this lookup.
+        to the directories in this lookup.
 
         """
 
@@ -324,7 +315,7 @@ class TemplateLookup(TemplateCollection):
                     filename=posixpath.normpath(filename),
                     lookup=self,
                     module_filename=module_filename,
-                    **self.template_args
+                    **self.template_args,
                 )
                 return template
             except:
@@ -342,16 +333,15 @@ class TemplateLookup(TemplateCollection):
 
         try:
             template_stat = os.stat(template.filename)
-            if template.module._modified_time < template_stat[stat.ST_MTIME]:
-                self._collection.pop(uri, None)
-                return self._load(template.filename, uri)
-            else:
+            if template.module._modified_time >= template_stat[stat.ST_MTIME]:
                 return template
-        except OSError:
+            self._collection.pop(uri, None)
+            return self._load(template.filename, uri)
+        except OSError as e:
             self._collection.pop(uri, None)
             raise exceptions.TemplateLookupException(
-                "Cant locate template for uri %r" % uri
-            )
+                "Can't locate template for uri %r" % uri
+            ) from e
 
     def put_string(self, uri, text):
         """Place a new :class:`.Template` object into this

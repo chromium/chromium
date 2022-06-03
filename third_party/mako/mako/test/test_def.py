@@ -1,12 +1,10 @@
-from mako import compat
 from mako import lookup
 from mako.template import Template
-from test import assert_raises
-from test import eq_
-from test import requires_python_3
-from test import TemplateTest
-from test.util import flatten_result
-from test.util import result_lines
+from mako.testing.assertions import assert_raises
+from mako.testing.assertions import eq_
+from mako.testing.fixtures import TemplateTest
+from mako.testing.helpers import flatten_result
+from mako.testing.helpers import result_lines
 
 
 class DefTest(TemplateTest):
@@ -49,7 +47,6 @@ class DefTest(TemplateTest):
             """hello mycomp hi, 5, 6""",
         )
 
-    @requires_python_3
     def test_def_py3k_args(self):
         template = Template(
             """
@@ -86,12 +83,8 @@ class DefTest(TemplateTest):
 """
         )
         # check that "a" is declared in "b", but not in "c"
-        if compat.py3k:
-            assert "a" not in template.module.render_c.__code__.co_varnames
-            assert "a" in template.module.render_b.__code__.co_varnames
-        else:
-            assert "a" not in template.module.render_c.func_code.co_varnames
-            assert "a" in template.module.render_b.func_code.co_varnames
+        assert "a" not in template.module.render_c.__code__.co_varnames
+        assert "a" in template.module.render_b.__code__.co_varnames
 
         # then test output
         eq_(flatten_result(template.render()), "im b and heres a: im a")

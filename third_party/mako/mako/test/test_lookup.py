@@ -1,21 +1,23 @@
 import os
-import unittest
+import tempfile
 
-from mako import compat
 from mako import exceptions
 from mako import lookup
 from mako import runtime
 from mako.template import Template
+from mako.testing.assertions import assert_raises_message
+from mako.testing.assertions import assert_raises_with_given_cause
+from mako.testing.config import config
+from mako.testing.helpers import file_with_template_code
+from mako.testing.helpers import replace_file_with_dir
+from mako.testing.helpers import result_lines
+from mako.testing.helpers import rewind_compile_time
 from mako.util import FastEncodingBuffer
-from test import assert_raises_message
-from test import eq_
-from test import template_base
-from test.util import result_lines
 
-tl = lookup.TemplateLookup(directories=[template_base])
+tl = lookup.TemplateLookup(directories=[config.template_base])
 
 
-class LookupTest(unittest.TestCase):
+class LookupTest:
     def test_basic(self):
         t = tl.get_template("index.html")
         assert result_lines(t.render()) == ["this is index"]
@@ -43,21 +45,22 @@ class LookupTest(unittest.TestCase):
         """test that hitting an existent directory still raises
         LookupError."""
 
-        self.assertRaises(
-            exceptions.TopLevelLookupException, tl.get_template, "/subdir"
+        assert_raises_with_given_cause(
+            exceptions.TopLevelLookupException,
+            KeyError,
+            tl.get_template,
+            "/subdir",
         )
 
     def test_no_lookup(self):
         t = Template("hi <%include file='foo.html'/>")
-        try:
-            t.render()
-            assert False
-        except exceptions.TemplateLookupException:
-            eq_(
-                str(compat.exception_as()),
-                "Template 'memory:%s' has no TemplateLookup associated"
-                % hex(id(t)),
-            )
+
+        assert_raises_message(
+            exceptions.TemplateLookupException,
+            "Template 'memory:%s' has no TemplateLookup associated"
+            % hex(id(t)),
+            t.render,
+        )
 
     def test_uri_adjust(self):
         tl = lookup.TemplateLookup(directories=["/foo/bar"])
@@ -82,8 +85,11 @@ class LookupTest(unittest.TestCase):
         f = tl.get_template("foo")
         assert f.uri in tl._collection
         f.filename = "nonexistent"
-        self.assertRaises(
-            exceptions.TemplateLookupException, tl.get_template, "foo"
+        assert_raises_with_given_cause(
+            exceptions.TemplateLookupException,
+            FileNotFoundError,
+            tl.get_template,
+            "foo",
         )
         assert f.uri not in tl._collection
 
@@ -91,7 +97,7 @@ class LookupTest(unittest.TestCase):
         """test the mechanics of an include where
         the include goes outside of the path"""
         tl = lookup.TemplateLookup(
-            directories=[os.path.join(template_base, "subdir")]
+            directories=[os.path.join(config.template_base, "subdir")]
         )
         index = tl.get_template("index.html")
 
@@ -120,3 +126,25 @@ class LookupTest(unittest.TestCase):
 
         # this is OK since the .. cancels out
         runtime._lookup_template(ctx, "foo/../index.html", index.uri)
+
+    def test_checking_against_bad_filetype(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            tl = lookup.TemplateLookup(directories=[tempdir])
+            index_file = file_with_template_code(
+                os.path.join(tempdir, "index.html")
+            )
+
+            with rewind_compile_time():
+                tmpl = Template(filename=index_file)
+
+            tl.put_template("index.html", tmpl)
+
+            replace_file_with_dir(index_file)
+
+            assert_raises_with_given_cause(
+                exceptions.TemplateLookupException,
+                OSError,
+                tl._check,
+                "index.html",
+                tl._collection["index.html"],
+            )

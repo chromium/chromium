@@ -1,5 +1,5 @@
 # ext/turbogears.py
-# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2021 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -9,7 +9,7 @@ from mako.lookup import TemplateLookup
 from mako.template import Template
 
 
-class TGPlugin(object):
+class TGPlugin:
 
     """TurboGears compatible Template Plugin."""
 
@@ -51,7 +51,7 @@ class TGPlugin(object):
     def render(
         self, info, format="html", fragment=False, template=None  # noqa
     ):
-        if isinstance(template, compat.string_types):
+        if isinstance(template, str):
             template = self.load_template(template)
 
         # Load extra vars func if provided

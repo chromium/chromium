@@ -1,5 +1,4 @@
 import re
-import unittest
 
 from mako import exceptions
 from mako.codegen import _FOR_LOOP
@@ -7,12 +6,12 @@ from mako.lookup import TemplateLookup
 from mako.runtime import LoopContext
 from mako.runtime import LoopStack
 from mako.template import Template
-from test import assert_raises_message
-from test import TemplateTest
-from test.util import flatten_result
+from mako.testing.assertions import assert_raises_message
+from mako.testing.fixtures import TemplateTest
+from mako.testing.helpers import flatten_result
 
 
-class TestLoop(unittest.TestCase):
+class TestLoop:
     def test__FOR_LOOP(self):
         for statement, target_list, expression_list in (
             ("for x in y:", "x", "y"),
@@ -137,7 +136,7 @@ ${x} ${loop.index} <- outer loop
         )
 
 
-class TestLoopStack(unittest.TestCase):
+class TestLoopStack:
     def setUp(self):
         self.stack = LoopStack()
         self.bottom = "spam"
@@ -180,7 +179,7 @@ class TestLoopStack(unittest.TestCase):
         assert before == (after + 1), "Exiting a context pops the stack"
 
 
-class TestLoopContext(unittest.TestCase):
+class TestLoopContext:
     def setUp(self):
         self.iterable = [1, 2, 3]
         self.ctx = LoopContext(self.iterable)
@@ -199,7 +198,7 @@ class TestLoopContext(unittest.TestCase):
 
     def test_reverse_index(self):
         length = len(self.iterable)
-        expected = tuple([length - i - 1 for i in range(length)])
+        expected = tuple(length - i - 1 for i in range(length))
         actual = tuple(self.ctx.reverse_index for i in self.ctx)
         print(expected, actual)
         assert expected == actual, (

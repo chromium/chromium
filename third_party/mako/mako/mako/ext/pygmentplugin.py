@@ -1,5 +1,5 @@
 # ext/pygmentplugin.py
-# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2021 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -24,8 +24,6 @@ from pygments.token import Operator
 from pygments.token import Other
 from pygments.token import String
 from pygments.token import Text
-
-from mako import compat
 
 
 class MakoLexer(RegexLexer):
@@ -108,7 +106,7 @@ class MakoHtmlLexer(DelegatingLexer):
     aliases = ["html+mako"]
 
     def __init__(self, **options):
-        super(MakoHtmlLexer, self).__init__(HtmlLexer, MakoLexer, **options)
+        super().__init__(HtmlLexer, MakoLexer, **options)
 
 
 class MakoXmlLexer(DelegatingLexer):
@@ -116,7 +114,7 @@ class MakoXmlLexer(DelegatingLexer):
     aliases = ["xml+mako"]
 
     def __init__(self, **options):
-        super(MakoXmlLexer, self).__init__(XmlLexer, MakoLexer, **options)
+        super().__init__(XmlLexer, MakoLexer, **options)
 
 
 class MakoJavascriptLexer(DelegatingLexer):
@@ -124,9 +122,7 @@ class MakoJavascriptLexer(DelegatingLexer):
     aliases = ["js+mako", "javascript+mako"]
 
     def __init__(self, **options):
-        super(MakoJavascriptLexer, self).__init__(
-            JavascriptLexer, MakoLexer, **options
-        )
+        super().__init__(JavascriptLexer, MakoLexer, **options)
 
 
 class MakoCssLexer(DelegatingLexer):
@@ -134,7 +130,7 @@ class MakoCssLexer(DelegatingLexer):
     aliases = ["css+mako"]
 
     def __init__(self, **options):
-        super(MakoCssLexer, self).__init__(CssLexer, MakoLexer, **options)
+        super().__init__(CssLexer, MakoLexer, **options)
 
 
 pygments_html_formatter = HtmlFormatter(
@@ -144,10 +140,7 @@ pygments_html_formatter = HtmlFormatter(
 
 def syntax_highlight(filename="", language=None):
     mako_lexer = MakoLexer()
-    if compat.py3k:
-        python_lexer = Python3Lexer()
-    else:
-        python_lexer = PythonLexer()
+    python_lexer = Python3Lexer()
     if filename.startswith("memory:") or language == "mako":
         return lambda string: highlight(
             string, mako_lexer, pygments_html_formatter

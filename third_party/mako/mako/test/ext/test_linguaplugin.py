@@ -1,40 +1,38 @@
 import os
 
-from .. import skip_if
-from .. import template_base
-from .. import TemplateTest
+import pytest
 
-try:
-    import lingua
-except:
-    lingua = None
-
-if lingua is not None:
-    from mako.ext.linguaplugin import LinguaMakoExtractor
-    from lingua.extractors import register_extractors
+from mako.ext.linguaplugin import LinguaMakoExtractor
+from mako.testing.assertions import eq_
+from mako.testing.config import config
+from mako.testing.exclusions import requires_lingua
+from mako.testing.fixtures import TemplateTest
 
 
 class MockOptions:
     keywords = []
     domain = None
+    comment_tag = True
 
 
-def skip():
-    return skip_if(
-        lambda: not lingua, "lingua not installed: skipping linguaplugin test"
-    )
+@requires_lingua
+class MakoExtractTest(TemplateTest):
+    @pytest.fixture(autouse=True)
+    def register_lingua_extractors(self):
+        from lingua.extractors import register_extractors
 
-
-class ExtractMakoTestCase(TemplateTest):
-    @skip()
-    def test_extract(self):
         register_extractors()
+
+    def test_extract(self):
         plugin = LinguaMakoExtractor({"comment-tags": "TRANSLATOR"})
         messages = list(
-            plugin(os.path.join(template_base, "gettext.mako"), MockOptions())
+            plugin(
+                os.path.join(config.template_base, "gettext.mako"),
+                MockOptions(),
+            )
         )
         msgids = [(m.msgid, m.msgid_plural) for m in messages]
-        self.assertEqual(
+        eq_(
             msgids,
             [
                 ("Page arg 1", None),
@@ -54,9 +52,9 @@ class ExtractMakoTestCase(TemplateTest):
                 ("Goodbye, really!", None),
                 ("P.S. byebye", None),
                 ("Top", None),
-                (u"foo", None),
+                ("foo", None),
                 ("hoho", None),
-                (u"bar", None),
+                ("bar", None),
                 ("Inside a p tag", None),
                 ("Later in a p tag", None),
                 ("No action at a distance.", None),

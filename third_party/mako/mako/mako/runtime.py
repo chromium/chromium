@@ -7,16 +7,16 @@
 """provides runtime services for templates, including Context,
 Namespace, and various helper functions."""
 
+import builtins
 import functools
 import sys
 
 from mako import compat
 from mako import exceptions
 from mako import util
-from mako.compat import compat_builtins
 
 
-class Context(object):
+class Context:
 
     """Provides runtime namespace, output buffer, and various
     callstacks for templates.
@@ -24,7 +24,7 @@ class Context(object):
     See :ref:`runtime_toplevel` for detail on the usage of
     :class:`.Context`.
 
-     """
+    """
 
     def __init__(self, buffer, **data):
         self._buffer_stack = [buffer]
@@ -103,7 +103,7 @@ class Context(object):
         if key in self._data:
             return self._data[key]
         else:
-            return compat_builtins.__dict__[key]
+            return builtins.__dict__[key]
 
     def _push_writer(self):
         """push a capturing buffer onto this Context and return
@@ -135,7 +135,7 @@ class Context(object):
     def get(self, key, default=None):
         """Return a value from this :class:`.Context`."""
 
-        return self._data.get(key, compat_builtins.__dict__.get(key, default))
+        return self._data.get(key, builtins.__dict__.get(key, default))
 
     def write(self, string):
         """Write a string to this :class:`.Context` object's
@@ -216,7 +216,7 @@ class CallerStack(list):
         self.nextcaller = self.pop()
 
 
-class Undefined(object):
+class Undefined:
 
     """Represents an undefined value in a template.
 
@@ -240,7 +240,7 @@ UNDEFINED = Undefined()
 STOP_RENDERING = ""
 
 
-class LoopStack(object):
+class LoopStack:
 
     """a stack for LoopContexts that implements the context manager protocol
     to automatically pop off the top of the stack on context exit
@@ -280,7 +280,7 @@ class LoopStack(object):
         return iter(self._top)
 
 
-class LoopContext(object):
+class LoopContext:
 
     """A magic loop variable.
     Automatically accessible in any ``% for`` block.
@@ -339,14 +339,13 @@ class LoopContext(object):
         return bool(self.index % 2)
 
     def cycle(self, *values):
-        """Cycle through values as the loop progresses.
-        """
+        """Cycle through values as the loop progresses."""
         if not values:
             raise ValueError("You must provide values to cycle through")
         return values[self.index % len(values)]
 
 
-class _NSAttr(object):
+class _NSAttr:
     def __init__(self, parent):
         self.__parent = parent
 
@@ -360,22 +359,22 @@ class _NSAttr(object):
         raise AttributeError(key)
 
 
-class Namespace(object):
+class Namespace:
 
     """Provides access to collections of rendering methods, which
-      can be local, from other templates, or from imported modules.
+    can be local, from other templates, or from imported modules.
 
-      To access a particular rendering method referenced by a
-      :class:`.Namespace`, use plain attribute access:
+    To access a particular rendering method referenced by a
+    :class:`.Namespace`, use plain attribute access:
 
-      .. sourcecode:: mako
+    .. sourcecode:: mako
 
-        ${some_namespace.foo(x, y, z)}
+      ${some_namespace.foo(x, y, z)}
 
-      :class:`.Namespace` also contains several built-in attributes
-      described here.
+    :class:`.Namespace` also contains several built-in attributes
+    described here.
 
-      """
+    """
 
     def __init__(
         self,
@@ -390,7 +389,7 @@ class Namespace(object):
         self.context = context
         self.inherits = inherits
         if callables is not None:
-            self.callables = dict([(c.__name__, c) for c in callables])
+            self.callables = {c.__name__: c for c in callables}
 
     callables = ()
 
@@ -482,15 +481,14 @@ class Namespace(object):
         key = (self, uri)
         if key in self.context.namespaces:
             return self.context.namespaces[key]
-        else:
-            ns = TemplateNamespace(
-                uri,
-                self.context._copy(),
-                templateuri=uri,
-                calling_uri=self._templateuri,
-            )
-            self.context.namespaces[key] = ns
-            return ns
+        ns = TemplateNamespace(
+            uri,
+            self.context._copy(),
+            templateuri=uri,
+            calling_uri=self._templateuri,
+        )
+        self.context.namespaces[key] = ns
+        return ns
 
     def get_template(self, uri):
         """Return a :class:`.Template` from the given ``uri``.
@@ -574,7 +572,7 @@ class TemplateNamespace(Namespace):
         self.context = context
         self.inherits = inherits
         if callables is not None:
-            self.callables = dict([(c.__name__, c) for c in callables])
+            self.callables = {c.__name__: c for c in callables}
 
         if templateuri is not None:
             self.template = _lookup_template(context, templateuri, calling_uri)
@@ -666,7 +664,7 @@ class ModuleNamespace(Namespace):
         self.context = context
         self.inherits = inherits
         if callables is not None:
-            self.callables = dict([(c.__name__, c) for c in callables])
+            self.callables = {c.__name__: c for c in callables}
 
         mod = __import__(module)
         for token in module.split(".")[1:]:
@@ -790,7 +788,7 @@ def _include_file(context, uri, calling_uri, **kwargs):
         except Exception:
             result = template.include_error_handler(ctx, compat.exception_as())
             if not result:
-                compat.reraise(*sys.exc_info())
+                raise
     else:
         callable_(ctx, **kwargs)
 
@@ -837,8 +835,10 @@ def _lookup_template(context, uri, relativeto):
     uri = lookup.adjust_uri(uri, relativeto)
     try:
         return lookup.get_template(uri)
-    except exceptions.TopLevelLookupException:
-        raise exceptions.TemplateLookupException(str(compat.exception_as()))
+    except exceptions.TopLevelLookupException as e:
+        raise exceptions.TemplateLookupException(
+            str(compat.exception_as())
+        ) from e
 
 
 def _populate_self_namespace(context, template, self_ns=None):
@@ -862,14 +862,10 @@ def _render(template, callable_, args, data, as_unicode=False):
     output of the given template and template callable."""
 
     if as_unicode:
-        buf = util.FastEncodingBuffer(as_unicode=True)
-    elif template.bytestring_passthrough:
-        buf = compat.StringIO()
+        buf = util.FastEncodingBuffer()
     else:
         buf = util.FastEncodingBuffer(
-            as_unicode=as_unicode,
-            encoding=template.output_encoding,
-            errors=template.encoding_errors,
+            encoding=template.output_encoding, errors=template.encoding_errors
         )
     context = Context(buf, **data)
     context._outputting_as_unicode = as_unicode
@@ -880,7 +876,7 @@ def _render(template, callable_, args, data, as_unicode=False):
         callable_,
         context,
         *args,
-        **_kwargs_for_callable(callable_, data)
+        **_kwargs_for_callable(callable_, data),
     )
     return context._pop_buffer().getvalue()
 
@@ -951,13 +947,15 @@ def _render_error(template, context, error):
     if template.error_handler:
         result = template.error_handler(context, error)
         if not result:
-            compat.reraise(*sys.exc_info())
+            tp, value, tb = sys.exc_info()
+            if value and tb:
+                raise value.with_traceback(tb)
+            else:
+                raise error
     else:
         error_template = exceptions.html_error_template()
         if context._outputting_as_unicode:
-            context._buffer_stack[:] = [
-                util.FastEncodingBuffer(as_unicode=True)
-            ]
+            context._buffer_stack[:] = [util.FastEncodingBuffer()]
         else:
             context._buffer_stack[:] = [
                 util.FastEncodingBuffer(

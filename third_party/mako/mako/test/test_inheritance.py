@@ -1,11 +1,8 @@
-import unittest
-
-from mako import compat
 from mako import lookup
-from test.util import result_lines
+from mako.testing.helpers import result_lines
 
 
-class InheritanceTest(unittest.TestCase):
+class InheritanceTest:
     def test_basic(self):
         collection = lookup.TemplateLookup()
 
@@ -257,22 +254,13 @@ ${next.body()}
         """,
         )
 
-        if compat.py3k:
-            assert result_lines(
-                collection.get_template("index").render_unicode(x=5, y=10)
-            ) == [
-                "this is the base.",
-                "pageargs: (type: <class 'dict'>) [('x', 5), ('y', 10)]",
-                "print 5, 10, 7",
-            ]
-        else:
-            assert result_lines(
-                collection.get_template("index").render_unicode(x=5, y=10)
-            ) == [
-                "this is the base.",
-                "pageargs: (type: <type 'dict'>) [('x', 5), ('y', 10)]",
-                "print 5, 10, 7",
-            ]
+        assert result_lines(
+            collection.get_template("index").render_unicode(x=5, y=10)
+        ) == [
+            "this is the base.",
+            "pageargs: (type: <class 'dict'>) [('x', 5), ('y', 10)]",
+            "print 5, 10, 7",
+        ]
 
     def test_pageargs_2(self):
         collection = lookup.TemplateLookup()

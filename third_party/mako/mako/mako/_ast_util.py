@@ -1,5 +1,5 @@
 # mako/_ast_util.py
-# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2021 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -47,7 +47,6 @@ from _ast import Sub
 from _ast import UAdd
 from _ast import USub
 
-from mako.compat import arg_stringname
 
 BOOLOP_SYMBOLS = {And: "and", Or: "or"}
 
@@ -94,9 +93,7 @@ def parse(expr, filename="<unknown>", mode="exec"):
 
 def iter_fields(node):
     """Iterate over all fields of a node, only yielding existing fields."""
-    # CPython 2.5 compat
-    if not hasattr(node, "_fields") or not node._fields:
-        return
+
     for field in node._fields:
         try:
             yield field, getattr(node, field)
@@ -104,7 +101,7 @@ def iter_fields(node):
             pass
 
 
-class NodeVisitor(object):
+class NodeVisitor:
 
     """
     Walks the abstract syntax tree and call visitor functions for every node
@@ -266,10 +263,10 @@ class SourceGenerator(NodeVisitor):
                 self.visit(default)
         if node.vararg is not None:
             write_comma()
-            self.write("*" + arg_stringname(node.vararg))
+            self.write("*" + node.vararg.arg)
         if node.kwarg is not None:
             write_comma()
-            self.write("**" + arg_stringname(node.kwarg))
+            self.write("**" + node.kwarg.arg)
 
     def decorators(self, node):
         for decorator in node.decorator_list:

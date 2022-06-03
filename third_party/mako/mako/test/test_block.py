@@ -1,9 +1,9 @@
 from mako import exceptions
 from mako.lookup import TemplateLookup
 from mako.template import Template
-from test import assert_raises_message
-from test import TemplateTest
-from test.util import result_lines
+from mako.testing.assertions import assert_raises_message
+from mako.testing.fixtures import TemplateTest
+from mako.testing.helpers import result_lines
 
 
 class BlockTest(TemplateTest):

@@ -1,5 +1,5 @@
 # ext/beaker_cache.py
-# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2021 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -40,7 +40,7 @@ class BeakerCacheImpl(CacheImpl):
                 _beaker_cache = cache.template.cache_args["manager"]
             else:
                 _beaker_cache = beaker_cache.CacheManager()
-        super(BeakerCacheImpl, self).__init__(cache)
+        super().__init__(cache)
 
     def _get_cache(self, **kw):
         expiretime = kw.pop("timeout", None)

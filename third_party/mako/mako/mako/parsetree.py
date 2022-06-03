@@ -1,5 +1,5 @@
 # mako/parsetree.py
-# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2021 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -9,13 +9,12 @@
 import re
 
 from mako import ast
-from mako import compat
 from mako import exceptions
 from mako import filters
 from mako import util
 
 
-class Node(object):
+class Node:
 
     """base class for a Node in the parse tree."""
 
@@ -51,7 +50,7 @@ class TemplateNode(Node):
     """a 'container' node that stores the overall collection of nodes."""
 
     def __init__(self, filename):
-        super(TemplateNode, self).__init__("", 0, 0, filename)
+        super().__init__("", 0, 0, filename)
         self.nodes = []
         self.page_attributes = {}
 
@@ -80,7 +79,7 @@ class ControlLine(Node):
     has_loop_context = False
 
     def __init__(self, keyword, isend, text, **kwargs):
-        super(ControlLine, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.text = text
         self.keyword = keyword
         self.isend = isend
@@ -107,11 +106,13 @@ class ControlLine(Node):
         """return true if the given keyword is a ternary keyword
         for this ControlLine"""
 
-        return keyword in {
-            "if": set(["else", "elif"]),
-            "try": set(["except", "finally"]),
-            "for": set(["else"]),
-        }.get(self.keyword, [])
+        cases = {
+            "if": {"else", "elif"},
+            "try": {"except", "finally"},
+            "for": {"else"},
+        }
+
+        return keyword in cases.get(self.keyword, set())
 
     def __repr__(self):
         return "ControlLine(%r, %r, %r, %r)" % (
@@ -123,11 +124,10 @@ class ControlLine(Node):
 
 
 class Text(Node):
-
     """defines plain text in the template."""
 
     def __init__(self, content, **kwargs):
-        super(Text, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.content = content
 
     def __repr__(self):
@@ -135,7 +135,6 @@ class Text(Node):
 
 
 class Code(Node):
-
     """defines a Python code block, either inline or module level.
 
     e.g.::
@@ -153,7 +152,7 @@ class Code(Node):
     """
 
     def __init__(self, text, ismodule, **kwargs):
-        super(Code, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.text = text
         self.ismodule = ismodule
         self.code = ast.PythonCode(text, **self.exception_kwargs)
@@ -173,7 +172,6 @@ class Code(Node):
 
 
 class Comment(Node):
-
     """defines a comment line.
 
     # this is a comment
@@ -181,7 +179,7 @@ class Comment(Node):
     """
 
     def __init__(self, text, **kwargs):
-        super(Comment, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.text = text
 
     def __repr__(self):
@@ -189,7 +187,6 @@ class Comment(Node):
 
 
 class Expression(Node):
-
     """defines an inline expression.
 
     ${x+y}
@@ -197,7 +194,7 @@ class Expression(Node):
     """
 
     def __init__(self, text, escapes, **kwargs):
-        super(Expression, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.text = text
         self.escapes = escapes
         self.escapes_code = ast.ArgumentList(escapes, **self.exception_kwargs)
@@ -210,7 +207,7 @@ class Expression(Node):
         # TODO: make the "filter" shortcut list configurable at parse/gen time
         return self.code.undeclared_identifiers.union(
             self.escapes_code.undeclared_identifiers.difference(
-                set(filters.DEFAULT_ESCAPES.keys())
+                filters.DEFAULT_ESCAPES
             )
         ).difference(self.code.declared_identifiers)
 
@@ -223,7 +220,6 @@ class Expression(Node):
 
 
 class _TagMeta(type):
-
     """metaclass to allow Tag to produce a subclass according to
     its keyword"""
 
@@ -232,7 +228,7 @@ class _TagMeta(type):
     def __init__(cls, clsname, bases, dict_):
         if getattr(cls, "__keyword__", None) is not None:
             cls._classmap[cls.__keyword__] = cls
-        super(_TagMeta, cls).__init__(clsname, bases, dict_)
+        super().__init__(clsname, bases, dict_)
 
     def __call__(cls, keyword, attributes, **kwargs):
         if ":" in keyword:
@@ -254,7 +250,7 @@ class _TagMeta(type):
         return type.__call__(cls, keyword, attributes, **kwargs)
 
 
-class Tag(compat.with_metaclass(_TagMeta, Node)):
+class Tag(Node, metaclass=_TagMeta):
     """abstract base class for tags.
 
     e.g.::
@@ -276,7 +272,7 @@ class Tag(compat.with_metaclass(_TagMeta, Node)):
         expressions,
         nonexpressions,
         required,
-        **kwargs
+        **kwargs,
     ):
         r"""construct a new Tag instance.
 
@@ -297,17 +293,20 @@ class Tag(compat.with_metaclass(_TagMeta, Node)):
          other arguments passed to the Node superclass (lineno, pos)
 
         """
-        super(Tag, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.keyword = keyword
         self.attributes = attributes
         self._parse_attributes(expressions, nonexpressions)
         missing = [r for r in required if r not in self.parsed_attributes]
         if len(missing):
             raise exceptions.CompileException(
-                "Missing attribute(s): %s"
-                % ",".join([repr(m) for m in missing]),
-                **self.exception_kwargs
+                (
+                    "Missing attribute(s): %s"
+                    % ",".join(repr(m) for m in missing)
+                ),
+                **self.exception_kwargs,
             )
+
         self.parent = None
         self.nodes = []
 
@@ -339,23 +338,22 @@ class Tag(compat.with_metaclass(_TagMeta, Node)):
                             code.undeclared_identifiers
                         )
                         expr.append("(%s)" % m.group(1))
-                    else:
-                        if x:
-                            expr.append(repr(x))
+                    elif x:
+                        expr.append(repr(x))
                 self.parsed_attributes[key] = " + ".join(expr) or repr("")
             elif key in nonexpressions:
                 if re.search(r"\${.+?}", self.attributes[key]):
                     raise exceptions.CompileException(
-                        "Attibute '%s' in tag '%s' does not allow embedded "
+                        "Attribute '%s' in tag '%s' does not allow embedded "
                         "expressions" % (key, self.keyword),
-                        **self.exception_kwargs
+                        **self.exception_kwargs,
                     )
                 self.parsed_attributes[key] = repr(self.attributes[key])
             else:
                 raise exceptions.CompileException(
                     "Invalid attribute for tag '%s': '%s'"
                     % (self.keyword, key),
-                    **self.exception_kwargs
+                    **self.exception_kwargs,
                 )
         self.expression_undeclared_identifiers = undeclared_identifiers
 
@@ -379,13 +377,13 @@ class IncludeTag(Tag):
     __keyword__ = "include"
 
     def __init__(self, keyword, attributes, **kwargs):
-        super(IncludeTag, self).__init__(
+        super().__init__(
             keyword,
             attributes,
             ("file", "import", "args"),
             (),
             ("file",),
-            **kwargs
+            **kwargs,
         )
         self.page_args = ast.PythonCode(
             "__DUMMY(%s)" % attributes.get("args", ""), **self.exception_kwargs
@@ -396,24 +394,22 @@ class IncludeTag(Tag):
 
     def undeclared_identifiers(self):
         identifiers = self.page_args.undeclared_identifiers.difference(
-            set(["__DUMMY"])
+            {"__DUMMY"}
         ).difference(self.page_args.declared_identifiers)
-        return identifiers.union(
-            super(IncludeTag, self).undeclared_identifiers()
-        )
+        return identifiers.union(super().undeclared_identifiers())
 
 
 class NamespaceTag(Tag):
     __keyword__ = "namespace"
 
     def __init__(self, keyword, attributes, **kwargs):
-        super(NamespaceTag, self).__init__(
+        super().__init__(
             keyword,
             attributes,
             ("file",),
             ("name", "inheritable", "import", "module"),
             (),
-            **kwargs
+            **kwargs,
         )
 
         self.name = attributes.get("name", "__anon_%s" % hex(abs(id(self))))
@@ -421,12 +417,12 @@ class NamespaceTag(Tag):
             raise exceptions.CompileException(
                 "'name' and/or 'import' attributes are required "
                 "for <%namespace>",
-                **self.exception_kwargs
+                **self.exception_kwargs,
             )
         if "file" in attributes and "module" in attributes:
             raise exceptions.CompileException(
                 "<%namespace> may only have one of 'file' or 'module'",
-                **self.exception_kwargs
+                **self.exception_kwargs,
             )
 
     def declared_identifiers(self):
@@ -437,9 +433,7 @@ class TextTag(Tag):
     __keyword__ = "text"
 
     def __init__(self, keyword, attributes, **kwargs):
-        super(TextTag, self).__init__(
-            keyword, attributes, (), ("filter"), (), **kwargs
-        )
+        super().__init__(keyword, attributes, (), ("filter"), (), **kwargs)
         self.filter_args = ast.ArgumentList(
             attributes.get("filter", ""), **self.exception_kwargs
         )
@@ -458,13 +452,13 @@ class DefTag(Tag):
             c for c in attributes if c.startswith("cache_")
         ]
 
-        super(DefTag, self).__init__(
+        super().__init__(
             keyword,
             attributes,
             expressions,
             ("name", "filter", "decorator"),
             ("name",),
-            **kwargs
+            **kwargs,
         )
         name = attributes["name"]
         if re.match(r"^[\w_]+$", name):
@@ -521,19 +515,19 @@ class BlockTag(Tag):
             c for c in attributes if c.startswith("cache_")
         ]
 
-        super(BlockTag, self).__init__(
+        super().__init__(
             keyword,
             attributes,
             expressions,
             ("name", "filter", "decorator"),
             (),
-            **kwargs
+            **kwargs,
         )
         name = attributes.get("name")
         if name and not re.match(r"^[\w_]+$", name):
             raise exceptions.CompileException(
                 "%block may not specify an argument signature",
-                **self.exception_kwargs
+                **self.exception_kwargs,
             )
         if not name and attributes.get("args", None):
             raise exceptions.CompileException(
@@ -577,7 +571,7 @@ class CallTag(Tag):
     __keyword__ = "call"
 
     def __init__(self, keyword, attributes, **kwargs):
-        super(CallTag, self).__init__(
+        super().__init__(
             keyword, attributes, ("args"), ("expr",), ("expr",), **kwargs
         )
         self.expression = attributes["expr"]
@@ -597,26 +591,25 @@ class CallTag(Tag):
 
 class CallNamespaceTag(Tag):
     def __init__(self, namespace, defname, attributes, **kwargs):
-        super(CallNamespaceTag, self).__init__(
+        super().__init__(
             namespace + ":" + defname,
             attributes,
             tuple(attributes.keys()) + ("args",),
             (),
             (),
-            **kwargs
+            **kwargs,
         )
 
         self.expression = "%s.%s(%s)" % (
             namespace,
             defname,
             ",".join(
-                [
-                    "%s=%s" % (k, v)
-                    for k, v in self.parsed_attributes.items()
-                    if k != "args"
-                ]
+                "%s=%s" % (k, v)
+                for k, v in self.parsed_attributes.items()
+                if k != "args"
             ),
         )
+
         self.code = ast.PythonCode(self.expression, **self.exception_kwargs)
         self.body_decl = ast.FunctionArgs(
             attributes.get("args", ""), **self.exception_kwargs
@@ -635,7 +628,7 @@ class InheritTag(Tag):
     __keyword__ = "inherit"
 
     def __init__(self, keyword, attributes, **kwargs):
-        super(InheritTag, self).__init__(
+        super().__init__(
             keyword, attributes, ("file",), (), ("file",), **kwargs
         )
 
@@ -651,9 +644,7 @@ class PageTag(Tag):
             "enable_loop",
         ] + [c for c in attributes if c.startswith("cache_")]
 
-        super(PageTag, self).__init__(
-            keyword, attributes, expressions, (), (), **kwargs
-        )
+        super().__init__(keyword, attributes, expressions, (), (), **kwargs)
         self.body_decl = ast.FunctionArgs(
             attributes.get("args", ""), **self.exception_kwargs
         )

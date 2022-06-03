@@ -1,10 +1,8 @@
 # mako/util.py
-# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2021 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
-from __future__ import absolute_import
-
 from ast import parse
 import codecs
 import collections
@@ -13,7 +11,7 @@ import os
 import re
 import timeit
 
-from mako import compat
+from .compat import importlib_metadata_get
 
 
 def update_wrapper(decorated, fn):
@@ -22,7 +20,7 @@ def update_wrapper(decorated, fn):
     return decorated
 
 
-class PluginLoader(object):
+class PluginLoader:
     def __init__(self, group):
         self.group = group
         self.impls = {}
@@ -30,18 +28,17 @@ class PluginLoader(object):
     def load(self, name):
         if name in self.impls:
             return self.impls[name]()
-        else:
-            import pkg_resources
 
-            for impl in pkg_resources.iter_entry_points(self.group, name):
+        for impl in importlib_metadata_get(self.group):
+            if impl.name == name:
                 self.impls[name] = impl.load
                 return impl.load()
-            else:
-                from mako import exceptions
 
-                raise exceptions.RuntimeException(
-                    "Can't load plugin %s %s" % (self.group, name)
-                )
+        from mako import exceptions
+
+        raise exceptions.RuntimeException(
+            "Can't load plugin %s %s" % (self.group, name)
+        )
 
     def register(self, name, modulepath, objname):
         def load():
@@ -61,7 +58,7 @@ def verify_directory(dir_):
     while not os.path.exists(dir_):
         try:
             tries += 1
-            os.makedirs(dir_, compat.octal("0775"))
+            os.makedirs(dir_, 0o755)
         except:
             if tries > 5:
                 raise
@@ -76,7 +73,7 @@ def to_list(x, default=None):
         return x
 
 
-class memoized_property(object):
+class memoized_property:
 
     """A read-only @property that is only evaluated once."""
 
@@ -92,7 +89,7 @@ class memoized_property(object):
         return result
 
 
-class memoized_instancemethod(object):
+class memoized_instancemethod:
 
     """Decorate a method memoize its return value.
 
@@ -140,19 +137,15 @@ class SetLikeDict(dict):
         return x
 
 
-class FastEncodingBuffer(object):
+class FastEncodingBuffer:
 
     """a very rudimentary buffer that is faster than StringIO,
-    but doesn't crash on unicode data like cStringIO."""
+    and supports unicode data."""
 
-    def __init__(self, encoding=None, errors="strict", as_unicode=False):
+    def __init__(self, encoding=None, errors="strict"):
         self.data = collections.deque()
         self.encoding = encoding
-        if as_unicode:
-            self.delim = compat.u("")
-        else:
-            self.delim = ""
-        self.as_unicode = as_unicode
+        self.delim = ""
         self.errors = errors
         self.write = self.data.append
 
@@ -179,7 +172,7 @@ class LRUCache(dict):
     is inexact.
     """
 
-    class _Item(object):
+    class _Item:
         def __init__(self, key, value):
             self.key = key
             self.value = value
@@ -203,9 +196,8 @@ class LRUCache(dict):
     def setdefault(self, key, value):
         if key in self:
             return self[key]
-        else:
-            self[key] = value
-            return value
+        self[key] = value
+        return value
 
     def __setitem__(self, key, value):
         item = dict.get(self, key)
@@ -295,7 +287,7 @@ def sorted_dict_repr(d):
     """
     keys = list(d.keys())
     keys.sort()
-    return "{" + ", ".join(["%r: %r" % (k, d[k]) for k in keys]) + "}"
+    return "{" + ", ".join("%r: %r" % (k, d[k]) for k in keys) + "}"
 
 
 def restore__ast(_ast):
@@ -308,7 +300,7 @@ def restore__ast(_ast):
     m = compile(
         """\
 def foo(): pass
-class Bar(object): pass
+class Bar: pass
 if False: pass
 baz = 'mako'
 1 + 2 - 3 * 4 / 5
@@ -380,12 +372,8 @@ mako in baz not in mako""",
 
 
 def read_file(path, mode="rb"):
-    fp = open(path, mode)
-    try:
-        data = fp.read()
-        return data
-    finally:
-        fp.close()
+    with open(path, mode) as fp:
+        return fp.read()
 
 
 def read_python_file(path):

@@ -1,5 +1,5 @@
 # mako/lexer.py
-# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2021 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -9,7 +9,6 @@
 import codecs
 import re
 
-from mako import compat
 from mako import exceptions
 from mako import parsetree
 from mako.pygen import adjust_whitespace
@@ -17,14 +16,9 @@ from mako.pygen import adjust_whitespace
 _regexp_cache = {}
 
 
-class Lexer(object):
+class Lexer:
     def __init__(
-        self,
-        text,
-        filename=None,
-        disable_unicode=False,
-        input_encoding=None,
-        preprocessor=None,
+        self, text, filename=None, input_encoding=None, preprocessor=None
     ):
         self.text = text
         self.filename = filename
@@ -36,13 +30,7 @@ class Lexer(object):
         self.tag = []
         self.control_line = []
         self.ternary_stack = []
-        self.disable_unicode = disable_unicode
         self.encoding = input_encoding
-
-        if compat.py3k and disable_unicode:
-            raise exceptions.UnsupportedError(
-                "Mako for Python 3 does not " "support disabling Unicode"
-            )
 
         if preprocessor is None:
             self.preprocessor = []
@@ -66,10 +54,7 @@ class Lexer(object):
         try:
             reg = _regexp_cache[(regexp, flags)]
         except KeyError:
-            if flags:
-                reg = re.compile(regexp, flags)
-            else:
-                reg = re.compile(regexp)
+            reg = re.compile(regexp, flags) if flags else re.compile(regexp)
             _regexp_cache[(regexp, flags)] = reg
 
         return self.match_reg(reg)
@@ -87,10 +72,7 @@ class Lexer(object):
         match = reg.match(self.text, self.match_position)
         if match:
             (start, end) = match.span()
-            if end == start:
-                self.match_position = end + 1
-            else:
-                self.match_position = end
+            self.match_position = end + 1 if end == start else end
             self.matched_lineno = self.lineno
             lines = re.findall(r"\n", self.text[mp : self.match_position])
             cp = mp - 1
@@ -98,10 +80,6 @@ class Lexer(object):
                 cp -= 1
             self.matched_charpos = mp - cp
             self.lineno += len(lines)
-            # print "MATCHED:", match.group(0), "LINE START:",
-            # self.matched_lineno, "LINE END:", self.lineno
-        # print "MATCH:", regexp, "\n", self.text[mp : mp + 15], \
-        #          (match and "TRUE" or "FALSE")
         return match
 
     def parse_until_text(self, watch_nesting, *text):
@@ -161,12 +139,15 @@ class Lexer(object):
         if self.control_line:
             control_frame = self.control_line[-1]
             control_frame.nodes.append(node)
-            if not (
-                isinstance(node, parsetree.ControlLine)
-                and control_frame.is_ternary(node.keyword)
+            if (
+                not (
+                    isinstance(node, parsetree.ControlLine)
+                    and control_frame.is_ternary(node.keyword)
+                )
+                and self.ternary_stack
+                and self.ternary_stack[-1]
             ):
-                if self.ternary_stack and self.ternary_stack[-1]:
-                    self.ternary_stack[-1][-1].nodes.append(node)
+                self.ternary_stack[-1][-1].nodes.append(node)
         if isinstance(node, parsetree.Tag):
             if len(self.tag):
                 node.parent = self.tag[-1]
@@ -188,18 +169,18 @@ class Lexer(object):
                 raise exceptions.SyntaxException(
                     "Keyword '%s' not a legal ternary for keyword '%s'"
                     % (node.keyword, self.control_line[-1].keyword),
-                    **self.exception_kwargs
+                    **self.exception_kwargs,
                 )
 
     _coding_re = re.compile(r"#.*coding[:=]\s*([-\w.]+).*\r?\n")
 
     def decode_raw_stream(self, text, decode_raw, known_encoding, filename):
         """given string/unicode or bytes/string, determine encoding
-           from magic encoding comment, return body as unicode
-           or raw if decode_raw=False
+        from magic encoding comment, return body as unicode
+        or raw if decode_raw=False
 
         """
-        if isinstance(text, compat.text_type):
+        if isinstance(text, str):
             m = self._coding_re.match(text)
             encoding = m and m.group(1) or known_encoding or "utf-8"
             return encoding, text
@@ -219,11 +200,7 @@ class Lexer(object):
                 )
         else:
             m = self._coding_re.match(text.decode("utf-8", "ignore"))
-            if m:
-                parsed_encoding = m.group(1)
-            else:
-                parsed_encoding = known_encoding or "utf-8"
-
+            parsed_encoding = m.group(1) if m else known_encoding or "utf-8"
         if decode_raw:
             try:
                 text = text.decode(parsed_encoding)
@@ -241,7 +218,7 @@ class Lexer(object):
 
     def parse(self):
         self.encoding, self.text = self.decode_raw_stream(
-            self.text, not self.disable_unicode, self.encoding, self.filename
+            self.text, True, self.encoding, self.filename
         )
 
         for preproc in self.preprocessor:
@@ -276,12 +253,13 @@ class Lexer(object):
 
             if self.match_position > self.textlength:
                 break
-            raise exceptions.CompileException("assertion failed")
+            # TODO: no coverage here
+            raise exceptions.MakoException("assertion failed")
 
         if len(self.tag):
             raise exceptions.SyntaxException(
                 "Unclosed tag: <%%%s>" % self.tag[-1].keyword,
-                **self.exception_kwargs
+                **self.exception_kwargs,
             )
         if len(self.control_line):
             raise exceptions.SyntaxException(
@@ -312,34 +290,33 @@ class Lexer(object):
             re.I | re.S | re.X,
         )
 
-        if match:
-            keyword, attr, isend = match.groups()
-            self.keyword = keyword
-            attributes = {}
-            if attr:
-                for att in re.findall(
-                    r"\s*(\w+)\s*=\s*(?:'([^']*)'|\"([^\"]*)\")", attr
-                ):
-                    key, val1, val2 = att
-                    text = val1 or val2
-                    text = text.replace("\r\n", "\n")
-                    attributes[key] = text
-            self.append_node(parsetree.Tag, keyword, attributes)
-            if isend:
-                self.tag.pop()
-            else:
-                if keyword == "text":
-                    match = self.match(r"(.*?)(?=\</%text>)", re.S)
-                    if not match:
-                        raise exceptions.SyntaxException(
-                            "Unclosed tag: <%%%s>" % self.tag[-1].keyword,
-                            **self.exception_kwargs
-                        )
-                    self.append_node(parsetree.Text, match.group(1))
-                    return self.match_tag_end()
-            return True
-        else:
+        if not match:
             return False
+
+        keyword, attr, isend = match.groups()
+        self.keyword = keyword
+        attributes = {}
+        if attr:
+            for att in re.findall(
+                r"\s*(\w+)\s*=\s*(?:'([^']*)'|\"([^\"]*)\")", attr
+            ):
+                key, val1, val2 = att
+                text = val1 or val2
+                text = text.replace("\r\n", "\n")
+                attributes[key] = text
+        self.append_node(parsetree.Tag, keyword, attributes)
+        if isend:
+            self.tag.pop()
+        elif keyword == "text":
+            match = self.match(r"(.*?)(?=\</%text>)", re.S)
+            if not match:
+                raise exceptions.SyntaxException(
+                    "Unclosed tag: <%%%s>" % self.tag[-1].keyword,
+                    **self.exception_kwargs,
+                )
+            self.append_node(parsetree.Text, match.group(1))
+            return self.match_tag_end()
+        return True
 
     def match_tag_end(self):
         match = self.match(r"\</%[\t ]*(.+?)[\t ]*>")
@@ -348,13 +325,13 @@ class Lexer(object):
                 raise exceptions.SyntaxException(
                     "Closing tag without opening tag: </%%%s>"
                     % match.group(1),
-                    **self.exception_kwargs
+                    **self.exception_kwargs,
                 )
             elif self.tag[-1].keyword != match.group(1):
                 raise exceptions.SyntaxException(
                     "Closing tag </%%%s> does not match tag: <%%%s>"
                     % (match.group(1), self.tag[-1].keyword),
-                    **self.exception_kwargs
+                    **self.exception_kwargs,
                 )
             self.tag.pop()
             return True
@@ -363,14 +340,14 @@ class Lexer(object):
 
     def match_end(self):
         match = self.match(r"\Z", re.S)
-        if match:
-            string = match.group()
-            if string:
-                return string
-            else:
-                return True
-        else:
+        if not match:
             return False
+
+        string = match.group()
+        if string:
+            return string
+        else:
+            return True
 
     def match_text(self):
         match = self.match(
@@ -422,63 +399,62 @@ class Lexer(object):
 
     def match_expression(self):
         match = self.match(r"\${")
-        if match:
-            line, pos = self.matched_lineno, self.matched_charpos
-            text, end = self.parse_until_text(True, r"\|", r"}")
-            if end == "|":
-                escapes, end = self.parse_until_text(True, r"}")
-            else:
-                escapes = ""
-            text = text.replace("\r\n", "\n")
-            self.append_node(
-                parsetree.Expression,
-                text,
-                escapes.strip(),
-                lineno=line,
-                pos=pos,
-            )
-            return True
-        else:
+        if not match:
             return False
+
+        line, pos = self.matched_lineno, self.matched_charpos
+        text, end = self.parse_until_text(True, r"\|", r"}")
+        if end == "|":
+            escapes, end = self.parse_until_text(True, r"}")
+        else:
+            escapes = ""
+        text = text.replace("\r\n", "\n")
+        self.append_node(
+            parsetree.Expression,
+            text,
+            escapes.strip(),
+            lineno=line,
+            pos=pos,
+        )
+        return True
 
     def match_control_line(self):
         match = self.match(
-            r"(?<=^)[\t ]*(%(?!%)|##)[\t ]*((?:(?:\\r?\n)|[^\r\n])*)"
+            r"(?<=^)[\t ]*(%(?!%)|##)[\t ]*((?:(?:\\\r?\n)|[^\r\n])*)"
             r"(?:\r?\n|\Z)",
             re.M,
         )
-        if match:
-            operator = match.group(1)
-            text = match.group(2)
-            if operator == "%":
-                m2 = re.match(r"(end)?(\w+)\s*(.*)", text)
-                if not m2:
-                    raise exceptions.SyntaxException(
-                        "Invalid control line: '%s'" % text,
-                        **self.exception_kwargs
-                    )
-                isend, keyword = m2.group(1, 2)
-                isend = isend is not None
-
-                if isend:
-                    if not len(self.control_line):
-                        raise exceptions.SyntaxException(
-                            "No starting keyword '%s' for '%s'"
-                            % (keyword, text),
-                            **self.exception_kwargs
-                        )
-                    elif self.control_line[-1].keyword != keyword:
-                        raise exceptions.SyntaxException(
-                            "Keyword '%s' doesn't match keyword '%s'"
-                            % (text, self.control_line[-1].keyword),
-                            **self.exception_kwargs
-                        )
-                self.append_node(parsetree.ControlLine, keyword, isend, text)
-            else:
-                self.append_node(parsetree.Comment, text)
-            return True
-        else:
+        if not match:
             return False
+
+        operator = match.group(1)
+        text = match.group(2)
+        if operator == "%":
+            m2 = re.match(r"(end)?(\w+)\s*(.*)", text)
+            if not m2:
+                raise exceptions.SyntaxException(
+                    "Invalid control line: '%s'" % text,
+                    **self.exception_kwargs,
+                )
+            isend, keyword = m2.group(1, 2)
+            isend = isend is not None
+
+            if isend:
+                if not len(self.control_line):
+                    raise exceptions.SyntaxException(
+                        "No starting keyword '%s' for '%s'" % (keyword, text),
+                        **self.exception_kwargs,
+                    )
+                elif self.control_line[-1].keyword != keyword:
+                    raise exceptions.SyntaxException(
+                        "Keyword '%s' doesn't match keyword '%s'"
+                        % (text, self.control_line[-1].keyword),
+                        **self.exception_kwargs,
+                    )
+            self.append_node(parsetree.ControlLine, keyword, isend, text)
+        else:
+            self.append_node(parsetree.Comment, text)
+        return True
 
     def match_comment(self):
         """matches the multiline version of a comment"""

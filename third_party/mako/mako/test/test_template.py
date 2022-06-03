@@ -1,30 +1,23 @@
-# -*- coding: utf-8 -*-
-
 import os
-import unittest
 
-from mako import compat
 from mako import exceptions
 from mako import runtime
 from mako import util
-from mako.compat import u
 from mako.ext.preprocessors import convert_comments
 from mako.lookup import TemplateLookup
 from mako.template import ModuleInfo
 from mako.template import ModuleTemplate
 from mako.template import Template
-from test import assert_raises
-from test import assert_raises_message
-from test import eq_
-from test import module_base
-from test import requires_python_2
-from test import template_base
-from test import TemplateTest
-from test.util import flatten_result
-from test.util import result_lines
+from mako.testing.assertions import assert_raises
+from mako.testing.assertions import assert_raises_message
+from mako.testing.assertions import eq_
+from mako.testing.config import config
+from mako.testing.fixtures import TemplateTest
+from mako.testing.helpers import flatten_result
+from mako.testing.helpers import result_lines
 
 
-class ctx(object):
+class ctx:
     def __init__(self, a, b):
         pass
 
@@ -33,6 +26,23 @@ class ctx(object):
 
     def __exit__(self, *arg):
         pass
+
+
+class MiscTest(TemplateTest):
+    def test_crlf_linebreaks(self):
+
+        crlf = r"""
+<%
+    foo = True
+    bar = True
+%>
+% if foo and \
+     bar:
+     foo and bar
+%endif
+"""
+        crlf = crlf.replace("\n", "\r\n")
+        self._do_test(Template(crlf), "\r\n\r\n     foo and bar\r\n")
 
 
 class EncodingTest(TemplateTest):
@@ -51,34 +61,23 @@ class EncodingTest(TemplateTest):
         except:
             # <h3>Exception: <span style="color:red">Foobar</span></h3>
             markup = html_error_template().render(full=False, css=False)
-            if compat.py3k:
-                assert (
-                    '<span style="color:red">Foobar</span></h3>'.encode(
-                        "ascii"
-                    )
-                    not in markup
-                )
-                assert (
-                    "&lt;span style=&#34;color:red&#34;"
-                    "&gt;Foobar&lt;/span&gt;".encode("ascii") in markup
-                )
-            else:
-                assert (
-                    '<span style="color:red">Foobar</span></h3>' not in markup
-                )
-                assert (
-                    "&lt;span style=&#34;color:red&#34;"
-                    "&gt;Foobar&lt;/span&gt;" in markup
-                )
+            assert (
+                '<span style="color:red">Foobar</span></h3>'.encode("ascii")
+                not in markup
+            )
+            assert (
+                "&lt;span style=&#34;color:red&#34;"
+                "&gt;Foobar&lt;/span&gt;".encode("ascii") in markup
+            )
 
     def test_unicode(self):
         self._do_memory_test(
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, quand "
                 "une drôle de petite voix m’a réveillé. Elle disait: "
                 "« S’il vous plaît… dessine-moi un mouton! »"
             ),
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, quand "
                 "une drôle de petite voix m’a réveillé. Elle disait: "
                 "« S’il vous plaît… dessine-moi un mouton! »"
@@ -87,12 +86,12 @@ class EncodingTest(TemplateTest):
 
     def test_encoding_doesnt_conflict(self):
         self._do_memory_test(
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, quand "
                 "une drôle de petite voix m’a réveillé. Elle disait: "
                 "« S’il vous plaît… dessine-moi un mouton! »"
             ),
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, quand "
                 "une drôle de petite voix m’a réveillé. Elle disait: "
                 "« S’il vous plaît… dessine-moi un mouton! »"
@@ -101,14 +100,14 @@ class EncodingTest(TemplateTest):
         )
 
     def test_unicode_arg(self):
-        val = u(
+        val = (
             "Alors vous imaginez ma surprise, au lever du jour, quand "
             "une drôle de petite voix m’a réveillé. Elle disait: "
             "« S’il vous plaît… dessine-moi un mouton! »"
         )
         self._do_memory_test(
             "${val}",
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, quand "
                 "une drôle de petite voix m’a réveillé. Elle disait: "
                 "« S’il vous plaît… dessine-moi un mouton! »"
@@ -119,7 +118,7 @@ class EncodingTest(TemplateTest):
     def test_unicode_file(self):
         self._do_file_test(
             "unicode.html",
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, quand "
                 "une drôle de petite voix m’a réveillé. Elle disait: "
                 "« S’il vous plaît… dessine-moi un mouton! »"
@@ -129,29 +128,26 @@ class EncodingTest(TemplateTest):
     def test_unicode_file_code(self):
         self._do_file_test(
             "unicode_code.html",
-            u("""hi, drôle de petite voix m’a réveillé."""),
+            ("""hi, drôle de petite voix m’a réveillé."""),
             filters=flatten_result,
         )
 
     def test_unicode_file_lookup(self):
         lookup = TemplateLookup(
-            directories=[template_base],
+            directories=[config.template_base],
             output_encoding="utf-8",
             default_filters=["decode.utf8"],
         )
-        if compat.py3k:
-            template = lookup.get_template("/chs_unicode_py3k.html")
-        else:
-            template = lookup.get_template("/chs_unicode.html")
+        template = lookup.get_template("/chs_unicode_py3k.html")
         eq_(
             flatten_result(template.render_unicode(name="毛泽东")),
-            u("毛泽东 是 新中国的主席<br/> Welcome 你 to 北京."),
+            ("毛泽东 是 新中国的主席<br/> Welcome 你 to 北京."),
         )
 
     def test_unicode_bom(self):
         self._do_file_test(
             "bom.html",
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, quand "
                 "une drôle de petite voix m’a réveillé. Elle disait: "
                 "« S’il vous plaît… dessine-moi un mouton! »"
@@ -160,29 +156,29 @@ class EncodingTest(TemplateTest):
 
         self._do_file_test(
             "bommagic.html",
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, quand "
                 "une drôle de petite voix m’a réveillé. Elle disait: "
                 "« S’il vous plaît… dessine-moi un mouton! »"
             ),
         )
 
-        self.assertRaises(
+        assert_raises(
             exceptions.CompileException,
             Template,
             filename=self._file_path("badbom.html"),
-            module_directory=module_base,
+            module_directory=config.module_base,
         )
 
     def test_unicode_memory(self):
-        val = u(
+        val = (
             "Alors vous imaginez ma surprise, au lever du jour, quand "
             "une drôle de petite voix m’a réveillé. Elle disait: "
             "« S’il vous plaît… dessine-moi un mouton! »"
         )
         self._do_memory_test(
             ("## -*- coding: utf-8 -*-\n" + val).encode("utf-8"),
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, quand "
                 "une drôle de petite voix m’a réveillé. Elle disait: "
                 "« S’il vous plaît… dessine-moi un mouton! »"
@@ -190,14 +186,14 @@ class EncodingTest(TemplateTest):
         )
 
     def test_unicode_text(self):
-        val = u(
+        val = (
             "<%text>Alors vous imaginez ma surprise, au lever du jour, quand "
             "une drôle de petite voix m’a réveillé. Elle disait: "
             "« S’il vous plaît… dessine-moi un mouton! »</%text>"
         )
         self._do_memory_test(
             ("## -*- coding: utf-8 -*-\n" + val).encode("utf-8"),
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, quand "
                 "une drôle de petite voix m’a réveillé. Elle disait: "
                 "« S’il vous plaît… dessine-moi un mouton! »"
@@ -205,8 +201,7 @@ class EncodingTest(TemplateTest):
         )
 
     def test_unicode_text_ccall(self):
-        val = u(
-            """
+        val = """
         <%def name="foo()">
             ${capture(caller.body)}
         </%def>
@@ -215,10 +210,9 @@ class EncodingTest(TemplateTest):
 quand une drôle de petite voix m’a réveillé. Elle disait:
 « S’il vous plaît… dessine-moi un mouton! »</%text>
         </%call>"""
-        )
         self._do_memory_test(
             ("## -*- coding: utf-8 -*-\n" + val).encode("utf-8"),
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, quand "
                 "une drôle de petite voix m’a réveillé. Elle disait: "
                 "« S’il vous plaît… dessine-moi un mouton! »"
@@ -227,43 +221,26 @@ quand une drôle de petite voix m’a réveillé. Elle disait:
         )
 
     def test_unicode_literal_in_expr(self):
-        if compat.py3k:
-            self._do_memory_test(
-                u(
-                    "## -*- coding: utf-8 -*-\n"
-                    '${"Alors vous imaginez ma surprise, au lever du jour, '
-                    "quand une drôle de petite voix m’a réveillé. "
-                    "Elle disait: "
-                    '« S’il vous plaît… dessine-moi un mouton! »"}\n'
-                ).encode("utf-8"),
-                u(
-                    "Alors vous imaginez ma surprise, au lever du jour, "
-                    "quand une drôle de petite voix m’a réveillé. "
-                    "Elle disait: « S’il vous plaît… dessine-moi un mouton! »"
-                ),
-                filters=lambda s: s.strip(),
-            )
-        else:
-            self._do_memory_test(
-                u(
-                    "## -*- coding: utf-8 -*-\n"
-                    '${u"Alors vous imaginez ma surprise, au lever du jour, '
-                    "quand une drôle de petite voix m’a réveillé. "
-                    "Elle disait: « S’il vous plaît… dessine-moi un "
-                    'mouton! »"}'
-                ).encode("utf-8"),
-                u(
-                    "Alors vous imaginez ma surprise, au lever du jour, "
-                    "quand une drôle de petite voix m’a réveillé. "
-                    "Elle disait: « S’il vous plaît… dessine-moi un mouton! »"
-                ),
-                filters=lambda s: s.strip(),
-            )
+        self._do_memory_test(
+            (
+                "## -*- coding: utf-8 -*-\n"
+                '${"Alors vous imaginez ma surprise, au lever du jour, '
+                "quand une drôle de petite voix m’a réveillé. "
+                "Elle disait: "
+                '« S’il vous plaît… dessine-moi un mouton! »"}\n'
+            ).encode("utf-8"),
+            (
+                "Alors vous imaginez ma surprise, au lever du jour, "
+                "quand une drôle de petite voix m’a réveillé. "
+                "Elle disait: « S’il vous plaît… dessine-moi un mouton! »"
+            ),
+            filters=lambda s: s.strip(),
+        )
 
     def test_unicode_literal_in_expr_file(self):
         self._do_file_test(
             "unicode_expr.html",
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, "
                 "quand une drôle de petite voix m’a réveillé. "
                 "Elle disait: « S’il vous plaît… dessine-moi un mouton! »"
@@ -272,85 +249,49 @@ quand une drôle de petite voix m’a réveillé. Elle disait:
         )
 
     def test_unicode_literal_in_code(self):
-        if compat.py3k:
-            self._do_memory_test(
-                u(
-                    """## -*- coding: utf-8 -*-
-                <%
-                    context.write("Alors vous imaginez ma surprise, au """
-                    """lever du jour, quand une drôle de petite voix m’a """
-                    """réveillé. Elle disait: """
-                    """« S’il vous plaît… dessine-moi un mouton! »")
-                %>
-                """
-                ).encode("utf-8"),
-                u(
-                    "Alors vous imaginez ma surprise, au lever du jour, "
-                    "quand une drôle de petite voix m’a réveillé. "
-                    "Elle disait: « S’il vous plaît… dessine-moi un mouton! »"
-                ),
-                filters=lambda s: s.strip(),
-            )
-        else:
-            self._do_memory_test(
-                u(
-                    """## -*- coding: utf-8 -*-
-                <%
-                    context.write(u"Alors vous imaginez ma surprise, """
-                    """au lever du jour, quand une drôle de petite voix """
-                    """m’a réveillé. Elle disait: « S’il vous plaît… """
-                    """dessine-moi un mouton! »")
-                %>
-                """
-                ).encode("utf-8"),
-                u(
-                    "Alors vous imaginez ma surprise, au lever du jour, "
-                    "quand une drôle de petite voix m’a réveillé. "
-                    "Elle disait: « S’il vous plaît… dessine-moi un mouton! »"
-                ),
-                filters=lambda s: s.strip(),
-            )
+        self._do_memory_test(
+            (
+                """## -*- coding: utf-8 -*-
+            <%
+                context.write("Alors vous imaginez ma surprise, au """
+                """lever du jour, quand une drôle de petite voix m’a """
+                """réveillé. Elle disait: """
+                """« S’il vous plaît… dessine-moi un mouton! »")
+            %>
+            """
+            ).encode("utf-8"),
+            (
+                "Alors vous imaginez ma surprise, au lever du jour, "
+                "quand une drôle de petite voix m’a réveillé. "
+                "Elle disait: « S’il vous plaît… dessine-moi un mouton! »"
+            ),
+            filters=lambda s: s.strip(),
+        )
 
     def test_unicode_literal_in_controlline(self):
-        if compat.py3k:
-            self._do_memory_test(
-                u(
-                    """## -*- coding: utf-8 -*-
-                <%
-                    x = "drôle de petite voix m’a réveillé."
-                %>
-                % if x=="drôle de petite voix m’a réveillé.":
-                    hi, ${x}
-                % endif
-                """
-                ).encode("utf-8"),
-                u("""hi, drôle de petite voix m’a réveillé."""),
-                filters=lambda s: s.strip(),
-            )
-        else:
-            self._do_memory_test(
-                u(
-                    """## -*- coding: utf-8 -*-
-                <%
-                    x = u"drôle de petite voix m’a réveillé."
-                %>
-                % if x==u"drôle de petite voix m’a réveillé.":
-                    hi, ${x}
-                % endif
-                """
-                ).encode("utf-8"),
-                u("""hi, drôle de petite voix m’a réveillé."""),
-                filters=lambda s: s.strip(),
-            )
+        self._do_memory_test(
+            (
+                """## -*- coding: utf-8 -*-
+            <%
+                x = "drôle de petite voix m’a réveillé."
+            %>
+            % if x=="drôle de petite voix m’a réveillé.":
+                hi, ${x}
+            % endif
+            """
+            ).encode("utf-8"),
+            ("""hi, drôle de petite voix m’a réveillé."""),
+            filters=lambda s: s.strip(),
+        )
 
     def test_unicode_literal_in_tag(self):
         self._do_file_test(
             "unicode_arguments.html",
             [
-                u("x is: drôle de petite voix m’a réveillé"),
-                u("x is: drôle de petite voix m’a réveillé"),
-                u("x is: drôle de petite voix m’a réveillé"),
-                u("x is: drôle de petite voix m’a réveillé"),
+                ("x is: drôle de petite voix m’a réveillé"),
+                ("x is: drôle de petite voix m’a réveillé"),
+                ("x is: drôle de petite voix m’a réveillé"),
+                ("x is: drôle de petite voix m’a réveillé"),
             ],
             filters=result_lines,
         )
@@ -358,148 +299,75 @@ quand une drôle de petite voix m’a réveillé. Elle disait:
         self._do_memory_test(
             util.read_file(self._file_path("unicode_arguments.html")),
             [
-                u("x is: drôle de petite voix m’a réveillé"),
-                u("x is: drôle de petite voix m’a réveillé"),
-                u("x is: drôle de petite voix m’a réveillé"),
-                u("x is: drôle de petite voix m’a réveillé"),
+                ("x is: drôle de petite voix m’a réveillé"),
+                ("x is: drôle de petite voix m’a réveillé"),
+                ("x is: drôle de petite voix m’a réveillé"),
+                ("x is: drôle de petite voix m’a réveillé"),
             ],
             filters=result_lines,
         )
 
     def test_unicode_literal_in_def(self):
-        if compat.py3k:
-            self._do_memory_test(
-                u(
-                    """## -*- coding: utf-8 -*-
-                <%def name="bello(foo, bar)">
-                Foo: ${ foo }
-                Bar: ${ bar }
-                </%def>
-                <%call expr="bello(foo='árvíztűrő tükörfúrógép', """
-                    """bar='ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP')">
-                </%call>"""
-                ).encode("utf-8"),
-                u(
-                    """Foo: árvíztűrő tükörfúrógép """
-                    """Bar: ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"""
-                ),
-                filters=flatten_result,
-            )
+        self._do_memory_test(
+            (
+                """## -*- coding: utf-8 -*-
+            <%def name="bello(foo, bar)">
+            Foo: ${ foo }
+            Bar: ${ bar }
+            </%def>
+            <%call expr="bello(foo='árvíztűrő tükörfúrógép', """
+                """bar='ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP')">
+            </%call>"""
+            ).encode("utf-8"),
+            (
+                """Foo: árvíztűrő tükörfúrógép """
+                """Bar: ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"""
+            ),
+            filters=flatten_result,
+        )
 
-            self._do_memory_test(
-                u(
-                    "## -*- coding: utf-8 -*-\n"
-                    """<%def name="hello(foo='árvíztűrő tükörfúrógép', """
-                    """bar='ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP')">\n"""
-                    "Foo: ${ foo }\n"
-                    "Bar: ${ bar }\n"
-                    "</%def>\n"
-                    "${ hello() }"
-                ).encode("utf-8"),
-                u(
-                    """Foo: árvíztűrő tükörfúrógép Bar: """
-                    """ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"""
-                ),
-                filters=flatten_result,
-            )
-        else:
-            self._do_memory_test(
-                u(
-                    """## -*- coding: utf-8 -*-
-                <%def name="bello(foo, bar)">
-                Foo: ${ foo }
-                Bar: ${ bar }
-                </%def>
-                <%call expr="bello(foo=u'árvíztűrő tükörfúrógép', """
-                    """bar=u'ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP')">
-                </%call>"""
-                ).encode("utf-8"),
-                u(
-                    """Foo: árvíztűrő tükörfúrógép Bar: """
-                    """ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"""
-                ),
-                filters=flatten_result,
-            )
-
-            self._do_memory_test(
-                u(
-                    """## -*- coding: utf-8 -*-
-                <%def name="hello(foo=u'árvíztűrő tükörfúrógép', """
-                    """bar=u'ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP')">
-                Foo: ${ foo }
-                Bar: ${ bar }
-                </%def>
-                ${ hello() }"""
-                ).encode("utf-8"),
-                u(
-                    """Foo: árvíztűrő tükörfúrógép Bar: """
-                    """ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"""
-                ),
-                filters=flatten_result,
-            )
+        self._do_memory_test(
+            (
+                "## -*- coding: utf-8 -*-\n"
+                """<%def name="hello(foo='árvíztűrő tükörfúrógép', """
+                """bar='ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP')">\n"""
+                "Foo: ${ foo }\n"
+                "Bar: ${ bar }\n"
+                "</%def>\n"
+                "${ hello() }"
+            ).encode("utf-8"),
+            (
+                """Foo: árvíztűrő tükörfúrógép Bar: """
+                """ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"""
+            ),
+            filters=flatten_result,
+        )
 
     def test_input_encoding(self):
         """test the 'input_encoding' flag on Template, and that unicode
-            objects arent double-decoded"""
-
-        if compat.py3k:
-            self._do_memory_test(
-                u("hello ${f('śląsk')}"),
-                u("hello śląsk"),
-                input_encoding="utf-8",
-                template_args={"f": lambda x: x},
-            )
-
-            self._do_memory_test(
-                u("## -*- coding: utf-8 -*-\nhello ${f('śląsk')}"),
-                u("hello śląsk"),
-                template_args={"f": lambda x: x},
-            )
-        else:
-            self._do_memory_test(
-                u("hello ${f(u'śląsk')}"),
-                u("hello śląsk"),
-                input_encoding="utf-8",
-                template_args={"f": lambda x: x},
-            )
-
-            self._do_memory_test(
-                u("## -*- coding: utf-8 -*-\nhello ${f(u'śląsk')}"),
-                u("hello śląsk"),
-                template_args={"f": lambda x: x},
-            )
-
-    def test_raw_strings(self):
-        """test that raw strings go straight thru with default_filters
-        turned off, bytestring_passthrough enabled.
-
-        """
+        objects arent double-decoded"""
 
         self._do_memory_test(
-            u("## -*- coding: utf-8 -*-\nhello ${x}"),
-            "hello śląsk",
-            default_filters=[],
-            template_args={"x": "śląsk"},
-            unicode_=False,
-            bytestring_passthrough=True,
-            output_encoding=None,  # 'ascii'
+            ("hello ${f('śląsk')}"),
+            ("hello śląsk"),
+            input_encoding="utf-8",
+            template_args={"f": lambda x: x},
         )
 
-        # now, the way you *should* be doing it....
         self._do_memory_test(
-            u("## -*- coding: utf-8 -*-\nhello ${x}"),
-            u("hello śląsk"),
-            template_args={"x": u("śląsk")},
+            ("## -*- coding: utf-8 -*-\nhello ${f('śląsk')}"),
+            ("hello śląsk"),
+            template_args={"f": lambda x: x},
         )
 
     def test_encoding(self):
         self._do_memory_test(
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, quand "
                 "une drôle de petite voix m’a réveillé. Elle disait: "
                 "« S’il vous plaît… dessine-moi un mouton! »"
             ),
-            u(
+            (
                 "Alors vous imaginez ma surprise, au lever du jour, quand "
                 "une drôle de petite voix m’a réveillé. Elle disait: "
                 "« S’il vous plaît… dessine-moi un mouton! »"
@@ -510,13 +378,13 @@ quand une drôle de petite voix m’a réveillé. Elle disait:
 
     def test_encoding_errors(self):
         self._do_memory_test(
-            u(
+            (
                 """KGB (transliteration of "КГБ") is the Russian-language """
                 """abbreviation for Committee for State Security, """
                 """(Russian: Комит́ет Госуд́арственной Безоп́асности """
                 """(help·info); Komitet Gosudarstvennoy Bezopasnosti)"""
             ),
-            u(
+            (
                 """KGB (transliteration of "КГБ") is the Russian-language """
                 """abbreviation for Committee for State Security, """
                 """(Russian: Комит́ет Госуд́арственной Безоп́асности """
@@ -529,78 +397,16 @@ quand une drôle de petite voix m’a réveillé. Elle disait:
 
     def test_read_unicode(self):
         lookup = TemplateLookup(
-            directories=[template_base],
+            directories=[config.template_base],
             filesystem_checks=True,
             output_encoding="utf-8",
         )
-        if compat.py3k:
-            template = lookup.get_template("/read_unicode_py3k.html")
-        else:
-            template = lookup.get_template("/read_unicode.html")
+        template = lookup.get_template("/read_unicode_py3k.html")
         # TODO: I've no idea what encoding this file is, Python 3.1.2
         # won't read the file even with open(...encoding='utf-8') unless
         # errors is specified.   or if there's some quirk in 3.1.2
         # since I'm pretty sure this test worked with py3k when I wrote it.
         template.render(path=self._file_path("internationalization.html"))
-
-    @requires_python_2
-    def test_bytestring_passthru(self):
-        self._do_file_test(
-            "chs_utf8.html",
-            "毛泽东 是 新中国的主席<br/> Welcome 你 to 北京. Welcome 你 to 北京.",
-            default_filters=[],
-            disable_unicode=True,
-            output_encoding=None,
-            template_args={"name": "毛泽东"},
-            filters=flatten_result,
-            unicode_=False,
-        )
-
-        self._do_file_test(
-            "chs_utf8.html",
-            "毛泽东 是 新中国的主席<br/> Welcome 你 to 北京. Welcome 你 to 北京.",
-            disable_unicode=True,
-            output_encoding=None,
-            template_args={"name": "毛泽东"},
-            filters=flatten_result,
-            unicode_=False,
-        )
-
-        template = self._file_template(
-            "chs_utf8.html", output_encoding=None, disable_unicode=True
-        )
-        self.assertRaises(
-            UnicodeDecodeError, template.render_unicode, name="毛泽东"
-        )
-
-        template = Template(
-            "${'Alors vous imaginez ma surprise, au lever"
-            " du jour, quand une drôle de petite voix m’a "
-            "réveillé. Elle disait: « S’il vous plaît… "
-            "dessine-moi un mouton! »'}",
-            output_encoding=None,
-            disable_unicode=True,
-            input_encoding="utf-8",
-        )
-        assert (
-            template.render() == "Alors vous imaginez ma surprise, "
-            "au lever du jour, quand une drôle de petite "
-            "voix m’a réveillé. Elle disait: « S’il vous "
-            "plaît… dessine-moi un mouton! »"
-        )
-        template = Template(
-            "${'Alors vous imaginez ma surprise, au "
-            "lever du jour, quand une drôle de petite "
-            "voix m’a réveillé. Elle disait: « S’il "
-            "vous plaît… dessine-moi un mouton! »'}",
-            input_encoding="utf8",
-            output_encoding="utf8",
-            disable_unicode=False,
-            default_filters=[],
-        )
-        # raises because expression contains an encoded bytestring which cannot
-        # be decoded
-        self.assertRaises(UnicodeDecodeError, template.render)
 
 
 class PageArgsTest(TemplateTest):
@@ -1094,7 +900,7 @@ class ReservedNameTest(TemplateTest):
                 exceptions.NameConflictError,
                 r"Reserved words passed to render\(\): %s" % name,
                 Template("x").render,
-                **{name: "foo"}
+                **{name: "foo"},
             )
 
     def test_names_in_template(self):
@@ -1134,15 +940,18 @@ class ControlTest(TemplateTest):
     %endfor
 """
         )
-        assert result_lines(
-            t.render(
-                y=[
-                    {"test": "one"},
-                    {"foo": "bar"},
-                    {"foo": "bar", "test": "two"},
-                ]
+        assert (
+            result_lines(
+                t.render(
+                    y=[
+                        {"test": "one"},
+                        {"foo": "bar"},
+                        {"foo": "bar", "test": "two"},
+                    ]
+                )
             )
-        ) == ["yes x has test", "no x does not have test", "yes x has test"]
+            == ["yes x has test", "no x does not have test", "yes x has test"]
+        )
 
     def test_blank_control_1(self):
         self._do_memory_test(
@@ -1358,15 +1167,16 @@ class GlobalsTest(TemplateTest):
 
 class RichTracebackTest(TemplateTest):
     def _do_test_traceback(self, utf8, memory, syntax):
+
         if memory:
             if syntax:
-                source = u(
+                source = (
                     '## coding: utf-8\n<% print "m’a réveillé. '
                     "Elle disait: « S’il vous plaît… dessine-moi "
                     "un mouton! » %>"
                 )
             else:
-                source = u(
+                source = (
                     '## coding: utf-8\n<% print u"m’a réveillé. '
                     "Elle disait: « S’il vous plaît… dessine-moi un "
                     'mouton! »" + str(5/0) %>'
@@ -1416,40 +1226,47 @@ for utf8 in (True, False):
 
 
 class ModuleDirTest(TemplateTest):
-    def tearDown(self):
+    def teardown_method(self):
         import shutil
 
-        shutil.rmtree(module_base, True)
+        shutil.rmtree(config.module_base, True)
 
     def test_basic(self):
         t = self._file_template("modtest.html")
         t2 = self._file_template("subdir/modtest.html")
 
-        eq_(t.module.__file__, os.path.join(module_base, "modtest.html.py"))
+        eq_(
+            t.module.__file__,
+            os.path.join(config.module_base, "modtest.html.py"),
+        )
         eq_(
             t2.module.__file__,
-            os.path.join(module_base, "subdir", "modtest.html.py"),
+            os.path.join(config.module_base, "subdir", "modtest.html.py"),
         )
 
     def test_callable(self):
         def get_modname(filename, uri):
             return os.path.join(
-                module_base,
+                config.module_base,
                 os.path.dirname(uri)[1:],
                 "foo",
                 os.path.basename(filename) + ".py",
             )
 
-        lookup = TemplateLookup(template_base, modulename_callable=get_modname)
+        lookup = TemplateLookup(
+            config.template_base, modulename_callable=get_modname
+        )
         t = lookup.get_template("/modtest.html")
         t2 = lookup.get_template("/subdir/modtest.html")
         eq_(
             t.module.__file__,
-            os.path.join(module_base, "foo", "modtest.html.py"),
+            os.path.join(config.module_base, "foo", "modtest.html.py"),
         )
         eq_(
             t2.module.__file__,
-            os.path.join(module_base, "subdir", "foo", "modtest.html.py"),
+            os.path.join(
+                config.module_base, "subdir", "foo", "modtest.html.py"
+            ),
         )
 
     def test_custom_writer(self):
@@ -1462,17 +1279,17 @@ class ModuleDirTest(TemplateTest):
             f.close()
 
         lookup = TemplateLookup(
-            template_base,
+            config.template_base,
             module_writer=write_module,
-            module_directory=module_base,
+            module_directory=config.module_base,
         )
         lookup.get_template("/modtest.html")
         lookup.get_template("/subdir/modtest.html")
         eq_(
             canary,
             [
-                os.path.join(module_base, "modtest.html.py"),
-                os.path.join(module_base, "subdir", "modtest.html.py"),
+                os.path.join(config.module_base, "modtest.html.py"),
+                os.path.join(config.module_base, "subdir", "modtest.html.py"),
             ],
         )
 
@@ -1626,7 +1443,7 @@ class ModuleTemplateTest(TemplateTest):
         ]
 
 
-class TestTemplateAPI(unittest.TestCase):
+class TestTemplateAPI:
     def test_metadata(self):
         t = Template(
             """
@@ -1816,7 +1633,7 @@ class LexerTest(TemplateTest):
     def _fixture(self):
         from mako.parsetree import TemplateNode, Text
 
-        class MyLexer(object):
+        class MyLexer:
             encoding = "ascii"
 
             def __init__(self, *arg, **kw):

@@ -1,5 +1,5 @@
 # mako/ast.py
-# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2021 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -9,12 +9,11 @@ code, as well as generating Python from AST nodes"""
 
 import re
 
-from mako import compat
 from mako import exceptions
 from mako import pyparser
 
 
-class PythonCode(object):
+class PythonCode:
 
     """represents information about a string containing Python code"""
 
@@ -39,7 +38,7 @@ class PythonCode(object):
         # - AST is less likely to break with version changes
         # (for example, the behavior of co_names changed a little bit
         # in python version 2.5)
-        if isinstance(code, compat.string_types):
+        if isinstance(code, str):
             expr = pyparser.parse(code.lstrip(), "exec", **exception_kwargs)
         else:
             expr = code
@@ -48,7 +47,7 @@ class PythonCode(object):
         f.visit(expr)
 
 
-class ArgumentList(object):
+class ArgumentList:
 
     """parses a fragment of code as a comma-separated list of expressions"""
 
@@ -57,7 +56,7 @@ class ArgumentList(object):
         self.args = []
         self.declared_identifiers = set()
         self.undeclared_identifiers = set()
-        if isinstance(code, compat.string_types):
+        if isinstance(code, str):
             if re.match(r"\S", code) and not re.match(r",\s*$", code):
                 # if theres text and no trailing comma, insure its parsed
                 # as a tuple by adding a trailing comma
@@ -88,7 +87,7 @@ class PythonFragment(PythonCode):
         if not m:
             raise exceptions.CompileException(
                 "Fragment '%s' is not a partial control statement" % code,
-                **exception_kwargs
+                **exception_kwargs,
             )
         if m.group(3):
             code = code[: m.start(3)]
@@ -97,7 +96,7 @@ class PythonFragment(PythonCode):
             code = code + "pass"
         elif keyword == "try":
             code = code + "pass\nexcept:pass"
-        elif keyword == "elif" or keyword == "else":
+        elif keyword in ["elif", "else"]:
             code = "if False:pass\n" + code + "pass"
         elif keyword == "except":
             code = "try:pass\n" + code + "pass"
@@ -106,12 +105,12 @@ class PythonFragment(PythonCode):
         else:
             raise exceptions.CompileException(
                 "Unsupported control keyword: '%s'" % keyword,
-                **exception_kwargs
+                **exception_kwargs,
             )
-        super(PythonFragment, self).__init__(code, **exception_kwargs)
+        super().__init__(code, **exception_kwargs)
 
 
-class FunctionDecl(object):
+class FunctionDecl:
 
     """function declaration"""
 
@@ -124,13 +123,13 @@ class FunctionDecl(object):
         if not hasattr(self, "funcname"):
             raise exceptions.CompileException(
                 "Code '%s' is not a function declaration" % code,
-                **exception_kwargs
+                **exception_kwargs,
             )
         if not allow_kwargs and self.kwargs:
             raise exceptions.CompileException(
                 "'**%s' keyword argument not allowed here"
                 % self.kwargnames[-1],
-                **exception_kwargs
+                **exception_kwargs,
             )
 
     def get_argument_expressions(self, as_call=False):
@@ -200,6 +199,4 @@ class FunctionArgs(FunctionDecl):
     """the argument portion of a function declaration"""
 
     def __init__(self, code, **kwargs):
-        super(FunctionArgs, self).__init__(
-            "def ANON(%s):pass" % code, **kwargs
-        )
+        super().__init__("def ANON(%s):pass" % code, **kwargs)

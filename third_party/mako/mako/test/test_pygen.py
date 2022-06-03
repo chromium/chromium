@@ -1,12 +1,11 @@
-import unittest
+from io import StringIO
 
-from mako.compat import StringIO
 from mako.pygen import adjust_whitespace
 from mako.pygen import PythonPrinter
-from test import eq_
+from mako.testing.assertions import eq_
 
 
-class GeneratePythonTest(unittest.TestCase):
+class GeneratePythonTest:
     def test_generate_normal(self):
         stream = StringIO()
         printer = PythonPrinter(stream)
@@ -165,7 +164,7 @@ print "more indent"
         )
 
 
-class WhitespaceTest(unittest.TestCase):
+class WhitespaceTest:
     def test_basic(self):
         text = """
         for x in range(0,15):

@@ -1,10 +1,9 @@
 # mako/cmd.py
-# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2021 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 from argparse import ArgumentParser
-import io
 from os.path import dirname
 from os.path import isfile
 import sys
@@ -85,16 +84,14 @@ def cmdline(argv=None):
         except:
             _exit()
 
-    kw = dict([varsplit(var) for var in options.var])
+    kw = dict(varsplit(var) for var in options.var)
     try:
         rendered = template.render(**kw)
     except:
         _exit()
     else:
         if output_file:
-            io.open(output_file, "wt", encoding=output_encoding).write(
-                rendered
-            )
+            open(output_file, "wt", encoding=output_encoding).write(rendered)
         else:
             sys.stdout.write(rendered)
 

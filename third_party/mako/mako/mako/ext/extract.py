@@ -1,23 +1,25 @@
 # ext/extract.py
-# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2021 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
+from io import BytesIO
+from io import StringIO
 import re
 
-from mako import compat
 from mako import lexer
 from mako import parsetree
 
 
-class MessageExtractor(object):
+class MessageExtractor:
+    use_bytes = True
+
     def process_file(self, fileobj):
         template_node = lexer.Lexer(
             fileobj.read(), input_encoding=self.config["encoding"]
         ).parse()
-        for extracted in self.extract_nodes(template_node.get_children()):
-            yield extracted
+        yield from self.extract_nodes(template_node.get_children())
 
     def extract_nodes(self, nodes):
         translator_comments = []
@@ -90,7 +92,7 @@ class MessageExtractor(object):
                 comment[1] for comment in translator_comments
             ]
 
-            if isinstance(code, compat.text_type):
+            if isinstance(code, str) and self.use_bytes:
                 code = code.encode(input_encoding, "backslashreplace")
 
             used_translator_comments = False
@@ -99,7 +101,10 @@ class MessageExtractor(object):
             # input string of the input is non-ascii)
             # Also, because we added it, we have to subtract one from
             # node.lineno
-            code = compat.byte_buffer(compat.b("\n") + code)
+            if self.use_bytes:
+                code = BytesIO(b"\n" + code)
+            else:
+                code = StringIO("\n" + code)
 
             for message in self.process_python(
                 code, node.lineno - 1, translator_strings
@@ -112,8 +117,7 @@ class MessageExtractor(object):
             in_translator_comments = False
 
             if child_nodes:
-                for extracted in self.extract_nodes(child_nodes):
-                    yield extracted
+                yield from self.extract_nodes(child_nodes)
 
     @staticmethod
     def _split_comment(lineno, comment):

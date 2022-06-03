@@ -1,10 +1,8 @@
-import unittest
-
 from mako.template import Template
-from test.util import flatten_result
+from mako.testing.helpers import flatten_result
 
 
-class DecoratorTest(unittest.TestCase):
+class DecoratorTest:
     def test_toplevel(self):
         template = Template(
             """
