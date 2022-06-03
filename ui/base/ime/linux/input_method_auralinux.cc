@@ -344,25 +344,14 @@ bool InputMethodAuraLinux::MaybeUpdateComposition(bool text_committed) {
 }
 
 void InputMethodAuraLinux::UpdateContextFocusState() {
-  bool old_text_input_type = text_input_type_;
+  auto old_text_input_type = text_input_type_;
   text_input_type_ = GetTextInputType();
 
-  // We only focus in |context_| when the focus is in a textfield.
-  if (old_text_input_type != TEXT_INPUT_TYPE_NONE) {
-    context_->Blur();
-  }
-  if (text_input_type_ != TEXT_INPUT_TYPE_NONE) {
-    context_->Focus();
-  }
-
-  // |context_simple_| can be used in any textfield, including password box, and
-  // even if the focused text input client's text input type is
-  // ui::TEXT_INPUT_TYPE_NONE.
   auto* client = GetTextInputClient();
-  if (client)
-    context_simple_->Focus();
-  else
-    context_simple_->Blur();
+  bool has_client = client != nullptr;
+  context_->UpdateFocus(has_client, old_text_input_type, text_input_type_);
+  context_simple_->UpdateFocus(has_client, old_text_input_type,
+                               text_input_type_);
 
   LinuxInputMethodContext* context =
       text_input_type_ != TEXT_INPUT_TYPE_NONE &&

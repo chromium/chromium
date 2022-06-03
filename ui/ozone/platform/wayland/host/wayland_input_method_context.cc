@@ -206,6 +206,27 @@ void WaylandInputMethodContext::Reset() {
     text_input_->Reset();
 }
 
+void WaylandInputMethodContext::UpdateFocus(bool has_client,
+                                            TextInputType old_type,
+                                            TextInputType new_type) {
+  // TODO(b/226781965): Known issue that this does not work.
+  if (is_simple_) {
+    // simple context can be used in any textfield, including password box, and
+    // even if the focused text input client's text input type is
+    // ui::TEXT_INPUT_TYPE_NONE.
+    if (has_client)
+      Focus();
+    else
+      Blur();
+  } else {
+    // Otherwise We only focus when the focus is in a textfield.
+    if (old_type != TEXT_INPUT_TYPE_NONE)
+      Blur();
+    if (new_type != TEXT_INPUT_TYPE_NONE)
+      Focus();
+  }
+}
+
 void WaylandInputMethodContext::Focus() {
   focused_ = true;
   MaybeUpdateActivated();

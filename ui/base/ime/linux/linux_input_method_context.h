@@ -58,11 +58,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
   // before calling DispatchKeyEvent().
   virtual void Reset() = 0;
 
-  // Focuses the context.
-  virtual void Focus() = 0;
-
-  // Blurs the context.
-  virtual void Blur() = 0;
+  // Called when text input focus is changed.
+  virtual void UpdateFocus(bool has_client,
+                           TextInputType old_type,
+                           TextInputType new_type) = 0;
 
   // Returns the corresponding VirtualKeyboardController instance.
   // Or nullptr, if not supported.

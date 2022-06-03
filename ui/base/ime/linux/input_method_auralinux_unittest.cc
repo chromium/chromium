@@ -60,8 +60,10 @@ class TestResult {
 class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
  public:
   explicit LinuxInputMethodContextForTesting(
-      LinuxInputMethodContextDelegate* delegate)
+      LinuxInputMethodContextDelegate* delegate,
+      bool is_simple)
       : delegate_(delegate),
+        is_simple_(is_simple),
         is_sync_mode_(false),
         eat_key_(false),
         focused_(false) {}
@@ -142,9 +144,15 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
 
   void Reset() override {}
 
-  void Focus() override { focused_ = true; }
-
-  void Blur() override { focused_ = false; }
+  void UpdateFocus(bool has_client,
+                   TextInputType old_type,
+                   TextInputType new_type) override {
+    if (is_simple_) {
+      focused_ = has_client;
+    } else {
+      focused_ = new_type != TEXT_INPUT_TYPE_NONE;
+    }
+  }
 
   void SetCursorLocation(const gfx::Rect& rect) override {
     cursor_position_ = rect;
@@ -175,6 +183,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
  private:
   LinuxInputMethodContextDelegate* delegate_;
   VirtualKeyboardControllerStub virtual_keyboard_controller_;
+  const bool is_simple_;
   std::vector<std::u16string> actions_;
   bool is_sync_mode_;
   bool eat_key_;
@@ -199,8 +208,8 @@ class LinuxInputMethodContextFactoryForTesting
   std::unique_ptr<LinuxInputMethodContext> CreateInputMethodContext(
       LinuxInputMethodContextDelegate* delegate,
       bool is_simple) const override {
-    return std::unique_ptr<ui::LinuxInputMethodContext>(
-        new LinuxInputMethodContextForTesting(delegate));
+    return std::make_unique<LinuxInputMethodContextForTesting>(delegate,
+                                                               is_simple);
   }
 };
 

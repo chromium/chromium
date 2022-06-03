@@ -174,6 +174,26 @@ void InputMethodContextImplGtk::Reset() {
   }
 }
 
+void InputMethodContextImplGtk::UpdateFocus(bool has_client,
+                                            ui::TextInputType old_type,
+                                            ui::TextInputType new_type) {
+  if (is_simple_) {
+    // simple context can be used in any textfield, including password box, and
+    // even if the focused text input client's text input type is
+    // ui::TEXT_INPUT_TYPE_NONE.
+    if (has_client)
+      Focus();
+    else
+      Blur();
+  } else {
+    // Otherwise We only focus when the focus is in a textfield.
+    if (old_type != ui::TEXT_INPUT_TYPE_NONE)
+      Blur();
+    if (new_type != ui::TEXT_INPUT_TYPE_NONE)
+      Focus();
+  }
+}
+
 void InputMethodContextImplGtk::Focus() {
   gtk_im_context_focus_in(gtk_context_);
   has_focus_ = true;
