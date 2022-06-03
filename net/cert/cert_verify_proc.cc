@@ -812,7 +812,7 @@ static bool CheckNameConstraints(const std::vector<std::string>& dns_names,
         continue;
       base::StringPiece suffix =
           base::StringPiece(dns_name).substr(dns_name.size() - domain.size());
-      if (!base::LowerCaseEqualsASCII(suffix, domain))
+      if (!base::EqualsCaseInsensitiveASCII(suffix, domain))
         continue;
       ok = true;
       break;
