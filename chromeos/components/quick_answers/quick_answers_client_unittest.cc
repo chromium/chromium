@@ -131,11 +131,12 @@ class QuickAnswersClientTest : public QuickAnswersTestBase {
     return std::move(mock_intent_generator_);
   }
 
+  base::test::TaskEnvironment task_environment_;
+
   std::unique_ptr<QuickAnswersClient> client_;
   std::unique_ptr<MockQuickAnswersDelegate> mock_delegate_;
   std::unique_ptr<MockResultLoader> mock_result_loader_;
   std::unique_ptr<MockIntentGenerator> mock_intent_generator_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   QuickAnswersClient::ResultLoaderFactoryCallback
