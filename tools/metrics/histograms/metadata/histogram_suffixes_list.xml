@@ -10349,18 +10349,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ThreadPool.NumWorkers.Renderer"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ThreadWatcher" separator=".">
-  <suffix name="CACHE" label="where watched thread is CACHE BrowserThread."/>
-  <suffix name="DB" label="where watched thread is DB BrowserThread."/>
-  <suffix name="FILE" label="where watched thread is FILE BrowserThread."/>
-  <suffix name="IO" label="where watched thread is IO BrowserThread."/>
-  <suffix name="UI" label="where watched thread is UI BrowserThread."/>
-  <affected-histogram name="ThreadWatcher.ResponseTime"/>
-  <affected-histogram name="ThreadWatcher.ResponsiveThreads"/>
-  <affected-histogram name="ThreadWatcher.Unresponsive"/>
-  <affected-histogram name="ThreadWatcher.UnresponsiveThreads"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="TileUiSurface" separator="." ordering="prefix,2">
   <suffix name="NTP" label="Query tiles section on the new tab page"/>
   <suffix name="Omnibox" label="Query tiles suggestion on omnibox"/>
