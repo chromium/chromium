@@ -158,6 +158,46 @@ constexpr uint8_t kSecgEcSecp512r1[] = {0x2b, 0x81, 0x04, 0x00, 0x23};
 constexpr uint8_t kNetscapeCertificateTypeOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
                                                    0xf8, 0x42, 0x01, 0x01};
 
+// CONST_OID nsExtBaseURL[] = { NETSCAPE_CERT_EXT, 0x02 };
+constexpr uint8_t kNetscapeBaseURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                           0xf8, 0x42, 0x01, 0x02};
+
+// CONST_OID nsExtRevocationURL[] = { NETSCAPE_CERT_EXT, 0x03 };
+constexpr uint8_t kNetscapeRevocationURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                                 0xf8, 0x42, 0x01, 0x03};
+
+// CONST_OID nsExtCARevocationURL[] = { NETSCAPE_CERT_EXT, 0x04 };
+constexpr uint8_t kNetscapeCARevocationURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                                   0xf8, 0x42, 0x01, 0x04};
+
+// CONST_OID nsExtCACertURL[] = { NETSCAPE_CERT_EXT, 0x06 };
+constexpr uint8_t kNetscapeCACertURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                             0xf8, 0x42, 0x01, 0x06};
+
+// CONST_OID nsExtCertRenewalURL[] = { NETSCAPE_CERT_EXT, 0x07 };
+constexpr uint8_t kNetscapeRenewalURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                              0xf8, 0x42, 0x01, 0x07};
+
+// CONST_OID nsExtCAPolicyURL[] = { NETSCAPE_CERT_EXT, 0x08 };
+constexpr uint8_t kNetscapeCAPolicyURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                               0xf8, 0x42, 0x01, 0x08};
+
+// CONST_OID nsExtSSLServerName[] = { NETSCAPE_CERT_EXT, 0x0c };
+constexpr uint8_t kNetscapeSSLServerNameOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                                 0xf8, 0x42, 0x01, 0x0c};
+
+// CONST_OID nsExtComment[] = { NETSCAPE_CERT_EXT, 0x0d };
+constexpr uint8_t kNetscapeCommentOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                           0xf8, 0x42, 0x01, 0x0d};
+
+// CONST_OID nsExtLostPasswordURL[] = { NETSCAPE_CERT_EXT, 0x0e };
+constexpr uint8_t kNetscapeLostPasswordURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                                   0xf8, 0x42, 0x01, 0x0e};
+
+// CONST_OID nsExtCertRenewalTime[] = { NETSCAPE_CERT_EXT, 0x0f };
+constexpr uint8_t kNetscapeRenewalTimeOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                               0xf8, 0x42, 0x01, 0x0f};
+
 // The certificate viewer may be used to view client certificates, so use the
 // relaxed parsing mode. See crbug.com/770323 and crbug.com/788655.
 constexpr auto kNameStringHandling =
@@ -290,6 +330,20 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<net::der::Input, int>({
 
     // Extension fields (including details of extensions):
     {net::der::Input(kNetscapeCertificateTypeOid), IDS_CERT_EXT_NS_CERT_TYPE},
+    {net::der::Input(kNetscapeBaseURLOid), IDS_CERT_EXT_NS_CERT_BASE_URL},
+    {net::der::Input(kNetscapeRevocationURLOid),
+     IDS_CERT_EXT_NS_CERT_REVOCATION_URL},
+    {net::der::Input(kNetscapeCARevocationURLOid),
+     IDS_CERT_EXT_NS_CA_REVOCATION_URL},
+    {net::der::Input(kNetscapeRenewalURLOid), IDS_CERT_EXT_NS_CERT_RENEWAL_URL},
+    {net::der::Input(kNetscapeCAPolicyURLOid), IDS_CERT_EXT_NS_CA_POLICY_URL},
+    {net::der::Input(kNetscapeSSLServerNameOid),
+     IDS_CERT_EXT_NS_SSL_SERVER_NAME},
+    {net::der::Input(kNetscapeCommentOid), IDS_CERT_EXT_NS_COMMENT},
+    {net::der::Input(kNetscapeLostPasswordURLOid),
+     IDS_CERT_EXT_NS_LOST_PASSWORD_URL},
+    {net::der::Input(kNetscapeRenewalTimeOid),
+     IDS_CERT_EXT_NS_CERT_RENEWAL_TIME},
     {net::der::Input(kSubjectDirectoryAttributesOid),
      IDS_CERT_X509_SUBJECT_DIRECTORY_ATTR},
     {net::der::Input(net::kSubjectKeyIdentifierOid),
@@ -1278,6 +1332,17 @@ absl::optional<std::string> X509CertificateModel::ProcessExtensionData(
     return ProcessCrlDistributionPoints(extension.value);
   if (extension.oid == net::der::Input(net::kAuthorityInfoAccessOid))
     return ProcessAuthorityInfoAccess(extension.value);
+  if (extension.oid == net::der::Input(kNetscapeBaseURLOid) ||
+      extension.oid == net::der::Input(kNetscapeRevocationURLOid) ||
+      extension.oid == net::der::Input(kNetscapeCARevocationURLOid) ||
+      extension.oid == net::der::Input(kNetscapeCACertURLOid) ||
+      extension.oid == net::der::Input(kNetscapeRenewalURLOid) ||
+      extension.oid == net::der::Input(kNetscapeCAPolicyURLOid) ||
+      extension.oid == net::der::Input(kNetscapeSSLServerNameOid) ||
+      extension.oid == net::der::Input(kNetscapeCommentOid) ||
+      extension.oid == net::der::Input(kNetscapeLostPasswordURLOid)) {
+    return ProcessIA5String(extension.value);
+  }
   return ProcessRawBytes(extension.value);
 }
 

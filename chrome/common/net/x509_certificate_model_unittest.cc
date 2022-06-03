@@ -378,6 +378,20 @@ TEST_P(X509CertificateModel, GlobalsignComCert) {
             extensions[8].value);
 }
 
+TEST_P(X509CertificateModel, NSCertComment) {
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                      "foaf.me.chromium-test-cert.der");
+  ASSERT_TRUE(cert.get());
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(cert->cert_buffer()), GetParam());
+  ASSERT_TRUE(model.is_valid());
+
+  auto extensions = model.GetExtensions("critical", "notcrit");
+  ASSERT_EQ(5U, extensions.size());
+  EXPECT_EQ("Netscape Certificate Comment", extensions[1].name);
+  EXPECT_EQ("notcrit\nOpenSSL Generated Certificate", extensions[1].value);
+}
+
 TEST_P(X509CertificateModel, DiginotarCert) {
   auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
                                       "diginotar_public_ca_2025.pem");
