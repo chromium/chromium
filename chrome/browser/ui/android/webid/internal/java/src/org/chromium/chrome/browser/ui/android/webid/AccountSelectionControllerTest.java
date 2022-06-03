@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
@@ -37,6 +38,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
@@ -155,6 +157,10 @@ public class AccountSelectionControllerTest {
                 DESIRED_AVATAR_SIZE);
     }
 
+    public ArgumentMatcher<ImageFetcher.Params> imageFetcherParamsHaveUrl(GURL url) {
+        return params -> params != null && params.url.equals(url.getSpec());
+    }
+
     @Test
     public void testShowAccountSignInHeader() {
         doAnswer(new Answer<Void>() {
@@ -200,7 +206,29 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoSignIn */);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        // Brand icon should be transparent placeholder icon. This is useful so that the header text
+        // wrapping does not change in the case that the brand icon download succeeds.
+        assertNotNull(headerModel.get(IDP_BRAND_ICON));
+    }
+
+    /**
+     * Test that the FedCM account picker does not display the brand icon placeholder if the brand
+     * icon URL is empty.
+     */
+    @Test
+    public void testNoBrandIconUrl() {
+        IdentityProviderMetadata idpMetadataNoBrandIconUrl =
+                new IdentityProviderMetadata(Color.BLACK, Color.BLACK, "");
+        mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
+                idpMetadataNoBrandIconUrl, CLIENT_ID_METADATA, false /* isAutoSignIn */);
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertNull(headerModel.get(IDP_BRAND_ICON));
+
+        // The only downloaded icon should not be an IDP brand icon.
+        verify(mMockImageFetcher, times(1))
+                .fetchImage(
+                        argThat(imageFetcherParamsHaveUrl(TEST_PROFILE_PIC)), any(Callback.class));
     }
 
     @Test

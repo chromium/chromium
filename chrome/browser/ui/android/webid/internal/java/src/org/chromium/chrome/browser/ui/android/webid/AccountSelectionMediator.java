@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Handler;
+import android.text.TextUtils;
 
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -173,11 +176,19 @@ class AccountSelectionMediator {
     void showAccounts(String rpEtldPlusOne, String idpEtldPlusOne, List<Account> accounts,
             IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata,
             boolean isAutoSignIn) {
+        if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
+            // Use placeholder icon so that the header text wrapping does not change when the icon
+            // is fetched.
+            mBrandIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+            Canvas brandIconCanvas = new Canvas(mBrandIcon);
+            brandIconCanvas.drawColor(Color.TRANSPARENT);
+        }
+
         mSelectedAccount = accounts.size() == 1 ? accounts.get(0) : null;
         showAccountsInternal(rpEtldPlusOne, idpEtldPlusOne, accounts, idpMetadata, clientMetadata,
                 isAutoSignIn, /*focusItem=*/ItemProperties.HEADER);
 
-        if (idpMetadata.getBrandIconUrl() != null) {
+        if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
             int brandIconIdealSize = AccountSelectionBridge.getBrandIconIdealSize();
             ImageFetcher.Params params = ImageFetcher.Params.create(idpMetadata.getBrandIconUrl(),
                     ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME, brandIconIdealSize,

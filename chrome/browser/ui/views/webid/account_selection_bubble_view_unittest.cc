@@ -145,20 +145,15 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     EXPECT_FALSE(dialog()->GetCancelButton());
 
     std::vector<views::View*> header_children = header->children();
-    ASSERT_EQ(header_children.size(), 3u);
-
-    // Check logo image.
-    views::ImageView* image_view =
-        static_cast<views::ImageView*>(header_children[0]);
-    EXPECT_TRUE(image_view);
+    ASSERT_EQ(header_children.size(), 2u);
 
     // Check title text.
-    views::Label* title_view = static_cast<views::Label*>(header_children[1]);
+    views::Label* title_view = static_cast<views::Label*>(header_children[0]);
     ASSERT_TRUE(title_view);
     EXPECT_EQ(title_view->GetText(), title);
 
     // Check close button.
-    views::Button* button = static_cast<views::Button*>(header_children[2]);
+    views::Button* button = static_cast<views::Button*>(header_children[1]);
     EXPECT_TRUE(button);
 
     // Check separator.

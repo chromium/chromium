@@ -42,7 +42,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
  private:
   // Returns a View containing the logo of the identity provider and the title
   // of the bubble, properly formatted.
-  std::unique_ptr<views::View> CreateHeaderView(const std::u16string& title);
+  std::unique_ptr<views::View> CreateHeaderView(const std::u16string& title,
+                                                bool has_icon);
 
   void CloseBubble();
 
