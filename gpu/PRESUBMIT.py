@@ -21,7 +21,14 @@ def CommonChecks(input_api, output_api):
     sys.path = [
         input_api.PresubmitLocalPath()
     ] + sys.path
-    output.extend(input_api.canned_checks.RunPylint(input_api, output_api))
+    pylint_checks = input_api.canned_checks.GetPylint(
+        input_api,
+        output_api,
+        version='2.7')
+    # TODO(crbug.com/1329829): Re-enable pylint once all the code under this
+    # directory is on the same Python version and existing warnings have been
+    # cleaned up.
+    # output.extend(input_api.RunTests(pylint_checks))
   finally:
     sys.path = sys_path_backup
 
