@@ -135,15 +135,30 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
     return AppListModelProvider::Get()->model()->FindItem(id);
   }
 
-  bool IsAppListItemInFront(const std::string& id) {
+  int GetAppListItemIndex(const std::string& id) {
     AppListModel* const model = AppListModelProvider::Get()->model();
     AppListItemList* const item_list = model->top_level_item_list();
 
     size_t index;
     if (!item_list->FindItemIndex(id, &index))
-      return false;
+      return -1;
+    return index;
+  }
 
+  bool IsAppListItemInFront(const std::string& id) {
+    const int index = GetAppListItemIndex(id);
+    DCHECK_GE(index, 0);
     return index == 0;
+  }
+
+  bool IsAppListItemLast(const std::string& id) {
+    const int index = GetAppListItemIndex(id);
+    DCHECK_GE(index, 0);
+    const int model_size = AppListModelProvider::Get()
+                               ->model()
+                               ->top_level_item_list()
+                               ->item_count();
+    return index == model_size - 1;
   }
 
  private:
@@ -158,7 +173,11 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddApp) {
 
   ash::AppListItem* app = GetAppListItem(kId1);
   EXPECT_FALSE(app->is_folder());
+  EXPECT_FALSE(app->is_new_install());
   EXPECT_EQ("App 1", app->name());
+  // If `add_to_front` is not set, the item should be added to the back of the
+  // app list.
+  EXPECT_TRUE(IsAppListItemLast(kId1));
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddAppToFront) {
@@ -181,12 +200,17 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderAndApps) {
   EXPECT_EQ(2u, folder->ChildItemCount());
   EXPECT_TRUE(folder->FindChildItem(kId2));
   EXPECT_TRUE(folder->FindChildItem(kId3));
+  EXPECT_FALSE(folder->is_new_install());
 
   ash::AppListItem* app1 = GetAppListItem(kId2);
   EXPECT_EQ(kId1, app1->folder_id());
+  EXPECT_FALSE(app1->is_new_install());
 
   ash::AppListItem* app2 = GetAppListItem(kId3);
   EXPECT_EQ(kId1, app2->folder_id());
+  EXPECT_FALSE(app2->is_new_install());
+
+  EXPECT_TRUE(IsAppListItemLast(kId1));
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderToFront) {

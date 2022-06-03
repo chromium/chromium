@@ -50,6 +50,7 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     case apps::AppType::kBuiltIn:
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kSystemWeb:
+    case apps::AppType::kRemote:
       // Chrome, Lacros, Settings, etc. are built-in.
       return false;
     case apps::AppType::kMacOs:
@@ -61,7 +62,6 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     case apps::AppType::kExtension:
     case apps::AppType::kWeb:
     case apps::AppType::kPluginVm:
-    case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kStandaloneBrowserChromeApp:
     case apps::AppType::kStandaloneBrowserExtension:
@@ -91,8 +91,15 @@ AppServiceAppItem::AppServiceAppItem(
     if (app_type_ == apps::AppType::kRemote) {
       ash::RemoteAppsManager* remote_manager =
           ash::RemoteAppsManagerFactory::GetForProfile(profile);
-      if (remote_manager->ShouldAddToFront(app_update.AppId()))
+      if (remote_manager->ShouldAddToFront(app_update.AppId())) {
         SetPosition(model_updater->GetPositionBeforeFirstItem());
+      } else {
+        // Add the app at the end of the app list to preserve behavior from
+        // before productivity launcher, so the positions in which remote apps
+        // are added are consistent with old launcher order (which may be
+        // assumed by extensions using remote apps API).
+        SetPosition(model_updater->GetFirstAvailablePosition());
+      }
 
       const ash::RemoteAppsModel::AppInfo* app_info =
           remote_manager->GetAppInfo(app_update.AppId());
