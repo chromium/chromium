@@ -525,7 +525,8 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueueFromMainThread(
     sequence_manager_->WillQueueTask(&pending_task, name_);
     MaybeReportIpcTaskQueuedFromMainThread(pending_task, name_);
   }
-  RecordTaskDelay(pending_task.delayed_run_time - lazy_now->Now());
+  RecordQueuingDelayedTaskMetrics(pending_task.delayed_run_time -
+                                  lazy_now->Now());
   main_thread_only().delayed_incoming_queue.push(std::move(pending_task));
   UpdateWakeUp(lazy_now);
 
@@ -574,15 +575,40 @@ void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
   TraceQueueSize();
 }
 
-void TaskQueueImpl::RecordTaskDelay(TimeDelta delay) {
+void TaskQueueImpl::RecordQueuingDelayedTaskMetrics(TimeDelta delay) {
   // This logic minimizes the performance overhead of emitting a histogram.
-  static AtomicSequenceNumber sample_id_;
   static constexpr int kBatchSize = 10000;
   static const int kOffset = RandInt(0, kBatchSize - 1);
+  static std::atomic<size_t> max_delayed_incoming_queue_size = 0;
+  static AtomicSequenceNumber sample_counter;
+  // Sample all TaskQueue's towards a single histogram for simplicity (still
+  // gives us an idea of the overall data structure needs).
+  size_t local_max =
+      max_delayed_incoming_queue_size.load(std::memory_order_relaxed);
 
-  if ((sample_id_.GetNext() - kOffset) % kBatchSize == 0) {
+  // Use random sampling to reduce the cost of recording these histograms.
+  if ((sample_counter.GetNext() - kOffset) % kBatchSize == 0) {
+    while (!max_delayed_incoming_queue_size.compare_exchange_weak(
+        local_max, 0, std::memory_order_relaxed)) {
+      // Retry
+    }
+
     UMA_HISTOGRAM_LONG_TIMES("Scheduler.TaskQueueImpl.PostDelayedTaskDelay",
                              delay);
+    UMA_HISTOGRAM_COUNTS_1000(
+        "Scheduler.TaskQueueImpl.DelayedIncomingQueueSize",
+        main_thread_only().delayed_incoming_queue.size());
+    UMA_HISTOGRAM_COUNTS_1000(
+        "Scheduler.TaskQueueImpl.MaxDelayedIncomingQueueSize", local_max);
+  } else {
+    // |max_delayed_incoming_queue_size| is atomically assigned the size of
+    // |delayed_incoming_queue| if it's bigger.
+    while (main_thread_only().delayed_incoming_queue.size() > local_max &&
+           !max_delayed_incoming_queue_size.compare_exchange_weak(
+               local_max, main_thread_only().delayed_incoming_queue.size(),
+               std::memory_order_relaxed)) {
+      // Retry
+    }
   }
 }
 
