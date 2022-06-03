@@ -32,7 +32,7 @@ class StartSurfaceRecentTabObserver {
   // Notifies the receiver that the most recent tab was removed.
   virtual void MostRecentTabRemoved(web::WebState* web_state) {}
   // Notifies the receiver that the favicon for the current page of the most
-  // recent tab was updated to |image|.
+  // recent tab was updated to `image`.
   virtual void MostRecentTabFaviconUpdated(UIImage* image) {}
 
  protected:
@@ -92,11 +92,11 @@ class StartSurfaceRecentTabBrowserAgent
   // A list of observers notified when the most recent tab is removed. Weak
   // references.
   base::ObserverList<StartSurfaceRecentTabObserver, true>::Unchecked observers_;
-  // Manages observation relationship between |this| and favicon::FaviconDriver.
+  // Manages observation relationship between `this` and favicon::FaviconDriver.
   base::ScopedObservation<favicon::FaviconDriver,
                           favicon::FaviconDriverObserver>
       favicon_driver_observer_{this};
-  // Manages observation relationship between |this| and web::WebState.
+  // Manages observation relationship between `this` and web::WebState.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
   // The most recent tab managed by this Browser Agent.

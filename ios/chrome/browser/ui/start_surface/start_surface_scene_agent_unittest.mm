@@ -98,7 +98,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
   StartSurfaceSceneAgent* agent_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
-  // Create WebState at |index| with |url| as the current url.
+  // Create WebState at `index` with `url` as the current url.
   void InsertNewWebState(int index, WebStateOpener opener, GURL url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();
     test_web_state->SetCurrentURL(url);
@@ -111,8 +111,8 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
                                    WebStateList::INSERT_FORCE_INDEX, opener);
   }
 
-  // Create a WebState that has a navigation history of more than one at |index|
-  // with |url| as the current url.
+  // Create a WebState that has a navigation history of more than one at `index`
+  // with `url` as the current url.
   void InsertNewWebStateWithNavigationHistory(int index,
                                               WebStateOpener opener,
                                               GURL url) {

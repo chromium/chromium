@@ -95,7 +95,7 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   }
 
   // If there is no active tab, a NTP will be added, and since there is no
-  // recent tab, there is no need to mark |modifytVisibleNTPForStartSurface|.
+  // recent tab, there is no need to mark `modifytVisibleNTPForStartSurface`.
   // Keep showing the last active NTP tab no matter whether the Start Surface is
   // enabled or not by design.
   // Note that activeWebState could only be nullptr when the Tab grid is active
@@ -132,7 +132,7 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
       /*inherit_opener=*/false, /*should_show_start_surface=*/true);
 }
 
-// Removes duplicate NTP tabs in |browser|'s WebStateList.
+// Removes duplicate NTP tabs in `browser`'s WebStateList.
 - (void)removeExcessNTPsInBrowser:(Browser*)browser {
   WebStateList* webStateList = browser->GetWebStateList();
   web::WebState* activeWebState =
@@ -146,11 +146,11 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
     web::WebState* webState = webStateList->GetWebStateAt(i);
     if (IsURLNtp(webState->GetVisibleURL())) {
       // Check if there is navigation history for this WebState that is showing
-      // the NTP. If there is, then set |keepOneNTP| to NO, indicating that all
+      // the NTP. If there is, then set `keepOneNTP` to NO, indicating that all
       // WebStates in NTPs with no navigation history will get removed.
       if (webState->GetNavigationItemCount() == 1) {
         // Keep track if active WebState is showing an NTP and has no navigation
-        // history since it may get removed if |keepOneNTP| is NO.
+        // history since it may get removed if `keepOneNTP` is NO.
         if (i == activeWebStateIndex) {
           activeWebStateIsEmptyNTP = YES;
         }
