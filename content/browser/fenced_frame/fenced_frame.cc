@@ -10,6 +10,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "url/gurl.h"
 
@@ -58,6 +59,9 @@ FencedFrame::FencedFrame(
       SiteInstanceImpl::CreateForFencedFrame(
           owner_render_frame_host->GetSiteInstance());
 
+  // Set the mandatory sandbox flags from the beginning.
+  blink::FramePolicy frame_policy;
+  frame_policy.sandbox_flags = blink::kFencedFrameForcedSandboxFlags;
   // Note that even though this is happening in response to an event in the
   // renderer (i.e., the creation of a <fencedframe> element), we are still
   // putting `renderer_initiated_creation` as false. This is because that
@@ -68,8 +72,12 @@ FencedFrame::FencedFrame(
   // apply for fenced frames, portals, and prerendered nested FrameTrees, hence
   // the decision to mark it as false.
   frame_tree_->Init(site_instance.get(), /*renderer_initiated_creation=*/false,
-                    /*main_frame_name=*/"", /*opener=*/nullptr,
-                    /*frame_policy=*/blink::FramePolicy());
+                    /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,
+                    frame_policy);
+  // Note that pending frame policy will be passed as `frame_policy` in
+  // `replication_state` in `mojom::CreateFrameParams`.
+  // See `RenderFrameHostImpl::CreateRenderFrame`.
+  frame_tree_->root()->SetPendingFramePolicy(frame_policy);
 
   // TODO(crbug.com/1199679): This should be moved to FrameTree::Init.
   web_contents_->NotifySwappedFromRenderManager(

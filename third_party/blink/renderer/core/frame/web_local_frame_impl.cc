@@ -100,6 +100,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_params_builder.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
@@ -1974,10 +1975,12 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
   network::mojom::blink::WebSandboxFlags sandbox_flags =
       network::mojom::blink::WebSandboxFlags::kNone;
   PermissionsPolicyFeatureState feature_state;
-  if (!previous_frame->Owner()) {
+  if (!previous_frame->Owner() || previous_frame->IsFencedFrameRoot()) {
     // Provisional main frames need to force sandbox flags.  This is necessary
     // to inherit sandbox flags when a sandboxed frame does a window.open()
     // which triggers a cross-process navigation.
+    // Fenced frames also need to force special initial sandbox flags that are
+    // passed via frame_policy.
     sandbox_flags = frame_policy.sandbox_flags;
   }
   // Note: this *always* temporarily sets a frame owner, even for main frames!
@@ -2115,13 +2118,22 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
   // New documents are either:
   // 1. The initial empty document:
   //   a. In a new iframe.
-  //   b. In a new popup.
+  //   b. In a new fencedframe.
+  //   c. In a new popup.
   // 2. A document replacing the previous, one via a navigation.
   //
-  // This is about 1.b. This is used to define sandbox flags for the initial
-  // empty document in a new popup.
-  if (frame_->IsMainFrame())
+  // 1.b. will get the special sandbox flags. See:
+  // https://docs.google.com/document/d/1RO4NkQk_XaEE7vuysM9LJilZYsoOhydfh93sOvrPQxU/edit
+  // For 1.c., this is used to define sandbox flags for
+  // the initial empty document in a new popup.
+  if (frame_->IsMainFrame()) {
+    DCHECK(!frame_->IsInFencedFrameTree() ||
+           ((sandbox_flags & blink::kFencedFrameForcedSandboxFlags) ==
+            blink::kFencedFrameForcedSandboxFlags))
+        << "An MPArch fencedframe must be configured with its forced sandbox "
+        << "flags:" << sandbox_flags;
     frame_->SetOpenerSandboxFlags(sandbox_flags);
+  }
 
   Frame* opener_frame = opener ? ToCoreFrame(*opener) : nullptr;
 
