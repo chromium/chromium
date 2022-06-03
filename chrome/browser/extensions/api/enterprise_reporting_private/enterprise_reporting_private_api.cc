@@ -547,6 +547,11 @@ bool EnterpriseReportingPrivateEnqueueRecordFunction::TryParseParams(
     return false;
   }
 
+  if (!record.has_timestamp_us()) {
+    // Missing record timestamp
+    return false;
+  }
+
   if (!::reporting::Priority_IsValid(params->request.priority) ||
       !::reporting::Priority_Parse(
           ::reporting::Priority_Name(params->request.priority), &priority)) {
