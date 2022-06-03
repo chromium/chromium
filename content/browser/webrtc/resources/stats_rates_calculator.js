@@ -417,19 +417,7 @@ export class StatsRatesCalculator {
   constructor() {
     this.previousReport = null;
     this.currentReport = null;
-  }
-
-  addStatsReport(report) {
-    this.previousReport = this.currentReport;
-    this.currentReport = report;
-    this.updateCalculatedMetrics_();
-  }
-
-  // Updates all "calculated metrics", which are metrics derived from standard
-  // values, such as converting total counters (e.g. bytesSent) to rates (e.g.
-  // bytesSent/s).
-  updateCalculatedMetrics_() {
-    const statsCalculators = [
+    this.statsCalculators = [
       {
         type: 'data-channel',
         metricCalculators: {
@@ -580,7 +568,19 @@ export class StatsRatesCalculator {
         },
       },
     ];
-    statsCalculators.forEach(statsCalculator => {
+  }
+
+  addStatsReport(report) {
+    this.previousReport = this.currentReport;
+    this.currentReport = report;
+    this.updateCalculatedMetrics_();
+  }
+
+  // Updates all "calculated metrics", which are metrics derived from standard
+  // values, such as converting total counters (e.g. bytesSent) to rates (e.g.
+  // bytesSent/s).
+  updateCalculatedMetrics_() {
+    this.statsCalculators.forEach(statsCalculator => {
       this.currentReport.getByType(statsCalculator.type).forEach(stats => {
         Object.keys(statsCalculator.metricCalculators)
             .forEach(originalMetric => {
