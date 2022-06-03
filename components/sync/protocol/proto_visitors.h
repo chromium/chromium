@@ -691,11 +691,20 @@ VISIT_PROTO_FIELDS(const sync_pb::WebauthnCredentialSpecifics& proto) {
   // etc.
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics::PageTransition& proto) {
+  VISIT_ENUM(core_transition);
+  VISIT(blocked);
+  VISIT(forward_back);
+  VISIT(from_address_bar);
+  VISIT(home_page);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics::RedirectEntry& proto) {
   VISIT(originator_visit_id);
   VISIT(url);
   VISIT(title);
   VISIT(hidden);
+  VISIT_ENUM(redirect_type);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics& proto) {

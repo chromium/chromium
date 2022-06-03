@@ -16,6 +16,8 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/sync_enums.proto";
+
 // A history sync entity - this roughly represents one navigation, including its
 // full redirect chain (but not referrals). Fields correspond to similarly named
 // fields in history::VisitRow and history::URLRow.
@@ -36,14 +38,30 @@ message HistorySpecifics {
     optional string title = 3;
     // True if the URL should NOT be used for auto-complete.
     optional bool hidden = 4;
+    // The redirect type (if any).
+    optional SyncEnums.PageTransitionRedirectType redirect_type = 5;
   }
   // The redirect chain. The first entry is the URL the user originally
   // navigated to; the last one is where they ended up. If there were no
   // redirects, this has only one entry.
   repeated RedirectEntry redirect_entries = 3;
 
+  message PageTransition {
+    // The core transition type.
+    optional SyncEnums.PageTransition core_transition = 1 [default = LINK];
+    // Qualifiers:
+    // A supervised user tried to access this URL but was blocked.
+    optional bool blocked = 2;
+    // User used the Forward or Back button to navigate among browsing history.
+    optional bool forward_back = 3;
+    // User used the address bar to trigger this navigation.
+    optional bool from_address_bar = 4;
+    // User is navigating to the home page.
+    optional bool home_page = 5;
+  }
   // The PageTransition for the navigation.
-  optional int32 page_transition = 4;
+  optional PageTransition page_transition = 4;
+
   // The ID of the visit, on the originator client, that was a referrer for
   // this one, or 0 if no referrer exists.
   optional int64 originator_referring_visit_id = 5;
