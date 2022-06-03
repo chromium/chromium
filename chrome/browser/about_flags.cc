@@ -52,7 +52,6 @@
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/share/share_features.h"
 #include "chrome/browser/sharing/features.h"
-#include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/ui/app_list/search/search_features.h"
@@ -6194,10 +6193,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"restrict-gamepad-access", flag_descriptions::kRestrictGamepadAccessName,
      flag_descriptions::kRestrictGamepadAccessDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kRestrictGamepadAccess)},
-
-    {"shared-clipboard-ui", flag_descriptions::kSharedClipboardUIName,
-     flag_descriptions::kSharedClipboardUIDescription, kOsAll,
-     FEATURE_VALUE_TYPE(kSharedClipboardUI)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"sharing-desktop-screenshots",

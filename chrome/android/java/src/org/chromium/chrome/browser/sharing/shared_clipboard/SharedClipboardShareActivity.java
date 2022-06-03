@@ -20,7 +20,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sharing.SharingAdapter;
@@ -43,7 +42,8 @@ public class SharedClipboardShareActivity
      * the SharedClipboardShareActivity appropriately. This call requires native to be loaded.
      */
     public static void updateComponentEnabledState() {
-        boolean enabled = ChromeFeatureList.isEnabled(ChromeFeatureList.SHARED_CLIPBOARD_UI);
+        // TODO(https://crbug.com/1311675): Remove this.
+        boolean enabled = false;
         PostTask.postTask(TaskTraits.USER_VISIBLE, () -> setComponentEnabled(enabled));
     }
 

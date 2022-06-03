@@ -23,7 +23,6 @@
 #include "chrome/browser/performance_hints/performance_hints_features.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "chrome/browser/share/share_features.h"
-#include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/video_tutorials/switches.h"
 #include "chrome/common/chrome_features.h"
@@ -266,7 +265,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSearchEnginePromoNewDevice,
     &kSearchEnginePromoNewDeviceV2,
     &kShareButtonInTopToolbar,
-    &kSharedClipboardUI,
     &kShowScrollableMVTOnNTPAndroid,
     &kFeedPositionAndroid,
     &kSpannableInlineAutocomplete,

@@ -2339,12 +2339,6 @@ const char kSidePanelJourneysName[] = "Side panel journeys";
 const char kSidePanelJourneysDescription[] =
     "Enables Journeys within the side panel.";
 
-const char kSharedClipboardUIName[] =
-    "Enable shared clipboard feature signals to be handled";
-const char kSharedClipboardUIDescription[] =
-    "Enables shared clipboard feature signals to be handled by showing "
-    "a list of user's available devices to share the clipboard.";
-
 const char kSharingDesktopScreenshotsName[] = "Desktop Screenshots";
 const char kSharingDesktopScreenshotsDescription[] =
     "Enables taking"

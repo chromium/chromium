@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
-#include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_utils.h"
 #include "chrome/browser/sharing/sharing_device_source.h"
 #include "chrome/browser/sharing/sharing_fcm_handler.h"
@@ -34,7 +33,6 @@ using ::testing::Return;
 
 namespace {
 
-const char16_t kEmptyText[] = u"";
 const char16_t kText[] = u"Some text to copy to phone device.";
 
 class MockSharingDeviceRegistration : public SharingDeviceRegistration {
@@ -84,36 +82,8 @@ class SharedClipboardUtilsTest : public testing::Test {
 
 }  // namespace
 
+// TODO(https://crbug.com/1311675): Remove this test and file once all the
+// shared clipboard implementation is gone.
 TEST_F(SharedClipboardUtilsTest, UIFlagDisabled_DoNotShowMenu) {
-  scoped_feature_list_.InitAndDisableFeature(kSharedClipboardUI);
-  EXPECT_FALSE(ShouldOfferSharedClipboard(&profile_, kText));
-}
-
-TEST_F(SharedClipboardUtilsTest, IncognitoProfile_DoNotShowMenu) {
-  scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
-  EXPECT_FALSE(ShouldOfferSharedClipboard(
-      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true), kText));
-}
-
-TEST_F(SharedClipboardUtilsTest, EmptyClipboardProtocol_DoNotShowMenu) {
-  scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
-  EXPECT_FALSE(ShouldOfferSharedClipboard(&profile_, kEmptyText));
-}
-
-TEST_F(SharedClipboardUtilsTest, ClipboardProtocol_ShowMenu) {
-  scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
-  EXPECT_TRUE(ShouldOfferSharedClipboard(&profile_, kText));
-}
-
-TEST_F(SharedClipboardUtilsTest, NoSharingService_DoNotShowMenu) {
-  scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
-  create_service_ = false;
-  EXPECT_FALSE(ShouldOfferSharedClipboard(&profile_, kText));
-}
-
-TEST_F(SharedClipboardUtilsTest, EnterprisePolicy_Disabled) {
-  scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
-  // Set the enterprise policy to false:
-  profile_.GetPrefs()->SetBoolean(prefs::kSharedClipboardEnabled, false);
   EXPECT_FALSE(ShouldOfferSharedClipboard(&profile_, kText));
 }

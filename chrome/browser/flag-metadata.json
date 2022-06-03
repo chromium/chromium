@@ -5417,11 +5417,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "shared-clipboard-ui",
-    "owners": [ "//chrome/browser/sharing/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "shared-highlighting-amp",
     "owners": ["cheickcisse@google.com"],
     "expiry_milestone": 97

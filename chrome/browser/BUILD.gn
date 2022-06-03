@@ -1568,8 +1568,6 @@ static_library("browser") {
     "sharing/features.h",
     "sharing/ping_message_handler.cc",
     "sharing/ping_message_handler.h",
-    "sharing/shared_clipboard/feature_flags.cc",
-    "sharing/shared_clipboard/feature_flags.h",
     "sharing/shared_clipboard/remote_copy_handle_message_result.h",
     "sharing/shared_clipboard/shared_clipboard_message_handler.cc",
     "sharing/shared_clipboard/shared_clipboard_message_handler.h",
