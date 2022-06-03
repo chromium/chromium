@@ -558,11 +558,11 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
             base::Milliseconds(4));
     unsigned hash = WTF::StringHash::GetHash(entry->name());
     WTF::AddFloatToHash(hash, entry->startTime());
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
         "devtools.timeline", "EventTiming", hash, unsafe_start_time, "data",
         entry->ToTracedValue(DomWindow()->GetFrame()));
 
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
         "devtools.timeline", "EventTiming", hash, unsafe_end_time);
   }
 }
