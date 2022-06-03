@@ -66,53 +66,52 @@ std::unique_ptr<base::DictionaryValue> ParseDictionary(
   return base::DictionaryValue::From(ParseJSON(data));
 }
 
-bool GetBoolean(const base::Value::DictStorage& dict, const std::string& key) {
-  auto iter = dict.find(key);
-  if (iter == dict.end() || !iter->second.is_bool()) {
+bool GetBoolean(const base::Value::Dict& dict, const std::string& key) {
+  absl::optional<bool> value = dict.FindBool(key);
+  if (!value.has_value()) {
     ADD_FAILURE() << key << " does not exist or is not a boolean.";
     return false;
   }
-  return iter->second.GetBool();
+  return *value;
 }
 
-int GetInteger(const base::Value::DictStorage& dict, const std::string& key) {
-  auto iter = dict.find(key);
-  if (iter == dict.end() || !iter->second.is_int()) {
+int GetInteger(const base::Value::Dict& dict, const std::string& key) {
+  absl::optional<int> value = dict.FindInt(key);
+  if (!value.has_value()) {
     ADD_FAILURE() << key << " does not exist or is not an integer.";
     return 0;
   }
-  return iter->second.GetInt();
+  return *value;
 }
 
-std::string GetString(const base::Value::DictStorage& dict,
-                      const std::string& key) {
-  auto iter = dict.find(key);
-  if (iter == dict.end() || !iter->second.is_string()) {
+std::string GetString(const base::Value::Dict& dict, const std::string& key) {
+  const std::string* value = dict.FindString(key);
+  if (!value) {
     ADD_FAILURE() << key << " does not exist or is not a string.";
     return "";
   }
-  return iter->second.GetString();
+  return *value;
 }
 
-std::unique_ptr<base::ListValue> GetList(const base::Value::DictStorage& dict,
+std::unique_ptr<base::ListValue> GetList(const base::Value::Dict& dict,
                                          const std::string& key) {
-  auto iter = dict.find(key);
-  if (iter == dict.end() || !iter->second.is_list()) {
+  const base::Value::List* value = dict.FindList(key);
+  if (!value) {
     ADD_FAILURE() << key << " does not exist or is not a list.";
     return std::make_unique<base::ListValue>();
   }
   return base::ListValue::From(
-      base::Value::ToUniquePtrValue(iter->second.Clone()));
+      base::Value::ToUniquePtrValue(base::Value(value->Clone())));
 }
 
-base::Value::DictStorage GetDict(const base::Value::DictStorage& dict,
-                                 const std::string& key) {
-  auto iter = dict.find(key);
-  if (iter == dict.end() || !iter->second.is_dict()) {
+base::Value::Dict GetDict(const base::Value::Dict& dict,
+                          const std::string& key) {
+  const base::Value::Dict* value = dict.FindDict(key);
+  if (!value) {
     ADD_FAILURE() << key << " does not exist or is not a dict.";
-    return base::Value::DictStorage();
+    return base::Value::Dict();
   }
-  return iter->second.Clone().TakeDictDeprecated();
+  return value->Clone();
 }
 
 std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(

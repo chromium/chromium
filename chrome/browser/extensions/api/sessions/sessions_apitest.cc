@@ -107,7 +107,7 @@ testing::AssertionResult CheckSessionModels(const base::ListValue& devices,
   for (size_t i = 0; i < devices.GetListDeprecated().size(); ++i) {
     const base::Value& device_value = devices.GetListDeprecated()[i];
     EXPECT_TRUE(device_value.is_dict());
-    const base::Value::DictStorage device = utils::ToDictionary(device_value);
+    const base::Value::Dict device = utils::ToDictionary(device_value);
     EXPECT_EQ(kSessionTags[i], api_test_utils::GetString(device, "info"));
     EXPECT_EQ(kSessionTags[i], api_test_utils::GetString(device, "deviceName"));
     const std::unique_ptr<base::ListValue> sessions =
@@ -117,10 +117,9 @@ testing::AssertionResult CheckSessionModels(const base::ListValue& devices,
     // sessions, and if 1, that will be a Window. Grab it.
     if (num_sessions == 0)
       continue;
-    const base::Value::DictStorage session =
+    const base::Value::Dict session =
         utils::ToDictionary(sessions->GetListDeprecated()[0]);
-    const base::Value::DictStorage window =
-        api_test_utils::GetDict(session, "window");
+    const base::Value::Dict window = api_test_utils::GetDict(session, "window");
     // Only the tabs are interesting.
     const std::unique_ptr<base::ListValue> tabs =
         api_test_utils::GetList(window, "tabs");
@@ -130,7 +129,7 @@ testing::AssertionResult CheckSessionModels(const base::ListValue& devices,
     }
     EXPECT_EQ(std::size(kTabIDs), tabs->GetListDeprecated().size());
     for (size_t j = 0; j < tabs->GetListDeprecated().size(); ++j) {
-      const base::Value::DictStorage tab =
+      const base::Value::Dict tab =
           utils::ToDictionary(tabs->GetListDeprecated()[j]);
       EXPECT_FALSE(tab.contains("id"));  // sessions API does not give tab IDs
       EXPECT_EQ(static_cast<int>(j), api_test_utils::GetInteger(tab, "index"));
@@ -308,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetDevicesListEmpty) {
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
   CreateSessionModels();
 
-  const base::Value::DictStorage restored_window_session =
+  const base::Value::Dict restored_window_session =
       utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
           CreateFunction<SessionsRestoreFunction>(true).get(), "[\"tag3.3\"]",
           browser(), api_test_utils::INCLUDE_INCOGNITO));
@@ -320,9 +319,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
 
   base::ListValue* windows = result.get();
   EXPECT_EQ(2u, windows->GetListDeprecated().size());
-  const base::Value::DictStorage restored_window =
+  const base::Value::Dict restored_window =
       api_test_utils::GetDict(restored_window_session, "window");
-  base::Value::DictStorage window;
+  base::Value::Dict window;
   int restored_id = api_test_utils::GetInteger(restored_window, "id");
   for (base::Value& window_value : windows->GetListDeprecated()) {
     window = utils::ToDictionary(std::move(window_value));

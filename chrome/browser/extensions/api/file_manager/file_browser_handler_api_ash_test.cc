@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(FileBrowserHandlerExtensionTest, SelectionFailed) {
   select_file_function->set_has_callback(true);
   select_file_function->set_user_gesture(true);
 
-  base::Value::DictStorage result =
+  base::Value::Dict result =
       utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
           select_file_function.get(),
           "[{\"suggestedName\": \"some_file_name.txt\"}]", browser()));
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(FileBrowserHandlerExtensionTest, SuggestedFullPath) {
   select_file_function->set_has_callback(true);
   select_file_function->set_user_gesture(true);
 
-  base::Value::DictStorage result =
+  base::Value::Dict result =
       utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
           select_file_function.get(),
           "[{\"suggestedName\": \"/path_to_file/some_file_name.txt\"}]",

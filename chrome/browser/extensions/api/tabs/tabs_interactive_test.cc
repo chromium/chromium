@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
   scoped_refptr<const extensions::Extension> extension(
       extensions::ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
-  base::Value::DictStorage result =
+  base::Value::Dict result =
       utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
           function.get(), "[]", new_browser));
 
@@ -212,7 +212,7 @@ class ExtensionWindowLastFocusedTest : public PlatformAppBrowserTest {
 
   Browser* CreateBrowserWithEmptyTab(bool as_popup);
 
-  int GetTabId(const base::Value::DictStorage& dict) const;
+  int GetTabId(const base::Value::Dict& dict) const;
 
   std::unique_ptr<base::Value> RunFunction(ExtensionFunction* function,
                                            const std::string& params);
@@ -287,21 +287,14 @@ Browser* ExtensionWindowLastFocusedTest::CreateBrowserWithEmptyTab(
 }
 
 int ExtensionWindowLastFocusedTest::GetTabId(
-    const base::Value::DictStorage& dict) const {
-  auto iter = dict.find(keys::kTabsKey);
-  if (iter == dict.end() || !iter->second.is_list())
+    const base::Value::Dict& dict) const {
+  const base::Value::List* tabs = dict.FindList(keys::kTabsKey);
+  if (!tabs || tabs->empty())
     return -2;
-  const base::ListValue& tabs = base::Value::AsListValue(iter->second);
-  if (tabs.GetListDeprecated().empty())
+  const base::Value::Dict* tab_dict = (*tabs)[0].GetIfDict();
+  if (!tab_dict)
     return -2;
-  const base::Value& tab = tabs.GetListDeprecated()[0];
-  const base::DictionaryValue* tab_dict = nullptr;
-  if (!tab.GetAsDictionary(&tab_dict))
-    return -2;
-  absl::optional<int> tab_id = tab_dict->FindIntKey(keys::kIdKey);
-  if (!tab_id)
-    return -2;
-  return *tab_id;
+  return tab_dict->FindInt(keys::kIdKey).value_or(-2);
 }
 
 std::unique_ptr<base::Value> ExtensionWindowLastFocusedTest::RunFunction(
@@ -322,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::DictStorage result = utils::ToDictionary(
+    const base::Value::Dict result = utils::ToDictionary(
         RunFunction(function.get(), "[{\"populate\": true}]"));
     EXPECT_NE(devtools_window_id, api_test_utils::GetInteger(result, "id"));
   }
@@ -339,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> get_current_app_function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::DictStorage result = utils::ToDictionary(
+    const base::Value::Dict result = utils::ToDictionary(
         RunFunction(get_current_app_function.get(), "[{\"populate\": true}]"));
     int app_window_id = app_window->session_id().id();
     EXPECT_NE(app_window_id, api_test_utils::GetInteger(result, "id"));
@@ -357,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::DictStorage result = utils::ToDictionary(
+    const base::Value::Dict result = utils::ToDictionary(
         RunFunction(function.get(), "[{\"populate\": true}]"));
     int normal_browser_window_id =
         ExtensionTabUtil::GetWindowId(normal_browser);
@@ -373,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::DictStorage result = utils::ToDictionary(
+    const base::Value::Dict result = utils::ToDictionary(
         RunFunction(function.get(), "[{\"populate\": true}]"));
     int popup_browser_window_id = ExtensionTabUtil::GetWindowId(popup_browser);
     EXPECT_EQ(popup_browser_window_id,
@@ -389,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::DictStorage result = utils::ToDictionary(RunFunction(
+    const base::Value::Dict result = utils::ToDictionary(RunFunction(
         function.get(),
         "[{\"populate\": true, \"windowTypes\": [ \"devtools\" ]}]"));
     int devtools_window_id = ExtensionTabUtil::GetWindowId(

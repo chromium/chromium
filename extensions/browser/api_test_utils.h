@@ -69,14 +69,12 @@ std::unique_ptr<base::DictionaryValue> ParseDictionary(const std::string& data);
 // Get |key| from |val| as the specified type. If |key| does not exist, or is
 // not of the specified type, adds a failure to the current test and returns
 // false, 0, empty string, etc.
-bool GetBoolean(const base::Value::DictStorage& val, const std::string& key);
-int GetInteger(const base::Value::DictStorage& val, const std::string& key);
-std::string GetString(const base::Value::DictStorage& val,
-                      const std::string& key);
-std::unique_ptr<base::ListValue> GetList(const base::Value::DictStorage& val,
+bool GetBoolean(const base::Value::Dict& val, const std::string& key);
+int GetInteger(const base::Value::Dict& val, const std::string& key);
+std::string GetString(const base::Value::Dict& val, const std::string& key);
+std::unique_ptr<base::ListValue> GetList(const base::Value::Dict& val,
                                          const std::string& key);
-base::Value::DictStorage GetDict(const base::Value::DictStorage& val,
-                                 const std::string& key);
+base::Value::Dict GetDict(const base::Value::Dict& val, const std::string& key);
 
 // Run |function| with |args| and return the result. Adds an error to the
 // current test if |function| returns an error. Takes ownership of

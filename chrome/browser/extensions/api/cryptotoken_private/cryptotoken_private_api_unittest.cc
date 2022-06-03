@@ -267,11 +267,11 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
         api::CryptotokenPrivateCanAppIdGetAttestationFunction>();
     function->set_has_callback(true);
 
-    base::Value::DictStorage dict;
-    dict.emplace("appId", app_id);
-    dict.emplace("tabId", tab_id_);
-    dict.emplace("frameId", -1);  // Ignored.
-    dict.emplace("origin", app_id);
+    base::Value::Dict dict;
+    dict.Set("appId", app_id);
+    dict.Set("tabId", tab_id_);
+    dict.Set("frameId", -1);  // Ignored.
+    dict.Set("origin", app_id);
     auto args = std::make_unique<base::Value>(base::Value::Type::LIST);
     args->Append(base::Value(std::move(dict)));
     auto args_list = base::ListValue::From(std::move(args));
@@ -300,11 +300,11 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
         api::CryptotokenPrivateCanMakeU2fApiRequestFunction>();
     function->set_has_callback(true);
 
-    base::Value::DictStorage dict;
-    dict.emplace("appId", origin);
-    dict.emplace("tabId", tab_id_);
-    dict.emplace("frameId", 0 /* main frame */);
-    dict.emplace("origin", origin);
+    base::Value::Dict dict;
+    dict.Set("appId", origin);
+    dict.Set("tabId", tab_id_);
+    dict.Set("frameId", 0 /* main frame */);
+    dict.Set("origin", origin);
     auto args = std::make_unique<base::Value>(base::Value::Type::LIST);
     args->Append(base::Value(std::move(dict)));
     auto args_list = base::ListValue::From(std::move(args));
