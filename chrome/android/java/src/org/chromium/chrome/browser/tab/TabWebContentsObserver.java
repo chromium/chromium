@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import android.os.Handler;
+import android.widget.Toast;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -159,7 +160,18 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 // {@link WebContentsObserver#renderProcessGone} first.
                 SadTab sadTab = SadTab.from(mTab);
                 (new Handler()).post(() -> {
-                    sadTab.show(mTab.getThemedApplicationContext(), null, null);
+                    sadTab.show(mTab.getThemedApplicationContext(),
+                            /* suggestionAction= */ () -> {
+                                Toast.makeText(mTab.getContext(), "TODO suggestionAction", Toast.LENGTH_SHORT).show();
+                            },
+
+                            /* buttonAction= */ () -> {
+                                if (sadTab.showSendFeedbackView()) {
+                                    Toast.makeText(mTab.getContext(), "TODO startHelpAndFeedback", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    mTab.reload();
+                                }
+                            });
                 });
                 // This is necessary to correlate histogram data with stability counts.
                 RecordHistogram.recordBooleanHistogram("Stability.Android.RendererCrash", true);

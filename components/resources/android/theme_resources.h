@@ -18,7 +18,6 @@ enum {
 #include "components/resources/android/page_info_resource_id.h"
 #include "components/resources/android/permissions_resource_id.h"
 #include "components/resources/android/sms_resource_id.h"
-#include "components/resources/android/webxr_resource_id.h"
   ANDROID_COMPONENTS_RESOURCE_ID_MAX,
 };
 

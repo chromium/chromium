@@ -379,8 +379,6 @@ include_rules = [
   "+device/bluetooth",
   "+device/fido",
   "+device/gamepad/public/cpp",
-  "+device/vr/buildflags/buildflags.h",
-  "+device/vr/public",
   "+extensions/browser",
   "+extensions/common",
   "+extensions/components/javascript_dialog_extensions_client",

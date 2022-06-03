@@ -6,7 +6,6 @@ import("//android_webview/system_webview_apk_tmpl.gni")
 import("//android_webview/variables.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/python.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
@@ -451,13 +450,6 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
         [ "//clank/build/bot/filters:webview_instrumentation_test_apk_filters" ]
   }
 
-  # We only want to bother including these on bots set up for VR testing
-  if (include_vr_data) {
-    data += [
-      "//chrome/android/shared_preference_files/test/",
-      "//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk",
-    ]
-  }
   additional_apks = [
     "//android_webview/test/embedded_test_server:aw_net_test_support_apk",
     "//net/android:net_test_support_apk",

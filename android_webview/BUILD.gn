@@ -16,7 +16,6 @@ import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//chrome/android/trichrome.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/repack.gni")
@@ -1184,10 +1183,8 @@ grit("generate_components_strings") {
   source = "../components/components_strings.grd"
 
   defines = [
-    "enable_arcore=$enable_arcore",
     "enable_pdf=$enable_pdf",
     "enable_print_preview=$enable_print_preview",
-    "enable_vr=$enable_vr",
   ]
 
   # components_strings contains strings from all components. WebView

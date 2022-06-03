@@ -4,7 +4,6 @@ specific_include_rules = {
     "+content/browser/media/android/browser_media_player_manager.h",
   ],
   "chrome_jni_onload.cc": [
-    "+device/vr/buildflags/buildflags.h",
     "+third_party/gvr-android-sdk",
   ],
 }

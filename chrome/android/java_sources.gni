@@ -11,13 +11,8 @@ import("//chrome/common/features.gni")
 import("//components/feed/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/omnibox/browser/test_java_sources.gni")
-import("//device/vr/buildflags/buildflags.gni")
 
 chrome_java_sources += public_autofill_assistant_java_sources
-
-if (enable_vr) {
-  chrome_java_sources += [ "java/src/org/chromium/chrome/browser/component_updater/VrAssetsComponentInstaller.java" ]
-}
 
 # Only used for testing, should not be shipped to end users.
 if (enable_offline_pages_harness) {
@@ -26,11 +21,4 @@ if (enable_offline_pages_harness) {
 
 if (enable_supervised_users) {
   chrome_java_sources += [ "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountService.java" ]
-}
-
-if (enable_arcore) {
-  chrome_java_sources += [
-    "java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateImpl.java",
-    "java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateProviderImpl.java",
-  ]
 }

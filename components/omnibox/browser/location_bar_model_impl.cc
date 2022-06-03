@@ -28,7 +28,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "url/origin.h"
 
-#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #endif
 
@@ -193,7 +193,7 @@ LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source) {
 }
 
 const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
-#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   auto* const icon_override = delegate_->GetVectorIconOverride();
   if (icon_override)
     return *icon_override;

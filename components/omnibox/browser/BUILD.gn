@@ -5,7 +5,6 @@
 import("//build/buildflag_header.gni")
 import("//build/config/ui.gni")
 import("//components/vector_icons/vector_icons.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -16,7 +15,6 @@ if (is_android) {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_VR=$enable_vr" ]
 }
 
 aggregate_vector_icons("omnibox_vector_icons") {
@@ -288,7 +286,7 @@ static_library("browser") {
     "//ui/gfx",
   ]
 
-  if ((!is_android || enable_vr) && !is_ios) {
+  if ((!is_android) && !is_ios) {
     deps += [ ":vector_icons" ]
   }
 
@@ -362,7 +360,7 @@ static_library("location_bar") {
     deps += [ "//chromeos/crosapi/cpp:cpp" ]
   }
 
-  if ((!is_android || enable_vr) && !is_ios) {
+  if ((!is_android) && !is_ios) {
     deps += [ ":vector_icons" ]
   }
 
@@ -596,7 +594,7 @@ source_set("unit_tests") {
     "zero_suggest_verbatim_match_provider_unittest.cc",
   ]
 
-  if ((!is_android || enable_vr) && !is_ios) {
+  if ((!is_android) && !is_ios) {
     sources += [ "location_bar_model_util_unittest.cc" ]
   }
 
@@ -636,7 +634,7 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if ((!is_android || enable_vr) && !is_ios) {
+  if ((!is_android) && !is_ios) {
     deps += [
       ":buildflags",
       "//components/omnibox/browser:vector_icons",

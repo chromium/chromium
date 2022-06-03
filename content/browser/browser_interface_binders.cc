@@ -1135,13 +1135,8 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&PictureInPictureServiceImpl::Create));
   map->Add<blink::mojom::WakeLockService>(
       base::BindRepeating(&WakeLockServiceImpl::Create));
-#if BUILDFLAG(ENABLE_VR)
-  map->Add<device::mojom::VRService>(
-      base::BindRepeating(&VRServiceImpl::Create));
-#else
   map->Add<device::mojom::VRService>(
       base::BindRepeating(&EmptyBinderForFrame<device::mojom::VRService>));
-#endif
   map->Add<attribution_internals::mojom::Handler>(
       base::BindRepeating(&BindAttributionInternalsHandler));
   map->Add<mojom::PrerenderInternalsHandler>(

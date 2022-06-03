@@ -1,2 +1,0 @@
--dontwarn com.google.common.logging.nano.Vr$**
--dontwarn com.google.vr.**

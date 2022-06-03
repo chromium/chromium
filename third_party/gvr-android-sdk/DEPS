@@ -1,5 +1,0 @@
-include_rules = [
-  '+base/android/jni_android.h',
-  '+base/android/jni_generator/jni_generator_helper.h',
-  '+base/android/jni_int_wrapper.h',
-]

@@ -18,7 +18,6 @@
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -247,7 +246,7 @@ bool ChromePageInfoDelegate::IsSubresourceFilterActivated(
 }
 
 bool ChromePageInfoDelegate::IsContentDisplayedInVrHeadset() {
-  return vr::VrTabHelper::IsContentDisplayedInHeadset(web_contents_);
+  return false;
 }
 
 security_state::SecurityLevel ChromePageInfoDelegate::GetSecurityLevel() {

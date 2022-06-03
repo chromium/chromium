@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/passwords/password_generation_popup_controller_impl.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -1458,14 +1457,6 @@ void ChromePasswordManagerClient::HideFillingUI() {
 bool ChromePasswordManagerClient::IsPasswordManagementEnabledForCurrentPage(
     const GURL& url) const {
   bool is_enabled = CanShowBubbleOnURL(url);
-
-  // The password manager is disabled while VR (virtual reality) is being used,
-  // as the use of conventional UI elements might harm the user experience in
-  // VR.
-  if (vr::VrTabHelper::IsUiSuppressedInVr(
-          web_contents(), vr::UiSuppressedElement::kPasswordManager)) {
-    is_enabled = false;
-  }
 
   // The password manager is disabled on Google Password Manager page.
   if (url.DeprecatedGetOriginAsURL() ==

@@ -27,7 +27,6 @@ import("//components/services/screen_ai/buildflags/features.gni")
 import("//components/signin/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//crypto/features.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/gpu/args.gni")
 import("//net/features.gni")
@@ -1831,9 +1830,6 @@ static_library("browser") {
     "video_tutorials/video_tutorial_service_factory.h",
     "visibility_timer_tab_helper.cc",
     "visibility_timer_tab_helper.h",
-    "vr/ui_suppressed_element.h",
-    "vr/vr_tab_helper.cc",
-    "vr/vr_tab_helper.h",
     "web_data_service_factory.cc",
     "web_data_service_factory.h",
     "webapps/chrome_webapps_client.cc",
@@ -2326,7 +2322,6 @@ static_library("browser") {
     "//device/base/synchronization",
     "//device/fido",
     "//device/gamepad/public/cpp:switches",
-    "//device/vr/buildflags",
     "//extensions/buildflags",
     "//google_apis",
     "//gpu/config",
@@ -2508,7 +2503,6 @@ static_library("browser") {
       "//components/drive",
       "//components/quirks",
       "//components/session_manager/core",
-      "//device/vr/public/mojom:isolated_xr_service",
     ]
 
     allow_circular_includes_from += [
@@ -7136,47 +7130,6 @@ static_library("browser") {
       "supervised_user/supervised_user_extensions_metrics_recorder.cc",
       "supervised_user/supervised_user_extensions_metrics_recorder.h",
     ]
-  }
-
-  if (enable_vr) {
-    if (enable_gvr_services) {
-      public_deps += [ "android/vr:vr_android" ]
-      configs += [ "//third_party/gvr-android-sdk:libgvr_config" ]
-      allow_circular_includes_from += [ "android/vr:vr_android" ]
-    }
-
-    if (is_win) {
-      sources += [
-        "vr/ui_host/vr_ui_host_impl.cc",
-        "vr/ui_host/vr_ui_host_impl.h",
-      ]
-
-      deps += [ "//device/vr/public/mojom:isolated_xr_service" ]
-    }
-
-    sources += [
-      "component_updater/vr_assets_component_installer.cc",
-      "component_updater/vr_assets_component_installer.h",
-      "vr/chrome_xr_integration_client.cc",
-      "vr/chrome_xr_integration_client.h",
-    ]
-
-    deps += [
-      "//chrome/browser/vr:vr_common",
-      "//device/vr",
-    ]
-
-    if (is_android) {
-      if (enable_arcore) {
-        deps += [
-          "//chrome/browser/android/vr:ar_jni_headers",
-          "//components/webxr/android",
-          "//device/vr/android/arcore",
-        ]
-      }
-    } else {
-      deps += [ "//device/vr/public/mojom:isolated_xr_service" ]
-    }
   }
 
   if (enable_wayland_server) {

@@ -1684,10 +1684,6 @@ if (is_android) {
       public_deps += [ "//ui/lottie" ]
     }
 
-    if (enable_vr) {
-      deps += [ "//third_party/gvr-android-sdk:gvr_shim" ]
-    }
-
     if (enable_gwp_asan) {
       deps += [ "//components/gwp_asan/client" ]
     }

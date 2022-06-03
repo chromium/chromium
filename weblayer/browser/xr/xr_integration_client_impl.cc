@@ -58,18 +58,6 @@ XrIntegrationClientImpl::GetInstallHelper(device::mojom::XRDeviceId device_id) {
 
 content::XRProviderList XrIntegrationClientImpl::GetAdditionalProviders() {
   content::XRProviderList providers;
-
-  if (base::FeatureList::IsEnabled(features::kWebXrArModule)) {
-    base::android::ScopedJavaLocalRef<jobject>
-        j_ar_compositor_delegate_provider =
-            Java_ArCompositorDelegateProviderImpl_Constructor(
-                base::android::AttachCurrentThread());
-
-    providers.push_back(std::make_unique<webxr::ArCoreDeviceProvider>(
-        webxr::ArCompositorDelegateProvider(
-            std::move(j_ar_compositor_delegate_provider))));
-  }
-
   return providers;
 }
 

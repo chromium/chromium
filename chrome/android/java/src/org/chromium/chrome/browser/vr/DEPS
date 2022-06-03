@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/webxr/android/java/src/org/chromium/components/webxr",
-]

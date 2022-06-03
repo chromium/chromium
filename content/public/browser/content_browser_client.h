@@ -2108,12 +2108,6 @@ class CONTENT_EXPORT ContentBrowserClient {
                                          const PepperPluginInfo& plugin_info);
 #endif
 
-#if BUILDFLAG(ENABLE_VR)
-  // Allows the embedder to provide mechanisms to integrate with WebXR
-  // functionality.
-  virtual XrIntegrationClient* GetXrIntegrationClient();
-#endif
-
   // External applications and services may launch the browser in a mode which
   // exposes browser control interfaces via Mojo. Any such interface binding
   // request received from an external client is passed to this method.

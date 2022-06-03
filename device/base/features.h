@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "device/base/device_base_export.h"
-#include "device/vr/buildflags/buildflags.h"
 
 namespace device {
 
@@ -21,18 +20,9 @@ DEVICE_BASE_EXPORT extern const base::Feature kNewBLEWinImplementation;
 DEVICE_BASE_EXPORT extern const base::Feature kNewBLEGattSessionHandling;
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_VR)
-DEVICE_BASE_EXPORT extern const base::Feature kWebXrOrientationSensorDevice;
-#endif  // BUILDFLAG(ENABLE_VR)
-
 // New features should be added to the device::features namespace.
 
 namespace features {
-#if BUILDFLAG(ENABLE_OPENXR)
-DEVICE_BASE_EXPORT extern const base::Feature kOpenXR;
-DEVICE_BASE_EXPORT extern const base::Feature kOpenXrExtendedFeatureSupport;
-DEVICE_BASE_EXPORT extern const base::Feature kOpenXRSharedImages;
-#endif  // ENABLE_OPENXR
 
 DEVICE_BASE_EXPORT extern const base::Feature kWebXrHandInput;
 DEVICE_BASE_EXPORT extern const base::Feature kWebXrHitTest;

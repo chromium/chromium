@@ -242,7 +242,7 @@ struct AutocompleteMatch {
   JavaObjectWeakGlobalRef GetMatchingJavaTab() const;
 #endif
 
-#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Converts SuggestionAnswer::AnswerType to an answer vector icon.
   static const gfx::VectorIcon& AnswerTypeToAnswerIcon(int type);
 

@@ -101,12 +101,6 @@ class ChromeHidDelegate;
 class ChromeSerialDelegate;
 class ChromeWebAuthenticationDelegate;
 
-#if BUILDFLAG(ENABLE_VR)
-namespace vr {
-class ChromeXrIntegrationClient;
-}
-#endif
-
 class ChromeContentBrowserClient : public content::ContentBrowserClient {
  public:
   ChromeContentBrowserClient();
@@ -726,10 +720,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const content::PepperPluginInfo& plugin_info) override;
 #endif
 
-#if BUILDFLAG(ENABLE_VR)
-  content::XrIntegrationClient* GetXrIntegrationClient() override;
-#endif
-
   void BindBrowserControlInterface(mojo::ScopedMessagePipeHandle pipe) override;
   bool ShouldInheritCrossOriginEmbedderPolicyImplicitly(
       const GURL& url) override;
@@ -904,10 +894,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<ChromeWebAuthenticationDelegate> web_authentication_delegate_;
 #endif
   std::unique_ptr<permissions::BluetoothDelegateImpl> bluetooth_delegate_;
-
-#if BUILDFLAG(ENABLE_VR)
-  std::unique_ptr<vr::ChromeXrIntegrationClient> xr_integration_client_;
-#endif
 
   // Returned from GetNetworkContextsParentDirectory() but created on the UI
   // thread because it needs to access the Local State prefs.

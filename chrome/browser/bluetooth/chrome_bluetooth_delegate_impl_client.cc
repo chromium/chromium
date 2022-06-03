@@ -18,7 +18,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/device_dialog/chrome_bluetooth_chooser_android_delegate.h"
 #include "chrome/browser/ui/android/device_dialog/chrome_bluetooth_scanning_prompt_android_delegate.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "components/permissions/android/bluetooth_chooser_android.h"
 #include "components/permissions/android/bluetooth_scanning_prompt_android.h"
 #else
@@ -45,11 +44,6 @@ ChromeBluetoothDelegateImplClient::RunBluetoothChooser(
     content::RenderFrameHost* frame,
     const content::BluetoothChooser::EventHandler& event_handler) {
 #if BUILDFLAG(IS_ANDROID)
-  if (vr::VrTabHelper::IsUiSuppressedInVr(
-          content::WebContents::FromRenderFrameHost(frame),
-          vr::UiSuppressedElement::kBluetoothChooser)) {
-    return nullptr;
-  }
   return std::make_unique<permissions::BluetoothChooserAndroid>(
       frame, event_handler,
       std::make_unique<ChromeBluetoothChooserAndroidDelegate>());

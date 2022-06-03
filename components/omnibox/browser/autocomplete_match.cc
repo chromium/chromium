@@ -36,7 +36,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "url/third_party/mozilla/url_parse.h"
 
-#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "components/vector_icons/vector_icons.h"     // nogncheck
@@ -362,7 +362,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   return *this;
 }
 
-#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // static
 const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(int type) {
   switch (static_cast<SuggestionAnswer::AnswerType>(type)) {

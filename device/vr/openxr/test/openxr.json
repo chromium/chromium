@@ -1,6 +1,0 @@
-{
-  "file_format_version": "1.0.0",
-  "runtime": {
-    "library_path": ".\\OpenXrRuntime.dll"
-  }
-}

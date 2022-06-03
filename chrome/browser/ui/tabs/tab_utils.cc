@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/usb/usb_tab_helper.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/common/content_features.h"
@@ -62,13 +61,6 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
 
   if (contents->IsConnectedToSerialPort())
     states.push_back(TabAlertState::SERIAL_CONNECTED);
-
-  // Check if VR content is being presented in a headset.
-  // NOTE: This icon must take priority over the audio alert ones
-  // because most VR content has audio and its usage is implied by the VR
-  // icon.
-  if (vr::VrTabHelper::IsContentDisplayedInHeadset(contents))
-    states.push_back(TabAlertState::VR_PRESENTING_IN_HEADSET);
 
   if (contents->HasPictureInPictureVideo() ||
       contents->HasPictureInPictureDocument())

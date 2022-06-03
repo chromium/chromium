@@ -47,7 +47,6 @@
 #include "chrome/browser/ui/interventions/framebust_block_message_delegate.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/tab_helpers.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -187,12 +186,6 @@ void TabWebContentsDelegateAndroid::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
     scoped_refptr<content::FileSelectListener> listener,
     const FileChooserParams& params) {
-  if (vr::VrTabHelper::IsUiSuppressedInVr(
-          WebContents::FromRenderFrameHost(render_frame_host),
-          vr::UiSuppressedElement::kFileChooser)) {
-    listener->FileSelectionCanceled();
-    return;
-  }
   FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
                                    params);
 }
@@ -279,11 +272,7 @@ void TabWebContentsDelegateAndroid::FindMatchRectsReply(
 content::JavaScriptDialogManager*
 TabWebContentsDelegateAndroid::GetJavaScriptDialogManager(
     WebContents* source) {
-  // For VR, we use app modal since the dialog view will cover the location bar.
-  if (!vr::VrTabHelper::IsInVr(source)) {
     return javascript_dialogs::TabModalDialogManager::FromWebContents(source);
-  }
-  return javascript_dialogs::AppModalDialogManager::GetInstance();
 }
 
 void TabWebContentsDelegateAndroid::RequestMediaAccessPermission(

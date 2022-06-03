@@ -17,13 +17,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
 #include "components/security_state/core/security_state.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
 
@@ -34,13 +32,6 @@ std::unique_ptr<UsbChooserDialogAndroid> UsbChooserDialogAndroid::Create(
     base::OnceClosure on_close) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-
-  // TODO(asimjour): This should be removed once we have proper
-  // implementation of USB chooser in VR.
-  if (vr::VrTabHelper::IsUiSuppressedInVr(
-          web_contents, vr::UiSuppressedElement::kUsbChooser)) {
-    return nullptr;
-  }
 
   // Create (and show) the UsbChooser dialog.
   base::android::ScopedJavaLocalRef<jobject> window_android =

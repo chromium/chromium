@@ -11,7 +11,6 @@ import("//build/config/ui.gni")
 import("//build/nocompile.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
 import("//content/common/features.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
@@ -690,13 +689,6 @@ static_library("test_support") {
   # probably be changed to just `use_ozone`, especially after crbug.com/1293575.
   if (is_linux || is_chromeos || is_fuchsia) {
     deps += [ "//ui/platform_window/common" ]
-  }
-
-  if (enable_vr) {
-    sources += [
-      "../public/test/xr_test_utils.cc",
-      "../public/test/xr_test_utils.h",
-    ]
   }
 
   if (is_chromeos_lacros) {
@@ -1831,11 +1823,6 @@ test("content_browsertests") {
         [ "../browser/compositor/image_transport_factory_browsertest.cc" ]
   }
 
-  if (enable_vr) {
-    sources += [ "../browser/xr/metrics/session_metrics_browsertest.cc" ]
-    deps += [ "//device/vr:vr_fakes" ]
-  }
-
   if ((is_win || is_chromeos || is_linux) && !is_tsan) {
     # NOTE: We don't bother to build these tests when TSan is enabled, because
     # they can't properly launch a child content_shell in that environment.
@@ -2906,11 +2893,6 @@ test("content_unittests") {
   if (is_linux || is_chromeos) {
     sources += [ "../common/set_process_title_linux_unittest.cc" ]
     deps += [ "//content/common:set_process_title_linux" ]
-  }
-
-  if (enable_vr) {
-    sources += [ "../browser/xr/service/xr_runtime_manager_unittest.cc" ]
-    deps += [ "//device/vr:vr_fakes" ]
   }
 
   if (is_chromecast) {

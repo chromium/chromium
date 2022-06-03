@@ -336,11 +336,6 @@ are declared in tools/grit/grit_rule.gni.
         <part file="printing_strings.grdp" />
       </if>
 
-      <!-- Strings that are only used when VR devices are supported -->
-      <if expr="enable_vr">
-        <part file="vr_strings.grdp" />
-      </if>
-
       <!-- Supervised user error page -->
       <if expr="enable_supervised_users">
         <part file="supervised_user_error_page_strings.grdp" />
@@ -6184,7 +6179,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_OMNIBOX_CLEAR_ALL" desc="Accessibility text for the button that deletes all text input from the omnibox on touch devices.">
         Clear input
       </message>
-      <if expr="is_android or enable_vr">
+      <if expr="is_android">
         <message name="IDS_SEARCH_OR_TYPE_WEB_ADDRESS" desc="Prompt to enter text into the text field that will either perform web searches or navigate to a website. [CHAR_LIMIT=38]" formatter_data="android_java">
           Search or type web address
         </message>

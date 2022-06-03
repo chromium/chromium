@@ -4,7 +4,6 @@
 
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
@@ -295,7 +294,6 @@ component("gfx") {
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
-    "//device/vr/buildflags",
     "//mojo/public/cpp/bindings:struct_traits",
     "//skia",
     "//third_party/zlib",

@@ -19,7 +19,7 @@
 #include "ui/gfx/color_utils.h"
 #include "url/gurl.h"
 
-#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #define SUPPORT_PEDALS_VECTOR_ICONS
 namespace gfx {
 struct VectorIcon;

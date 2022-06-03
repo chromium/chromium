@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//device/vr/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom_component("vr_service") {
@@ -23,9 +22,6 @@ mojom_component("vr_service") {
   ]
 
   enabled_features = []
-  if (enable_openxr) {
-    enabled_features += [ "enable_openxr" ]
-  }
 
   shared_cpp_typemap = {
     types = [

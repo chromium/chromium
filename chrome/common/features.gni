@@ -12,7 +12,6 @@ import("//components/feed/features.gni")
 import("//components/nacl/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//crypto/features.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//net/features.gni")
@@ -84,7 +83,6 @@ use_brlapi = is_chromeos_ash
 # Every grit target in //chrome should apply these defines so that the
 # proper build flags can be set.
 chrome_grit_defines = [
-  "enable_arcore=$enable_arcore",
   "enable_background_mode=$enable_background_mode",
   "enable_background_contents=$enable_background_contents",
   "enable_basic_printing=$enable_basic_printing",
@@ -97,7 +95,6 @@ chrome_grit_defines = [
   "enable_service_discovery=$enable_service_discovery",
   "enable_side_search=$enable_side_search",
   "enable_supervised_users=$enable_supervised_users",
-  "enable_vr=$enable_vr",
   "enable_webui_tab_strip=$enable_webui_tab_strip",
   "safe_browsing_mode=$safe_browsing_mode",
   "optimize_webui=$optimize_webui",

@@ -116,9 +116,6 @@ if (is_android) {
       "android/permissions_resource_id.h",
       "android/sms_resource_id.h",
       "android/theme_resources.h",
-      "android/webxr_resource_id.h",
     ]
-
-    public_deps = [ "//device/vr/buildflags" ]
   }
 }

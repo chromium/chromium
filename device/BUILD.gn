@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
 if (is_android) {
@@ -377,30 +376,6 @@ test("device_unittests") {
       "bluetooth/test/fake_gatt_write_result_winrt.h",
       "bluetooth/test/fake_radio_winrt.cc",
       "bluetooth/test/fake_radio_winrt.h",
-    ]
-  }
-
-  if (enable_vr) {
-    sources += [
-      "vr/orientation/orientation_device_provider_unittest.cc",
-      "vr/orientation/orientation_device_unittest.cc",
-      "vr/util/fps_meter_unittest.cc",
-      "vr/util/sliding_average_unittest.cc",
-      "vr/util/stage_utils_unittest.cc",
-      "vr/vr_device_base_unittest.cc",
-    ]
-
-    defines = [ "DEVICE_VR_IMPLEMENTATION" ]
-
-    deps += [
-      "//device/vr",
-      "//device/vr:vr_fakes",
-      "//device/vr:vr_util",
-      "//device/vr/orientation",
-      "//device/vr/public/mojom:isolated_xr_service",
-      "//services/device/public/cpp/generic_sensor",
-      "//ui/display",
-      "//ui/display:test_support",
     ]
   }
 

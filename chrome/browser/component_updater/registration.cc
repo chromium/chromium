@@ -39,7 +39,6 @@
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
@@ -79,10 +78,6 @@
 #if BUILDFLAG(ENABLE_NACL)
 #include "chrome/browser/component_updater/pnacl_component_installer.h"
 #endif  // BUILDFLAG(ENABLE_NACL)
-
-#if BUILDFLAG(ENABLE_VR)
-#include "chrome/browser/component_updater/vr_assets_component_installer.h"
-#endif
 
 #if BUILDFLAG(ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM)
 #include "chrome/browser/component_updater/media_foundation_widevine_cdm_component_installer.h"
@@ -184,12 +179,6 @@ void RegisterComponentsForUpdate() {
   RegisterThirdPartyModuleListComponent(cus);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(ENABLE_VR)
-  if (component_updater::ShouldRegisterVrAssetsComponentOnStartup()) {
-    component_updater::RegisterVrAssetsComponent(cus);
-  }
-#endif
 
   MaybeRegisterPKIMetadataComponent(cus);
 

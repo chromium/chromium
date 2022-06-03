@@ -19,7 +19,6 @@
 #include "chrome/browser/autofill/manual_filling_utils.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -279,9 +278,6 @@ void CreditCardAccessoryControllerImpl::OnToggleChanged(
 bool CreditCardAccessoryController::AllowedForWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
-  if (vr::VrTabHelper::IsInVr(web_contents)) {
-    return false;  // TODO(crbug.com/902305): Re-enable if possible.
-  }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableManualFallbackForVirtualCards)) {
     PersonalDataManager* personal_data_manager =

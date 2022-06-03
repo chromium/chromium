@@ -16,7 +16,6 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/buildflags.h"
@@ -754,16 +753,9 @@ extern const base::Feature kUserTypeByDeviceTypeMetricsProvider;
 #endif
 
 // Android expects this string from Java code, so it is always needed.
-// TODO(crbug.com/731802): Use #if BUILDFLAG(ENABLE_VR_BROWSING) instead.
-#if BUILDFLAG(ENABLE_VR) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kVrBrowsing;
 #endif
-#if BUILDFLAG(ENABLE_VR)
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kVrBrowsingExperimentalFeatures;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kVrBrowsingExperimentalRendering;
-#endif  // ENABLE_VR
 
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)

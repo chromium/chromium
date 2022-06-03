@@ -16,7 +16,6 @@ import(
     "//chrome/android/features/start_surface/public/start_surface_public_java_sources.gni")
 import("//chrome/android/features/tab_ui/buildflags.gni")
 import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
-import("//chrome/android/features/vr/public_vr_java_sources.gni")
 import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
 import("//chrome/android/monochrome_android_manifest_jinja_variables.gni")
@@ -26,7 +25,6 @@ import("//chrome/browser/password_manager/buildflags.gni")
 import("//chrome/browser/share/android/java_sources.gni")
 import("//chrome/chrome_paks.gni")
 import("//chrome/common/features.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/icu/config.gni")
@@ -84,9 +82,7 @@ app_hooks_impl = "java/src/org/chromium/chrome/browser/AppHooksImpl.java"
 
 # Exclude it from JNI registration if VR is not enabled.
 chrome_jni_sources_exclusions = []
-if (!enable_vr) {
-  chrome_jni_sources_exclusions += [ "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java" ]
-}
+chrome_jni_sources_exclusions += [ "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java" ]
 chrome_jni_registration_header =
     "$root_build_dir/gen/chrome/browser/android/chrome_jni_registration.h"
 chrome_jni_for_test_registration_header = "$root_build_dir/gen/chrome/browser/android/chrome_jni_for_test_registration.h"
@@ -259,23 +255,6 @@ android_resources("chrome_app_java_resources") {
   ]
 }
 
-if (enable_vr) {
-  # TODO(crbug.com/935982): Currently, adding multiple resource folders to a
-  # resource target may clobber some resources. Once that is fixed we should add
-  # the VR resurces to chrome_app_java_resources.
-  android_resources("chrome_vr_java_resources") {
-    # Overrides 'gvr_vr_mode_component' in //third_party/gvr-android-sdk:gvr_common_java
-    # in tests.
-    resource_overlay = true
-    sources = [
-      "//chrome/android/java/res_vr/values-v17/styles.xml",
-      "//chrome/android/java/res_vr/values-vrheadset-v26/styles.xml",
-      "//chrome/android/java/res_vr/values/values.xml",
-    ]
-    deps = [ ":chrome_app_java_resources" ]
-  }
-}
-
 android_library("app_hooks_java") {
   sources = [ app_hooks_impl ]
   deps = [ ":chrome_java" ]
@@ -295,13 +274,6 @@ java_group("delegate_public_impl_java") {
     "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/language/android:ulp_delegate_public_java",
   ]
-}
-
-java_cpp_template("vr_build_config") {
-  sources = [ "//chrome/android/java/src/org/chromium/chrome/browser/vr/VrBuildConfig.template" ]
-  if (enable_vr) {
-    defines = [ "ENABLE_VR" ]
-  }
 }
 
 android_library("chrome_java") {
@@ -545,7 +517,6 @@ android_library("chrome_java") {
     "//components/webapps/common/android:webapk_install_java",
     "//components/webauthn/android:java",
     "//components/webrtc/android:java",
-    "//components/webxr/android:ar_java_interfaces",
     "//content/public/android:content_java",
     "//content/public/common:common_java",
     "//device/gamepad:java",
@@ -621,7 +592,6 @@ android_library("chrome_java") {
     ":chrome_android_java_google_api_keys_srcjar",
     ":chrome_strict_mode_switch",
     ":resource_id_javagen",
-    ":vr_build_config",
     "//chrome:assist_ranker_prediction_enum_javagen",
     "//chrome:instant_apps_reasons_enum_javagen",
     "//chrome:offline_pages_enum_javagen",
@@ -643,24 +613,9 @@ android_library("chrome_java") {
   # From java_sources.gni.
   sources = chrome_java_sources + [ app_hooks_impl ]
 
-  sources += public_vr_java_sources
-
   # Include sources from public_tab_management_java_sources.gni.
   sources += public_tab_management_java_sources
   sources += start_surface_public_java_sources
-
-  if (enable_arcore) {
-    deps += [
-      "//components/webxr/android:ar_java_base",
-      "//components/webxr/android:webxr_android_enums_java",
-    ]
-  }
-
-  if (enable_vr) {
-    deps += [ ":chrome_vr_java_resources" ]
-  }
-
-  srcjar_deps += [ ":chrome_vr_android_java_enums_srcjar" ]
 
   # Add the actual implementation where necessary so that downstream targets
   # can provide their own implementations.
@@ -827,15 +782,6 @@ java_cpp_enum("chrome_android_java_enums_srcjar") {
   ]
 }
 
-java_cpp_enum("chrome_vr_android_java_enums_srcjar") {
-  sources = [
-    "//chrome/browser/android/vr/vrcore_install_helper.h",
-    "//chrome/browser/vr/text_edit_action.h",
-    "//chrome/browser/vr/ui_test_input.h",
-    "//chrome/browser/vr/ui_unsupported_mode.h",
-  ]
-}
-
 proto_java_library("update_proto_java") {
   proto_path = "java/src/org/chromium/chrome/browser/omaha/metrics"
   sources = [ "$proto_path/update_success_tracking.proto" ]
@@ -854,13 +800,10 @@ java_cpp_template("resource_id_javagen") {
     "//components/resources/android/page_info_resource_id.h",
     "//components/resources/android/permissions_resource_id.h",
     "//components/resources/android/sms_resource_id.h",
-    "//components/resources/android/webxr_resource_id.h",
-    "$root_gen_dir/device/vr/buildflags/buildflags.h",
   ]
 
   deps = [
     "//chrome/browser/password_manager:password_manager_buildflags",
-    "//device/vr/buildflags",
   ]
 }
 
@@ -955,157 +898,6 @@ android_library("chrome_unit_test_java") {
     "//ui/android:ui_java_test_support",
     "//url:gurl_java",
   ]
-}
-
-if (enable_vr || enable_arcore) {
-  chrome_test_xr_java_deps = [
-    ":chrome_test_util_java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//build/android:build_java",
-    "//chrome/android:chrome_java",
-    "//chrome/android:delegate_public_impl_java",
-    "//chrome/android/features/vr:java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/tab:java",
-    "//chrome/browser/tabmodel:java",
-    "//chrome/browser/ui/messages/android:java",
-    "//chrome/browser/util:java",
-    "//components/embedder_support/android:util_java",
-    "//components/permissions/android:java",
-    "//components/policy/android:policy_java",
-    "//content/public/android:content_java",
-    "//content/public/test/android:content_java_test_support",
-    "//net/android:net_java_test_support",
-    "//third_party/android_support_test_runner:rules_java",
-    "//third_party/android_support_test_runner:runner_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_browser_browser_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit",
-    "//third_party/ub-uiautomator:ub_uiautomator_java",
-    "//ui/android:ui_java",
-  ]
-
-  # Files used for both VR and AR testing
-  android_library("chrome_test_xr_java") {
-    testonly = true
-
-    sources = [
-      "javatests/src/org/chromium/chrome/browser/vr/WebXrTestFramework.java",
-      "javatests/src/org/chromium/chrome/browser/vr/XrTestFramework.java",
-      "javatests/src/org/chromium/chrome/browser/vr/rules/ChromeTabbedActivityXrTestRule.java",
-      "javatests/src/org/chromium/chrome/browser/vr/rules/CustomTabActivityXrTestRule.java",
-      "javatests/src/org/chromium/chrome/browser/vr/rules/WebappActivityXrTestRule.java",
-      "javatests/src/org/chromium/chrome/browser/vr/rules/XrActivityRestriction.java",
-      "javatests/src/org/chromium/chrome/browser/vr/rules/XrActivityRestrictionRule.java",
-      "javatests/src/org/chromium/chrome/browser/vr/rules/XrTestRule.java",
-      "javatests/src/org/chromium/chrome/browser/vr/util/PermissionUtils.java",
-      "javatests/src/org/chromium/chrome/browser/vr/util/XrTestRuleUtils.java",
-    ]
-
-    deps = chrome_test_xr_java_deps
-
-    data = [
-      "//chrome/test/data/android/feed/",
-      "//chrome/test/data/xr/e2e_test_files/",
-      "//third_party/blink/web_tests/resources/testharness.js",
-    ]
-
-    data_deps = [ "//ui/base:goldctl" ]
-  }
-
-  if (enable_vr) {
-    # All files necessary for VR instrumentation tests
-    android_library("chrome_test_vr_java") {
-      testonly = true
-
-      sources = [
-        "javatests/src/org/chromium/chrome/browser/vr/EmulatedVrController.java",
-        "javatests/src/org/chromium/chrome/browser/vr/TestVrShellDelegate.java",
-        "javatests/src/org/chromium/chrome/browser/vr/VrDaydreamReadyModuleInstallTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/VrInstallUpdateMessageTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrVrDeviceTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrVrInputTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrVrPermissionTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrVrPermissionTestFramework.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrVrTabTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrVrTestFramework.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrVrTransitionTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/mock/MockBrowserKeyboardInterface.java",
-        "javatests/src/org/chromium/chrome/browser/vr/mock/MockVrCoreVersionChecker.java",
-        "javatests/src/org/chromium/chrome/browser/vr/mock/MockVrDaydreamApi.java",
-        "javatests/src/org/chromium/chrome/browser/vr/rules/ChromeTabbedActivityVrTestRule.java",
-        "javatests/src/org/chromium/chrome/browser/vr/rules/CustomTabActivityVrTestRule.java",
-        "javatests/src/org/chromium/chrome/browser/vr/rules/VrActivityRestrictionRule.java",
-        "javatests/src/org/chromium/chrome/browser/vr/rules/VrModuleNotInstalled.java",
-        "javatests/src/org/chromium/chrome/browser/vr/rules/VrTestRule.java",
-        "javatests/src/org/chromium/chrome/browser/vr/rules/WebappActivityVrTestRule.java",
-        "javatests/src/org/chromium/chrome/browser/vr/util/NativeUiUtils.java",
-        "javatests/src/org/chromium/chrome/browser/vr/util/RenderTestUtils.java",
-        "javatests/src/org/chromium/chrome/browser/vr/util/VrMessageUtils.java",
-        "javatests/src/org/chromium/chrome/browser/vr/util/VrShellDelegateUtils.java",
-        "javatests/src/org/chromium/chrome/browser/vr/util/VrTestRuleUtils.java",
-        "javatests/src/org/chromium/chrome/browser/vr/util/VrTransitionUtils.java",
-      ]
-
-      deps =
-          chrome_test_xr_java_deps + [
-            ":chrome_test_util_java",
-            "//chrome/android:chrome_test_xr_java",
-            "//components/module_installer/android:module_installer_java",
-            "//components/browser_ui/site_settings/android:java",
-            "//components/content_settings/android:content_settings_enums_java",
-            "//components/infobars/android:java",
-            "//components/messages/android:java",
-            "//components/messages/android/internal:java",
-            "//components/messages/android/test:test_support_java",
-            "//chrome/browser/profiles/android:java",
-            "//chrome/browser/tabmodel:java",
-            "//third_party/gvr-android-sdk:controller_test_api_java",
-            "//third_party/gvr-android-sdk:gvr_common_java",
-            "//ui/android:ui_java_test_support",
-          ]
-
-      data = [
-        "//chrome/android/shared_preference_files/test/",
-        "//third_party/gvr-android-sdk/test-apks/",
-      ]
-    }
-  }
-
-  if (enable_arcore) {
-    # All files necessary for AR instrumentation tests
-    android_library("chrome_test_ar_java") {
-      testonly = true
-
-      sources = [
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrArAnchorsTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrArCameraAccessTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrArDepthSensingTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrArHitTestTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrArLightEstimationTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrArSanityTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrArSessionTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrArTestFramework.java",
-        "javatests/src/org/chromium/chrome/browser/vr/WebXrArViewportScaleTest.java",
-        "javatests/src/org/chromium/chrome/browser/vr/rules/ArPlaybackFile.java",
-        "javatests/src/org/chromium/chrome/browser/vr/rules/ArTestRule.java",
-        "javatests/src/org/chromium/chrome/browser/vr/rules/ChromeTabbedActivityArTestRule.java",
-        "javatests/src/org/chromium/chrome/browser/vr/rules/CustomTabActivityArTestRule.java",
-        "javatests/src/org/chromium/chrome/browser/vr/rules/WebappActivityArTestRule.java",
-        "javatests/src/org/chromium/chrome/browser/vr/util/ArTestRuleUtils.java",
-      ]
-
-      deps =
-          chrome_test_xr_java_deps + [ "//chrome/android:chrome_test_xr_java" ]
-
-      data = [
-        "//chrome/test/data/xr/ar_playback_datasets/",
-        "//third_party/arcore-android-sdk/test-apks/",
-      ]
-    }
-  }
 }
 
 # Overrides icon / name defined in chrome_app_java_resources.
@@ -1220,10 +1012,6 @@ template("libchrome_impl") {
       deps += invoker.deps
     }
 
-    if (enable_vr) {
-      deps += [ "//chrome/browser/android/vr:module_factory" ]
-    }
-
     module_descs = chrome_modern_module_descs
     forward_variables_from(invoker, "*", [ "deps" ])
   }
@@ -1265,9 +1053,6 @@ chrome_common_shared_library("libchromefortest") {
     "//content/test:test_support",
     "//ui/base/clipboard:clipboard_test_support",
   ]
-  if (enable_vr) {
-    deps += [ "//chrome/browser/android/vr:test_support" ]
-  }
 
   # Make this a partitioned library, since some partitioned code is linked in
   # (otherwise, the library will warn at build time that it contains multiple
@@ -1521,10 +1306,6 @@ template("libmonochrome_apk_or_bundle_tmpl") {
     if (webview_includes_weblayer) {
       defines = [ "WEBVIEW_INCLUDES_WEBLAYER" ]
       deps += [ "//weblayer:weblayer_lib" ]
-    }
-
-    if (enable_vr) {
-      deps += [ "//chrome/browser/android/vr:module_factory" ]
     }
 
     is_monochrome = true
@@ -1910,8 +1691,7 @@ template("monochrome_public_apk_or_module_tmpl") {
     includes = [ "java/AndroidManifest.xml" ]
     split_input = "java/AndroidManifest_split.xml"
     split_output = _split_android_manifest
-    variables = chrome_public_jinja_variables +
-                [ "include_arcore_manifest_flag=$enable_arcore" ]
+    variables = chrome_public_jinja_variables
     if (_is_trichrome) {
       input = "java/AndroidManifest_trichrome_chrome.xml"
       variables += trichrome_jinja_variables
@@ -2125,10 +1905,6 @@ template("chrome_test_apk_tmpl") {
              "//third_party/android_sdk:android_test_mock_java",
              "//third_party/android_sdk:android_test_runner_java",
            ]
-    if (enable_vr) {
-      # Contains VrFirstRunActivity, which is referenced by AndroidManifest.xml.
-      deps += [ "//chrome/android/features/vr:java" ]
-    }
 
     additional_apks = [ "//net/android:net_test_support_apk" ]
     if (defined(invoker.additional_apks)) {
@@ -2822,10 +2598,6 @@ generate_jni("chrome_jni_headers") {
   # Used for testing only, should not be shipped to end users.
   if (enable_offline_pages_harness) {
     sources += [ "java/src/org/chromium/chrome/browser/offlinepages/evaluation/OfflinePageEvaluationBridge.java" ]
-  }
-
-  if (enable_vr) {
-    sources += [ "java/src/org/chromium/chrome/browser/component_updater/VrAssetsComponentInstaller.java" ]
   }
 }
 

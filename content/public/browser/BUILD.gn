@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/webrtc/webrtc.gni")
@@ -452,7 +451,6 @@ source_set("browser_sources") {
     "//components/download/public/common:public",
     "//components/services/storage/public/mojom",
     "//content/public/common:common_sources",
-    "//device/vr/buildflags",
     "//ipc",
     "//media/mojo/mojom",
     "//media/mojo/mojom:remoting",
@@ -605,21 +603,6 @@ source_set("browser_sources") {
       "chromeos/delegate_to_browser_gpu_service_accelerator_factory.h",
       "tts_controller_delegate.cc",
       "tts_controller_delegate.h",
-    ]
-  }
-
-  if (enable_vr) {
-    sources += [
-      "browser_xr_runtime.h",
-      "xr_install_helper.h",
-      "xr_integration_client.cc",
-      "xr_integration_client.h",
-      "xr_runtime_manager.h",
-    ]
-
-    public_deps += [
-      "//device/vr/public/cpp",
-      "//device/vr/public/mojom:isolated_xr_service",
     ]
   }
 

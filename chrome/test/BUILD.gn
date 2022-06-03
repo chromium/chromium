@@ -324,18 +324,7 @@ static_library("test_support") {
   }
 
   if (is_android) {
-#    public_deps += [
-#      ":test_support_ui_android",
-#      "//chrome:chrome_android_core",
-#      "//components/feed/core/v2:feed_core_stubs",
-#    ]
-#    if (enable_vr) {
-#      public_deps += [ "//chrome/browser/android/vr:test_support" ]
-#
-#      # Add a dummy implementation of RegisterJni to satisfy the linker.
-#      sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
-#    }
-#    allow_circular_includes_from = [ ":test_support_ui_android" ]
+
   } else {
     public_deps += [
       # Android uses //chrome:chrome_android_core instead of the //chrome/app
@@ -2991,7 +2980,7 @@ if (!is_android) {
       }
     }
 
-    if ((!is_android || enable_vr) && !is_ios) {
+    if ((!is_android) && !is_ios) {
       sources += [ "../browser/ui/views/payments/payment_handler_header_view_ui_browsertest.cc" ]
     }
 
@@ -7938,7 +7927,6 @@ test("unit_tests") {
       "../browser/ui/views/overlay/document_overlay_window_views_unittest.cc",
       "../browser/ui/views/overlay/video_overlay_window_views_unittest.cc",
       "../browser/ui/views/page_action/page_action_icon_view_unittest.cc",
-      "../browser/ui/views/page_info/page_info_bubble_view_unittest.cc",
       "../browser/ui/views/page_info/safety_tip_page_info_bubble_view_unittest.cc",
       "../browser/ui/views/payments/payment_request_item_list_unittest.cc",
       "../browser/ui/views/payments/validating_textfield_unittest.cc",
@@ -9953,102 +9941,6 @@ group("closure_compile") {
     "base:closure_compile",
     "data:closure_compile",
   ]
-}
-
-# This is split out here instead of being part of //chrome/test:browser_tests
-# because many of the Windows tests have specific hardware requirements, and
-# it's cleaner to just have a separate target we can compile only on supported
-# configurations instead of trying to conditionally skip tests.
-if (!is_android) {
-  group("xr_browser_tests") {
-    testonly = true
-    data_deps = [
-      ":xr_browser_tests_binary",
-      ":xr_browser_tests_runner",
-    ]
-
-    if (is_win) {
-      # The .exe is necessary even though the target isn't an actual executable
-      # since mb.py automatically appends .exe when looking for runtime deps
-      # on Windows.
-      write_runtime_deps = "$root_out_dir/$target_name.exe.runtime_deps"
-    } else {
-      write_runtime_deps = "$root_out_dir/$target_name.runtime_deps"
-    }
-  }
-
-  test("xr_browser_tests_binary") {
-    testonly = true
-    deps = [ ":xr_browser_tests_common" ]
-
-    # Most tests require VR to be enabled.
-    if (enable_vr) {
-      deps += [ "//chrome/browser/vr:xr_browser_tests_vr_required" ]
-    }
-  }
-
-  # This should only contain files that are useful if enable_vr = false. For
-  # tests/infrastructure that require enable_vr = true, see
-  # //chrome/browser/vr:xr_browser_tests_vr_required.
-  source_set("xr_browser_tests_common") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    # Infrastructure
-    sources = [
-      "//chrome/browser/vr/test/conditional_skipping.cc",
-      "//chrome/browser/vr/test/conditional_skipping.h",
-      "//chrome/browser/vr/test/multi_class_browser_test.h",
-      "//chrome/browser/vr/test/webxr_browser_test.cc",
-      "//chrome/browser/vr/test/webxr_browser_test.h",
-      "//chrome/browser/vr/test/webxr_vr_browser_test.cc",
-      "//chrome/browser/vr/test/webxr_vr_browser_test.h",
-      "//chrome/browser/vr/test/xr_browser_test.cc",
-      "//chrome/browser/vr/test/xr_browser_test.h",
-    ]
-
-    # Tests
-    sources += [
-      "//chrome/browser/vr/webxr_vr_runtimeless_browser_test.cc",
-      "//chrome/browser/vr/webxr_vr_spatial_tracking_test.cc",
-    ]
-
-    deps = [
-      "//base",
-      "//chrome/test:browser_tests_runner",
-      "//device/base",
-      "//sandbox/policy",
-    ]
-
-    public_deps = [
-      "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
-    ]
-
-    data = [
-      "//chrome/test/data/xr/e2e_test_files/",
-      "//third_party/blink/web_tests/resources/testharness.js",
-    ]
-
-    if (is_win && enable_vr) {
-      deps += [
-        "//device/vr",
-        "//device/vr:directx_helpers",
-      ]
-    }
-
-    if (!is_mac) {
-      data_deps = [ "//chrome:packed_resources" ]
-    }
-  }
-
-  # TODO(https://crbug.com/816629): Migrate this to a generic wrapper script
-  # once the functionality is available on all platforms.
-  copy("xr_browser_tests_runner") {
-    testonly = true
-    sources = [ "//chrome/browser/vr/test/run_xr_browser_tests.py" ]
-    outputs = [ "$root_out_dir/run_xr_browser_tests.py" ]
-  }
 }
 
 proto_library("profile_proto_db_test_proto") {

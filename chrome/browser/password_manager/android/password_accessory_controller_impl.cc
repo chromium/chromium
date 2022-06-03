@@ -28,7 +28,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
@@ -227,7 +226,7 @@ bool PasswordAccessoryController::AllowedForWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   // TODO(crbug.com/902305): Re-enable if possible.
-  return !vr::VrTabHelper::IsInVr(web_contents);
+  return true;
 }
 
 // static

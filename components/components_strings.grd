@@ -348,9 +348,6 @@
       <if expr="is_ios">
         <part file="management_ios_strings.grdp" />
       </if>
-      <if expr="enable_vr">
-        <part file="webxr_strings.grdp" />
-      </if>
 
       <!-- Generic terms -->
       <message name="IDS_CANCEL" desc="Used for Cancel on buttons">

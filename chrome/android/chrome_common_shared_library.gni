@@ -8,7 +8,6 @@ import("//build/config/android/linker_version_script.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/partitioned_shared_library.gni")
 import("//chrome/android/modules/buildflags.gni")
-import("//device/vr/buildflags/buildflags.gni")
 
 # TODO(cjgrant): Remove these variables once downstream stops using them.
 bundle_library_suffix = ""
@@ -36,7 +35,7 @@ template("chrome_common_shared_library") {
   _collect_inputs_only =
       defined(invoker.collect_inputs_only) && invoker.collect_inputs_only
 
-  # When _collect_inputs_only && !(!_is_webview && enable_vr).
+  # When _collect_inputs_only && !(!_is_webview).
   not_needed([ "_export_java_symbols" ])
 
   # Create a partitioned libraries if the build config supports it, and the
@@ -102,20 +101,6 @@ template("chrome_common_shared_library") {
       inputs = [ "$_linker_script" ]
       ldflags += [ "-Wl,--version-script=" +
                    rebase_path(_linker_script, root_build_dir) ]
-    }
-
-    # Handle VR JNI registration and dependencies.
-    if (!_is_webview && enable_vr) {
-      if (_export_java_symbols) {
-        # NOTE: While this file is named *_monochrome.cc, it just contains an
-        # empty vr::RegisterJni() function that returns true.
-        sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
-      } else {
-        sources += [ "../browser/android/vr/register_jni.cc" ]
-        deps += [
-          "//chrome/browser/android/vr:jni_registration($default_toolchain)",
-        ]
-      }
     }
 
     if (_generate_partitions) {

@@ -147,7 +147,6 @@
 #include "chrome/browser/universal_web_contents_observers.h"
 #include "chrome/browser/url_param_filter/url_param_filter_throttle.h"
 #include "chrome/browser/usb/frame_usb_services.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -283,7 +282,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/google_api_keys.h"
@@ -598,10 +596,6 @@
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#endif
-
-#if BUILDFLAG(ENABLE_VR)
-#include "chrome/browser/vr/chrome_xr_integration_client.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -3530,7 +3524,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
     }
 #endif
 
-    web_prefs->immersive_mode_enabled = vr::VrTabHelper::IsInVr(web_contents);
+    web_prefs->immersive_mode_enabled = false;
   }
 
   web_prefs->lazy_load_enabled =
@@ -6198,16 +6192,6 @@ bool ChromeContentBrowserClient::ShouldAllowPluginCreation(
   return true;
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
-
-#if BUILDFLAG(ENABLE_VR)
-content::XrIntegrationClient*
-ChromeContentBrowserClient::GetXrIntegrationClient() {
-  if (!xr_integration_client_)
-    xr_integration_client_ = std::make_unique<vr::ChromeXrIntegrationClient>(
-        base::PassKey<ChromeContentBrowserClient>());
-  return xr_integration_client_.get();
-}
-#endif  // BUILDFLAG(ENABLE_VR)
 
 void ChromeContentBrowserClient::BindBrowserControlInterface(
     mojo::ScopedMessagePipeHandle pipe) {

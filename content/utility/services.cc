@@ -56,11 +56,6 @@
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-#if BUILDFLAG(ENABLE_VR) && !BUILDFLAG(IS_ANDROID)
-#include "content/services/isolated_xr_device/xr_device_service.h"  // nogncheck
-#include "device/vr/public/mojom/isolated_xr_service.mojom.h"       // nogncheck
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "sandbox/win/src/sandbox.h"
@@ -282,14 +277,6 @@ auto RunVideoCapture(
       std::move(receiver), base::ThreadTaskRunnerHandle::Get());
 }
 
-#if BUILDFLAG(ENABLE_VR) && !BUILDFLAG(IS_ANDROID)
-auto RunXrDeviceService(
-    mojo::PendingReceiver<device::mojom::XRDeviceService> receiver) {
-  return std::make_unique<device::XrDeviceService>(
-      std::move(receiver), content::ChildProcess::current()->io_task_runner());
-}
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH) && \
     (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 auto RunOOPArcVideoAcceleratorFactoryService(
@@ -343,10 +330,6 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #if BUILDFLAG(IS_WIN)
   services.Add(RunMediaFoundationServiceBroker);
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(ENABLE_VR) && !BUILDFLAG(IS_ANDROID)
-  services.Add(RunXrDeviceService);
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && \
     (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))

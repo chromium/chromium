@@ -42,12 +42,6 @@ group("vr_perf_tests_base") {
       data_deps += [ ":generate_vr_assets_profile" ]
     }
   }
-
-  if (is_win) {
-    if (enable_openxr) {
-      data_deps += [ "//device/vr:openxr_mock" ]
-    }
-  }
 }
 
 if (!is_android) {

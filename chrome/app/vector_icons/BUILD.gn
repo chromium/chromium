@@ -5,7 +5,6 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/util/branding.gni")
 import("//components/vector_icons/vector_icons.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//ui/webui/webui_features.gni")
 
 aggregate_vector_icons("chrome_vector_icons") {
@@ -243,11 +242,6 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   if (!is_android) {
     sources += [ "nearby_share.icon" ]
-  }
-
-  if (enable_vr && !is_android) {
-    # Used on desktop VR headsets and Linux unit tests.
-    sources += [ "open_in_browser.icon" ]
   }
 
   if (enable_webui_tab_strip) {

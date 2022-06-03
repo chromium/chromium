@@ -85,24 +85,6 @@ by a child template that "extends" this file.
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    {% set enable_vr = enable_vr|default(0) %}
-    {% if enable_vr == "true" %}
-    <!-- Indicates use of Android's VR-mode, available only on Android N+. -->
-    <uses-feature android:name="android.software.vr.mode" android:required="false"/>
-    <!-- Indicates use of VR features that are available only on Daydream-ready devices. -->
-    <uses-feature android:name="android.hardware.vr.high_performance" android:required="false"/>
-    <!--
-      Indicates that we don't need Chrome to be available on devices that only support landscape
-      orientation. This is needed because we have VR specific activities that declare the
-      android:orientation attribute.
-    -->
-    <uses-feature android:name="android.hardware.screen.landscape" android:required="false"/>
-    <!-- Indicates that head tracking should be done in 6DoF, if available -->
-    <uses-feature android:name="android.hardware.vr.headtracking" android:version="1" android:required="false"/>
-    <!-- Feature declarations required to support conditional install for VR DFM -->
-    <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false"/>
-    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false"/>
-    {% endif %}
 
     <permission android:name="{{ manifest_package }}.permission.CHILD_SERVICE" android:protectionLevel="signature" />
     <permission android:name="{{ manifest_package }}.permission.READ_WRITE_BOOKMARK_FOLDERS" android:protectionLevel="signatureOrSystem" />
@@ -159,12 +141,7 @@ by a child template that "extends" this file.
         alternate mechanism.
       -->
       <queries>
-        {% if include_arcore_manifest_flag == 'true' %}
-          <package android:name="com.google.ar.core" />
-        {% endif %}
-        {% if enable_vr == "true" %}
-          <package android:name="com.google.vr.vrcore" />
-        {% endif %}
+
       </queries>
     {% endif %}
 
@@ -950,12 +927,6 @@ by a child template that "extends" this file.
       {% endif %}
       <meta-data android:name="android.content.APP_RESTRICTIONS"
           android:resource="@xml/app_restrictions"/>
-
-      {% if include_arcore_manifest_flag == 'true' %}
-      <!-- ARCore APK integration -->
-      <!-- This tag indicates that this application optionally uses ARCore. -->
-      <meta-data android:name="com.google.ar.core" android:value="optional" />
-      {% endif %}
 
       <!-- Cast support -->
       <meta-data

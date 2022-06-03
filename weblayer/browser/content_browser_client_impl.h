@@ -39,10 +39,6 @@ class FeatureListCreator;
 class SafeBrowsingService;
 struct MainParams;
 
-#if BUILDFLAG(ENABLE_ARCORE)
-class XrIntegrationClientImpl;
-#endif  // BUILDFLAG(ENABLE_ARCORE)
-
 class ContentBrowserClientImpl : public content::ContentBrowserClient {
  public:
   explicit ContentBrowserClientImpl(MainParams* params);
@@ -220,9 +216,6 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
 #endif  // BUILDFLAG(IS_ANDROID)
   content::SpeechRecognitionManagerDelegate*
   CreateSpeechRecognitionManagerDelegate() override;
-#if BUILDFLAG(ENABLE_ARCORE)
-  content::XrIntegrationClient* GetXrIntegrationClient() override;
-#endif  // BUILDFLAG(ENABLE_ARCORE)
   ukm::UkmService* GetUkmService() override;
   bool HasErrorPage(int http_status_code) override;
   bool IsClipboardPasteAllowed(
@@ -251,9 +244,6 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
 
   std::unique_ptr<FeatureListCreator> feature_list_creator_;
 
-#if BUILDFLAG(ENABLE_ARCORE)
-  std::unique_ptr<XrIntegrationClientImpl> xr_integration_client_;
-#endif  // BUILDFLAG(ENABLE_ARCORE)
 };
 
 }  // namespace weblayer

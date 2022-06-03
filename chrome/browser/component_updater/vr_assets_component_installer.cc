@@ -64,38 +64,11 @@ bool VrAssetsComponentInstallerPolicy::
 // static
 void VrAssetsComponentInstallerPolicy::RegisterComponent(
     ComponentUpdateService* cus) {
-#if BUILDFLAG(USE_VR_ASSETS_COMPONENT)
-  if (registration_pending_ || registered_component_) {
-    return;
-  }
-  const std::string crx_id = crx_file::id_util::GenerateIdFromHash(
-      kVrAssetsPublicKeySHA256, sizeof(kVrAssetsPublicKeySHA256));
-  std::unique_ptr<VrAssetsComponentInstallerPolicy> policy(
-      new VrAssetsComponentInstallerPolicy());
-  auto installer = base::MakeRefCounted<ComponentInstaller>(std::move(policy));
-  registration_pending_ = true;
-  installer->Register(
-      cus,
-      base::BindOnce(&VrAssetsComponentInstallerPolicy::OnRegisteredComponent,
-                     base::Unretained(cus)));
-#endif  // BUILDFLAG(USE_VR_ASSETS_COMPONENT)
 }
 
 // static
 void VrAssetsComponentInstallerPolicy::UpdateComponent(
     ComponentUpdateService* cus) {
-#if BUILDFLAG(USE_VR_ASSETS_COMPONENT)
-  if (registration_pending_) {
-    ondemand_update_pending_ = true;
-    return;
-  }
-  ondemand_update_pending_ = false;
-  const std::string crx_id = crx_file::id_util::GenerateIdFromHash(
-      kVrAssetsPublicKeySHA256, sizeof(kVrAssetsPublicKeySHA256));
-  cus->GetOnDemandUpdater().OnDemandUpdate(
-      crx_id, OnDemandUpdater::Priority::FOREGROUND,
-      base::BindOnce([](update_client::Error error) { return; }));
-#endif  // BUILDFLAG(USE_VR_ASSETS_COMPONENT)
 }
 
 // static

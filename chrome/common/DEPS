@@ -51,7 +51,6 @@ include_rules = [
   "+components/url_formatter",
   "+components/variations/net",
   "+components/version_info",
-  "+device/vr/buildflags/buildflags.h",
   "+extensions/buildflags",
   "+extensions/common",
   "+gin/public",  # For profiling.cc

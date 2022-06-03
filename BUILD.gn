@@ -20,7 +20,6 @@ import("//build/util/generate_wrapper.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/browser/media/router/features.gni")
 import("//components/nacl/features.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
@@ -793,25 +792,6 @@ group("gn_all") {
       "//headless:headless_non_renderer",
       "//headless:headless_tests",
     ]
-  }
-
-  if (enable_vr) {
-    deps += [
-      "//chrome/browser/vr:vr_common_perftests",
-      "//chrome/browser/vr:vr_common_unittests",
-      "//chrome/browser/vr:vr_pixeltests",
-    ]
-    if (!is_android) {
-      deps += [ "//tools/perf/contrib/vr_benchmarks:vr_perf_tests" ]
-    } else {
-      deps += [ "//chrome/browser/android/vr:vr_android_unittests" ]
-      import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
-      foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
-        deps += [
-          "//tools/perf/contrib/vr_benchmarks:vr_perf_tests${_target_suffix}",
-        ]
-      }
-    }
   }
 
   if (use_atk) {

@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info_ui.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -153,12 +152,6 @@ class PageInfoMainView : public views::View,
   // The section that contains 'Ad personalization' button that opens a
   // subpage.
   raw_ptr<views::View> ads_personalization_section_ = nullptr;
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
-  // The view that contains ui related to features on a page, like a presenting
-  // VR page.
-  raw_ptr<views::View> page_feature_info_view_ = nullptr;
-#endif
 
   // These rows bundle together all the |View|s involved in a single row of the
   // permissions section, and keep those views updated when the underlying

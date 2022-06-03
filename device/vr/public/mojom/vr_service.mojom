@@ -34,7 +34,6 @@ enum XRDeviceId {
   // OCULUS_DEVICE_ID = 5,
   // WINDOWS_MIXED_REALITY_ID = 6,
   ARCORE_DEVICE_ID = 7,
-  [EnableIf=enable_openxr] OPENXR_DEVICE_ID = 8,
 };
 
 enum XRHandedness {

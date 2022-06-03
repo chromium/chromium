@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
@@ -919,8 +918,7 @@ bool ChromeAutofillClient::ShouldShowSigninPromo() {
 }
 
 bool ChromeAutofillClient::AreServerCardsSupported() const {
-  // When in VR, server side cards are not supported.
-  return !vr::VrTabHelper::IsInVr(web_contents());
+  return true;
 }
 
 void ChromeAutofillClient::ExecuteCommand(int id) {

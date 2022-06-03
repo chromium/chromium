@@ -1232,12 +1232,6 @@ bool ContentBrowserClient::ShouldAllowPluginCreation(
 }
 #endif
 
-#if BUILDFLAG(ENABLE_VR)
-XrIntegrationClient* ContentBrowserClient::GetXrIntegrationClient() {
-  return nullptr;
-}
-#endif
-
 void ContentBrowserClient::BindBrowserControlInterface(
     mojo::ScopedMessagePipeHandle pipe) {}
 

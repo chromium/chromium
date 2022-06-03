@@ -16,14 +16,11 @@ import("//chrome/android/features/dev_ui/dev_ui_module.gni")
 import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/common/features.gni")
 import("//components/optimization_guide/features.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//weblayer/variables.gni")
 import("channel.gni")
 
 default_chrome_public_jinja_variables = [
   "channel=$android_channel",
-  "enable_vr=$enable_vr",
-  "include_arcore_manifest_flag=false",
   "zygote_preload_class=org.chromium.content_public.app.ZygotePreload",
 ]
 
@@ -421,32 +418,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         deps += invoker.deps
       }
 
-      if (_is_bundle_module && invoker.is_base_module && enable_arcore &&
-          is_monochrome) {
-        # AR DFM is disabled - set the loadable_modules /
-        # secondary_abi_loadable_modules to what would be brought in by the
-        # module. The AR Java will be brought in by the chrome_bundle target.
-        # This needs to happen for monochrome builds of base module if ARCore is
-        # enabled. For Trichrome, the native library is added to
-        # TrichromeLibrary.apk so it's not needed here.
-        _libarcore_dir = get_label_info(
-                             "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
-                             "target_out_dir") + "/com_google_ar_core_java/jni"
-
-        if (android_64bit_target_cpu) {
-          if (invoker.is_64_bit_browser) {
-            loadable_modules +=
-                [ "$_libarcore_dir/arm64-v8a/libarcore_sdk_c.so" ]
-          } else {
-            secondary_abi_loadable_modules +=
-                [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
-          }
-        } else {
-          loadable_modules +=
-              [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
-        }
-      }
-
       if (_is_bundle_module) {
         # Sets ISOLATED_SPLITS_ENABLED in BuildConfig.java.
         isolated_splits_enabled = true
@@ -461,16 +432,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
           extra_verification_manifest = "${_bundle_target_gen_dir}/${_bundle_name}__chrome_bundle_module_manifest/AndroidManifest.xml"
           extra_verification_manifest_dep =
               "${invoker.bundle_target}__chrome_bundle_module__merge_manifests"
-        }
-
-        # The arcore manifest needs to be merged into the base module because
-        # the Play Store verifies the com.google.ar.core.min_apk_version
-        # meta-data tag is in the base manifest.
-        if (enable_arcore) {
-          deps += [
-            "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
-            "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
-          ]
         }
 
         if (is_monochrome) {

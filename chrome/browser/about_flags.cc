@@ -155,7 +155,6 @@
 #include "device/bluetooth/floss/floss_features.h"
 #include "device/fido/features.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
@@ -375,19 +374,6 @@ const FeatureEntry::Choice kOzonePlatformHintRuntimeChoices[] = {
 #endif
 };
 #endif
-
-#if BUILDFLAG(ENABLE_VR)
-const FeatureEntry::Choice kWebXrForceRuntimeChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flag_descriptions::kWebXrRuntimeChoiceNone, switches::kWebXrForceRuntime,
-     switches::kWebXrRuntimeNone},
-
-#if BUILDFLAG(ENABLE_OPENXR)
-    {flag_descriptions::kWebXrRuntimeChoiceOpenXR, switches::kWebXrForceRuntime,
-     switches::kWebXrRuntimeOpenXr},
-#endif  // ENABLE_OPENXR
-};
-#endif  // ENABLE_VR
 
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kElasticOverscrollFilterType[] = {
@@ -4257,14 +4243,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(ENABLE_VR)
-    {"webxr-incubations", flag_descriptions::kWebXrIncubationsName,
-     flag_descriptions::kWebXrIncubationsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(device::features::kWebXrIncubations)},
-    {"webxr-runtime", flag_descriptions::kWebXrForceRuntimeName,
-     flag_descriptions::kWebXrForceRuntimeDescription, kOsDesktop,
-     MULTI_VALUE_TYPE(kWebXrForceRuntimeChoices)},
-#endif  // ENABLE_VR
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"disable-accelerated-mjpeg-decode",
      flag_descriptions::kAcceleratedMjpegDecodeName,
