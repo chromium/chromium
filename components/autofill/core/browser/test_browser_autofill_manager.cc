@@ -47,6 +47,10 @@ void TestBrowserAutofillManager::UploadFormData(
     BrowserAutofillManager::UploadFormData(submitted_form, observed_submission);
 }
 
+void TestBrowserAutofillManager::ScheduleRefill(const FormData& form) {
+  TriggerRefillForTest(form);
+}
+
 bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
     std::unique_ptr<FormStructure> form_structure,
     bool observed_submission) {

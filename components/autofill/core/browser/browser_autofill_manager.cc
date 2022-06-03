@@ -52,6 +52,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
@@ -1525,6 +1526,65 @@ void BrowserAutofillManager::JavaScriptChangedAutofilledValue(
                          << Br{} << Tag{"table"} << Tr{} << field_number
                          << std::move(change);
   }
+
+  MaybeTriggerRefillForExpirationDate(form, field, old_value);
+}
+
+void BrowserAutofillManager::MaybeTriggerRefillForExpirationDate(
+    const FormData& form,
+    const FormFieldData& field,
+    const std::u16string& old_value) {
+  // TODO(crbug.com/1314360): Remove these lines once launched.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillRefillModifiedCreditCardExpirationDates)) {
+    return;
+  }
+
+  // We currently support a single case of refilling credit card expiration
+  // dates: If we filled the expiration date in a format "05/2023" and the
+  // website turned it into "05 / 20" (i.e. it broke the year by cutting the
+  // last two digits instead of stripping the first two digits).
+  constexpr size_t kSupportedLength = base::StringPiece("MM/YYYY").size();
+  if (old_value.length() != kSupportedLength)
+    return;
+  if (old_value == field.value)
+    return;
+
+  const char16_t* kFormatRegEx = uR"(^(\d\d)(\s?[/-]?\s?)?(\d\d|\d\d\d\d)$)";
+  std::vector<std::u16string> old_groups;
+  if (!MatchesPattern(old_value, kFormatRegEx, &old_groups))
+    return;
+  DCHECK_EQ(old_groups.size(), 4u);
+
+  std::vector<std::u16string> new_groups;
+  if (!MatchesPattern(field.value, kFormatRegEx, &new_groups))
+    return;
+  DCHECK_EQ(new_groups.size(), 4u);
+
+  int old_month, old_year, new_month, new_year;
+  if (!base::StringToInt(old_groups[1], &old_month) ||
+      !base::StringToInt(old_groups[3], &old_year) ||
+      !base::StringToInt(new_groups[1], &new_month) ||
+      !base::StringToInt(new_groups[3], &new_year) ||
+      old_groups[3].size() != 4 || new_groups[3].size() != 2 ||
+      old_month != new_month ||
+      // We need to refill if the first two digits of the year were preserved.
+      old_year / 100 != new_year) {
+    return;
+  }
+
+  std::u16string refill_value = field.value;
+  CHECK(refill_value.size() >= 2);
+  refill_value[refill_value.size() - 1] = '0' + (old_year % 10);
+  refill_value[refill_value.size() - 2] = '0' + ((old_year % 100) / 10);
+
+  FormStructure* form_structure = FindCachedFormByRendererId(form.global_id());
+  if (form_structure && ShouldTriggerRefill(*form_structure)) {
+    FillingContext* filling_context = GetFillingContext(*form_structure);
+    DCHECK(filling_context);  // This is enforced by ShouldTriggerRefill.
+    filling_context->forced_fill_values[field.global_id()] = refill_value;
+    ScheduleRefill(form);
+  }
 }
 
 void BrowserAutofillManager::PropagateAutofillPredictions(
@@ -1771,8 +1831,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
   // Only record the types that are filled for an eventual refill if all the
   // following are satisfied:
-  //  The refilling feature is enabled.
-  //  A form with the given name is already filled.
+  //  The form is already filled.
   //  A refill has not been attempted for that form yet.
   //  This fill is not a refill attempt.
   FillingContext* filling_context = GetFillingContext(*form_structure);
@@ -1780,7 +1839,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
                               !filling_context->attempted_refill && !is_refill;
 
   // Counts the number of times a type was seen in the section to be filled.
-  // This is used to limit the maximum number fills per value.
+  // This is used to limit the maximum number of fills per value.
   base::flat_map<ServerFieldType, size_t> type_count;
   type_count.reserve(form_structure->field_count());
 
@@ -1827,6 +1886,10 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       }
     }
 
+    bool has_override =
+        filling_context && base::Contains(filling_context->forced_fill_values,
+                                          form.fields[i].global_id());
+
     // Do not override prefilled text/input field values. Selection fields are
     // excluded from this check because they may have a non-empty value.
     // If the initiating element had a prefilled value but the autofill
@@ -1836,7 +1899,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     if (base::FeatureList::IsEnabled(
             features::kAutofillPreventOverridingPrefilledValues)) {
       if (form.fields[i].form_control_type != "select-one" &&
-          !form.fields[i].value.empty() &&
+          !form.fields[i].value.empty() && !has_override &&
           !FormFieldData::DeepEqual(form.fields[i], field)) {
         buffer << Tr{} << field_number << "Skipped: value is prefilled";
         std::string unused_failure_to_fill;
@@ -1937,13 +2000,18 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     const std::u16string kEmptyCvc{};
     std::string failure_to_fill;  // Reason for failing to fill.
 
+    const std::map<FieldGlobalId, std::u16string>& forced_fill_values =
+        filling_context ? filling_context->forced_fill_values
+                        : std::map<FieldGlobalId, std::u16string>();
+
     // Fill the non-empty value from |profile_or_credit_card| into the |result|
     // form, which will be sent to the renderer. FillFieldWithValue() may also
     // fill a field if it had been autofilled or manually filled before, and
     // also returns true in such a case; however, such fields don't reach this
     // code.
     bool is_newly_autofilled = FillFieldWithValue(
-        cached_field, profile_or_credit_card, &result.fields[i], should_notify,
+        cached_field, profile_or_credit_card, forced_fill_values,
+        &result.fields[i], should_notify,
         optional_cvc ? *optional_cvc : kEmptyCvc,
         data_util::DetermineGroups(*form_structure), action, &failure_to_fill);
     if (is_newly_autofilled)
@@ -2007,6 +2075,12 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   // Note that this may invalidate |profile_or_credit_card|.
   if (action == mojom::RendererFormDataAction::kFill && !is_refill)
     personal_data_->RecordUseOf(profile_or_credit_card);
+
+  if (filling_context) {
+    // When a new preview/fill starts, previously forced_fill_values should be
+    // ignored the operation could be for a different card or address.
+    filling_context->forced_fill_values.clear();
+  }
 }
 
 std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
@@ -2130,21 +2204,8 @@ void BrowserAutofillManager::OnFormProcessed(
   // If a form with the same name was previously filled, and there has not
   // been a refill attempt on that form yet, start the process of triggering a
   // refill.
-  if (ShouldTriggerRefill(form_structure)) {
-    FillingContext* filling_context = GetFillingContext(form_structure);
-    DCHECK(filling_context != nullptr);
-
-    // If a timer for the refill was already running, it means the form
-    // changed again. Stop the timer and start it again.
-    if (filling_context->on_refill_timer.IsRunning())
-      filling_context->on_refill_timer.AbandonAndStop();
-
-    // Start a new timer to trigger refill.
-    filling_context->on_refill_timer.Start(
-        FROM_HERE, kWaitTimeForDynamicForms,
-        base::BindRepeating(&BrowserAutofillManager::TriggerRefill,
-                            weak_ptr_factory_.GetWeakPtr(), form));
-  }
+  if (ShouldTriggerRefill(form_structure))
+    ScheduleRefill(form);
 }
 
 void BrowserAutofillManager::OnAfterProcessParsedForms(
@@ -2371,15 +2432,16 @@ bool BrowserAutofillManager::FillFieldWithValue(
     AutofillField* autofill_field,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
+    const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
     FormFieldData* field_data,
     bool should_notify,
     const std::u16string& cvc,
     uint32_t profile_form_bitmask,
     mojom::RendererFormDataAction action,
     std::string* failure_to_fill) {
-  bool filled_field =
-      field_filler_.FillFormField(*autofill_field, profile_or_credit_card,
-                                  field_data, cvc, action, failure_to_fill);
+  bool filled_field = field_filler_.FillFormField(
+      *autofill_field, profile_or_credit_card, forced_fill_values, field_data,
+      cvc, action, failure_to_fill);
   if (filled_field) {
     if (failure_to_fill)
       *failure_to_fill = "Decided to fill";
@@ -2442,6 +2504,26 @@ bool BrowserAutofillManager::ShouldTriggerRefill(
   }
 
   return !filling_context->attempted_refill && delta < kLimitBeforeRefill;
+}
+
+void BrowserAutofillManager::ScheduleRefill(const FormData& form) {
+  FormStructure* form_structure = FindCachedFormByRendererId(form.global_id());
+  if (!form_structure)
+    return;
+
+  FillingContext* filling_context = GetFillingContext(*form_structure);
+  DCHECK(filling_context != nullptr);
+
+  // If a timer for the refill was already running, it means the form
+  // changed again. Stop the timer and start it again.
+  if (filling_context->on_refill_timer.IsRunning())
+    filling_context->on_refill_timer.AbandonAndStop();
+
+  // Start a new timer to trigger refill.
+  filling_context->on_refill_timer.Start(
+      FROM_HERE, kWaitTimeForDynamicForms,
+      base::BindRepeating(&BrowserAutofillManager::TriggerRefill,
+                          weak_ptr_factory_.GetWeakPtr(), form));
 }
 
 void BrowserAutofillManager::TriggerRefill(const FormData& form) {

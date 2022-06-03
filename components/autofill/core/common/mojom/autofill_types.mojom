@@ -105,7 +105,7 @@ enum SubmissionReadinessState {
   kTwoFields = 7,
 };
 
-// autofill::FrameToken
+// autofill::FrameToken (components/autofill/core/common/unique_ids.h)
 struct FrameToken {
   // The token wrapped by a LocalFrameToken or a RemoteFrameToken.
   mojo_base.mojom.UnguessableToken token;
@@ -113,29 +113,30 @@ struct FrameToken {
   bool is_local;
 };
 
-// autofill::
+// autofill::FrameTokenWithPredecessor
+// (components/autofill/core/common/form_data.h)
 struct FrameTokenWithPredecessor {
   FrameToken token;
   int32 predecessor;
 };
 
-// autofill::FormRendererId
+// autofill::FormRendererId (components/autofill/core/common/unique_ids.h)
 struct FormRendererId {
   uint64 id;
 };
 
-// autofill::FieldRendererId
+// autofill::FieldRendererId (components/autofill/core/common/unique_ids.h)
 struct FieldRendererId {
   uint64 id;
 };
 
-// autofill::SelectOption
+// autofill::SelectOption (components/autofill/core/common/form_field_data.h)
 struct SelectOption {
   mojo_base.mojom.String16 value;
   mojo_base.mojom.String16 content;
 };
 
-// autofill::FormFieldData
+// autofill::FormFieldData (components/autofill/core/common/form_field_data.h)
 struct FormFieldData {
   enum CheckStatus {
     kNotCheckable,
@@ -202,14 +203,17 @@ struct FormFieldData {
 
   array<mojo_base.mojom.String16> datalist_values;
   array<mojo_base.mojom.String16> datalist_labels;
+
+  bool force_override;
 };
 
+// autofill::ButtonTitleInfo (components/autofill/core/common/form_data.h)
 struct ButtonTitleInfo {
   mojo_base.mojom.String16 title;
   ButtonTitleType type;
 };
 
-// autofill::FormData
+// autofill::FormData (components/autofill/core/common/form_data.h)
 struct FormData {
   mojo_base.mojom.String16 id_attribute;
   mojo_base.mojom.String16 name_attribute;
@@ -227,6 +231,7 @@ struct FormData {
 };
 
 // autofill::FormFieldDataPredictions
+// (components/autofill/core/common/form_field_data_predictions.h)
 struct FormFieldDataPredictions {
   string host_form_signature;
   string signature;
@@ -238,6 +243,7 @@ struct FormFieldDataPredictions {
 };
 
 // autofill::FormDataPredictions
+// (components/autofill/core/common/form_data_predictions.h)
 struct FormDataPredictions {
   FormData data;
   string signature;
@@ -245,6 +251,7 @@ struct FormDataPredictions {
 };
 
 // autofill::PasswordAndMetadata
+// (components/autofill/core/common/password_form_fill_data.h)
 struct PasswordAndMetadata {
   mojo_base.mojom.String16 username;
   mojo_base.mojom.String16 password;
@@ -253,6 +260,7 @@ struct PasswordAndMetadata {
 };
 
 // autofill::PasswordFormFillData
+// (components/autofill/core/common/password_form_fill_data.h)
 struct PasswordFormFillData {
   FormRendererId form_renderer_id;
   url.mojom.Url url;
@@ -267,12 +275,14 @@ struct PasswordFormFillData {
 };
 
 // autofill::PasswordFormGenerationData
+// (components/autofill/core/common/password_form_generation_data.h)
 struct PasswordFormGenerationData {
    FieldRendererId new_password_renderer_id;
    FieldRendererId confirmation_password_renderer_id;
 };
 
 // autofill::password_generation::PasswordGenerationUIData
+// (components/autofill/core/common/password_generation_util.h)
 struct PasswordGenerationUIData {
   gfx.mojom.RectF bounds;
   int32 max_length;
@@ -284,6 +294,7 @@ struct PasswordGenerationUIData {
 };
 
 // autofill::ParsingResult
+// (components/autofill/core/common/password_form_fill_data.h)
 struct ParsingResult {
   FieldRendererId username_renderer_id;
   FieldRendererId password_renderer_id;
@@ -310,7 +321,7 @@ enum RendererFormDataAction {
   kPreview,  // The renderer should preview the form data.
 };
 
-// autofill::TouchToFillEligible
+// autofill::TouchToFillEligible (components/autofill/core/common/aliases.h)
 struct TouchToFillEligible {
   bool eligible;
 };

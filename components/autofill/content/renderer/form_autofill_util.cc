@@ -1070,8 +1070,10 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
       continue;
     }
 
-    if (element.GetAutofillState() == WebAutofillState::kAutofilled)
+    if (element.GetAutofillState() == WebAutofillState::kAutofilled &&
+        !data.fields[i].force_override) {
       continue;
+    }
 
     const std::u16string current_element_value = element.Value().Utf16();
 
@@ -1097,6 +1099,7 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
          IsTextAreaElement(element)) &&
         element.UserHasEditedTheField() &&
         !SanitizedFieldIsEmpty(current_element_value) &&
+        !data.fields[i].force_override &&
         !HasAttributeWithValue(*kValue, current_element_value) &&
         !HasAttributeWithValue(*kPlaceholder, current_element_value)) {
       continue;
@@ -1104,7 +1107,8 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
 
     // Check if we should autofill/preview/clear a select element or leave it.
     if (IsSelectElement(element) && element.UserHasEditedTheField() &&
-        !SanitizedFieldIsEmpty(current_element_value)) {
+        !SanitizedFieldIsEmpty(current_element_value) &&
+        !data.fields[i].force_override) {
       continue;
     }
 

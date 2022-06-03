@@ -49,6 +49,8 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
                                    const base::TimeTicks& interaction_time,
                                    const base::TimeTicks& submission_time,
                                    bool observed_submission) override;
+  // Immediately triggers the refill.
+  void ScheduleRefill(const FormData& form) override;
 
   // Unique to TestBrowserAutofillManager:
 

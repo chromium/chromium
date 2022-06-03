@@ -118,6 +118,8 @@ extern const base::Feature kAutofillExtractAllDatalists;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableSupportForPhoneNumberTrunkTypes;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillRefillModifiedCreditCardExpirationDates;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillTypeSpecificPopupWidth;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillFixFillableFieldTypes;

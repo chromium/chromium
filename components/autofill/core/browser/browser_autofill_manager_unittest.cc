@@ -387,8 +387,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     merchant_promo_code_manager_->Init(&personal_data(),
                                        /*is_off_the_record=*/false);
 
-    autofill_driver_ =
-        std::make_unique<testing::NiceMock<MockAutofillDriver>>();
+    autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>();
     auto payments_client = std::make_unique<payments::TestPaymentsClient>(
         autofill_driver_->GetURLLoaderFactory(),
         autofill_client_.GetIdentityManager(), &personal_data());
@@ -10029,5 +10028,140 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
           exp_label, kAmericanExpressCard,
           browser_autofill_manager_->GetPackedCreditCardID(2)));
 }
+
+// The following Refill Tests ensure that Autofill can handle the situation
+// where it fills a credit card form with an expiration date like 04/2999
+// and the website tries to reformat the input with whitespaces around the
+// slash and then sacrifices the wrong digits in the expiration date. I.e.,
+// the website replaces "04/2099" with "04 / 20". The tests ensure that this
+// triggers a refill with "04 / 29".
+struct RefillTestCase {
+  // The value that JavaScript owned by the website sets for the expiration
+  // date filed.
+  std::u16string exp_date_from_js;
+  // Whether we expect a refill from in this test case.
+  bool triggers_refill;
+  // What value we expect in the refill.
+  const char* refilled_exp_date = nullptr;
+};
+
+class BrowserAutofillManagerRefillTest
+    : public BrowserAutofillManagerTest,
+      public testing::WithParamInterface<RefillTestCase> {};
+
+TEST_P(BrowserAutofillManagerRefillTest,
+       RefillModifiedCreditCardExpirationDates) {
+  RefillTestCase test_case = GetParam();
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillRefillModifiedCreditCardExpirationDates);
+
+  // Set up a CC form with name, cc number and expiration date.
+  FormData form;
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+  FormFieldData field;
+  test::CreateTestFormField("Name on Card", "nameoncard", "", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Expiration date", "exp_date", "", "text", &field);
+  form.fields.push_back(field);
+
+  // Notify BrowserAutofillManager of the form.
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+
+  // Simulate filling and store the data to be filled in |first_fill_data|.
+  const char guid[] = "00000000-0000-0000-0000-000000000004";
+  int response_page_id = 0;
+  FormData first_fill_data;
+  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+                                     MakeFrontendId(guid, std::string()),
+                                     &response_page_id, &first_fill_data);
+  ASSERT_EQ(3u, first_fill_data.fields.size());
+  ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley", "text",
+                    first_fill_data.fields[0]);
+  ExpectFilledField("Card Number", "cardnumber", "4234567890123456", "text",
+                    first_fill_data.fields[1]);
+  ExpectFilledField("Expiration date", "exp_date", "04/2999", "text",
+                    first_fill_data.fields[2]);
+
+  FormData refilled_form;
+  if (test_case.triggers_refill) {
+    // Prepare intercepting the filling operation to the driver and capture
+    // the re-filled form data.
+    EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _))
+        .Times(1)
+        .WillOnce(DoAll(testing::SaveArg<2>(&refilled_form),
+                        testing::Return(std::vector<FieldGlobalId>{})));
+  } else {
+    EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _)).Times(0);
+  }
+  // Simulate that JavaScript modifies the expiration date field.
+  FormData form_after_js_modification = first_fill_data;
+  form_after_js_modification.fields[2].value = test_case.exp_date_from_js;
+  browser_autofill_manager_->JavaScriptChangedAutofilledValue(
+      form_after_js_modification, form_after_js_modification.fields[2],
+      u"04/2999");
+
+  testing::Mock::VerifyAndClearExpectations(autofill_driver_.get());
+
+  if (test_case.triggers_refill) {
+    ASSERT_EQ(3u, refilled_form.fields.size());
+    ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley", "text",
+                      refilled_form.fields[0]);
+    EXPECT_FALSE(refilled_form.fields[0].force_override);
+    ExpectFilledField("Card Number", "cardnumber", "4234567890123456", "text",
+                      refilled_form.fields[1]);
+    EXPECT_FALSE(refilled_form.fields[1].force_override);
+    ExpectFilledField("Expiration date", "exp_date",
+                      test_case.refilled_exp_date, "text",
+                      refilled_form.fields[2]);
+    EXPECT_TRUE(refilled_form.fields[2].force_override);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BrowserAutofillManagerRefillTest,
+    testing::Values(
+        // This is the classic case: Autofill filled 04/2999, website overrode
+        // 04 / 29, we need to fix this to 04 / 99.
+        RefillTestCase{.exp_date_from_js = u"04 / 29",
+                       .triggers_refill = true,
+                       .refilled_exp_date = "04 / 99"},
+        // Maybe the website replaced the separator and added whitespaces.
+        RefillTestCase{.exp_date_from_js = u"04 - 29",
+                       .triggers_refill = true,
+                       .refilled_exp_date = "04 - 99"},
+        // Maybe the website only replaced the separator.
+        RefillTestCase{.exp_date_from_js = u"04-29",
+                       .triggers_refill = true,
+                       .refilled_exp_date = "04-99"},
+        // Maybe the website was smart and dropped the correct digits.
+        RefillTestCase{
+            .exp_date_from_js = u"04 / 99",
+            .triggers_refill = false,
+        },
+        // Maybe the website did not modify the values at all.
+        RefillTestCase{
+            .exp_date_from_js = u"04/2999",
+            .triggers_refill = false,
+        },
+        // Maybe the website did something we don't support.
+        RefillTestCase{
+            .exp_date_from_js = u"April / 2999",
+            .triggers_refill = false,
+        },
+        // Maybe the website just added some whitespaces.
+        RefillTestCase{
+            .exp_date_from_js = u"04 / 2999",
+            .triggers_refill = false,
+        },
+        // Don't trigger refill on 3 digit years.
+        RefillTestCase{
+            .exp_date_from_js = u"04 / 299",
+            .triggers_refill = false,
+        }));
 
 }  // namespace autofill

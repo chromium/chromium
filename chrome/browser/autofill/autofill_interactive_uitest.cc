@@ -847,7 +847,9 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     // the HTML files, the detected language is flaky (e.g., it often detects
     // "fr" instead of "en").
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kAutofillShadowDOM},
+        /*enabled_features=*/
+        {blink::features::kAutofillShadowDOM,
+         features::kAutofillRefillModifiedCreditCardExpirationDates},
         /*disabled_features=*/{features::kAutofillPageLanguageDetection});
   }
   ~AutofillInteractiveTestBase() override = default;
@@ -2791,6 +2793,13 @@ class AutofillInteractiveTestCreditCard : public AutofillInteractiveTestBase {
   // we won't be able to encrypt the cc number. There will be a crash while
   // encrypting the cc number.
   void TearDownOnMainThread() override {}
+
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
+ private:
+  base::HistogramTester histogram_tester_;
 };
 
 // Test that credit card autofill works.
@@ -2891,9 +2900,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
   EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
-// TODO(crbug.com/1314360): This test validates current behavior, not desired
-// behavior.
-//
 // Some websites have JavaScript handlers that mess with the input of the user
 // and autofill. A common problem is that the date "09/2999" gets reformatted
 // into "09 / 20" instead of "09 / 99".
@@ -2902,8 +2908,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
 //    that it is supposed to fill 09/2999 and will fill that value.
 // 2) The website sees the content 09/2999 and reformats it to 09 / 29 because
 //    this is what websites do sometimes.
-//
-// TODO(crbug.com/1314360): The following two steps don't happen, yet.
 // 3) The AutofillAgent recognizes that it failed to fill 09/2999 and fills
 //    09 / 99 instead.
 // 4) The promise waits to see 09 / 99 and resolved.
@@ -2916,20 +2920,39 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestCreditCard,
 
   ASSERT_TRUE(AutofillFlow(GetElementById("CREDIT_CARD_NAME_FULL"), this));
 
-  // TODO(crbug.com/1314360): Once the behavior is fixed, change the substring
-  // "29" to "99" below twice.
   std::string script = R"(
     new Promise(function (resolve) {
       (function waitForCorrectExpirationDate(){
         const e = document.getElementById('CREDIT_CARD_EXP_DATE');
-        if (e && e.value === '09 / 29') {
+        if (e && e.value === '09 / 99') {
           return resolve(e.value);
         }
         setTimeout(waitForCorrectExpirationDate, 30);
       })();  // <-- This defines and calls waitForCorrectExpirationDate().
     });
   )";
-  EXPECT_EQ("09 / 29", content::EvalJs(GetWebContents(), script));
+  EXPECT_EQ("09 / 99", content::EvalJs(GetWebContents(), script));
+  content::LoadStopObserver load_stop_observer(GetWebContents());
+  ASSERT_TRUE(content::ExecuteScript(
+      GetWebContents(), "document.getElementById('testform').submit();"));
+  load_stop_observer.Wait();
+
+  // Short hand for ExpectbucketCount:
+  auto expect_count = [&](base::StringPiece name,
+                          base::HistogramBase::Sample sample,
+                          base::HistogramBase::Count expected_count) {
+    histogram_tester().ExpectBucketCount(name, sample, expected_count);
+  };
+  expect_count("Autofill.KeyMetrics.FillingReadiness.CreditCard", 1, 1);
+  expect_count("Autofill.KeyMetrics.FillingAcceptance.CreditCard", 1, 1);
+  expect_count("Autofill.KeyMetrics.FillingCorrectness.CreditCard", 1, 1);
+  expect_count("Autofill.KeyMetrics.FillingAssistance.CreditCard", 1, 1);
+  // Ensure that refills don't count as edits.
+  expect_count("Autofill.NumberOfEditedAutofilledFieldsAtSubmission", 0, 1);
+  expect_count("Autofill.PerfectFilling.CreditCards", 1, 1);
+  // Bucket 0 = edited, 1 = accepted; 3 samples for 3 fields.
+  expect_count("Autofill.EditedAutofilledFieldAtSubmission.Aggregate", 0, 0);
+  expect_count("Autofill.EditedAutofilledFieldAtSubmission.Aggregate", 1, 3);
 }
 
 // An extension of the test fixture for tests with site isolation.

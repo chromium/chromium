@@ -340,7 +340,7 @@ class BrowserAutofillManager : public AutofillManager,
       FormStructure* form_structure) {
     PreProcessStateMatchingTypes(profiles, form_structure);
   }
-#endif
+#endif  // defined(UNIT_TEST)
 
   base::raw_ptr<AutofillSuggestionGenerator> suggestion_generator() {
     return suggestion_generator_.get();
@@ -444,6 +444,9 @@ class BrowserAutofillManager : public AutofillManager,
     base::OneShotTimer on_refill_timer;
     // The field type groups that were initially filled.
     std::set<FieldTypeGroup> type_groups_originally_filled;
+    // If populated, this map determines which values will be filled into a
+    // field (it does not matter whether the field already contains a value).
+    std::map<FieldGlobalId, std::u16string> forced_fill_values;
   };
 
   // CreditCardAccessManager::Accessor
@@ -583,6 +586,7 @@ class BrowserAutofillManager : public AutofillManager,
       AutofillField* autofill_field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
+      const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       FormFieldData* field_data,
       bool should_notify,
       const std::u16string& cvc,
@@ -603,9 +607,20 @@ class BrowserAutofillManager : public AutofillManager,
   //  It's been less than kLimitBeforeRefillMs since the original fill.
   bool ShouldTriggerRefill(const FormStructure& form_structure);
 
+  // Schedules a call of TriggerRefill. Virtual for testing.
+  virtual void ScheduleRefill(const FormData& form);
+
   // Attempts to refill the form that was changed dynamically. Should only be
   // called if ShouldTriggerRefill returns true.
   void TriggerRefill(const FormData& form);
+
+  // This function is called by JavaScriptChangedAutofilledValue and may trigger
+  // a refill in case the website used JavaScript to reformat an expiration date
+  // like "05/2023" into "05 / 20" (i.e. it broke the year by cutting the last
+  // two digits instead of stripping the first two digits).
+  void MaybeTriggerRefillForExpirationDate(const FormData& form,
+                                           const FormFieldData& field,
+                                           const std::u16string& old_value);
 
   // Replaces the contents of |suggestions| with available suggestions for
   // |field|. |context| will contain additional information about the

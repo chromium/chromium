@@ -238,6 +238,11 @@ struct FormFieldData {
   // are handled very differently in Autofill.
   std::vector<std::u16string> datalist_values;
   std::vector<std::u16string> datalist_labels;
+
+  // When sent from browser to renderer, this bit indicates whether a field
+  // should be filled even though it is already considered autofilled OR
+  // user modified.
+  bool force_override = false;
 };
 
 // Serialize and deserialize FormFieldData. These are used when FormData objects

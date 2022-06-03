@@ -40,20 +40,24 @@ class FieldFiller {
   // Set |field_data|'s value to the right value in |profile_or_credit_card|.
   // Uses |field| to determine which field type should be filled, and
   // |app_locale_| as hint when filling exceptional cases like phone number
-  // values. If |action| indicates that the value will be used for the
+  // values. If |forced_fill_values| contains a string for the field to be
+  // filled, this value will be used unconditionally.
+  // If |action| indicates that the value will be used for the
   // autofill preview (aka. suggestion) state, the data to be filled may be
   // obfuscated.
   //
   // Returns |true| if the field has been filled, false otherwise. This is
   // independent of whether the field was filled or autofilled before. If
   // |failure_to_fill| is not null, errors are reported to that string.
-  bool FillFormField(const AutofillField& field,
-                     absl::variant<const AutofillProfile*, const CreditCard*>
-                         profile_or_credit_card,
-                     FormFieldData* field_data,
-                     const std::u16string& cvc,
-                     mojom::RendererFormDataAction action,
-                     std::string* failure_to_fill = nullptr);
+  bool FillFormField(
+      const AutofillField& field,
+      absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card,
+      const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
+      FormFieldData* field_data,
+      const std::u16string& cvc,
+      mojom::RendererFormDataAction action,
+      std::string* failure_to_fill = nullptr);
 
   // Returns the phone number value for the given |field|. The returned value
   // might be |number|, or |phone_home_city_and_number|, or could possibly be a

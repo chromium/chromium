@@ -233,6 +233,10 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
 
   static bool Read(autofill::mojom::FormFieldDataDataView data,
                    autofill::FormFieldData* out);
+
+  static bool force_override(const autofill::FormFieldData& r) {
+    return r.force_override;
+  }
 };
 
 template <>

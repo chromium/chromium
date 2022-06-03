@@ -147,6 +147,8 @@ bool StructTraits<
   if (!data.ReadDatalistLabels(&out->datalist_labels))
     return false;
 
+  out->force_override = data.force_override();
+
   return true;
 }
 
