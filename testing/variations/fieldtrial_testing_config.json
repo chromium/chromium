@@ -2738,28 +2738,6 @@
             ]
         }
     ],
-    "ContentSuggestionsHeaderMigration": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Header_Control_UIViewController_20220412",
-                    "enable_features": [
-                        "ContentSuggestionsHeaderMigration"
-                    ]
-                },
-                {
-                    "name": "Enabled_Header_UIViewController_20220412",
-                    "enable_features": [
-                        "ContentSuggestionsHeaderMigration",
-                        "ContentSuggestionsUIViewControllerMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContextMenuGoogleLensChip": [
         {
             "platforms": [
@@ -7585,21 +7563,6 @@
                     "enable_features": [
                         "SidePanelImprovedClobbering",
                         "SideSearchDSESupport"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SingleCellContentSuggestions": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "SingleCellContentSuggestions",
-                    "enable_features": [
-                        "SingleCellContentSuggestions"
                     ]
                 }
             ]

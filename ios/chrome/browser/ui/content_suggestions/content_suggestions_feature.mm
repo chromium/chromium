@@ -21,12 +21,12 @@ const base::Feature kSingleCellContentSuggestions{
 
 // Feature disabled by default.
 const base::Feature kContentSuggestionsHeaderMigration{
-    "ContentSuggestionsHeaderMigration", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ContentSuggestionsHeaderMigration", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature disabled by default.
 const base::Feature kContentSuggestionsUIViewControllerMigration{
     "ContentSuggestionsUIViewControllerMigration",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature disabled by default.
 const base::Feature kContentSuggestionsUIModuleRefresh{
