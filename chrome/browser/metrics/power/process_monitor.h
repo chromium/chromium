@@ -22,21 +22,24 @@ namespace base {
 class ProcessMetrics;
 }
 
-enum ProcessSubtypes {
-  kProcessSubtypeUnknown,
-  kProcessSubtypeExtensionPersistent,
-  kProcessSubtypeExtensionEvent,
-  kProcessSubtypeNetworkProcess,
+enum MonitoredProcessType {
+  kBrowser,
+  kRenderer,
+  kExtensionPersistent,
+  kExtensionEvent,
+  kGpu,
+  kPPAPIPlugin,
+  kUtility,
+  kNetwork,
+  kCount,
 };
 
 struct ProcessInfo {
-  ProcessInfo(int process_type,
-              ProcessSubtypes process_subtype,
+  ProcessInfo(MonitoredProcessType type,
               std::unique_ptr<base::ProcessMetrics> process_metrics);
   ~ProcessInfo();
 
-  int process_type;
-  ProcessSubtypes process_subtype;
+  MonitoredProcessType type;
   std::unique_ptr<base::ProcessMetrics> process_metrics;
 };
 
@@ -79,15 +82,14 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
 
   class Observer : public base::CheckedObserver {
    public:
-    // Provides the sampled metrics for every Chrome process. This is called
-    // once per process at a regular interval.
-    virtual void OnMetricsSampled(int process_type,
-                                  ProcessSubtypes process_subtype,
+    // Provides aggregated sampled metrics for all Chrome process of type
+    // `type`. This is called once per process type whenever
+    // `SampleAllProcesses` is called.
+    virtual void OnMetricsSampled(MonitoredProcessType type,
                                   const Metrics& metrics) {}
 
     // Provides the aggregated sampled metrics from every Chrome process. This
-    // is called once at a regular interval regardless of the number of
-    // processes.
+    // is called once whenever `SampleAllProcesses` is called.
     virtual void OnAggregatedMetricsSampled(const Metrics& metrics) {}
   };
 

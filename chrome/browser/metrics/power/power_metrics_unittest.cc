@@ -84,16 +84,16 @@ TEST(PowerMetricsTest, ReportAggregatedProcessMetricsHistograms) {
   ReportAggregatedProcessMetricsHistograms(process_metrics, suffixes);
 
   ExpectHistogramSamples(&histogram_tester, suffixes, {
-    {"PerformanceMonitor.AverageCPU3.Total", 20},
+    {"PerformanceMonitor.AverageCPU4.Total", 20},
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
-        {"PerformanceMonitor.IdleWakeups.Total", 51},
+        {"PerformanceMonitor.IdleWakeups2.Total", 51},
 #endif
 
 #if BUILDFLAG(IS_MAC)
-        {"PerformanceMonitor.PackageExitIdleWakeups.Total", 52},
-        {"PerformanceMonitor.EnergyImpact.Total", 10},
+        {"PerformanceMonitor.PackageExitIdleWakeups2.Total", 52},
+        {"PerformanceMonitor.EnergyImpact2.Total", 10},
 #endif
   });
 }

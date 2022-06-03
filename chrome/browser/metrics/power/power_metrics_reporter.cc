@@ -55,6 +55,31 @@ int64_t GetBucketForSample(base::TimeDelta value) {
       kOverflowBucket);
 }
 
+// Returns the histogram suffix to be used given the MonitoredProcessType.
+const char* GetMetricSuffixFromProcessType(MonitoredProcessType type) {
+  switch (type) {
+    case MonitoredProcessType::kBrowser:
+      return "BrowserProcess";
+    case MonitoredProcessType::kRenderer:
+      return "RendererProcess";
+    case MonitoredProcessType::kExtensionPersistent:
+      return "RendererExtensionPersistentProcess";
+    case MonitoredProcessType::kExtensionEvent:
+      return "RendererExtensionEventProcess";
+    case MonitoredProcessType::kGpu:
+      return "GPUProcess";
+    case MonitoredProcessType::kPPAPIPlugin:
+      return "PPAPIProcess";
+    case MonitoredProcessType::kUtility:
+      return "UtilityProcess";
+    case MonitoredProcessType::kNetwork:
+      return "NetworkProcess";
+    default:
+      NOTREACHED();
+      return "";
+  }
+}
+
 }  // namespace
 
 PowerMetricsReporter::PowerMetricsReporter(
@@ -169,44 +194,9 @@ void PowerMetricsReporter::OnLongIntervalEnd() {
 }
 
 void PowerMetricsReporter::OnMetricsSampled(
-    int process_type,
-    ProcessSubtypes process_subtype,
+    MonitoredProcessType type,
     const ProcessMonitor::Metrics& metrics) {
-  // The histogram macros don't support variables as histogram names,
-  // hence the macro duplication for each process type.
-  switch (process_type) {
-    case content::PROCESS_TYPE_BROWSER:
-      RecordProcessHistograms("BrowserProcess", metrics);
-      break;
-    case content::PROCESS_TYPE_RENDERER:
-      RecordProcessHistograms("RendererProcess", metrics);
-      break;
-    case content::PROCESS_TYPE_GPU:
-      RecordProcessHistograms("GPUProcess", metrics);
-      break;
-    case content::PROCESS_TYPE_PPAPI_PLUGIN:
-      RecordProcessHistograms("PPAPIProcess", metrics);
-      break;
-    case content::PROCESS_TYPE_UTILITY:
-      RecordProcessHistograms("UtilityProcess", metrics);
-      break;
-    default:
-      break;
-  }
-
-  switch (process_subtype) {
-    case kProcessSubtypeUnknown:
-      break;
-    case kProcessSubtypeExtensionPersistent:
-      RecordProcessHistograms("RendererExtensionPersistentProcess", metrics);
-      break;
-    case kProcessSubtypeExtensionEvent:
-      RecordProcessHistograms("RendererExtensionEventProcess", metrics);
-      break;
-    case kProcessSubtypeNetworkProcess:
-      RecordProcessHistograms("NetworkProcess", metrics);
-      break;
-  }
+  RecordProcessHistograms(GetMetricSuffixFromProcessType(type), metrics);
 }
 
 void PowerMetricsReporter::OnAggregatedMetricsSampled(

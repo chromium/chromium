@@ -73,7 +73,7 @@ ProcessMonitor::Metrics SampleMetrics(base::ProcessMetrics& process_metrics) {
   return metrics;
 }
 
-ProcessSubtypes GetProcessSubtypeForRenderProcess(
+MonitoredProcessType GetMonitoredProcessTypeForRenderProcess(
     content::RenderProcessHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -87,7 +87,7 @@ ProcessSubtypes GetProcessSubtypeForRenderProcess(
   // We only collect more granular metrics when there's only one extension
   // running in a given renderer, to reduce noise.
   if (extension_ids.size() != 1)
-    return kProcessSubtypeUnknown;
+    return MonitoredProcessType::kRenderer;
 
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(browser_context);
@@ -96,13 +96,13 @@ ProcessSubtypes GetProcessSubtypeForRenderProcess(
       extension_registry->enabled_extensions().GetByID(*extension_ids.begin());
 
   if (!extension)
-    return kProcessSubtypeUnknown;
+    return MonitoredProcessType::kRenderer;
 
   return extensions::BackgroundInfo::HasPersistentBackgroundPage(extension)
-             ? kProcessSubtypeExtensionPersistent
-             : kProcessSubtypeExtensionEvent;
+             ? MonitoredProcessType::kExtensionPersistent
+             : MonitoredProcessType::kExtensionEvent;
 #else
-  return kProcessSubtypeUnknown;
+  return MonitoredProcessType::kRenderer;
 #endif
 }
 
@@ -126,12 +126,9 @@ ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
 
 }  // namespace
 
-ProcessInfo::ProcessInfo(int process_type,
-                         ProcessSubtypes process_subtype,
+ProcessInfo::ProcessInfo(MonitoredProcessType type,
                          std::unique_ptr<base::ProcessMetrics> process_metrics)
-    : process_type(process_type),
-      process_subtype(process_subtype),
-      process_metrics(std::move(process_metrics)) {}
+    : type(type), process_metrics(std::move(process_metrics)) {}
 ProcessInfo::~ProcessInfo() = default;
 
 ProcessMonitor::Metrics::Metrics() = default;
@@ -143,8 +140,7 @@ ProcessMonitor::Metrics::~Metrics() = default;
 
 ProcessMonitor::ProcessMonitor()
     : browser_process_info_(
-          content::PROCESS_TYPE_BROWSER,
-          kProcessSubtypeUnknown,
+          MonitoredProcessType::kBrowser,
           CreateProcessMetrics(base::GetCurrentProcessHandle())) {
   // Ensure ProcessMonitor is created before any child process so that none is
   // missed.
@@ -164,6 +160,7 @@ ProcessMonitor::~ProcessMonitor() {
 void ProcessMonitor::SampleAllProcesses(Observer* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // Accumulate all the different processes.
   std::vector<ProcessInfo*> process_infos;
   process_infos.reserve(1 + render_process_infos_.size() +
                         browser_child_process_infos_.size());
@@ -173,13 +170,20 @@ void ProcessMonitor::SampleAllProcesses(Observer* observer) {
   for (auto& [_, process_info] : browser_child_process_infos_)
     process_infos.push_back(&process_info);
 
+  // Aggregate all metrics into a single sum, but also per their process type.
   Metrics aggregated_metrics;
+  std::array<Metrics, MonitoredProcessType::kCount> per_type_metrics;
   for (auto* process_info : process_infos) {
     Metrics metrics = SampleMetrics(*process_info->process_metrics);
     aggregated_metrics += metrics;
-    observer->OnMetricsSampled(process_info->process_type,
-                               process_info->process_subtype, metrics);
+    per_type_metrics[process_info->type] += metrics;
   }
+
+  for (int i = 0; i < MonitoredProcessType::kCount; i++) {
+    observer->OnMetricsSampled(static_cast<MonitoredProcessType>(i),
+                               per_type_metrics[i]);
+  }
+
   observer->OnAggregatedMetricsSampled(aggregated_metrics);
 }
 
@@ -193,15 +197,20 @@ void ProcessMonitor::OnRenderProcessHostCreated(
 
 void ProcessMonitor::RenderProcessReady(
     content::RenderProcessHost* render_process_host) {
+  // TODO(pmonette): It's possible for a process to be launched and then teared
+  //                 down without it being ever ready, which mean they will not
+  //                 affect the performance metrics, even though they should.
+  //                 Consider using `OnRenderProcessHostCreated()` instead of
+  //                 `RenderProcessReady()`.
   bool inserted =
       render_process_infos_
-          .emplace(std::piecewise_construct,
-                   std::forward_as_tuple(render_process_host),
-                   std::forward_as_tuple(
-                       content::PROCESS_TYPE_RENDERER,
-                       GetProcessSubtypeForRenderProcess(render_process_host),
-                       CreateProcessMetrics(
-                           render_process_host->GetProcess().Handle())))
+          .emplace(
+              std::piecewise_construct,
+              std::forward_as_tuple(render_process_host),
+              std::forward_as_tuple(
+                  GetMonitoredProcessTypeForRenderProcess(render_process_host),
+                  CreateProcessMetrics(
+                      render_process_host->GetProcess().Handle())))
           .second;
   DCHECK(inserted);
 
@@ -236,16 +245,15 @@ void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
   }
 #endif
 
-  ProcessSubtypes process_subtype =
+  MonitoredProcessType type =
       data.metrics_name == network::mojom::NetworkService::Name_
-          ? kProcessSubtypeNetworkProcess
-          : kProcessSubtypeUnknown;
+          ? MonitoredProcessType::kNetwork
+          : MonitoredProcessType::kUtility;
   bool inserted =
       browser_child_process_infos_
           .emplace(std::piecewise_construct, std::forward_as_tuple(data.id),
                    std::forward_as_tuple(
-                       data.process_type, process_subtype,
-                       CreateProcessMetrics(data.GetProcess().Handle())))
+                       type, CreateProcessMetrics(data.GetProcess().Handle())))
           .second;
   DCHECK(inserted);
 

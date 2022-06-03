@@ -134,29 +134,31 @@ chromium-metrics-reviews@google.com.
                but there was in the last 2 minutes"/>
 </variants>
 
-<histogram name="PerformanceMonitor.AverageCPU3.Total{UsageScenario}"
+<histogram name="PerformanceMonitor.AverageCPU4.Total{UsageScenario}"
     units="1/100 %" expires_after="2022-11-30">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    See definition of PerformanceClass.AverageCPU3.ProcessName. This is recorded
+    See definition of PerformanceClass.AverageCPU4.ProcessName. This is recorded
     for {UsageScenario} (see go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.AverageCPU3.{ProcessName}" units="1/100 %"
+<histogram name="PerformanceMonitor.AverageCPU4.{ProcessName}" units="1/100 %"
     expires_after="2022-11-30">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Average CPU utilization of process type {ProcessName}, read out at each
-    two-minute interval. The utilization is in the 0-100% range per CPU, which
-    is then summed up and multiplied by 100. The histogram is capped at 20000
-    (equivalent to 2 cores fully loaded). I.e. 4 cores busy at 25% each will
-    read as 25 * 4 * 100 = 10000.
+    Sum of the average CPU utilization of each process of the type
+    {ProcessName}, read out at each two-minute interval. The utilization is in
+    the 0-100% range per CPU, which is then summed up and multiplied by 100. The
+    histogram is capped at 20000 (equivalent to 2 cores fully loaded). I.e. 4
+    cores busy at 25% each will read as 25 * 4 * 100 = 10000. If no process of
+    type {ProcessName} existed during the interval, a sample of zero is still
+    emitted.
 
     NOTE: This metric has one significant limitation, it doesn't report the CPU
     usage of processes that terminate before the end of the interval. This means
@@ -168,26 +170,28 @@ chromium-metrics-reviews@google.com.
   <token key="ProcessName" variants="ProcessName"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.EnergyImpact.Total{UsageScenario}"
+<histogram name="PerformanceMonitor.EnergyImpact2.Total{UsageScenario}"
     units="ScaledUnits" expires_after="2022-11-30">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    See definition of PerformanceMonitor.EnergyImpact.ProcessName. This is
+    See definition of PerformanceMonitor.EnergyImpact2.ProcessName. This is
     recorded for {UsageScenario} (see go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.EnergyImpact.{ProcessName}"
+<histogram name="PerformanceMonitor.EnergyImpact2.{ProcessName}"
     units="ScaledUnits" expires_after="2022-11-30">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    (Mac only) A synthetic power use estimate, as displayed in macOS Activity
-    Monitor and the battery menu. This incorporates CPU utilization, idle
-    wakeups, IO, and task QoS level using per-machine-model weights. Divide by
-    100 to match Activity Monitor's scale. Recorded every two minutes.
+    (Mac only) The sum of the Energy Impact of each process of the type
+    {ProcessName}. Energy Impact is a synthetic power use estimate, as displayed
+    in macOS Activity Monitor and the battery menu. This incorporates CPU
+    utilization, idle wakeups, IO, and task QoS level using per-machine-model
+    weights. Divide by 100 to match Activity Monitor's scale. Recorded every two
+    minutes.
 
     NOTE: This metric has one signigicant limitation, it doesn't report the CPU
     usage of processes that terminate before the end of the interval. This means
@@ -199,23 +203,24 @@ chromium-metrics-reviews@google.com.
   <token key="ProcessName" variants="ProcessName"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.IdleWakeups.Total{UsageScenario}"
+<histogram name="PerformanceMonitor.IdleWakeups2.Total{UsageScenario}"
     units="WakeupsPerSecond" expires_after="2022-11-30">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    See definition of PerformanceMonitor.IdleWakeups.ProcessName. This is
+    See definition of PerformanceMonitor.IdleWakeups2.ProcessName. This is
     recorded for {UsageScenario} (see go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.IdleWakeups.{ProcessName}"
+<histogram name="PerformanceMonitor.IdleWakeups2.{ProcessName}"
     units="WakeupsPerSecond" expires_after="2022-11-30">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    The average CPU idle wakeups per second, sampled every two minutes.
+    The sum of the average CPU idle wakeups per second of each process of the
+    type {ProcessName}, sampled every two minutes.
 
     NOTE: This metric has one signigicant limitation, it doesn't report the CPU
     usage of processes that terminate before the end of the interval. This means
@@ -228,26 +233,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PerformanceMonitor.PackageExitIdleWakeups.Total{UsageScenario}"
+    name="PerformanceMonitor.PackageExitIdleWakeups2.Total{UsageScenario}"
     units="WakeupsPerSecond" expires_after="2022-11-30">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.orgg</owner>
   <summary>
-    See definition of PerformanceMonitor.PackageExitIdleWakeups.ProcessName.
+    See definition of PerformanceMonitor.PackageExitIdleWakeups2.ProcessName.
     This is recorded for {UsageScenario} (see go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.PackageExitIdleWakeups.{ProcessName}"
+<histogram name="PerformanceMonitor.PackageExitIdleWakeups2.{ProcessName}"
     units="WakeupsPerSecond" expires_after="2022-11-30">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.orgg</owner>
   <summary>
-    (Mac only) The average package exit idle wakeups per second, sampled every
-    two minutes. This is a subset of wakeups that indicate that the processor
-    complex was taken out of low-power state. For more info, see the
-    powermetrics man page on macOS.
+    (Mac only) The sum of the average package exit idle wakeups per second of
+    each process of the type {ProcessName}, sampled every two minutes. This is a
+    subset of wakeups that indicate that the processor complex was taken out of
+    low-power state. For more info, see the powermetrics man page on macOS.
 
     NOTE: This metric has one signigicant limitation, it doesn't report the CPU
     usage of processes that terminate before the end of the interval. This means
