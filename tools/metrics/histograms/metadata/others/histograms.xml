@@ -14613,7 +14613,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUI.WebUIURLLoaderFactory.URLRequestLoadTime" units="ms"
-    expires_after="2022-06-01">
+    expires_after="2022-10-30">
   <owner>dpapad@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
