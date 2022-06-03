@@ -295,6 +295,9 @@ def _run_resource_sizes(args):
   elif args.arch == 'arm32':
     tracked_groups.append(
         _Group(paths=['nacl_irt_arm.nexe'], title='File: nacl_irt_arm.nexe'))
+    tracked_groups.append(
+        _Group(paths=['nacl_helper_bootstrap'],
+               title='File: nacl_helper_bootstrap'))
 
   for g in tracked_groups:
     sizes = sum(
