@@ -126,7 +126,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
                         IDS_IOS_FOLLOW_MANAGEMENT_UNFOLLOW_ACTION)
              action:@selector(unfollowTapped)];
   menu.menuItems = @[ visitSiteOption, unfollowOption ];
+
+  // UIMenuController requires that this view controller be the first responder
+  // in order to display the menu and handle the menu options.
   [self becomeFirstResponder];
+
   [menu showMenuFromView:tableView
                     rect:[tableView rectForRowAtIndexPath:indexPath]];
 
@@ -210,14 +214,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
               object:nil];
   self.indexPathOfSelectedRow = nil;
   return [super resignFirstResponder];
-}
-
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-  if (action == @selector(visitSiteTapped) || action == @selector
-                                                  (unfollowTapped)) {
-    return YES;
-  }
-  return NO;
 }
 
 #pragma mark - Edit Menu Actions
