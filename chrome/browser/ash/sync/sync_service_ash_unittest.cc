@@ -19,8 +19,10 @@ namespace {
 class SyncServiceAshTest : public testing::Test {
  public:
   SyncServiceAshTest() {
-    override_features_.InitAndEnableFeature(
-        syncer::kSyncChromeOSExplicitPassphraseSharing);
+    override_features_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kSyncChromeOSExplicitPassphraseSharing,
+                              syncer::kSyncChromeOSAppsToggleSharing},
+        /*disabled_features=*/{});
     sync_service_ash_ = std::make_unique<SyncServiceAsh>(&sync_service_);
   }
 
@@ -59,20 +61,26 @@ TEST_F(SyncServiceAshTest, ShouldDisconnectOnShutdown) {
   mojo::Remote<crosapi::mojom::SyncService> sync_service_ash_remote;
   sync_service_ash()->BindReceiver(
       sync_service_ash_remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(sync_service_ash_remote.is_connected());
 
   mojo::Remote<crosapi::mojom::SyncExplicitPassphraseClient>
       explicit_passphrase_client_remote;
   sync_service_ash()->BindExplicitPassphraseClient(
       explicit_passphrase_client_remote.BindNewPipeAndPassReceiver());
-
-  ASSERT_TRUE(sync_service_ash_remote.is_connected());
   ASSERT_TRUE(explicit_passphrase_client_remote.is_connected());
+
+  mojo::Remote<crosapi::mojom::SyncUserSettingsClient>
+      user_settings_client_remote;
+  sync_service_ash()->BindUserSettingsClient(
+      user_settings_client_remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(user_settings_client_remote.is_connected());
 
   sync_service_ash()->Shutdown();
   // Wait for the disconnect handler to be called.
   RunAllPendingTasks();
   EXPECT_FALSE(sync_service_ash_remote.is_connected());
   EXPECT_FALSE(explicit_passphrase_client_remote.is_connected());
+  EXPECT_FALSE(user_settings_client_remote.is_connected());
 }
 
 }  // namespace
