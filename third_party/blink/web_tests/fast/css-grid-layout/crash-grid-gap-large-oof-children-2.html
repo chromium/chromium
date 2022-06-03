@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Test using a large grid gap and size containment and out of flow children.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/grid-definitions-parsing-utils.js"></script>
+<style>
+.grid {
+    border: 100px double;
+    contain: size layout;
+    display: inline-grid;
+    grid-row-gap: 1000000000vw;
+    grid-template-rows: 150px 100px;
+}
+.grid > div {
+    grid-row: auto / -1;
+    position: absolute;
+}
+</style>
+<div class="grid">
+  <div id="item">X</div>
+</div>
+<script>
+  test(function () {
+    testGridPositionDefinitionsValues(document.getElementById("item"), "auto", "-1", "auto", "auto");
+  }, "Tests that setting grid gap to a huge value is properly clamped and does not make the renderer crash.");
+ </script>

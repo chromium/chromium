@@ -3742,13 +3742,11 @@ void ComputeOutOfFlowOffsetAndSize(
     end_offset =
         TrackEndOffset(track_collection, item_placement.range_index.end,
                        item_placement.offset_in_range.end);
-    *size = end_offset - *start_offset;
-  } else {
-    // |start_offset| can be greater than |end_offset| if the track sizes from
-    // the grid overflow the container's respective size.
-    *size = (end_offset - *start_offset).ClampNegativeToZero();
   }
-  DCHECK(*size >= 0 || *size == kIndefiniteSize);
+
+  // |start_offset| can be greater than |end_offset| if the used track sizes or
+  // gutter size saturated the set offsets of the track collection.
+  *size = (end_offset - *start_offset).ClampNegativeToZero();
 }
 
 }  // namespace
