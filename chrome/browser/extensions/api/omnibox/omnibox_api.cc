@@ -278,7 +278,7 @@ ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
   params_ = SendSuggestions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
-  if (is_from_service_worker()) {
+  if (is_from_service_worker() && !params_->suggest_results.empty()) {
     std::vector<base::StringPiece> inputs;
     inputs.reserve(params_->suggest_results.size());
     for (const auto& suggestion : params_->suggest_results)
