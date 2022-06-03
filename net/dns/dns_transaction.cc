@@ -123,10 +123,10 @@ bool IsIPLiteral(const std::string& hostname) {
 }
 
 base::Value NetLogStartParams(const std::string& hostname, uint16_t qtype) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("hostname", hostname);
-  dict.SetIntKey("query_type", qtype);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("hostname", hostname);
+  dict.Set("query_type", qtype);
+  return base::Value(std::move(dict));
 }
 
 // ----------------------------------------------------------------------------
@@ -166,23 +166,23 @@ class DnsAttempt {
   // to the NetLog source source of the UDP socket used.  The request must have
   // completed before this is called.
   base::Value NetLogResponseParams(NetLogCaptureMode capture_mode) const {
-    base::Value dict(base::Value::Type::DICTIONARY);
+    base::Value::Dict dict;
 
     if (GetResponse()) {
       DCHECK(GetResponse()->IsValid());
-      dict.SetIntKey("rcode", GetResponse()->rcode());
-      dict.SetIntKey("answer_count", GetResponse()->answer_count());
-      dict.SetIntKey("additional_answer_count",
-                     GetResponse()->additional_answer_count());
+      dict.Set("rcode", GetResponse()->rcode());
+      dict.Set("answer_count", static_cast<int>(GetResponse()->answer_count()));
+      dict.Set("additional_answer_count",
+               static_cast<int>(GetResponse()->additional_answer_count()));
     }
 
-    GetSocketNetLog().source().AddToEventParameters(&dict);
+    GetSocketNetLog().source().AddToEventParameters(dict);
 
     if (capture_mode == NetLogCaptureMode::kEverything) {
-      dict.SetKey("response_buffer", GetRawResponseBufferForLog());
+      dict.Set("response_buffer", GetRawResponseBufferForLog());
     }
 
-    return dict;
+    return base::Value(std::move(dict));
   }
 
   // True if current attempt is pending (waiting for server response).

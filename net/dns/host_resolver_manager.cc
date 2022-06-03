@@ -281,14 +281,14 @@ bool HaveOnlyLoopbackAddresses() {
 base::Value NetLogProcTaskFailedParams(uint32_t attempt_number,
                                        int net_error,
                                        int os_error) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   if (attempt_number)
-    dict.SetIntKey("attempt_number", attempt_number);
+    dict.Set("attempt_number", base::saturated_cast<int>(attempt_number));
 
-  dict.SetIntKey("net_error", net_error);
+  dict.Set("net_error", net_error);
 
   if (os_error) {
-    dict.SetIntKey("os_error", os_error);
+    dict.Set("os_error", os_error);
 #if BUILDFLAG(IS_WIN)
     // Map the error code to a human-readable string.
     LPWSTR error_string = nullptr;
@@ -299,14 +299,14 @@ base::Value NetLogProcTaskFailedParams(uint32_t attempt_number,
                   (LPWSTR)&error_string,
                   0,         // Buffer size.
                   nullptr);  // Arguments (unused).
-    dict.SetStringKey("os_error_string", base::WideToUTF8(error_string));
+    dict.Set("os_error_string", base::WideToUTF8(error_string));
     LocalFree(error_string);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-    dict.SetStringKey("os_error_string", gai_strerror(os_error));
+    dict.Set("os_error_string", gai_strerror(os_error));
 #endif
   }
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 // Creates NetLog parameters when the DnsTask failed.
@@ -315,44 +315,45 @@ base::Value NetLogDnsTaskFailedParams(
     absl::optional<DnsQueryType> failed_transaction_type,
     absl::optional<base::TimeDelta> ttl,
     const HostCache::Entry* saved_results) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   if (failed_transaction_type) {
-    dict.SetIntKey("dns_query_type",
-                   static_cast<int>(failed_transaction_type.value()));
+    dict.Set("dns_query_type",
+             base::strict_cast<int>(failed_transaction_type.value()));
   }
   if (ttl)
-    dict.SetIntKey("error_ttl_sec", ttl.value().InSeconds());
-  dict.SetIntKey("net_error", net_error);
+    dict.Set("error_ttl_sec",
+             base::saturated_cast<int>(ttl.value().InSeconds()));
+  dict.Set("net_error", net_error);
   if (saved_results)
-    dict.SetKey("saved_results", saved_results->NetLogParams());
-  return dict;
+    dict.Set("saved_results", saved_results->NetLogParams());
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogDnsTaskExtractionFailureParams(
     DnsResponseResultExtractor::ExtractionError extraction_error,
     DnsQueryType dns_query_type,
     const HostCache::Entry& results) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("extraction_error", static_cast<int>(extraction_error));
-  dict.SetIntKey("dns_query_type", static_cast<int>(dns_query_type));
-  dict.SetKey("results", results.NetLogParams());
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("extraction_error", base::strict_cast<int>(extraction_error));
+  dict.Set("dns_query_type", base::strict_cast<int>(dns_query_type));
+  dict.Set("results", results.NetLogParams());
+  return base::Value(std::move(dict));
 }
 
 // Creates NetLog parameters for HOST_RESOLVER_MANAGER_JOB_ATTACH/DETACH events.
 base::Value NetLogJobAttachParams(const NetLogSource& source,
                                   RequestPriority priority) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  source.AddToEventParameters(&dict);
-  dict.SetStringKey("priority", RequestPriorityToString(priority));
-  return dict;
+  base::Value::Dict dict;
+  source.AddToEventParameters(dict);
+  dict.Set("priority", RequestPriorityToString(priority));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogIPv6AvailableParams(bool ipv6_available, bool cached) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetBoolKey("ipv6_available", ipv6_available);
-  dict.SetBoolKey("cached", cached);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("ipv6_available", ipv6_available);
+  dict.Set("cached", cached);
+  return base::Value(std::move(dict));
 }
 
 // The logging routines are defined here because some requests are resolved
@@ -462,9 +463,9 @@ class PriorityTracker {
 };
 
 base::Value NetLogResults(const HostCache::Entry& results) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("results", results.NetLogParams());
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("results", results.NetLogParams());
+  return base::Value(std::move(dict));
 }
 
 base::Value ToLogStringValue(const HostResolver::Host& host) {
@@ -846,19 +847,19 @@ class HostResolverManager::RequestImpl
 
     source_net_log_.BeginEvent(
         NetLogEventType::HOST_RESOLVER_MANAGER_REQUEST, [this] {
-          base::Value dict(base::Value::Type::DICTIONARY);
-          dict.SetKey("host", ToLogStringValue(request_host_));
-          dict.SetIntKey("dns_query_type",
-                         base::strict_cast<int>(parameters_.dns_query_type));
-          dict.SetBoolKey("allow_cached_response",
-                          parameters_.cache_usage !=
-                              ResolveHostParameters::CacheUsage::DISALLOWED);
-          dict.SetBoolKey("is_speculative", parameters_.is_speculative);
-          dict.SetStringKey("network_isolation_key",
-                            network_isolation_key_.ToDebugString());
-          dict.SetIntKey("secure_dns_policy",
-                         static_cast<int>(parameters_.secure_dns_policy));
-          return dict;
+          base::Value::Dict dict;
+          dict.Set("host", ToLogStringValue(request_host_));
+          dict.Set("dns_query_type",
+                   base::strict_cast<int>(parameters_.dns_query_type));
+          dict.Set("allow_cached_response",
+                   parameters_.cache_usage !=
+                       ResolveHostParameters::CacheUsage::DISALLOWED);
+          dict.Set("is_speculative", parameters_.is_speculative);
+          dict.Set("network_isolation_key",
+                   network_isolation_key_.ToDebugString());
+          dict.Set("secure_dns_policy",
+                   base::strict_cast<int>(parameters_.secure_dns_policy));
+          return base::Value(std::move(dict));
         });
   }
 
@@ -1358,7 +1359,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     base::Value::List transactions_needed_value;
     for (const TransactionInfo& info : transactions_needed_) {
       base::Value::Dict transaction_dict;
-      transaction_dict.Set("dns_query_type", static_cast<int>(info.type));
+      transaction_dict.Set("dns_query_type", base::strict_cast<int>(info.type));
       transactions_needed_value.Append(std::move(transaction_dict));
     }
     dict.Set("transactions_needed", std::move(transactions_needed_value));
@@ -1373,7 +1374,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       base::Value::List list;
       for (const TransactionInfo& info : transactions_in_progress_) {
         base::Value::Dict transaction_dict;
-        transaction_dict.Set("dns_query_type", static_cast<int>(info.type));
+        transaction_dict.Set("dns_query_type",
+                             base::strict_cast<int>(info.type));
         list.Append(std::move(transaction_dict));
       }
       dict.Set("started_transactions", std::move(list));
@@ -1383,7 +1385,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       base::Value::List list;
       for (const TransactionInfo& info : transactions_needed_) {
         base::Value::Dict transaction_dict;
-        transaction_dict.Set("dns_query_type", static_cast<int>(info.type));
+        transaction_dict.Set("dns_query_type",
+                             base::strict_cast<int>(info.type));
         list.Append(std::move(transaction_dict));
       }
       dict.Set("queued_transactions", std::move(list));
@@ -2493,17 +2496,17 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
  private:
   base::Value NetLogJobCreationParams(const NetLogSource& source) {
-    base::Value dict(base::Value::Type::DICTIONARY);
-    source.AddToEventParameters(&dict);
-    dict.SetKey("host", ToLogStringValue(key_.host));
+    base::Value::Dict dict;
+    source.AddToEventParameters(dict);
+    dict.Set("host", ToLogStringValue(key_.host));
     std::vector<base::Value> query_types_list;
     for (DnsQueryType query_type : key_.query_types)
       query_types_list.emplace_back(kDnsQueryTypes.at(query_type));
-    dict.SetKey("dns_query_types", base::Value(std::move(query_types_list)));
-    dict.SetIntKey("secure_dns_mode", static_cast<int>(key_.secure_dns_mode));
-    dict.SetStringKey("network_isolation_key",
-                      key_.network_isolation_key.ToDebugString());
-    return dict;
+    dict.Set("dns_query_types", base::Value(std::move(query_types_list)));
+    dict.Set("secure_dns_mode", base::strict_cast<int>(key_.secure_dns_mode));
+    dict.Set("network_isolation_key",
+             key_.network_isolation_key.ToDebugString());
+    return base::Value(std::move(dict));
   }
 
   void Finish() {

@@ -56,8 +56,9 @@ void HostCachePersistenceManager::ReadFromDisk() {
     return;
 
   net_log_.BeginEvent(net::NetLogEventType::HOST_CACHE_PREF_READ);
-  const base::Value* pref_value = pref_service_->GetList(pref_name_);
-  bool success = cache_->RestoreFromListValue(*pref_value);
+  const base::Value::List& pref_value =
+      pref_service_->GetList(pref_name_)->GetList();
+  bool success = cache_->RestoreFromListValue(pref_value);
   net_log_.AddEntryWithBoolParams(net::NetLogEventType::HOST_CACHE_PREF_READ,
                                   net::NetLogEventPhase::END, "success",
                                   success);
@@ -79,11 +80,10 @@ void HostCachePersistenceManager::WriteToDisk() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   net_log_.AddEvent(net::NetLogEventType::HOST_CACHE_PREF_WRITE);
-  base::Value value(base::Value::Type::LIST);
-  cache_->GetList(&value, false,
-                  net::HostCache::SerializationType::kRestorable);
+  base::Value::List list;
+  cache_->GetList(list, false, net::HostCache::SerializationType::kRestorable);
   writing_pref_ = true;
-  pref_service_->Set(pref_name_, value);
+  pref_service_->SetList(pref_name_, std::move(list));
   writing_pref_ = false;
 }
 

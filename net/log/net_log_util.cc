@@ -366,15 +366,13 @@ NET_EXPORT base::Value::Dict GetNetInfo(URLRequestContext* context) {
       dict.Set("dns_config", std::move(dns_config));
 
       base::Value::Dict cache_info_dict;
-      base::Value cache_contents_list(base::Value::Type::LIST);
+      base::Value::List cache_contents_list;
 
       cache_info_dict.Set("capacity", static_cast<int>(cache->max_entries()));
       cache_info_dict.Set("network_changes", cache->network_changes());
 
-      if (cache_contents_list.is_list()) {
-        cache->GetList(&cache_contents_list, true /* include_staleness */,
-                       HostCache::SerializationType::kDebug);
-      }
+      cache->GetList(cache_contents_list, true /* include_staleness */,
+                     HostCache::SerializationType::kDebug);
       cache_info_dict.Set("entries", std::move(cache_contents_list));
 
       dict.Set("cache", std::move(cache_info_dict));
