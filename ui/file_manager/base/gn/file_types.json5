@@ -324,7 +324,7 @@
   {
     "type": "archive",
     "translationKey": "7Z_ARCHIVE_FILE_TYPE",
-    "subtype": "7Z",
+    "subtype": "7ZIP",
     "extensions": [".7z"],
     "mime": "application/x-7z-compressed"
   },
@@ -344,86 +344,58 @@
   },
   {
     "type": "archive",
-    "translationKey": "TAR_BZIP2_ARCHIVE_FILE_TYPE",
-    "subtype": "TBZ2",
-    "extensions": [".tar.bz2", ".tar.bz", ".tbz", ".tbz2", ".tz2", ".tb2"],
-    "mime": "application/x-bzip2"
-  },
-  {
-    "type": "archive",
     "translationKey": "BZIP2_ARCHIVE_FILE_TYPE",
-    "subtype": "BZ2",
-    "extensions": [".bz2", ".bz"],
+    "subtype": "BZIP2",
+    "extensions": [".bz2", ".bz", ".tbz", ".tbz2", ".tz2", ".tb2"],
     "mime": "application/x-bzip2"
-  },
-  {
-    "type": "archive",
-    "translationKey": "TAR_GZIP_ARCHIVE_FILE_TYPE",
-    "subtype": "TGZ",
-    "extensions": [".tar.gz", ".tgz"],
-    "mime": "application/x-gzip"
   },
   {
     "type": "archive",
     "translationKey": "GZIP_ARCHIVE_FILE_TYPE",
-    "subtype": "GZ",
-    "extensions": [".gz"],
+    "subtype": "GZIP",
+    "extensions": [".gz", ".tgz"],
     "mime": "application/x-gzip"
   },
   {
     "type": "archive",
-    "translationKey": "TAR_LZMA_ARCHIVE_FILE_TYPE",
-    "subtype": "TLZMA",
-    "extensions": [".tar.lzma", ".tlzma", ".tlz"],
-    "mime": "application/x-lzma"
+    "translationKey": "LZIP_ARCHIVE_FILE_TYPE",
+    "subtype": "LZIP",
+    "extensions": [".lz"],
+    "mime": "application/x-lzip"
+  },
+  {
+    "type": "archive",
+    "translationKey": "LZOP_ARCHIVE_FILE_TYPE",
+    "subtype": "LZOP",
+    "extensions": [".lzo"],
+    "mime": "application/x-lzop"
   },
   {
     "type": "archive",
     "translationKey": "LZMA_ARCHIVE_FILE_TYPE",
     "subtype": "LZMA",
-    "extensions": [".lzma"],
+    "extensions": [".lzma", ".tlzma", ".tlz"],
     "mime": "application/x-lzma"
-  },
-  {
-    "type": "archive",
-    "translationKey": "TAR_XZ_ARCHIVE_FILE_TYPE",
-    "subtype": "TXZ",
-    "extensions": [".tar.xz", ".txz"],
-    "mime": "application/x-xz"
   },
   {
     "type": "archive",
     "translationKey": "XZ_ARCHIVE_FILE_TYPE",
     "subtype": "XZ",
-    "extensions": [".xz"],
+    "extensions": [".xz", ".txz"],
     "mime": "application/x-xz"
-  },
-  {
-    "type": "archive",
-    "translationKey": "TAR_Z_ARCHIVE_FILE_TYPE",
-    "subtype": "TZ",
-    "extensions": [".tar.z", ".taz", ".tz"],
-    "mime": "application/x-compress"
   },
   {
     "type": "archive",
     "translationKey": "Z_ARCHIVE_FILE_TYPE",
     "subtype": "Z",
-    "extensions": [".z"],
+    "extensions": [".z", ".taz", ".tz"],
     "mime": "application/x-compress"
   },
   {
     "type": "archive",
-    "translationKey": "TAR_ZSTD_ARCHIVE_FILE_TYPE",
-    "subtype": "TZST",
-    "extensions": [".tar.zst", ".tzst"],
-    "mime": "application/zstd"
-  },
-  {
-    "type": "archive",
     "translationKey": "ZSTD_ARCHIVE_FILE_TYPE",
-    "subtype": "ZST",
-    "extensions": [".zst"],
+    "subtype": "ZSTD",
+    "extensions": [".tar.zst", ".tzst", ".zst"],
     "mime": "application/zstd"
   },
 

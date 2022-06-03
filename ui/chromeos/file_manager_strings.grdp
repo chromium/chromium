@@ -1297,8 +1297,8 @@
   <message name="IDS_FILE_BROWSER_HTML_DOCUMENT_FILE_TYPE" desc="HTML document file type">
     HTML document
   </message>
-  <message name="IDS_FILE_BROWSER_ZIP_ARCHIVE_FILE_TYPE" desc="Zip archive file type">
-    Zip archive
+  <message name="IDS_FILE_BROWSER_ZIP_ARCHIVE_FILE_TYPE" desc="ZIP archive file type">
+    ZIP archive
   </message>
   <message name="IDS_FILE_BROWSER_RAR_ARCHIVE_FILE_TYPE" desc="RAR archive file type">
     RAR archive
@@ -1306,47 +1306,35 @@
   <message name="IDS_FILE_BROWSER_ISO_ARCHIVE_FILE_TYPE" desc="ISO archive file type">
     ISO image
   </message>
-  <message name="IDS_FILE_BROWSER_7Z_ARCHIVE_FILE_TYPE" desc="7z archive file type">
-    7z archive
+  <message name="IDS_FILE_BROWSER_7Z_ARCHIVE_FILE_TYPE" desc="7-Zip archive file type">
+    7-Zip archive
   </message>
   <message name="IDS_FILE_BROWSER_CRX_ARCHIVE_FILE_TYPE" desc="CRX archive file type">
     Chrome extension
   </message>
-  <message name="IDS_FILE_BROWSER_TAR_ARCHIVE_FILE_TYPE" desc="Tar archive file type">
-    Tar archive
+  <message name="IDS_FILE_BROWSER_TAR_ARCHIVE_FILE_TYPE" desc="TAR archive file type">
+    TAR archive
   </message>
-  <message name="IDS_FILE_BROWSER_TAR_BZIP2_ARCHIVE_FILE_TYPE" desc="Bzip2 compressed tar archive file type">
-    Bzip2 compressed tar archive
+  <message name="IDS_FILE_BROWSER_BZIP2_ARCHIVE_FILE_TYPE" desc="BZIP2 compressed archive file type">
+    BZIP2 compressed archive
   </message>
-  <message name="IDS_FILE_BROWSER_BZIP2_ARCHIVE_FILE_TYPE" desc="Bzip2 compressed archive file type">
-    Bzip2 compressed archive
-  </message>
-  <message name="IDS_FILE_BROWSER_TAR_GZIP_ARCHIVE_FILE_TYPE" desc="Gzip compressed tar archive file type">
-    Gzip compressed tar archive
-  </message>
-  <message name="IDS_FILE_BROWSER_GZIP_ARCHIVE_FILE_TYPE" desc="Gzip compressed archive file type">
-    Gzip compressed archive
-  </message>
-  <message name="IDS_FILE_BROWSER_TAR_LZMA_ARCHIVE_FILE_TYPE" desc="LZMA compressed tar archive file type">
-    LZMA compressed tar archive
+  <message name="IDS_FILE_BROWSER_GZIP_ARCHIVE_FILE_TYPE" desc="GZIP compressed archive file type">
+    GZIP compressed archive
   </message>
   <message name="IDS_FILE_BROWSER_LZMA_ARCHIVE_FILE_TYPE" desc="LZMA compressed archive file type">
     LZMA compressed archive
   </message>
-  <message name="IDS_FILE_BROWSER_TAR_XZ_ARCHIVE_FILE_TYPE" desc="XZ compressed tar archive file type">
-    XZ compressed tar archive
+  <message name="IDS_FILE_BROWSER_LZIP_ARCHIVE_FILE_TYPE" desc="LZIP compressed archive file type">
+    LZIP compressed archive
+  </message>
+  <message name="IDS_FILE_BROWSER_LZOP_ARCHIVE_FILE_TYPE" desc="LZOP compressed archive file type">
+    LZOP compressed archive
   </message>
   <message name="IDS_FILE_BROWSER_XZ_ARCHIVE_FILE_TYPE" desc="XZ compressed archive file type">
     XZ compressed archive
   </message>
-  <message name="IDS_FILE_BROWSER_TAR_Z_ARCHIVE_FILE_TYPE" desc="Z compressed tar archive file type">
-    Z compressed tar archive
-  </message>
   <message name="IDS_FILE_BROWSER_Z_ARCHIVE_FILE_TYPE" desc="Z compressed archive file type">
     Z compressed archive
-  </message>
-  <message name="IDS_FILE_BROWSER_TAR_ZSTD_ARCHIVE_FILE_TYPE" desc="ZSTD compressed tar archive file type">
-    Zstandard compressed tar archive
   </message>
   <message name="IDS_FILE_BROWSER_ZSTD_ARCHIVE_FILE_TYPE" desc="ZSTD compressed archive file type">
     Zstandard compressed archive

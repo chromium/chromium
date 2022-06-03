@@ -1074,7 +1074,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
     nameText: 'archive.zip',
     sizeText: '743 bytes',
-    typeText: 'Zip archive'
+    typeText: 'ZIP archive'
   }),
 
   zipSJISArchive: new TestEntryInfo({
@@ -1085,7 +1085,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Apr 6, 2022, 1:00 AM',
     nameText: 'sjis.zip',
     sizeText: '479 bytes',
-    typeText: 'Zip archive'
+    typeText: 'ZIP archive'
   }),
 
   zipExtArchive: new TestEntryInfo({
@@ -1096,7 +1096,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Apr 6, 2022, 1:00 AM',
     nameText: 'tera.zip',
     sizeText: '250 bytes',
-    typeText: 'Zip archive'
+    typeText: 'ZIP archive'
   }),
 
   debPackage: new TestEntryInfo({
