@@ -221,7 +221,7 @@ absl::optional<RequestAction> RulesetMatcherBase::GetBeforeRequestAction(
 
 void RulesetMatcherBase::OnRenderFrameCreated(content::RenderFrameHost* host) {
   DCHECK(host);
-  content::RenderFrameHost* parent = host->GetParent();
+  content::RenderFrameHost* parent = host->GetParentOrOuterDocument();
   if (!parent)
     return;
 
