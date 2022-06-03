@@ -238,6 +238,8 @@ class ASH_EXPORT CaptureModeCameraController
   // only for focusing the preview while recording is in progress.
   void PseudoFocusCameraPreview();
 
+  void OnActiveUserSessionChanged();
+
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
 
@@ -404,6 +406,10 @@ class ASH_EXPORT CaptureModeCameraController
   // Will be set to true the first time the number of connected cameras is
   // reported.
   bool did_report_number_of_cameras_before_ = false;
+
+  // Will be set to true the first user logs in. And we should only request the
+  // camera devices after the first user logs in.
+  bool did_first_user_login_ = false;
 
   base::WeakPtrFactory<CaptureModeCameraController> weak_ptr_factory_{this};
 };

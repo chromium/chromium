@@ -4417,4 +4417,31 @@ TEST_P(CaptureModeCameraFramesTest, CameraFatalErrors) {
 
 INSTANTIATE_TEST_SUITE_P(All, CaptureModeCameraFramesTest, testing::Bool());
 
+// The test fixture for starting test without active session.
+using NoSessionCaptureModeCameraTest = NoSessionAshTestBase;
+
+// Tests that camera info is requested after the user logs in instead of on
+// Chrome startup.
+TEST_F(NoSessionCaptureModeCameraTest, RequestCameraInfoAfterUserLogsIn) {
+  auto* camera_controller = GetCameraController();
+  GetTestDelegate()->video_source_provider()->AddFakeCameraWithoutNotifying(
+      "/dev/video0", "Integrated Webcam", "0123:4567",
+      media::MEDIA_VIDEO_FACING_NONE);
+
+  // Verify that the camera devices info is not updated yet.
+  EXPECT_TRUE(camera_controller->available_cameras().empty());
+
+  // Simulate the user login process and wait for the camera info to be updated.
+  {
+    base::RunLoop loop;
+    GetCameraController()->SetOnCameraListReceivedForTesting(
+        loop.QuitClosure());
+    SimulateUserLogin("example@gmail.com", user_manager::USER_TYPE_REGULAR);
+    loop.Run();
+  }
+
+  // Verify that after the user logs in, the camera info is up-to-date.
+  EXPECT_EQ(camera_controller->available_cameras().size(), 1u);
+}
+
 }  // namespace ash

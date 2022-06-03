@@ -701,6 +701,13 @@ void CaptureModeCameraController::PseudoFocusCameraPreview() {
   camera_preview_view_->UpdateA11yOverrideWindow();
 }
 
+void CaptureModeCameraController::OnActiveUserSessionChanged() {
+  if (!did_first_user_login_) {
+    did_first_user_login_ = true;
+    GetCameraDevices();
+  }
+}
+
 void CaptureModeCameraController::OnDevicesChanged(
     base::SystemMonitor::DeviceType device_type) {
   if (device_type == base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE)
@@ -726,7 +733,7 @@ void CaptureModeCameraController::ReconnectToVideoSourceProvider() {
 }
 
 void CaptureModeCameraController::GetCameraDevices() {
-  if (is_shutting_down_)
+  if (is_shutting_down_ || !did_first_user_login_)
     return;
 
   DCHECK(video_source_provider_remote_);
