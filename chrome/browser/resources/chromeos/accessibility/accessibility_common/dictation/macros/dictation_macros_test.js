@@ -12,6 +12,9 @@ DictationMacrosTest = class extends DictationE2ETestBase {
 
     await importModule(
         'MacroError', '/accessibility_common/dictation/macros/macro.js');
+    await importModule(
+        'StopListeningMacro',
+        '/accessibility_common/dictation/macros/stop_listening_macro.js');
   }
 };
 
@@ -68,4 +71,21 @@ SYNC_TEST_F('DictationMacrosTest', 'ListCommandsMacro', async function() {
   const runMacroResult = macro.runMacro();
   assertTrue(runMacroResult.isSuccess);
   assertEquals(undefined, runMacroResult.error);
+});
+
+SYNC_TEST_F('DictationMacrosTest', 'StopListeningMacro', async function() {
+  this.toggleDictationOn();
+  assertTrue(this.getDictationActive());
+  assertTrue(this.getSpeechRecognitionActive());
+  const macro = new StopListeningMacro();
+  assertEquals('STOP_LISTENING', macro.getMacroNameString());
+  const checkContextResult = macro.checkContext();
+  assertTrue(checkContextResult.canTryAction);
+  assertFalse(checkContextResult.willImmediatelyDisambiguate);
+  assertEquals(undefined, checkContextResult.error);
+  const runMacroResult = macro.runMacro();
+  assertTrue(runMacroResult.isSuccess);
+  assertEquals(undefined, runMacroResult.error);
+  assertFalse(this.getDictationActive());
+  assertFalse(this.getSpeechRecognitionActive());
 });

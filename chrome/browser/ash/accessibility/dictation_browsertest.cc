@@ -1140,6 +1140,46 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterCommandExecuted) {
       /*hints=*/std::vector<std::u16string>{kTrySaying, kUndo, kHelp});
 }
 
+// Tests behavior of Dictation macros that haven't been hooked up to the
+// speech parser.
+class DictationHiddenMacrosTest : public DictationTest {
+ protected:
+  DictationHiddenMacrosTest() = default;
+  ~DictationHiddenMacrosTest() = default;
+  DictationHiddenMacrosTest(const DictationHiddenMacrosTest&) = delete;
+  DictationHiddenMacrosTest& operator=(const DictationHiddenMacrosTest&) =
+      delete;
+
+  void RunHiddenMacro(int macro) {
+    std::string script = base::StringPrintf(R"(
+      accessibilityCommon.dictation_.runHiddenMacroForTesting(%d);
+      window.domAutomationController.send("done");
+    )",
+                                            macro);
+    extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+        /*context=*/browser()->profile(),
+        /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
+        /*script=*/script);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationHiddenMacrosTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationHiddenMacrosTest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, StopListening) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  RunHiddenMacro(/*STOP_LISTENING*/ 16);
+  WaitForRecognitionStopped();
+}
+
 // Tests behavior of Dictation and installation of Pumpkin.
 class DictationPumpkinInstallTest : public DictationTest {
  protected:

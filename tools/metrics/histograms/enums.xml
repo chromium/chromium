@@ -21120,7 +21120,7 @@ metrics consent we also won't be able to send UMA metrics. -->
     specified in Dictation JavaScript:
     https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/accessibility/accessibility_common/dictation/macros/macro_names.js
   </summary>
-  <int value="0" label="UNSPECIFID"/>
+  <int value="0" label="UNSPECIFIED"/>
   <int value="1" label="INPUT_TEXT_VIEW"/>
   <int value="2" label="DELETE_PREV_CHAR"/>
   <int value="3" label="NAV_PREV_CHAR"/>
@@ -21136,6 +21136,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="13" label="UNSELECT_TEXT"/>
   <int value="14" label="LIST_COMMANDS"/>
   <int value="15" label="NEW_LINE"/>
+  <int value="16" label="STOP_LISTENING"/>
 </enum>
 
 <enum name="CrosDictationToggleDictationMethod">

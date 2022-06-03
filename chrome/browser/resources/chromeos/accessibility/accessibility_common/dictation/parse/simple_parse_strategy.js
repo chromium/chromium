@@ -8,6 +8,7 @@
  */
 
 import {InputController} from '/accessibility_common/dictation/input_controller.js';
+import {HiddenMacroManager} from '/accessibility_common/dictation/macros/hidden_macro_manager.js';
 import {InputTextViewMacro, NewLineMacro} from '/accessibility_common/dictation/macros/input_text_view_macro.js';
 import {ListCommandsMacro} from '/accessibility_common/dictation/macros/list_commands_macro.js';
 import {Macro} from '/accessibility_common/dictation/macros/macro.js';
@@ -164,7 +165,9 @@ export class SimpleParseStrategy extends ParseStrategy {
   initialize_() {
     for (const key in MacroName) {
       const name = MacroName[key];
-      if (name === MacroName.INPUT_TEXT_VIEW || name === MacroName.UNSPECIFID) {
+      if (HiddenMacroManager.isHiddenMacro(name) ||
+          name === MacroName.INPUT_TEXT_VIEW ||
+          name === MacroName.UNSPECIFIED) {
         continue;
       }
 

@@ -4,6 +4,7 @@
 
 import {FocusHandler} from '/accessibility_common/dictation/focus_handler.js';
 import {InputController} from '/accessibility_common/dictation/input_controller.js';
+import {HiddenMacroManager} from '/accessibility_common/dictation/macros/hidden_macro_manager.js';
 import {Macro} from '/accessibility_common/dictation/macros/macro.js';
 import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
 import {MetricsUtils} from '/accessibility_common/dictation/metrics_utils.js';
@@ -117,7 +118,7 @@ export class Dictation {
   maybeInstallPumpkin_() {
     const pumpkinFeature = chrome.accessibilityPrivate.AccessibilityFeature
                                .DICTATION_PUMPKIN_PARSING;
-    chrome.accessibilityPrivate.isFeatureEnabled(pumpkinFeature, (enabled) => {
+    chrome.accessibilityPrivate.isFeatureEnabled(pumpkinFeature, enabled => {
       this.isPumpkinEnabled_ = enabled;
       if (enabled) {
         chrome.accessibilityPrivate.installPumpkinForDictation(success => {
@@ -158,7 +159,7 @@ export class Dictation {
     if (this.active_) {
       chrome.speechRecognitionPrivate.start(
           /** @type {!StartOptions} */ (this.speechRecognitionOptions_),
-          (type) => this.onSpeechRecognitionStarted_(type));
+          type => this.onSpeechRecognitionStarted_(type));
       this.setStopTimeout_(Dictation.Timeouts.NO_SPEECH_MS);
     } else {
       // We are no longer starting up - perhaps a stop came
@@ -337,7 +338,7 @@ export class Dictation {
    * @private
    */
   updateFromPrefs_(prefs) {
-    prefs.forEach((pref) => {
+    prefs.forEach(pref => {
       switch (pref.key) {
         case Dictation.DICTATION_LOCALE_PREF:
           if (pref.value) {
@@ -466,6 +467,11 @@ export class Dictation {
 
     // TODO(akihiroota): Either instantiate a new Web Worker or sandboxed
     // iframe to execute Pumpkin code.
+  }
+
+  /** @param {!MacroName} name The macro to run. */
+  runHiddenMacroForTesting(name) {
+    HiddenMacroManager.runMacroForTesting(name);
   }
 }
 

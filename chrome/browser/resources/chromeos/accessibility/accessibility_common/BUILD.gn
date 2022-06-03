@@ -44,11 +44,13 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/earcons/null_selection.wav",
     "dictation/focus_handler.js",
     "dictation/input_controller.js",
+    "dictation/macros/hidden_macro_manager.js",
     "dictation/macros/input_text_view_macro.js",
     "dictation/macros/list_commands_macro.js",
     "dictation/macros/macro.js",
     "dictation/macros/macro_names.js",
     "dictation/macros/repeatable_key_press_macro.js",
+    "dictation/macros/stop_listening_macro.js",
     "dictation/metrics_utils.js",
     "dictation/parse/input_text_strategy.js",
     "dictation/parse/parse_strategy.js",
@@ -230,11 +232,13 @@ js_library("dictation_ui_controller") {
 
 js_library("dictation_macros") {
   sources = [
+    "dictation/macros/hidden_macro_manager.js",
     "dictation/macros/input_text_view_macro.js",
     "dictation/macros/list_commands_macro.js",
     "dictation/macros/macro.js",
     "dictation/macros/macro_names.js",
     "dictation/macros/repeatable_key_press_macro.js",
+    "dictation/macros/stop_listening_macro.js",
   ]
   deps = [
     ":dictation_input_controller",

@@ -14,7 +14,7 @@
  * @enum {number}
  */
 export const MacroName = {
-  UNSPECIFID: 0,
+  UNSPECIFIED: 0,
 
   // Simply input text into a text field.
   INPUT_TEXT_VIEW: 1,
@@ -66,6 +66,9 @@ export const MacroName = {
   // Insert a new line character.
   // Note: This doesn't correspond to a Voice Access action.
   NEW_LINE: 15,
+
+  // Stops dictation.
+  STOP_LISTENING: 16,
 
   // Any new actions should match with Voice Access's semantic tags.
 };
