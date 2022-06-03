@@ -13,8 +13,10 @@ USE_PYTHON3 = True
 
 
 def RunUnittests(input_api, output_api):
-  return input_api.canned_checks.RunPythonUnitTests(input_api, output_api,
-                                                    ['test_suite_all'])
+  return input_api.canned_checks.RunPythonUnitTests(input_api,
+                                                    output_api,
+                                                    ['test_suite_all'],
+                                                    python3=True)
 
 
 def CheckChangeOnUpload(input_api, output_api):
