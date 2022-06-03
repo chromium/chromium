@@ -9,13 +9,20 @@ namespace ash::quick_start {
 
 class TargetDeviceBootstrapController {
  public:
+  enum class FeatureSupportStatus {
+    kUndetermined = 0,
+    kNotSupported,
+    kSupported
+  };
+
   TargetDeviceBootstrapController() = default;
   virtual ~TargetDeviceBootstrapController() = default;
 
   // Checks to see whether the feature can be supported on the device's
-  // hardware. Returns true if Bluetooth is supported and an adapter is present.
-  virtual bool IsFeatureSupported() = 0;
-}
+  // hardware. The feature is supported if Bluetooth is supported and an adapter
+  // is present.
+  virtual FeatureSupportStatus GetFeatureSupportStatus() const = 0;
+};
 
 }  // namespace ash::quick_start
 
