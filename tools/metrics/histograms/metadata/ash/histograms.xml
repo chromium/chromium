@@ -2356,7 +2356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.InteractiveWindowResize.TimeToPresent" units="ms"
-    expires_after="2022-04-17">
+    expires_after="2023-06-01">
   <owner>oshima@chromium.org</owner>
   <owner>mukai@chromium.org</owner>
   <summary>
@@ -2367,7 +2367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.InteractiveWindowResize.TimeToPresent.MaxLatency"
-    units="ms" expires_after="2021-12-10">
+    units="ms" expires_after="2023-06-01">
   <owner>oshima@chromium.org</owner>
   <owner>mukai@chromium.org</owner>
   <summary>
@@ -3460,7 +3460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Rotation.AnimationSmoothness" units="%"
-    expires_after="2022-04-10">
+    expires_after="2023-06-01">
   <owner>oshima@chromium.org</owner>
   <owner>wutao@chromium.org</owner>
   <summary>
