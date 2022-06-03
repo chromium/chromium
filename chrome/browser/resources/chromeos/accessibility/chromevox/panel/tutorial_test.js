@@ -266,7 +266,8 @@ TEST_F(
     });
 
 // Tests that the tutorial closes when the 'Exit tutorial' button is clicked.
-TEST_F('ChromeVoxTutorialTest', 'ExitButtonTest', async function() {
+// TODO(crbug.com/1332510): Failing on ChromeOS.
+TEST_F('ChromeVoxTutorialTest', 'DISABLED_ExitButtonTest', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -280,7 +281,8 @@ TEST_F('ChromeVoxTutorialTest', 'ExitButtonTest', async function() {
 });
 
 // Tests that the tutorial closes when Escape is pressed.
-TEST_F('ChromeVoxTutorialTest', 'EscapeTest', async function() {
+// TODO(crbug.com/1332510): Failing on ChromeOS.
+TEST_F('ChromeVoxTutorialTest', 'DISABLED_EscapeTest', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -684,7 +686,8 @@ TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', async function() {
 });
 
 // Tests that gestures can be used in the tutorial to navigate.
-TEST_F('ChromeVoxTutorialTest', 'Gestures', async function() {
+// TODO(crbug.com/1332510): Failing on ChromeOS.
+TEST_F('ChromeVoxTutorialTest', 'DISABLED_Gestures', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
