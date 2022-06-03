@@ -68,7 +68,7 @@ FileSystemAccessRegularFileDelegate::FileSystemAccessRegularFileDelegate(
 base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Read(
     int64_t offset,
     base::span<uint8_t> data) {
-  DCHECK_GE(offset, 0);
+  CHECK_GE(offset, 0);
 
   int size = base::checked_cast<int>(data.size());
   int result =
@@ -82,7 +82,7 @@ base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Read(
 base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Write(
     int64_t offset,
     const base::span<uint8_t> data) {
-  DCHECK_GE(offset, 0);
+  CHECK_GE(offset, 0);
 
   int write_size = base::checked_cast<int>(data.size());
 
@@ -164,14 +164,8 @@ void FileSystemAccessRegularFileDelegate::SetLength(
     int64_t new_length,
     base::OnceCallback<void(base::File::Error)> callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (new_length < 0) {
-    // This method is expected to finish asynchronously, so post a task to the
-    // current sequence to return the error.
-    task_runner_->PostTask(
-        FROM_HERE, WTF::Bind(std::move(callback),
-                             base::File::Error::FILE_ERROR_INVALID_OPERATION));
-    return;
-  }
+  CHECK_GE(new_length, 0);
+
   capacity_tracker_->RequestFileCapacityChange(
       new_length,
       WTF::Bind(&FileSystemAccessRegularFileDelegate::DidCheckSetLengthCapacity,

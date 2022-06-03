@@ -182,8 +182,17 @@ sync_access_handle_test((t, handle) => {
 
 sync_access_handle_test((t, handle) => {
   const readBuffer = new Uint8Array(24);
-  assert_throws_dom(
-    'NotSupportedError', () => handle.read(readBuffer, { at: -1 }));
+  assert_throws_js(TypeError, () => handle.read(readBuffer, {at: -1}));
 }, 'Test reading at a negative offset fails.');
+
+sync_access_handle_test((t, handle) => {
+  const text = 'foobar';
+  const writeBuffer = new TextEncoder().encode(text);
+  assert_throws_js(TypeError, () => handle.write(writeBuffer, {at: -1}));
+
+  const readBuffer = new Uint8Array(24);
+  const readBytes = handle.read(readBuffer, {at: 0});
+  assert_equals(0, readBytes, 'Check that no bytes were written');
+}, 'Test writing at a negative offset fails.');
 
 done();

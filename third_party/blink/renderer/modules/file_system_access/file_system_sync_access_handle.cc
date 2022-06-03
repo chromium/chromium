@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_sync_access_handle.h"
 
 #include "base/files/file_error_or.h"
+#include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -206,8 +207,14 @@ ScriptPromise FileSystemSyncAccessHandle::truncate(
   DCHECK(file_delegate()->IsValid())
       << "file I/O operation queued after file closed";
 
+  if (!base::CheckedNumeric<int64_t>(size).IsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Cannot truncate file to given length");
+    return result;
+  }
+
   file_delegate()->SetLength(
-      base::checked_cast<int64_t>(size),
+      size,
       WTF::Bind(
           [](ScriptPromiseResolver* resolver,
              FileSystemSyncAccessHandle* access_handle,
