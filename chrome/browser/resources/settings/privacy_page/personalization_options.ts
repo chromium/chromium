@@ -104,6 +104,12 @@ export class SettingsPersonalizationOptionsElement extends
       },
       // </if>
 
+      shouldShowAutofillAssistant_: {
+        type: Boolean,
+        value: () => loadTimeData.valueExists('enableAutofillAssistant') &&
+            loadTimeData.getBoolean('enableAutofillAssistant'),
+      },
+
     };
   }
 
@@ -121,6 +127,8 @@ export class SettingsPersonalizationOptionsElement extends
   // <if expr="not chromeos_ash and not chromeos_lacros">
   private signinAvailable_: boolean;
   // </if>
+
+  private shouldShowAutofillAssistant_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();

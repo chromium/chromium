@@ -321,6 +321,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
           settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::omnibox::kDocumentSuggestEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::prefs::kAutofillAssistantOnDesktopEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Languages page
   (*s_allowlist)[spellcheck::prefs::kSpellCheckEnable] =

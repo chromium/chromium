@@ -29,6 +29,7 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       driveSuggestAvailable: true,
+      enableAutofillAssistant: true,
       signinAvailable: true,
     });
   });
@@ -37,6 +38,7 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
     document.body.innerHTML = '';
     testElement = document.createElement('settings-personalization-options');
     testElement.prefs = {
+      autofill_assistant: {enabled: {value: false}},
       signin: {
         allowed_on_next_startup:
             {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true},
@@ -225,6 +227,18 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
         testElement.shadowRoot!.querySelector('#searchSuggestToggle')));
   });
   // </if>
+
+  test('autofillAssistantAvailable', function() {
+    assertTrue(
+        !!testElement.shadowRoot!.querySelector('#enableAssistantFlows'));
+  });
+
+  test('autofillAssistantUnavailable', function() {
+    loadTimeData.overrideValues({'enableAutofillAssistant': false});
+    buildTestElement();  // Rebuild the element after modifying loadTimeData.
+    assertFalse(
+        !!testElement.shadowRoot!.querySelector('#enableAssistantFlows'));
+  });
 });
 
 suite('PersonalizationOptionsTests_OfficialBuild', function() {

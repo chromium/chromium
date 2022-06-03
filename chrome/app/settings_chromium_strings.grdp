@@ -280,6 +280,11 @@
     Sign in to sync and personalize Chromium across your devices
   </message>
 
+    <!-- Autofill Assistant settings -->
+  <message name="IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF" translateable="false" desc="The documentation string of the 'Use Google Assistant' preference to help with automated flows on the web">
+    Google Assistant in Chromium
+  </message>
+
   <!-- Languages Page -->
   <if expr="is_win">
     <message name="IDS_SETTINGS_LANGUAGES_IS_DISPLAYED_IN_THIS_LANGUAGE" desc="The label for a language that is currently used as the UI display language.">

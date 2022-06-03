@@ -109,6 +109,15 @@
       </settings-toggle-button>
     </template>
 
+    <template is="dom-if" if="[[shouldShowAutofillAssistant_]]" restamp>
+      <settings-toggle-button id="enableAssistantFlows"
+          class="hr"
+          label="$i18n{autofillAssistantPref}"
+          sub-label="$i18n{autofillAssistantPrefDesc}"
+          pref="{{prefs.autofill_assistant.enabled}}">
+      </settings-toggle-button>
+    </template>
+
     <template is="dom-if" if="[[showSignoutDialog_]]" restamp>
       <settings-signout-dialog sync-status="[[syncStatus]]"
           on-close="onSignoutDialogClosed_">

@@ -279,6 +279,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableSendPasswords",
       base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
 
+  // Autofill Assistant on Desktop is currently used only by password change.
+  // As soon as it becomes more widely used, this condition needs to be
+  // adjusted.
+  html_source->AddBoolean(
+      "enableAutofillAssistant",
+      password_manager::features::IsAutomatedPasswordChangeEnabled());
+
 #if !BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(
       "enableDesktopDetailedLanguageSettings",
