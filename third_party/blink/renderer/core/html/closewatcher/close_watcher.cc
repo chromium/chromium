@@ -71,14 +71,23 @@ void CloseWatcher::WatcherStack::EscapeKeyHandler(KeyboardEvent* event) {
   }
 }
 
-bool CloseWatcher::WatcherStack::CheckForCreation() {
-  if (HasActiveWatcher() &&
-      !LocalFrame::ConsumeTransientUserActivation(window_->GetFrame())) {
-    return false;
+void CloseWatcher::WatcherStack::Signal() {
+  while (!watchers_.IsEmpty()) {
+    CloseWatcher* watcher = watchers_.back();
+    watcher->close();
+    if (!watcher->IsGroupedWithPrevious()) {
+      break;
+    }
   }
+}
 
-  ConsumeCloseWatcherCancelability();
-  return true;
+bool CloseWatcher::WatcherStack::HasConsumedFreeWatcher() const {
+  for (const auto& watcher : watchers_) {
+    if (!watcher->created_with_user_activation_) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // static
@@ -86,10 +95,9 @@ CloseWatcher* CloseWatcher::Create(LocalDOMWindow* window,
                                    CloseWatcherOptions* options) {
   if (!window->GetFrame())
     return nullptr;
-  WatcherStack* stack = window->closewatcher_stack();
-  if (!stack->CheckForCreation())
-    return nullptr;
-  return CreateInternal(window, *stack, options);
+
+  WatcherStack& stack = *window->closewatcher_stack();
+  return CreateInternal(window, stack, options);
 }
 
 // static
@@ -105,15 +113,6 @@ CloseWatcher* CloseWatcher::Create(ScriptState* script_state,
   }
 
   WatcherStack& stack = *window->closewatcher_stack();
-
-  if (!stack.CheckForCreation()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Creating more than one CloseWatcher at a time requires a user "
-        "activation.");
-    return nullptr;
-  }
-
   return CreateInternal(window, stack, options);
 }
 
@@ -122,6 +121,19 @@ CloseWatcher* CloseWatcher::CreateInternal(LocalDOMWindow* window,
                                            WatcherStack& stack,
                                            CloseWatcherOptions* options) {
   CloseWatcher* watcher = MakeGarbageCollected<CloseWatcher>(window);
+
+  if (LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
+    watcher->created_with_user_activation_ = true;
+    watcher->grouped_with_previous_ = false;
+  } else if (!stack.HasConsumedFreeWatcher()) {
+    watcher->created_with_user_activation_ = false;
+    watcher->grouped_with_previous_ = false;
+  } else {
+    watcher->created_with_user_activation_ = false;
+    watcher->grouped_with_previous_ = true;
+  }
+
+  stack.ConsumeCloseWatcherCancelability();
 
   if (options && options->hasSignal()) {
     AbortSignal* signal = options->signal();

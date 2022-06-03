@@ -27,11 +27,17 @@ class CloseWatcher final : public EventTargetWithInlineData,
   static CloseWatcher* Create(ScriptState*,
                               CloseWatcherOptions*,
                               ExceptionState&);
+
+  // TODO(domenic): remove the CloseWatcherOptions* from this overload. This is
+  // meant to be used by Chromium-internal callers, who will not want to pass an
+  // AbortSignal.
   static CloseWatcher* Create(LocalDOMWindow*, CloseWatcherOptions*);
+
   explicit CloseWatcher(LocalDOMWindow*);
   void Trace(Visitor*) const override;
 
   bool IsClosed() const { return state_ == State::kClosed; }
+  bool IsGroupedWithPrevious() const { return grouped_with_previous_; }
 
   void close();
   void destroy();
@@ -57,25 +63,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
     void Add(CloseWatcher*);
     void Remove(CloseWatcher*);
     bool HasActiveWatcher() const { return !watchers_.IsEmpty(); }
-
-    // This checks whether we can create a new CloseWatcher. Per spec we allow
-    // one "free" CloseWatcher, but if one already exists in the stack, then
-    // doing so will consume transient user activation.
-    //
-    // So the return values mean:
-    //
-    // - true: either we have no close watchers in the stack, and this is our
-    // free close watcher, or we had other close watchers in the stack, and we
-    // successfully consumed transient user activation so we can create a new
-    // one.
-    //
-    // - false: we had other close watchers in the stack, and there was no
-    // transient user activation to consume.
-    //
-    // If true is returned, then CanCloseWatcherFireCancel() will flip to false
-    // until the next user activation; close-watcher-related user activations
-    // are a shared resource between creation and the cancel event.
-    bool CheckForCreation();
+    bool HasConsumedFreeWatcher() const;
 
     void Trace(Visitor*) const;
 
@@ -93,7 +81,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
 
    private:
     // mojom::blink::CloseListener override:
-    void Signal() final { watchers_.back()->close(); }
+    void Signal() final;
 
     HeapLinkedHashSet<Member<CloseWatcher>> watchers_;
 
@@ -118,6 +106,8 @@ class CloseWatcher final : public EventTargetWithInlineData,
   enum class State { kActive, kClosed };
   State state_ = State::kActive;
   bool dispatching_cancel_ = false;
+  bool grouped_with_previous_ = false;
+  bool created_with_user_activation_ = false;
 };
 
 }  // namespace blink
