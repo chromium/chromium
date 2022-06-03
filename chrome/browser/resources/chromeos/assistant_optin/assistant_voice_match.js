@@ -61,6 +61,15 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
         type: String,
         value: '',
       },
+
+      /**
+       * Whether the {prefers-color-scheme: dark}
+       * @private {boolean}
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -276,6 +285,11 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
       return this.i18nAdvanced(
           'assistantVoiceMatchFooterForChild', {substitutions: [childName]});
     }
+  }
+
+  getReadyImgUrl_(isDarkMode) {
+    return './assistant_optin/assistant_ready_' + (isDarkMode ? 'dm' : 'lm') +
+        '.json';
   }
 }
 

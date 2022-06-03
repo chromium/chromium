@@ -351,6 +351,11 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
           this.i18n('assistantRelatedInfoTitle');
     }
   }
+
+  getAnimationUrl_(isDarkMode) {
+    return './assistant_optin/assistant_related_info_' +
+        (isDarkMode ? 'dm' : 'lm') + '.json';
+  }
 }
 
 customElements.define(AssistantRelatedInfo.is, AssistantRelatedInfo);
