@@ -5507,6 +5507,43 @@ TEST_F(CookieMonsterTest, ConvertPartitionedCookiesToUnpartitioned) {
   EXPECT_EQ(cookies.size(), 1u);
   EXPECT_EQ(cookies[0].Name(), "__Host-F");
   EXPECT_TRUE(cookies[0].IsPartitioned());
+
+  // Set three partitioned cookies:
+  // - The first has a partition key that is same-site with the cookie URL.
+  //
+  // - The second cookie has a partition key that is cross-site with the cookie
+  // URL because it has a different host.
+  //
+  // - The third cookie has a partition key that is cross-site with the cookie
+  // URL because it has a different scheme.
+  //
+  // The first cookie should be kept, even though it is not the most recently
+  // used. This is because we should cookies whose partition key is same-site
+  // with their URL.
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), https_www_foo_.url(),
+      "__Host-G=0; Secure; Path=/; SameSite=None; Partitioned", options,
+      absl::nullopt, absl::nullopt,
+      CookiePartitionKey::FromURLForTesting(https_www_foo_.url())));
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), https_www_foo_.url(),
+      "__Host-G=1; Secure; Path=/; SameSite=None; Partitioned", options,
+      absl::nullopt, absl::nullopt,
+      CookiePartitionKey::FromURLForTesting(GURL("https://2.com"))));
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), https_www_foo_.url(),
+      "__Host-G=2; Secure; Path=/; SameSite=None; Partitioned", options,
+      absl::nullopt, absl::nullopt,
+      CookiePartitionKey::FromURLForTesting((http_www_foo_.url()))));
+
+  cm->ConvertPartitionedCookiesToUnpartitioned(https_www_foo_.url());
+
+  cookies = GetAllCookiesForURL(cm.get(), https_www_foo_.url(),
+                                CookiePartitionKeyCollection::ContainsAll());
+  EXPECT_EQ(cookies.size(), 6u);
+  EXPECT_EQ(cookies[5].Name(), "__Host-G");
+  EXPECT_EQ(cookies[5].Value(), "0");
+  EXPECT_FALSE(cookies[4].IsPartitioned());
 }
 
 // Tests which use this class verify the expiry date clamping behavior when

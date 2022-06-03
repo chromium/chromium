@@ -2445,9 +2445,19 @@ void CookieMonster::OnConvertPartitionedCookiesToUnpartitioned(
       cookie_to_convert = *kv_pair.second[0];
     } else {
       for (const auto* cookie : kv_pair.second) {
-        // If the site only has partitioned cookies, we convert the most
-        // recently accessed cookie to unpartitioned and delete the rest.
+        // If the site only has partitioned cookies, we first check if there is
+        // a cookie whose partition key is same-site with the cookie's domain.
+        //
+        // If there are no partitioned cookies whose partition key is same-site
+        // with the cookie's domain, we convert the most recently accessed
+        // cookie to unpartitioned and delete the rest.
         if (cookie->IsPartitioned() && !cookie->PartitionKey()->nonce()) {
+          if (cookie->PartitionKey()->site() ==
+              SchemefulSite(GURL("https://" + cookie->DomainWithoutDot()))) {
+            should_convert_cookie = true;
+            cookie_to_convert = *cookie;
+            break;
+          }
           if (!should_convert_cookie ||
               cookie->LastAccessDate() > cookie_to_convert.LastAccessDate()) {
             should_convert_cookie = true;
