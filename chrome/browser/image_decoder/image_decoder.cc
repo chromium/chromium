@@ -33,24 +33,36 @@ void OnDecodeImageDone(
     std::move(fail_callback).Run(request_id);
 }
 
+void RunDecodeCallbackOnTaskRunner(
+    data_decoder::DecodeImageCallback callback,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    const SkBitmap& image) {
+  task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback), image));
+}
+
 template <typename ImageDataType>
 void DecodeImage(ImageDataType image_data,
                  data_decoder::mojom::ImageCodec codec,
                  bool shrink_to_fit,
                  const gfx::Size& desired_image_frame_size,
                  data_decoder::DecodeImageCallback callback,
+                 scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
                  data_decoder::DataDecoder* data_decoder) {
   base::span<const uint8_t> image_data_span(
       base::as_bytes(base::make_span(image_data)));
 
   if (data_decoder) {
-    data_decoder::DecodeImage(data_decoder, image_data_span, codec,
-                              shrink_to_fit, kMaxImageSizeInBytes,
-                              desired_image_frame_size, std::move(callback));
+    data_decoder::DecodeImage(
+        data_decoder, image_data_span, codec, shrink_to_fit,
+        kMaxImageSizeInBytes, desired_image_frame_size,
+        base::BindOnce(&RunDecodeCallbackOnTaskRunner, std::move(callback),
+                       std::move(callback_task_runner)));
   } else {
     data_decoder::DecodeImageIsolated(
         image_data_span, codec, shrink_to_fit, kMaxImageSizeInBytes,
-        desired_image_frame_size, std::move(callback));
+        desired_image_frame_size,
+        base::BindOnce(&RunDecodeCallbackOnTaskRunner, std::move(callback),
+                       std::move(callback_task_runner)));
   }
 }
 
@@ -154,6 +166,7 @@ void ImageDecoder::StartWithOptionsImpl(
 
   DecodeImage<ImageDataType>(std::move(image_data), codec, shrink_to_fit,
                              desired_image_frame_size, std::move(callback),
+                             image_request->task_runner(),
                              image_request->data_decoder());
 }
 
