@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/strings/escape.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -122,7 +123,9 @@ NSString* InjectedErrorPageFilePath() {
       URL.path() == base::SysNSStringToUTF8(LoadedErrorPageFilePath())) {
     std::string value;
     if (net::GetValueForKeyInQuery(URL, kOriginalUrlKey, &value)) {
-      return GURL(value);
+      // The URL was escaped when it was added to the error URL, unescape it
+      // here.
+      return GURL(base::UnescapeForHTML(base::UTF8ToUTF16(value)));
     }
   }
 
