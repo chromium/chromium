@@ -40,8 +40,14 @@ void GetInstalledVersion(InstalledVersionCallback callback) {
         ->GetInstalledBrowserVersion(base::BindOnce(
             [](InstalledVersionCallback callback,
                const std::string& version_str) {
-              std::move(callback).Run(
-                  InstalledAndCriticalVersion(base::Version(version_str)));
+              // We must return the current version if we obtain an invalid
+              // version, so that the InstalledVersionPoller can interpret that
+              // no update is available. This scenario can happen when rootfs
+              // LaCrOS was launched and no stateful LaCrOS component is
+              // currently available.
+              std::move(callback).Run(InstalledAndCriticalVersion(
+                  version_str.empty() ? version_info::GetVersion()
+                                      : base::Version(version_str)));
             },
             std::move(callback)));
     return;
