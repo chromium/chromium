@@ -4943,6 +4943,8 @@ static_library("browser") {
       "speech/tts_chromeos.h",
       "speech/tts_controller_delegate_impl.cc",
       "speech/tts_controller_delegate_impl.h",
+      "support_tool/ash/network_routes_data_collector.cc",
+      "support_tool/ash/network_routes_data_collector.h",
       "support_tool/ash/ui_hierarchy_data_collector.cc",
       "support_tool/ash/ui_hierarchy_data_collector.h",
       "sync/desk_sync_service_factory.cc",

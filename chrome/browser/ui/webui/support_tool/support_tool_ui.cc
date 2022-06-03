@@ -110,6 +110,8 @@ std::string GetDataCollectorName(
       return "Chrome OS Reven";
     case support_tool::CHROMEOS_DBUS:
       return "DBus Details";
+    case support_tool::CHROMEOS_NETWORK_ROUTES:
+      return "Chrome OS Network Routes";
     default:
       return "Error: Undefined";
   }

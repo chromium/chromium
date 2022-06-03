@@ -15,10 +15,11 @@ static constexpr support_tool::DataCollectorType kDataCollectors[] = {
 
 // Data collector types can only work on Chrome OS Ash.
 static constexpr support_tool::DataCollectorType kDataCollectorsChromeosAsh[] =
-    {support_tool::CHROMEOS_UI_HIERARCHY, support_tool::CHROMEOS_COMMAND_LINE,
-     support_tool::CHROMEOS_DEVICE_EVENT, support_tool::CHROMEOS_IWL_WIFI_DUMP,
-     support_tool::CHROMEOS_TOUCH_EVENTS, support_tool::CHROMEOS_CROS_API,
-     support_tool::CHROMEOS_LACROS,       support_tool::CHROMEOS_DBUS};
+    {support_tool::CHROMEOS_UI_HIERARCHY,  support_tool::CHROMEOS_COMMAND_LINE,
+     support_tool::CHROMEOS_DEVICE_EVENT,  support_tool::CHROMEOS_IWL_WIFI_DUMP,
+     support_tool::CHROMEOS_TOUCH_EVENTS,  support_tool::CHROMEOS_CROS_API,
+     support_tool::CHROMEOS_LACROS,        support_tool::CHROMEOS_DBUS,
+     support_tool::CHROMEOS_NETWORK_ROUTES};
 
 // Data collector types that can only work on if IS_CHROMEOS_WITH_HW_DETAILS
 // flag is turned on. IS_CHROMEOS_WITH_HW_DETAILS flag will be turned on for
