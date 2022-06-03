@@ -2665,14 +2665,14 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_COMPONENT_VPD_CACHE" translateable="false" desc="Name of device Vital Product Data SPI flash storage component.">
         Vpd Cached
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_NETWORK" translateable="false" desc="Name of device network component. TODO(gavindodd) clarify this.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_NETWORK" translateable="false" desc="Name of device network component.">
         Network
       </message>
       <message name="IDS_SHIMLESS_RMA_COMPONENT_CAMERA" translateable="false" desc="Name of device camera component.">
         Camera
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_STYLUS" translateable="false" desc="Name of device stylus component. TODO(gavindodd) clarify this.">
-        Stylus
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_STYLUS" translateable="false" desc="Name of device stylus support component.">
+        Stylus support
       </message>
       <message name="IDS_SHIMLESS_RMA_COMPONENT_TOUCHPAD" translateable="false" desc="Name of device touchpad component.">
         Touchpad
@@ -2683,7 +2683,7 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_COMPONENT_MEMORY" translateable="false" desc="Name of device memory components.">
         Memory
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_DISPLAY_PANEL" translateable="false" desc="Name of device display panel component. TODO(gavindodd) clarify this.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_DISPLAY_PANEL" translateable="false" desc="Name of device display panel component.">
         Display
       </message>
       <message name="IDS_SHIMLESS_RMA_COMPONENT_CELLULAR" translateable="false" desc="Name of device cellular network component. Used for wireless internet service through a service provider such as Google Fi.">
@@ -2707,7 +2707,7 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_COMPONENT_LID_GYROSCOPE" translateable="false" desc="Name of device component in the lid (e.g. screen) of the component.">
         Lid Gyroscope
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_SCREEN" translateable="false" desc="Name of device screen component. TODO(gavindodd) clarify this.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_SCREEN" translateable="false" desc="Name of device screen component.">
         Screen
       </message>
       <message name="IDS_SHIMLESS_RMA_COMPONENT_KEYBOARD" translateable="false" desc="Name of device keyboard component.">
