@@ -732,25 +732,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "win-pixel-builder-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "win10",
-    ),
-    os = os.WINDOWS_10,
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
-)
-
-ci.thin_tester(
-    name = "win-pixel-tester-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "win10",
-    ),
-    triggered_by = ["win-pixel-builder-rel"],
-)
-
-ci.builder(
     name = "linux-upload-perfetto",
     console_view_entry = consoles.console_view_entry(
         category = "perfetto",

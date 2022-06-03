@@ -432,7 +432,6 @@
       'win-backuprefptr-x86-fyi-rel': 'release_trybot_backuprefptr_x86_reclient',
       'win-celab-builder-rel': 'release_bot_minimal_symbols_reclient',
       'win-fieldtrial-rel': 'gpu_tests_release_bot_minimal_symbols_reclient',
-      'win-pixel-builder-rel': 'release_bot_reclient',
       'win-upload-perfetto': 'release_bot_perfetto_zlib_reclient',
       'win10-code-coverage': 'clang_code_coverage_reclient',
       'win32-archive-rel-goma-rbe-canary': 'release_bot_x86_minimal_symbols_enable_archive_compression',

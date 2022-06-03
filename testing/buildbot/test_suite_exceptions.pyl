@@ -2537,32 +2537,6 @@
       },
     },
   },
-  'pixel_browser_tests': {
-    'modifications': {
-      'win-pixel-tester-rel': {
-        'non_precommit_args': [
-          # Do not allow retry or it will break the bulk approval process.
-          # When retry with fail-pass pattern, the passing test will overwrite the previously
-          # seen flaky version on the trace. We can triage the image using the printed link,
-          # but it will not show on the Skia Gold search page.
-          '--test-launcher-retry-limit=0',
-        ],
-      },
-    },
-  },
-  'pixel_interactive_ui_tests': {
-    'modifications': {
-      'win-pixel-tester-rel': {
-        'non_precommit_args': [
-          # Do not allow retry or it will break the bulk approval process.
-          # When retry with fail-pass pattern, the passing test will overwrite the previously
-          # seen flaky version on the trace. We can triage the image using the printed link,
-          # but it will not show on the Skia Gold search page.
-          '--test-launcher-retry-limit=0',
-        ],
-      },
-    },
-  },
   'pixel_skia_gold_passthrough_test': {
     'modifications': {
       'Android FYI Release (Pixel 4)': {

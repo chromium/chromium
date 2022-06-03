@@ -3786,14 +3786,6 @@
           'isolated_scripts': 'fieldtrial_isolated_scripts',
         },
       },
-      'win-pixel-tester-rel': {
-        'mixins': [
-            'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'pixel_browser_tests_gtests',
-        }
-      },
       'win-upload-perfetto': {
         'additional_compile_targets': [ 'trace_processor_shell' ],
         'test_suites': {

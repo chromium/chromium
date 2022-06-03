@@ -1382,15 +1382,6 @@
       "use_remoteexec": true
     }
   },
-  "win-pixel-builder-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
   "win-upload-perfetto": {
     "gn_args": {
       "dcheck_always_on": false,
