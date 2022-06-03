@@ -435,10 +435,11 @@ message SystemProfileProto {
     // The drive that the current user data directory was loaded from.
     optional Drive user_data_drive = 17;
 
-    // Type of TPM on the device. This field is only filled in on ChromeOS. This
-    // includes Chromebooks with TPM1.2 or GSC (cr50 and ti50), and also
-    // includes flex devices (ChromeOS installed on devices with other OS),
-    // which has TPM type "runtime selection".
+    // Type of TPM on the device. This field is only filled in on ChromeOS
+    // devices (both CrOS and LaCrOS platforms). This includes Chromebooks with
+    // TPM1.2 or GSC (cr50 and ti50), and also includes flex devices (ChromeOS
+    // installed on devices with other OS), which has TPM type "runtime
+    // selection".
     enum TpmType {
       TPM_TYPE_UNKNOWN = 0;
       TPM_TYPE_1 = 1;

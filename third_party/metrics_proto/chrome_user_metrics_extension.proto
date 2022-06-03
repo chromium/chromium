@@ -14,6 +14,7 @@ package metrics;
 import "cast_logs.proto";
 import "cast_assistant_logs.proto";
 import "chrome_os_app_list_launch_event.proto";
+import "custom_tab_session.proto";
 import "histogram_event.proto";
 import "memory_leak_report.proto";
 import "omnibox_event.proto";
@@ -28,7 +29,7 @@ import "translate_event.proto";
 import "user_action_event.proto";
 import "user_demographics.proto";
 
-// Next tag: 27
+// Next tag: 28
 message ChromeUserMetricsExtension {
   // The product (i.e. end user application) for a given UMA log.
   enum Product {
@@ -167,4 +168,11 @@ message ChromeUserMetricsExtension {
   // session. This field is uploaded as independent logs, which contain only
   // session id and core system profile fields, apart from this field.
   repeated TraceLog trace_log = 19;
+
+  // Information about a Custom Tabs session, recorded in the log when the
+  // a CCT session ended. If custom tabs are opened and closed multiple times
+  // within the same log session, only the last one will be recorded. This is
+  // used to identify applications that use Custom Tabs in an abusive way. This
+  // is specific to Android.
+  optional CustomTabSessionProto custom_tab_session = 27;
 }
