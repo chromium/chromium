@@ -84,7 +84,8 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
   translate_bubble_view_->SetViewState(step, error_type);
 
   translate_bubble_view_->ShowForReason(reason);
-  translate::ReportTranslateBubbleUiAction(translate::BUBBLE_SHOWN);
+  translate::ReportTranslateBubbleUiAction(
+      translate::TranslateBubbleUiEvent::BUBBLE_SHOWN);
 
   translate_bubble_view_->model()->ReportUIChange(true);
 

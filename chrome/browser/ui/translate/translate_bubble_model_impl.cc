@@ -63,9 +63,6 @@ bool TranslateBubbleModelImpl::ShouldShowAlwaysTranslateShortcut() const {
 void TranslateBubbleModelImpl::SetViewState(
     TranslateBubbleModel::ViewState view_state) {
   current_view_state_ = view_state;
-  if (view_state == TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
-      view_state == TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE)
-    translate::ReportTranslateBubbleUiAction(translate::SET_STATE_OPTIONS);
 }
 
 void TranslateBubbleModelImpl::ShowError(

@@ -93899,32 +93899,36 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="TranslateBubbleUiEvent">
-  <int value="1" label="Switch to Options page"/>
-  <int value="2" label="Leave Options page"/>
+  <int value="1" label="[DEPRECATED] Switch to Options page"/>
+  <int value="2" label="[DEPRECATED] Leave Options page"/>
   <int value="3" label="[DEPRECATED] Advanced Link clicked"/>
   <int value="4" label="Always Translate checked"/>
   <int value="5" label="Always Translate unchecked"/>
   <int value="6" label="[DEPRECATED] Nope menu clicked"/>
   <int value="7" label="Never Translate Language menu clicked"/>
   <int value="8" label="Never Translate This Site menu clicked"/>
-  <int value="9" label="Translate button clicked"/>
+  <int value="9" label="Triggered translation by clicking target language tab"/>
   <int value="10" label="Done button clicked"/>
-  <int value="11" label="Cancel button clicked"/>
+  <int value="11" label="[DEPRECATED] Cancel button clicked"/>
   <int value="12" label="Close button clicked"/>
   <int value="13" label="Try Again button clicked"/>
-  <int value="14" label="Show Original button clicked"/>
+  <int value="14" label="Reverted translation by clicking source language tab"/>
   <int value="15" label="[DEPRECATED] Language Settings link clicked"/>
-  <int value="16" label="Source Language menu clicked"/>
-  <int value="17" label="Target Language menu clicked"/>
-  <int value="18" label="Page Action icon activated"/>
-  <int value="19" label="Page Action icon deactivated"/>
+  <int value="16" label="Language selected in source language combobox"/>
+  <int value="17" label="Language selected in target language combobox"/>
+  <int value="18" label="[DEPRECATED] Page Action icon activated"/>
+  <int value="19" label="[DEPRECATED] Page Action icon deactivated"/>
   <int value="20" label="Bubble was shown"/>
-  <int value="21" label="Bubble not shown: window is no longer valid"/>
+  <int value="21"
+      label="[DEPRECATED] Bubble not shown: window is no longer valid"/>
   <int value="22" label="Bubble not shown: window is minimized"/>
-  <int value="23" label="Bubble not shown: window is not active"/>
-  <int value="24" label="Bubble not shown: web contents not active"/>
+  <int value="23" label="[DEPRECATED] Bubble not shown: window is not active"/>
+  <int value="24"
+      label="[DEPRECATED] Bubble not shown: web contents not active"/>
   <int value="25" label="Bubble not shown: editable field is active"/>
-  <int value="26" label="Advanced menu item clicked"/>
+  <int value="26"
+      label="Page is Not in {Source Language} item, or Choose Another
+             Language item, in options menu clicked"/>
   <int value="27" label="[DEPRECATED] Advanced menu button clicked"/>
 </enum>
 

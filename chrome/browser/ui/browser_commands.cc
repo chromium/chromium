@@ -189,18 +189,9 @@ translate::TranslateBubbleUiEvent TranslateBubbleResultToUiEvent(
       [[fallthrough]];
     case ShowTranslateBubbleResult::SUCCESS:
       return translate::TranslateBubbleUiEvent::BUBBLE_SHOWN;
-    case ShowTranslateBubbleResult::BROWSER_WINDOW_NOT_VALID:
-      return translate::TranslateBubbleUiEvent::
-          BUBBLE_NOT_SHOWN_WINDOW_NOT_VALID;
     case ShowTranslateBubbleResult::BROWSER_WINDOW_MINIMIZED:
       return translate::TranslateBubbleUiEvent::
           BUBBLE_NOT_SHOWN_WINDOW_MINIMIZED;
-    case ShowTranslateBubbleResult::BROWSER_WINDOW_NOT_ACTIVE:
-      return translate::TranslateBubbleUiEvent::
-          BUBBLE_NOT_SHOWN_WINDOW_NOT_ACTIVE;
-    case ShowTranslateBubbleResult::WEB_CONTENTS_NOT_ACTIVE:
-      return translate::TranslateBubbleUiEvent::
-          BUBBLE_NOT_SHOWN_WEB_CONTENTS_NOT_ACTIVE;
     case ShowTranslateBubbleResult::EDITABLE_FIELD_IS_ACTIVE:
       return translate::TranslateBubbleUiEvent::
           BUBBLE_NOT_SHOWN_EDITABLE_FIELD_IS_ACTIVE;
