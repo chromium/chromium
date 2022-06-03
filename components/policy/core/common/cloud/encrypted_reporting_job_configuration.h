@@ -105,6 +105,15 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
   // Cancels the job, that was not allowed to proceed.
   void CancelNotAllowedJob();
 
+  // Callback to process error codes and, in case of success, response body.
+  void OnURLLoadComplete(DeviceManagementService::Job* job,
+                         int net_error,
+                         int response_code,
+                         const std::string& response_body) override;
+
+  // Test-only method that resets collected uploads state.
+  static void ResetUploadsStateForTest();
+
  protected:
   void UpdatePayloadBeforeGetInternal() override;
 
@@ -117,6 +126,11 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
 
  private:
   std::set<std::string> GetTopLevelKeyAllowList();
+
+  // Parameters populated from the payload_.
+  ::reporting::Priority priority_;
+  int64_t generation_id_{-1};
+  int64_t sequence_id_{-1};
 };
 
 }  // namespace policy
