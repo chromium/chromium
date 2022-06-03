@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityWinBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("/accessibility/input_datalist.html")));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   base::win::ScopedVariant result_variant;
 
