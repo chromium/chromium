@@ -515,11 +515,6 @@
       status: "test",
     },
     {
-      // https://github.com/DevSDK/calc-infinity-and-NaN/blob/master/explainer.md
-      name: "CSSCalcInfinityAndNaN",
-      status: "stable",
-    },
-    {
       // Support CSS Values Level 4 calc simplification and serialization
       // as specified in the specs below.
       // https://drafts.csswg.org/css-values-4/#calc-simplification

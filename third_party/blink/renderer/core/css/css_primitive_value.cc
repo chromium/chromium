@@ -59,10 +59,8 @@ float CSSPrimitiveValue::ClampToCSSLengthRange(double value) {
   // TODO(crbug.com/1133390): ClampTo function could occur the DECHECK failure
   // for NaN value. Therefore, infinity and NaN values should not be clamped
   // here.
-  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
-    value = CSSValueClampingUtils::ClampLength(value);
-  }
-  return ClampTo<float>(value, kMinValueForCssLength, kMaxValueForCssLength);
+  return ClampTo<float>(CSSValueClampingUtils::ClampLength(value),
+                        kMinValueForCssLength, kMaxValueForCssLength);
 }
 
 Length::ValueRange CSSPrimitiveValue::ConversionToLengthValueRange(
@@ -255,19 +253,14 @@ double CSSPrimitiveValue::ComputeSeconds() const {
   double result = IsCalculated()
                       ? To<CSSMathFunctionValue>(this)->ComputeSeconds()
                       : To<CSSNumericLiteralValue>(this)->ComputeSeconds();
-  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
-    result = CSSValueClampingUtils::ClampTime(result);
-  return result;
+  return CSSValueClampingUtils::ClampTime(result);
 }
 
 double CSSPrimitiveValue::ComputeDegrees() const {
   double result = IsCalculated()
                       ? To<CSSMathFunctionValue>(this)->ComputeDegrees()
                       : To<CSSNumericLiteralValue>(this)->ComputeDegrees();
-  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
-    result = CSSValueClampingUtils::ClampAngle(result);
-  }
-  return result;
+  return CSSValueClampingUtils::ClampAngle(result);
 }
 
 double CSSPrimitiveValue::ComputeDotsPerPixel() const {
@@ -321,21 +314,15 @@ uint8_t CSSPrimitiveValue::ComputeLength(
 template <>
 float CSSPrimitiveValue::ComputeLength(
     const CSSLengthResolver& length_resolver) const {
-  double value = ComputeLengthDouble(length_resolver);
-  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
-    value = CSSValueClampingUtils::ClampLength(value);
-  }
-  return ClampTo<float>(value);
+  return ClampTo<float>(
+      CSSValueClampingUtils::ClampLength(ComputeLengthDouble(length_resolver)));
 }
 
 template <>
 double CSSPrimitiveValue::ComputeLength(
     const CSSLengthResolver& length_resolver) const {
-  double value = ComputeLengthDouble(length_resolver);
-  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
-    return CSSValueClampingUtils::ClampLength(value);
-  }
-  return value;
+  return CSSValueClampingUtils::ClampLength(
+      ComputeLengthDouble(length_resolver));
 }
 
 double CSSPrimitiveValue::ComputeLengthDouble(
@@ -428,11 +415,8 @@ Length CSSPrimitiveValue::ConvertToLength(
   if (IsPercentage()) {
     if (IsNumericLiteralValue() ||
         !To<CSSMathFunctionValue>(this)->AllowsNegativePercentageReference()) {
-      double value = GetDoubleValueWithoutClamping();
-      if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
-        value = CSSValueClampingUtils::ClampLength(value);
-      }
-      return Length::Percent(value);
+      return Length::Percent(
+          CSSValueClampingUtils::ClampLength(GetDoubleValueWithoutClamping()));
     }
   }
   DCHECK(IsCalculated());

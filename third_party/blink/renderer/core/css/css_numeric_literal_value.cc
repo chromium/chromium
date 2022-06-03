@@ -24,8 +24,6 @@ void CSSNumericLiteralValue::TraceAfterDispatch(blink::Visitor* visitor) const {
 
 CSSNumericLiteralValue::CSSNumericLiteralValue(double num, UnitType type)
     : CSSPrimitiveValue(kNumericLiteralClass), num_(num) {
-  DCHECK(RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() ||
-         std::isfinite(num));
   DCHECK_NE(UnitType::kUnknown, type);
   numeric_literal_unit_type_ = static_cast<unsigned>(type);
 }
@@ -36,15 +34,9 @@ CSSNumericLiteralValue* CSSNumericLiteralValue::Create(double value,
   if (value < 0 || value > CSSValuePool::kMaximumCacheableIntegerValue)
     return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
 
-  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
-    // Value can be NaN.
-    if (std::isnan(value))
-      return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
-  } else {
-    // TODO(timloh): This looks wrong.
-    if (std::isinf(value))
-      value = 0;
-  }
+  // Value can be NaN.
+  if (std::isnan(value))
+    return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
 
   int int_value = ClampTo<int>(value);
   if (value != int_value)
@@ -257,13 +249,11 @@ String CSSNumericLiteralValue::CustomCSSText() const {
       // If the value is small integer, go the fast path.
       if (value < kMinInteger || value > kMaxInteger ||
           std::trunc(value) != value) {
-        if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() &&
-            (std::isinf(value) || std::isnan(value))) {
+        if (std::isinf(value) || std::isnan(value)) {
           text = FormatInfinityOrNaN(value, UnitTypeToString(GetType()));
         } else {
           text = FormatNumber(value, UnitTypeToString(GetType()));
         }
-
       } else {
         StringBuilder builder;
         int int_value = value;

@@ -11,13 +11,11 @@
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
 
-class CSSPrimitiveValueTest : public PageTestBase,
-                              private ScopedCSSCalcInfinityAndNaNForTest {
+class CSSPrimitiveValueTest : public PageTestBase {
  public:
   bool HasContainerRelativeUnits(const char* text) {
     return To<CSSPrimitiveValue>(
@@ -25,7 +23,7 @@ class CSSPrimitiveValueTest : public PageTestBase,
         ->HasContainerRelativeUnits();
   }
 
-  CSSPrimitiveValueTest() : ScopedCSSCalcInfinityAndNaNForTest(true) {}
+  CSSPrimitiveValueTest() = default;
 };
 
 using UnitType = CSSPrimitiveValue::UnitType;

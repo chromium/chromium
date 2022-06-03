@@ -1129,18 +1129,13 @@ static CSSPrimitiveValue* ConsumeMathFunctionAngle(
 static CSSPrimitiveValue* ConsumeMathFunctionAngle(
     CSSParserTokenRange& range,
     const CSSParserContext& context) {
-  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
-    MathFunctionParser math_parser(range, context,
-                                   CSSPrimitiveValue::ValueRange::kAll);
-    if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
-      if (calculation->Category() != kCalcAngle)
-        return nullptr;
-    }
-    return math_parser.ConsumeValue();
+  MathFunctionParser math_parser(range, context,
+                                 CSSPrimitiveValue::ValueRange::kAll);
+  if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
+    if (calculation->Category() != kCalcAngle)
+      return nullptr;
   }
-  return ConsumeMathFunctionAngle(range, context,
-                                  std::numeric_limits<double>::lowest(),
-                                  std::numeric_limits<double>::max());
+  return math_parser.ConsumeValue();
 }
 
 CSSPrimitiveValue* ConsumeAngle(

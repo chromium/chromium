@@ -642,17 +642,6 @@
     "args": ["--enable-blink-features=CSSModules", "--js-flags=--harmony-import-assertions"]
   },
   {
-    "prefix": "css-calc-infinity-and-nan-disabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/html/rendering/non-replaced-elements/the-page/crashtests/",
-              "external/wpt/css/css-values/",
-              "external/wpt/css/css-transforms/parsing/",
-              "external/wpt/css/css-transforms/crashtests/",
-              "external/wpt/html/obsolete/requirements-for-implementations/the-marquee-element-0/crashtests",
-              "external/wpt/css/css-transitions/crashtests/transition-large-word-spacing-001.html"],
-    "args": ["--disable-blink-features=CSSCalcInfinityAndNaN"]
-  },
-  {
     "prefix": "import-assertions",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/import-assertions"],
