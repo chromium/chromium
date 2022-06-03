@@ -602,7 +602,7 @@ void GooglePhotosFetcher<T>::AddRequestAndStartIfNecessary(
 
   auto fetcher = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       "wallpaper_google_photos_fetcher", identity_manager_, scopes,
-      signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
       signin::ConsentLevel::kSignin);
   auto* fetcher_ptr = fetcher.get();
   fetcher_ptr->Start(base::BindOnce(
