@@ -83,7 +83,7 @@ void AppendArgsJustAfterProgram(base::CommandLine& cmd,
   argv.insert(argv.begin() + 1, args.begin(), args.end());
 }
 
-void FillInSystemEnvironment(base::Value::DictStorage& ds) {
+void FillInSystemEnvironment(base::Value::Dict& ds) {
   std::string processor = "unknown";
 #if defined(ARCH_CPU_X86)
   processor = "x86";
@@ -93,8 +93,8 @@ void FillInSystemEnvironment(base::Value::DictStorage& ds) {
   LOG(WARNING) << "Unknown Processor.";
 #endif
 
-  ds["system"] = base::Value(SkiaGoldPixelDiff::GetPlatform());
-  ds["processor"] = base::Value(processor);
+  ds.Set("system", SkiaGoldPixelDiff::GetPlatform());
+  ds.Set("processor", processor);
 }
 
 // Fill in test environment to the keys_file. The format is json.
@@ -103,7 +103,7 @@ void FillInSystemEnvironment(base::Value::DictStorage& ds) {
 // should be filled in. Eg: operating system, graphics card, processor
 // architecture, screen resolution, etc.
 bool FillInTestEnvironment(const base::FilePath& keys_file) {
-  base::Value::DictStorage ds;
+  base::Value::Dict ds;
   FillInSystemEnvironment(ds);
   base::Value root(std::move(ds));
   std::string content;
