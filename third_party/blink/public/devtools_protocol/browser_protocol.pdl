@@ -6955,6 +6955,16 @@ domain Page
       AdFrameType adFrameType
       optional array of AdFrameExplanation explanations
 
+  # Identifies the bottom-most script which caused the frame to be labelled
+  # as an ad.
+  experimental type AdScriptId extends object
+    properties
+      # Script Id of the bottom-most script which caused the frame to be labelled
+      # as an ad.
+      Runtime.ScriptId scriptId
+      # Id of adScriptId's debugger.
+      Runtime.UniqueDebuggerId debuggerId
+
   # Indicates whether the frame is a secure context and why it is the case.
   experimental type SecureContextType extends string
     enum
@@ -7988,6 +7998,9 @@ domain Page
       FrameId parentFrameId
       # JavaScript stack trace of when frame was attached, only set if frame initiated from script.
       optional Runtime.StackTrace stack
+      # Identifies the bottom-most script which caused the frame to be labelled
+      # as an ad. Only sent if frame is labelled as an ad and id is available.
+      experimental optional AdScriptId adScriptId
 
   # Fired when frame no longer has a scheduled navigation.
   deprecated event frameClearedScheduledNavigation
