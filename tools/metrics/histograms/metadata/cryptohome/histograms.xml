@@ -373,14 +373,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.FreeDiskSpaceDuringLoginTotalFreedInMb" units="MiB"
+    expires_after="2023-02-01">
+  <owner>vsavu@chromium.org</owner>
+  <owner>gwendal@chromium.org</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
+  <summary>
+    Background: In critically low disk space scenarios, cryptohome performs
+    cleanup before allowing login to proceed. If enough space is available, this
+    operation is skipped and nothing is reported. This cleanup is related to the
+    periodic cleanup cryptohome performes.
+
+    This histogram records how many Mebibytes of space was freed in total every
+    time login cleanup is executed.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.FreeDiskSpaceTotalFreedInMb" units="MiB"
     expires_after="2023-02-01">
   <owner>vsavu@chromium.org</owner>
-  <owner>dlunev@chromium.org</owner>
+  <owner>gwendal@chromium.org</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
   <summary>
-    In low disk space scenarios, Cryptohome performs a lot of disk space
-    operations to erase data. This is the amount of space that was released by
-    the automatic cleanup.
+    Background: In low disk space scenarios, cryptohome performs cleanup
+    periodically. If enough space is available, this operation is skipped and
+    nothing is reported.
+
+    This histogram records how many Mebibytes of space was freed in total every
+    time cleanup is executed.
   </summary>
 </histogram>
 
