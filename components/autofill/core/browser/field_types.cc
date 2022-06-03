@@ -156,6 +156,8 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case PHONE_FAX_COUNTRY_CODE:
     case PHONE_FAX_CITY_AND_NUMBER:
     case PHONE_FAX_WHOLE_NUMBER:
+    case PHONE_HOME_NUMBER_PREFIX:
+    case PHONE_HOME_NUMBER_SUFFIX:
     case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case PRICE:
@@ -219,6 +221,10 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "EMAIL_ADDRESS";
     case PHONE_HOME_NUMBER:
       return "PHONE_HOME_NUMBER";
+    case PHONE_HOME_NUMBER_PREFIX:
+      return "PHONE_HOME_NUMBER_PREFIX";
+    case PHONE_HOME_NUMBER_SUFFIX:
+      return "PHONE_HOME_NUMBER_SUFFIX";
     case PHONE_HOME_CITY_CODE:
       return "PHONE_HOME_CITY_CODE";
     case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:

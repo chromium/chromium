@@ -217,6 +217,11 @@ std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
     case PHONE_HOME_NUMBER:
       return cached_parsed_phone_.number();
 
+    case PHONE_HOME_NUMBER_PREFIX:
+    case PHONE_HOME_NUMBER_SUFFIX:
+      NOTIMPLEMENTED();
+      return std::u16string();
+
     case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
       return GetTrunkPrefix() + cached_parsed_phone_.city_code();
 

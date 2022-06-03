@@ -256,9 +256,14 @@ enum ServerFieldType {
   // combination with a PHONE_HOME_COUNTRY_CODE field.
   PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX = 122,
 
+  // PHONE_HOME_NUMBER = PHONE_HOME_NUMBER_PREFIX + PHONE_HOME_NUMBER_SUFFIX.
+  // For the US numbers (650) 234-5678 the types correspond to 234 and 5678.
+  PHONE_HOME_NUMBER_PREFIX = 123,
+  PHONE_HOME_NUMBER_SUFFIX = 124,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
-  MAX_VALID_FIELD_TYPE = 123,
+  MAX_VALID_FIELD_TYPE = 125,
 };
 
 // The list of all HTML autocomplete field type hints supported by Chrome.
