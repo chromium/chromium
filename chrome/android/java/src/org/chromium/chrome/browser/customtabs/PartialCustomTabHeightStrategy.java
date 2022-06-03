@@ -42,6 +42,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
@@ -99,6 +100,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final int mHandleHeight;
     private ValueAnimator mAnimator;
     private int mShadowOffset;
+    private boolean mDrawOutlineShadow;
 
     private @HeightStatus int mStatus = HeightStatus.INITIAL_HEIGHT;
     private @HeightStatus int mTargetStatus;
@@ -306,6 +308,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mIsInMultiWindowMode = multiWindowModeStateDispatcher.isInMultiWindowMode();
         mNavigationBarColor = navigationBarColor;
         mNavigationBarDividerColor = navigationBarDividerColor;
+        mDrawOutlineShadow = SysUtils.isLowEndDevice();
         mHandleHeight =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_handle_height);
         mSpinnerFadeoutAnimatorListener = new AnimatorListener() {
@@ -347,9 +350,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     public void onToolbarInitialized(
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
         mToolbarCoordinator = coordinatorView;
-        roundCorners(coordinatorView, toolbar, toolbarCornerRadius);
-
         mToolbarView = toolbar;
+        roundCorners(coordinatorView, toolbar, toolbarCornerRadius);
         toolbar.setHandleStrategy(new PartialCustomTabHandleStrategy(mActivity));
     }
 
@@ -386,12 +388,28 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
         handleView.setElevation(
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation));
+        View handleBar = handleView.findViewById(R.id.handle_bar);
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) handleBar.getLayoutParams();
+        int dragBarTopMargin =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_handle_height)
+                - mActivity.getResources().getDimensionPixelSize(
+                        R.dimen.custom_tabs_drag_bar_height);
+        lp.setMargins(0, dragBarTopMargin, 0, 0);
+
         GradientDrawable background = (GradientDrawable) handleView.getBackground();
         background.mutate();
         background.setCornerRadii(new float[] {toolbarCornerRadius, toolbarCornerRadius,
                 toolbarCornerRadius, toolbarCornerRadius, 0, 0, 0, 0});
-        handleView.setBackground(background);
         updateShadowOffset();
+        if (mDrawOutlineShadow) {
+            int width = mActivity.getResources().getDimensionPixelSize(
+                    R.dimen.custom_tabs_outline_width);
+            int color = toolbar.getBackground().getColor();
+            background.setStroke(width, toolbar.getToolbarHairlineColor(color));
+        }
+
+        handleView.setBackground(background);
 
         // Pass the handle View to CustomTabToolbar for background color management.
         toolbar.setHandleView(handleView);
@@ -432,7 +450,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     private void updateShadowOffset() {
-        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE || mDrawOutlineShadow) {
             // Shadow is not necessary as CCT will be always of full-height in landscape mode.
             mShadowOffset = 0;
         } else {
@@ -533,8 +551,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // the handle bar portion of the CCT toolbar header.
         // TODO(jinsukkim):
         //   - Remove the shadow when in full-height so there won't be a gap beneath the status bar.
-        //   - Draw a thin border line around CCT on low-mem devices where the shadow effect via
-        //     android:elevation directive won't work.
         int windowPos = mActivity.getWindow().getAttributes().y;
         lp.height = getDisplayHeight() - windowPos - mHandleHeight - mShadowOffset - mNavbarHeight;
         parentView.setLayoutParams(lp);
@@ -598,9 +614,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
         Integer dividerColor = CustomTabNavigationBarController.getDividerColor(
                 mActivity, mNavigationBarColor, mNavigationBarDividerColor, needsDarkButtons);
+        View divider = mNavbar.findViewById(R.id.divider);
         if (dividerColor != null) {
-            View divider = mNavbar.findViewById(R.id.divider);
             divider.setBackgroundColor(dividerColor);
+        } else {
+            divider.setVisibility(View.GONE);
         }
     }
 

@@ -6,13 +6,15 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/custom_tabs_handle_height"
+    android:layout_height="match_parent"
     android:background="@drawable/custom_tabs_handle_view_shape">
 
     <ImageView
+        android:id="@+id/handle_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginTop="0dp"
+        android:layout_gravity="center_horizontal"
         android:importantForAccessibility="no"
         android:src="@drawable/drag_handlebar"
         android:tint="@macro/drag_handlebar_color" />
