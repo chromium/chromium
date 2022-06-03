@@ -1,5 +1,52 @@
 object_value {
   field {
+    name: "data_clears"
+    value {
+      array_value {
+        value {
+          object_value {
+            field {
+              name: "timestamp"
+              value {
+                string_value {
+                  value: "1643235571"
+                }
+              }
+            }
+            field {
+              name: "delete_begin"
+              value {
+                string_value {
+                  value: "1643235569"
+                }
+              }
+            }
+            field {
+              name: "delete_end"
+              value {
+                string_value {
+                  value: "1643235570"
+                }
+              }
+            }
+            field {
+              name: "origins"
+              value {
+                array_value {
+                  value {
+                    string_value {
+                      value: "https://a.test"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  field {
     name: "cookies"
     value {
       array_value {
@@ -361,7 +408,7 @@ object_value {
                           name: "a"
                           value: {
                             number_value {
-                              value: 123
+                              integer_value: 123
                             }
                           }
                         }
