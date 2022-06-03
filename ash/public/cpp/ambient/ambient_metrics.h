@@ -43,6 +43,10 @@ ASH_PUBLIC_EXPORT void RecordAmbientModeTotalNumberOfAlbums(int num_albums);
 
 ASH_PUBLIC_EXPORT void RecordAmbientModeSelectedNumberOfAlbums(int num_albums);
 
+ASH_PUBLIC_EXPORT void RecordAmbientModeAnimationSmoothness(
+    int smoothness,
+    AmbientAnimationTheme theme);
+
 }  // namespace ambient
 }  // namespace ash
 

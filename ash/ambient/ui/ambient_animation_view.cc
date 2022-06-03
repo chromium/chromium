@@ -23,6 +23,8 @@
 #include "ash/ambient/ui/glanceable_info_view.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/public/cpp/ambient/ambient_metrics.h"
+#include "ash/public/cpp/metrics_util.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
@@ -80,23 +82,13 @@ constexpr int kTimeFontSizeDip = 32;
 constexpr SkColor kDarkModeShieldColor =
     SkColorSetA(gfx::kGoogleGrey900, SK_AlphaOPAQUE / 10);
 
-// TODO(esum): Record throughput metrics to track animation performance in the
-// field. We can use ash::metrics_util::CalculateSmoothness().
-void LogCompositorThroughput(
-    base::TimeTicks logging_start_time,
-    const cc::FrameSequenceMetrics::CustomReportData& data) {
-  base::TimeDelta duration = base::TimeTicks::Now() - logging_start_time;
-  float duration_sec = duration.InSecondsF();
+void LogCompositorThroughput(AmbientAnimationTheme theme, int smoothness) {
   // Use VLOG instead of DVLOG since this log is performance-related and
   // developers will almost certainly only care about this log on non-debug
   // builds. The overhead of "--vmodule" regex matching is very minor so far to
   // performance/CPU.
-  VLOG(1) << "Compositor throughput report: frames_expected="
-          << data.frames_expected << " frames_produced=" << data.frames_produced
-          << " jank_count=" << data.jank_count
-          << " expected_fps=" << data.frames_expected / duration_sec
-          << " actual_fps=" << data.frames_produced / duration_sec
-          << " duration=" << duration;
+  VLOG(1) << "Compositor throughput report: smoothness=" << smoothness;
+  ambient::RecordAmbientModeAnimationSmoothness(smoothness, theme);
 }
 
 // Returns the maximum possible displacement in either dimension from the
@@ -377,8 +369,9 @@ void AmbientAnimationView::RestartThroughputTracking() {
   ui::Compositor* compositor = widget->GetCompositor();
   DCHECK(compositor);
   throughput_tracker_ = compositor->RequestNewThroughputTracker();
-  throughput_tracker_->Start(base::BindOnce(
-      &LogCompositorThroughput, /*logging_start_time=*/base::TimeTicks::Now()));
+  throughput_tracker_->Start(metrics_util::ForSmoothness(
+      base::BindRepeating(&LogCompositorThroughput,
+                          static_resources_->GetAmbientAnimationTheme())));
 }
 
 void AmbientAnimationView::ApplyJitter() {

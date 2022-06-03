@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace ambient {
@@ -96,6 +97,14 @@ void RecordAmbientModeTotalNumberOfAlbums(int num_albums) {
 void RecordAmbientModeSelectedNumberOfAlbums(int num_albums) {
   base::UmaHistogramCounts100("Ash.AmbientMode.SelectedNumberOfAlbums",
                               num_albums);
+}
+
+void RecordAmbientModeAnimationSmoothness(int smoothness,
+                                          AmbientAnimationTheme theme) {
+  base::UmaHistogramPercentage(
+      base::StrCat(
+          {"Ash.AmbientMode.LottieAnimationSmoothness.", ToString(theme)}),
+      smoothness);
 }
 
 }  // namespace ambient

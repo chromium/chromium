@@ -204,6 +204,17 @@ chromium-metrics-reviews@google.com.
   <token key="Theme" variants="AmbientModeThemes"/>
 </histogram>
 
+<histogram name="Ash.AmbientMode.LottieAnimationSmoothness.{Theme}" units="%"
+    expires_after="2022-12-01">
+  <owner>esum@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Emitted periodically while {Theme} is rendering in ambient mode. 100%
+    represents ideal smoothness.
+  </summary>
+  <token key="Theme" variants="AmbientModeThemes"/>
+</histogram>
+
 <histogram name="Ash.AmbientMode.PhotoSource" enum="AmbientModePhotoSource"
     expires_after="2022-12-01">
   <owner>cowmoo@google.com</owner>
