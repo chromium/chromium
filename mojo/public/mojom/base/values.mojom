@@ -36,7 +36,7 @@ struct DictionaryValue {
   map<string, Value> storage;
 };
 
-[Stable]
+[Stable, RenamedFrom="mojo_base.mojom.DeprecatedListValue"]
 struct ListValue {
   array<Value> storage;
 };
@@ -48,9 +48,4 @@ struct ListValue {
 [Stable]
 struct DeprecatedDictionaryValue {
   map<string, Value> storage;
-};
-
-[Stable]
-struct DeprecatedListValue {
-  array<Value> storage;
 };

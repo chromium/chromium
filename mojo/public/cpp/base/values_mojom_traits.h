@@ -107,18 +107,6 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
-    StructTraits<mojo_base::mojom::DeprecatedListValueDataView, base::Value> {
-  static base::span<const base::Value> storage(const base::Value& value) {
-    DCHECK(value.is_list());
-    return value.GetListDeprecated();
-  }
-
-  static bool Read(mojo_base::mojom::DeprecatedListValueDataView data,
-                   base::Value* value);
-};
-
-template <>
-struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     UnionTraits<mojo_base::mojom::ValueDataView, base::Value> {
   static mojo_base::mojom::ValueDataView::Tag GetTag(const base::Value& data) {
     switch (data.type()) {
