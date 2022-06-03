@@ -288,12 +288,6 @@ void WebUILoginView::AboutToRequestFocusFromTabTraversal(bool reverse) {
   web_view_->web_contents()->FocusThroughTabTraversal(reverse);
   GetWidget()->Activate();
   web_view_->web_contents()->Focus();
-
-  if (!GetOobeUI())
-    return;
-  CoreOobeView* view = GetOobeUI()->GetCoreOobeView();
-  if (view)
-    view->FocusReturned(reverse);
 }
 
 void WebUILoginView::OnAppTerminating() {

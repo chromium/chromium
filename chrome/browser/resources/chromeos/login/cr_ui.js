@@ -47,17 +47,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Called when focus is returned from ash::SystemTray.
-     * @param {boolean} reverse Is focus returned in reverse order?
-     */
-    static focusReturned(reverse) {
-      const screen = Oobe.getInstance().currentScreen;
-      if (screen && screen.onFocusReturned) {
-        screen.onFocusReturned(reverse);
-      }
-    }
-
-    /**
      * Handle the cancel accelerator.
      */
     static handleCancel() {

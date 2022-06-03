@@ -150,10 +150,6 @@ void CoreOobeHandler::RegisterMessages() {
   AddCallback("enableShelfButtons", &CoreOobeHandler::HandleEnableShelfButtons);
 }
 
-void CoreOobeHandler::FocusReturned(bool reverse) {
-  CallJS("cr.ui.Oobe.focusReturned", reverse);
-}
-
 void CoreOobeHandler::ShowScreenWithData(
     const ash::OobeScreenId& screen,
     absl::optional<base::Value::Dict> data) {

@@ -36,7 +36,6 @@ class CoreOobeView {
   virtual void ShowScreenWithData(const ash::OobeScreenId& screen,
                                   absl::optional<base::Value::Dict> data) = 0;
   virtual void ReloadContent(base::Value::Dict dictionary) = 0;
-  virtual void FocusReturned(bool reverse) = 0;
   virtual void UpdateClientAreaSize(const gfx::Size& size) = 0;
   virtual void ToggleSystemInfo() = 0;
   virtual void ForwardCancel() = 0;
@@ -87,7 +86,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void ShowScreenWithData(const ash::OobeScreenId& screen,
                           absl::optional<base::Value::Dict> data) override;
   void ReloadContent(base::Value::Dict dictionary) override;
-  void FocusReturned(bool reverse) override;
   // Updates client area size based on the primary screen size.
   void UpdateClientAreaSize(const gfx::Size& size) override;
   void ToggleSystemInfo() override;
