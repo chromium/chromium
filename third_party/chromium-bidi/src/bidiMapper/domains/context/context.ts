@@ -34,40 +34,47 @@ export class Context {
   readonly #eventManager: IEventManager;
   readonly #scriptEvaluator: ScriptEvaluator;
 
+  // Delegate to resolve `#initialized`.
+  #markContextInitialized: () => void = () => {
+    throw Error('Context is not created yet.');
+  };
+
+  // `#initialized` is resolved when `#markContextInitialized` is called.
+  #initialized: Promise<void> = new Promise((resolve) => {
+    this.#markContextInitialized = () => {
+      resolve();
+    };
+  });
+
+  public waitInitialized(): Promise<void> {
+    return this.#initialized;
+  }
+
   private constructor(
     _contextId: string,
     _cdpClient: CdpClient,
     _bidiServer: IBidiServer,
-    _eventManager: IEventManager,
-    _serializer: ScriptEvaluator
+    _eventManager: IEventManager
   ) {
     this.#contextId = _contextId;
     this.#cdpClient = _cdpClient;
     this.#bidiServer = _bidiServer;
     this.#eventManager = _eventManager;
-    this.#scriptEvaluator = _serializer;
+    this.#scriptEvaluator = ScriptEvaluator.create(_cdpClient);
+    // Just initiate initialization, don't wait for it to complete.
+    // Field `initialized` has a promise, which is resolved after initialization
+    // is completed.
+    // noinspection JSIgnoredPromiseFromCall
+    this.#initialize();
   }
 
-  public static async create(
-    contextId: string,
-    cdpClient: CdpClient,
-    bidiServer: IBidiServer,
-    eventManager: IEventManager
-  ) {
-    const scriptEvaluator = ScriptEvaluator.create(cdpClient);
-
-    const context = new Context(
-      contextId,
-      cdpClient,
-      bidiServer,
-      eventManager,
-      scriptEvaluator
-    );
-
-    await LogManager.create(contextId, cdpClient, bidiServer, scriptEvaluator);
-
-    await context.#initialize();
-    return context;
+  public static create(
+    _contextId: string,
+    _cdpClient: CdpClient,
+    _bidiServer: IBidiServer,
+    _eventManager: IEventManager
+  ): Context {
+    return new Context(_contextId, _cdpClient, _bidiServer, _eventManager);
   }
 
   public setSessionId(sessionId: string): void {
@@ -180,8 +187,13 @@ export class Context {
   }
 
   async #initialize() {
-    // Enabling Runtime doamin needed to have an exception stacktrace in
-    // `evaluateScript`.
+    await LogManager.create(
+      this.#contextId,
+      this.#cdpClient,
+      this.#bidiServer,
+      this.#scriptEvaluator
+    );
+    this.#initializeEventListeners();
     await this.#cdpClient.Runtime.enable();
     await this.#cdpClient.Page.enable();
     await this.#cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
@@ -191,8 +203,8 @@ export class Context {
       flatten: true,
     });
 
-    this.#initializeEventListeners();
     await this.#cdpClient.Runtime.runIfWaitingForDebugger();
+    this.#markContextInitialized();
   }
 
   #initializeEventListeners() {

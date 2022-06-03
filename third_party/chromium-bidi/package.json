@@ -29,7 +29,7 @@
     "argparse": "^2.0.1",
     "chai-exclude": "^2.1.0",
     "debug": "^4.3.4",
-    "puppeteer": "^14.1.1",
+    "puppeteer": "14.1.2",
     "ts-node": "^10.8.0",
     "tslib": "^2.4.0",
     "websocket": "^1.0.34",

@@ -27,7 +27,7 @@ import { NoSuchFrameException } from '../protocol/error';
 const logContext = log('context');
 
 export class BrowsingContextProcessor {
-  private _contexts: Map<string, Promise<Context>> = new Map();
+  private _contexts: Map<string, Context> = new Map();
   private _sessionToTargets: Map<string, Context> = new Map();
 
   // Set from outside.
@@ -70,78 +70,70 @@ export class BrowsingContextProcessor {
     });
   }
 
-  // Creation of `Context` can take quite a while. To avoid race condition, keep
-  // a Promise in the map, eventually resolved with the `Context`.
-  private async _getOrCreateContext(
+  private _getOrCreateContext(
     contextId: string,
     cdpSessionId: string
-  ): Promise<Context> {
-    let contextPromise = this._contexts.get(contextId);
-    if (!contextPromise) {
-      const sessionCdpClient = this._cdpConnection.getCdpClient(cdpSessionId);
-
-      // Don't wait for actual creation. Just put the Promise into map.
-      contextPromise = Context.create(
-        contextId,
-        sessionCdpClient,
-        this._bidiServer,
-        this._eventManager
-      );
-      this._contexts.set(contextId, contextPromise);
+  ): Context {
+    if (this._contexts.has(contextId)) {
+      return this._contexts.get(contextId)!;
     }
-    return contextPromise;
+
+    const context = Context.create(
+      contextId,
+      this._cdpConnection.getCdpClient(cdpSessionId),
+      this._bidiServer,
+      this._eventManager
+    );
+    this._contexts.set(contextId, context);
+    return context;
   }
 
   private _hasKnownContext(contextId: string): boolean {
     return this._contexts.has(contextId);
   }
 
-  private async _tryGetContext(
-    contextId: string
-  ): Promise<Context | undefined> {
-    return await this._contexts.get(contextId);
+  private _tryGetContext(contextId: string): Context | undefined {
+    return this._contexts.get(contextId);
   }
 
-  private async _getKnownContext(contextId: string): Promise<Context> {
+  private _getKnownContext(contextId: string): Context {
     if (!this._hasKnownContext(contextId)) {
       throw new Error('context not found');
     }
-    return await this._contexts.get(contextId)!;
+    return this._contexts.get(contextId)!;
   }
 
   private async _handleAttachedToTargetEvent(
     params: Protocol.Target.AttachedToTargetEvent
   ) {
-    logContext('AttachedToTarget event received', params);
+    logContext('AttachedToTarget event received: ' + JSON.stringify(params));
 
     const { sessionId, targetInfo } = params;
     if (!this._isValidTarget(targetInfo)) {
       return;
     }
 
-    const context = await this._getOrCreateContext(
-      targetInfo.targetId,
-      sessionId
-    );
+    const context = this._getOrCreateContext(targetInfo.targetId, sessionId);
     context.updateTargetInfo(targetInfo);
     this._sessionToTargets.delete(sessionId);
     this._sessionToTargets.set(sessionId, context);
     context.setSessionId(sessionId);
 
+    await context.waitInitialized();
     await this._onContextCreated(context);
   }
 
-  private async _handleInfoChangedEvent(
+  private _handleInfoChangedEvent(
     params: Protocol.Target.TargetInfoChangedEvent
   ) {
-    logContext('infoChangedEvent event received', params);
+    logContext('infoChangedEvent event received: ' + JSON.stringify(params));
 
     const targetInfo = params.targetInfo;
     if (!this._isValidTarget(targetInfo)) {
       return;
     }
 
-    const context = await this._tryGetContext(targetInfo.targetId);
+    const context = this._tryGetContext(targetInfo.targetId);
     if (context) {
       context.onInfoChangedEvent(targetInfo);
     }
@@ -154,7 +146,7 @@ export class BrowsingContextProcessor {
   private async _handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
-    logContext('detachedFromTarget event received', params);
+    logContext('detachedFromTarget event received: ' + JSON.stringify(params));
 
     // TODO: params.targetId is deprecated. Update this class to track using
     // params.sessionId instead.
@@ -219,6 +211,7 @@ export class BrowsingContextProcessor {
 
       if (this._hasKnownContext(contextId)) {
         const existingContext = await this._getKnownContext(contextId);
+        await existingContext.waitInitialized();
         resolve({ result: existingContext.serializeToBidiValue() });
         return;
       }
@@ -232,10 +225,12 @@ export class BrowsingContextProcessor {
             onAttachedToTarget
           );
 
-          const context = await this._getOrCreateContext(
-            contextId,
+          const context = this._getOrCreateContext(
+            attachToTargetEventParams.targetInfo.targetId,
             attachToTargetEventParams.sessionId
           );
+          context.updateTargetInfo(attachToTargetEventParams.targetInfo);
+          await context.waitInitialized();
           resolve({ result: context.serializeToBidiValue() });
         }
       };

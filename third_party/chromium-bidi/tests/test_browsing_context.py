@@ -36,7 +36,6 @@ async def test_browsingContext_getTree_contextReturned(websocket):
 
 
 @pytest.mark.asyncio
-# Not implemented yet.
 async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
       context_id):
     result = await execute_command(websocket, {
@@ -106,25 +105,22 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
     # Assert "browsingContext.contextCreated" event emitted.
     resp = await read_JSON_message(websocket)
     new_context_id = resp['params']['context']
-    # TODO: replace with assertion after event is raised with proper URL.
-    recursiveCompare({
+
+    assert resp == {
         "method": "browsingContext.contextCreated",
         "params": {
             "context": new_context_id,
             "children": [],
-            "url": "__any_value__"}
-    }, resp, ["url"])
+            "url": "about:blank"}}
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
-    # TODO: replace with assertion after event is raised with proper URL.
-    recursiveCompare({
+    assert resp == {
         "id": 9,
         "result": {
             "context": new_context_id,
             "children": [],
-            "url": "__any_value__"}
-    }, resp, ["url"])
+            "url": "about:blank"}}
 
 
 @pytest.mark.asyncio
