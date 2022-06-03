@@ -45,10 +45,10 @@ void SetQuicFlagByName_int64_t(int64_t* flag, const std::string& value) {
 }  // namespace
 
 void SetQuicFlagByName(const std::string& flag_name, const std::string& value) {
-#define QUIC_FLAG(flag, default_value)    \
-  if (flag_name == #flag) {               \
-    SetQuicFlagByName_bool(&flag, value); \
-    return;                               \
+#define QUIC_FLAG(flag, default_value)            \
+  if (flag_name == "FLAGS_" #flag) {              \
+    SetQuicFlagByName_bool(&FLAGS_##flag, value); \
+    return;                                       \
   }
 #include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG

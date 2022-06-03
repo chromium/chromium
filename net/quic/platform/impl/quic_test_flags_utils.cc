@@ -12,7 +12,7 @@
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 
 QuicFlagSaverImpl::QuicFlagSaverImpl() {
-#define QUIC_FLAG(flag, value) saved_##flag##_ = flag;
+#define QUIC_FLAG(flag, value) saved_##flag##_ = FLAGS_##flag;
 #include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG
 #define QUIC_PROTOCOL_FLAG(type, flag, ...) saved_##flag##_ = FLAGS_##flag;
@@ -21,7 +21,7 @@ QuicFlagSaverImpl::QuicFlagSaverImpl() {
 }
 
 QuicFlagSaverImpl::~QuicFlagSaverImpl() {
-#define QUIC_FLAG(flag, value) flag = saved_##flag##_;
+#define QUIC_FLAG(flag, value) FLAGS_##flag = saved_##flag##_;
 #include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG
 #define QUIC_PROTOCOL_FLAG(type, flag, ...) FLAGS_##flag = saved_##flag##_;
@@ -31,7 +31,7 @@ QuicFlagSaverImpl::~QuicFlagSaverImpl() {
 
 QuicFlagChecker::QuicFlagChecker() {
 #define QUIC_FLAG(flag, value)                                            \
-  CHECK_EQ(value, flag)                                                   \
+  CHECK_EQ(value, FLAGS_##flag)                                           \
       << "Flag set to an unexpected value.  A prior test is likely "      \
       << "setting a flag without using a QuicFlagSaver. Use QuicTest to " \
          "avoid this issue.";
