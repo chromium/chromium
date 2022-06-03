@@ -240,8 +240,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
       bool is_signed_in,
       Study_GoogleWebVisibility web_visibility);
 
-  // Returns the currently active set of variation ids, which includes any
-  // default values, synthetic variations and actual field trial variations.
+  // Returns the currently active set of variation ids, which includes ids from
+  // field trials, synthetic trials, and forced ids.
   std::set<VariationIDEntry> GetAllVariationIds();
 
   // Returns the collection of variation ids matching any of the given
@@ -265,8 +265,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // This consists of a list of valid IDs, and the actual transmitted header.
   std::set<VariationIDEntry> variation_ids_set_;
 
-  // Provides the google experiment ids forced from command line.
-  std::set<VariationIDEntry> default_variation_ids_set_;
+  // Provides the google experiment ids that are force-enabled through
+  // ForceVariationIds().
+  std::set<VariationIDEntry> force_enabled_ids_set_;
 
   // Variations ids from synthetic field trials.
   std::set<VariationIDEntry> synthetic_variation_ids_set_;
