@@ -4037,9 +4037,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter',
           '--lacros-chrome-path=lacros_clang_x64',
         ],
-        # TODO(crbug.com/1195974): Decides whether we want to run this on CQ.
-        # This target is heavy, which currently takes ~1 hour to run.
-        'ci_only': True,
         'test': 'browser_tests',
         'swarming': {
           'shards': 4,

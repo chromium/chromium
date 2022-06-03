@@ -3394,7 +3394,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter",
           "--lacros-chrome-path=lacros_clang_x64"
         ],
-        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [],

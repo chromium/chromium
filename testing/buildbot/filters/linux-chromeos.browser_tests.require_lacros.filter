@@ -29,6 +29,12 @@ VpnExtensionObserverBrowserTest*
 -SwitchAccessFocusRingManagerTest.GroupFocus
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
+-BrowserAppShelfControllerBrowserTest.*
+-ChromeVoxAutoScrollHandlerTest.RecyclerViewByPredicate
+-DockedMagnifierVirtualKeyboardTest.WelcomeScreen
+-ChromeVoxTutorialTest.Gestures
+-ChromeVoxTutorialTest.ExitButtonTest
+-ChromeVoxTutorialTest.EscapeTest
 # Flaky (crbug.com/1268842).
 -ChromeVoxBackgroundTest.GestureOnPopUpButton
 -ChromeVoxBackgroundTest.HitTestOnExoSurface
