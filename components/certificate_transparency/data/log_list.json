@@ -1,6 +1,6 @@
 {
-  "version": "9.31",
-  "log_list_timestamp": "2022-06-02T12:54:07Z",
+  "version": "10.1",
+  "log_list_timestamp": "2022-06-03T12:54:44Z",
   "operators": [
     {
       "name": "Google",
@@ -284,8 +284,8 @@
           "url": "https://yeti2022-2.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-03-11T00:00:00Z"
+            "usable": {
+              "timestamp": "2022-05-20T00:00:00Z"
             }
           },
           "temporal_interval": {
