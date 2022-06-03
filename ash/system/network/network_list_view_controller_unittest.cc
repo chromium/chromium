@@ -27,6 +27,7 @@
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/session_manager/session_manager_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,6 +46,7 @@ using chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper;
 using chromeos::bluetooth_config::mojom::BluetoothSystemState;
 
 using chromeos::network_config::CrosNetworkConfigTestHelper;
+using chromeos::network_config::NetworkTypeMatchesType;
 
 using chromeos::network_config::mojom::ActivationStateType;
 using chromeos::network_config::mojom::ConnectionStateType;
@@ -64,6 +66,9 @@ const char kTetherGuid[] = "tetherNetworkGuid";
 const char kTetherCarrier[] = "TetherNetworkCarrier";
 const char kWifiServiceGuid[] = "wifiServiceGuid";
 
+const std::string kEthernet = "ethernet";
+const std::string kEthernet2 = "ethernet_2";
+
 const char kVpnName[] = "vpn";
 const char kVpnDevicePath[] = "device/vpn";
 
@@ -72,6 +77,8 @@ const char kTestBaseEid[] = "12345678901234567890123456789012";
 
 const int kSignalStrength = 50;
 constexpr char kUser1Email[] = "user1@quicksettings.com";
+
+constexpr char kNetworkListNetworkItemView[] = "NetworkListNetworkItemView";
 
 // Delay used to simulate running process when setting device technology state.
 constexpr base::TimeDelta kInteractiveDelay = base::Milliseconds(3000);
@@ -215,38 +222,54 @@ class NetworkListViewControllerTest : public AshTestBase {
 
   // Checks that network list items are in the right order. This function
   // assumes that Mobile device is present and enabled.
-  void CheckNetworkListOrdering(size_t mobile_network_count) {
-    // TODO(tjohnsonkanu): add Ethernet and WiFi networks.
-    if (mobile_network_count) {
-      // We expect to see all network item views and Mobile subheader.
-      // Separator is null because only mobile networks are available.
-      EXPECT_EQ(mobile_network_count + 1, network_list()->children().size());
-      EXPECT_NE(nullptr, GetMobileSubHeader());
-      EXPECT_EQ(nullptr, GetMobileStatusMessage());
-      EXPECT_EQ(nullptr, GetMobileSeparator());
+  void CheckNetworkListOrdering(size_t ethernet_network_count,
+                                size_t mobile_network_count) {
+    // TODO(tjohnsonkanu): add  WiFi networks.
+    EXPECT_NE(nullptr, GetMobileSubHeader());
 
-      EXPECT_EQ(network_list()->children().at(0), GetMobileSubHeader());
-      return;
+    size_t index = 0;
+
+    // Expect that the view at |index| is a network item, and that it is an
+    // ethernet network.
+    for (int i = 0; i < static_cast<int>(ethernet_network_count); i++) {
+      CheckNetworkListItem(NetworkType::kEthernet, index++,
+                           /*guid=*/absl::nullopt);
     }
 
-    // Mobile header is shown and mobile status message is also shown.
-    EXPECT_EQ(2u, network_list()->children().size());
-    EXPECT_NE(nullptr, GetMobileSubHeader());
-    EXPECT_NE(nullptr, GetMobileStatusMessage());
+    // Mobile data section.
+    if (index > 0) {
+      // Expect that the mobile network separator exists.
+      EXPECT_NE(nullptr, GetMobileSeparator());
+      EXPECT_EQ(network_list()->children().at(index++), GetMobileSeparator());
+      EXPECT_EQ(network_list()->children().at(index++), GetMobileSubHeader());
+    } else {
+      EXPECT_EQ(nullptr, GetMobileSeparator());
+      EXPECT_EQ(network_list()->children().at(index++), GetMobileSubHeader());
+    }
 
-    EXPECT_EQ(network_list()->children().at(0), GetMobileSubHeader());
-    EXPECT_EQ(network_list()->children().at(1), GetMobileStatusMessage());
+    for (int i = 0; i < static_cast<int>(mobile_network_count); i++) {
+      CheckNetworkListItem(NetworkType::kMobile, index, /*guid=*/absl::nullopt);
+      EXPECT_STREQ(network_list()->children().at(index++)->GetClassName(),
+                   kNetworkListNetworkItemView);
+    }
   }
 
-  void CheckNetworkListItem(size_t index, const std::string& guid) {
+  void CheckNetworkListItem(NetworkType type,
+                            size_t index,
+                            const absl::optional<std::string>& guid) {
     ASSERT_GT(network_list()->children().size(), index);
     EXPECT_STREQ(network_list()->children().at(index)->GetClassName(),
-                 "NetworkListNetworkItemView");
-    EXPECT_EQ(static_cast<NetworkListNetworkItemView*>(
-                  network_list()->children().at(index))
-                  ->network_properties()
-                  ->guid,
-              guid);
+                 kNetworkListNetworkItemView);
+
+    const NetworkStatePropertiesPtr& network =
+        static_cast<NetworkListNetworkItemView*>(
+            network_list()->children().at(index))
+            ->network_properties();
+    EXPECT_TRUE(NetworkTypeMatchesType(network->type, type));
+
+    if (guid.has_value()) {
+      EXPECT_EQ(network->guid, guid);
+    }
   }
 
   void SetupCellular() {
@@ -475,7 +498,7 @@ TEST_F(NetworkListViewControllerTest, MobileSectionHeaderAddEsimButtonStates) {
   EXPECT_FALSE(GetMobileSubHeader()->is_add_esim_visible());
 }
 
-TEST_F(NetworkListViewControllerTest, HasCorrectNetworkList) {
+TEST_F(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
   EXPECT_EQ(0u, network_list()->children().size());
   EXPECT_EQ(nullptr, GetMobileSubHeader());
   EXPECT_EQ(nullptr, GetMobileStatusMessage());
@@ -483,7 +506,8 @@ TEST_F(NetworkListViewControllerTest, HasCorrectNetworkList) {
   AddEuicc();
   SetupCellular();
 
-  CheckNetworkListOrdering(/*mobile_network_count=*/0u);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0u,
+                           /*mobile_network_count=*/0u);
 
   std::vector<NetworkStatePropertiesPtr> networks;
 
@@ -493,24 +517,31 @@ TEST_F(NetworkListViewControllerTest, HasCorrectNetworkList) {
   networks.push_back(std::move(cellular_network));
   UpdateNetworkList(networks);
 
-  CheckNetworkListOrdering(/*mobile_network_count=*/1u);
-  CheckNetworkListItem(/*index=*/1u, /*guid=*/kCellularName);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0u,
+                           /*mobile_network_count=*/1u);
+  CheckNetworkListItem(NetworkType::kCellular, /*index=*/1u,
+                       /*guid=*/kCellularName);
 
   cellular_network = CreateStandaloneNetworkProperties(
       kCellularName2, NetworkType::kCellular, ConnectionStateType::kConnected);
   networks.push_back(std::move(cellular_network));
   UpdateNetworkList(networks);
 
-  CheckNetworkListOrdering(/*mobile_network_count=*/2u);
-  CheckNetworkListItem(/*index=*/2u, /*guid=*/kCellularName2);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0u,
+                           /*mobile_network_count=*/2u);
+  CheckNetworkListItem(NetworkType::kCellular, /*index=*/2u,
+                       /*guid=*/kCellularName2);
 
   // Update a network and make sure it is still in network list.
   networks.front()->connection_state = ConnectionStateType::kNotConnected;
   UpdateNetworkList(networks);
 
-  CheckNetworkListOrdering(/*mobile_network_count=*/2u);
-  CheckNetworkListItem(/*index=*/1u, /*guid=*/kCellularName);
-  CheckNetworkListItem(/*index=*/2u, /*guid=*/kCellularName2);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0u,
+                           /*mobile_network_count=*/2u);
+  CheckNetworkListItem(NetworkType::kCellular, /*index=*/1u,
+                       /*guid=*/kCellularName);
+  CheckNetworkListItem(NetworkType::kCellular, /*index=*/2u,
+                       /*guid=*/kCellularName2);
 
   // Remove all networks and add Tether networks. Only one network should be in
   // list.
@@ -520,8 +551,56 @@ TEST_F(NetworkListViewControllerTest, HasCorrectNetworkList) {
   networks.push_back(std::move(tether_network));
   UpdateNetworkList(networks);
 
-  CheckNetworkListOrdering(/*mobile_network_count=*/1u);
-  CheckNetworkListItem(/*index=*/1u, /*guid=*/kTetherName);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0u,
+                           /*mobile_network_count=*/1u);
+  CheckNetworkListItem(NetworkType::kTether, /*index=*/1u,
+                       /*guid=*/kTetherName);
+}
+
+TEST_F(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
+  AddEuicc();
+  SetupCellular();
+  std::vector<NetworkStatePropertiesPtr> networks;
+
+  NetworkStatePropertiesPtr ethernet_network =
+      CreateStandaloneNetworkProperties(kEthernet, NetworkType::kEthernet,
+                                        ConnectionStateType::kNotConnected);
+  networks.push_back(std::move(ethernet_network));
+  UpdateNetworkList(networks);
+
+  CheckNetworkListOrdering(/*ethernet_network_count=*/1u,
+                           /*mobile_network_count=*/0u);
+  CheckNetworkListItem(NetworkType::kEthernet, /*index=*/0u,
+                       /*guid=*/kEthernet);
+
+  // Add mobile network.
+  NetworkStatePropertiesPtr cellular_network =
+      CreateStandaloneNetworkProperties(kCellularName, NetworkType::kCellular,
+                                        ConnectionStateType::kConnected);
+  networks.push_back(std::move(cellular_network));
+  UpdateNetworkList(networks);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/1u,
+                           /*mobile_network_count=*/1u);
+
+  // Mobile list item will be at index 3 after ethernet, separator and header.
+  CheckNetworkListItem(NetworkType::kCellular, /*index=*/3u,
+                       /*guid=*/kCellularName);
+
+  ethernet_network = CreateStandaloneNetworkProperties(
+      kEthernet2, NetworkType::kEthernet, ConnectionStateType::kNotConnected);
+  networks.push_back(std::move(ethernet_network));
+  UpdateNetworkList(networks);
+
+  CheckNetworkListOrdering(/*ethernet_network_count=*/2u,
+                           /*mobile_network_count=*/1u);
+  CheckNetworkListItem(NetworkType::kEthernet, /*index=*/0u,
+                       /*guid=*/kEthernet);
+  CheckNetworkListItem(NetworkType::kEthernet, /*index=*/1u,
+                       /*guid=*/kEthernet2);
+
+  // Mobile list item will be at index 4 after ethernet, separator and header.
+  CheckNetworkListItem(NetworkType::kCellular, /*index=*/4u,
+                       /*guid=*/kCellularName);
 }
 
 TEST_F(NetworkListViewControllerTest,

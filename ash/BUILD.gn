@@ -3040,6 +3040,7 @@ test("ash_unittests") {
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/bluetooth_config:test_support",
+    "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
     "//chromeos/strings:strings_grit",
     "//chromeos/system",

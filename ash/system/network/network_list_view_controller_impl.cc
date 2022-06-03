@@ -175,6 +175,10 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
   // or if the default network has a proxy installed.
   index = ShowConnectionWarningIfVpnOrProxy(index);
 
+  // Show Ethernet section first.
+  index = CreateItemViewsIfMissingAndReorder(NetworkType::kEthernet, index,
+                                             networks, &previous_network_views);
+
   if (ShouldMobileDataSectionBeShown()) {
     // Add separator if mobile section is not the first view child, else
     // delete unused separator.
