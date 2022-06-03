@@ -318,10 +318,6 @@
     "label": "//media/capture:capture_unittests",
     "type": "windowed_test_launcher",
   },
-  "cast_accessibility_unittests": {
-    "label": "//chromecast/browser/accessibility/flutter:cast_accessibility_unittests",
-    "type": "console_test_launcher",
-  },
   "cast_display_settings_unittests": {
     "label": "//chromecast/ui/display_settings:cast_display_settings_unittests",
     "type": "console_test_launcher",
