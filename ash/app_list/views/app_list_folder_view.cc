@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
@@ -34,6 +35,7 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_shadow.h"
 #include "base/barrier_closure.h"
@@ -102,6 +104,12 @@ void SetBackgroundViewColor(views::View* background_view,
   } else {
     background_view->layer()->SetColor(color);
   }
+}
+
+// Returns true if ChromeVox (spoken feedback) is enabled.
+bool IsSpokenFeedbackEnabled() {
+  return Shell::HasInstance() &&  // May be null in tests.
+         Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
 }
 
 // Transit from the background of the folder item's icon to the opened
@@ -1257,8 +1265,10 @@ void AppListFolderView::ResetItemsGridForClose() {
 void AppListFolderView::CloseFolderPage() {
   DVLOG(1) << __FUNCTION__;
   // When a folder closes only show the selection highlight if there was already
-  // one showing.
-  const bool select_folder = items_grid_view()->has_selected_view();
+  // one showing, or if the user is using ChromeVox (spoken feedback). In the
+  // latter case it makes the close folder announcement more natural.
+  const bool select_folder =
+      items_grid_view()->has_selected_view() || IsSpokenFeedbackEnabled();
   ResetItemsGridForClose();
   folder_controller_->ShowApps(folder_item_view_, select_folder);
 }

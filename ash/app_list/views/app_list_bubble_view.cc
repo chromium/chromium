@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/model/app_list_folder_item.h"
@@ -73,6 +74,11 @@ constexpr int kShadowElevation = 3;
 AppListConfig* GetAppListConfig() {
   return AppListConfigProvider::Get().GetConfigForType(
       AppListConfigType::kDense, /*can_create=*/true);
+}
+
+// Returns true if ChromeVox (spoken feedback) is enabled.
+bool IsSpokenFeedbackEnabled() {
+  return Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
 }
 
 // A simplified horizontal separator that uses a solid color layer for painting.
@@ -650,8 +656,10 @@ void AppListBubbleView::ShowFolderForItemView(AppListItemView* folder_item_view,
                                           /*hide_for_reparent=*/false);
   if (focus_name_input) {
     folder_view_->FocusNameInput();
-  } else if (apps_page_->scrollable_apps_grid_view()->has_selected_view()) {
-    // If the user is keyboard navigating, move focus into the folder.
+  } else if (apps_page_->scrollable_apps_grid_view()->has_selected_view() ||
+             IsSpokenFeedbackEnabled()) {
+    // If the user is keyboard navigating, or using ChromeVox (spoken feedback),
+    // move focus into the folder.
     folder_view_->FocusFirstItem(/*silently=*/false);
   } else {
     // Release focus so that disabling the views below does not shift focus
