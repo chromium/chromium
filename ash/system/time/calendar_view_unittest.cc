@@ -99,6 +99,10 @@ class CalendarViewTest : public AshTestBase {
   }
 
   void CreateCalendarView() {
+    if (!widget_) {
+      widget_ = CreateFramelessTestWidget();
+      widget_->SetFullscreen(true);
+    }
     AccountId user_account = AccountId::FromUserEmail(kTestUser);
     GetSessionControllerClient()->SwitchActiveUser(user_account);
 
@@ -549,6 +553,86 @@ TEST_F(CalendarViewTest, FocusingToDateCell) {
   EXPECT_EQ(u"7",
             static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
                 ->GetText());
+}
+
+// Tests the Ash.Calendar.MaxDistanceBrowsed metric only records once in
+// CalendarViews lifetime.
+TEST_F(CalendarViewTest, MaxDistanceBrowsedRecordsOncePerLifetime) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("24 Oct 2021 10:00 GMT", &date));
+
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+
+  CreateCalendarView();
+  DestroyCalendarViewWidget();
+
+  // The metric should log once.
+  histogram_tester->ExpectTotalCount("Ash.Calendar.MaxDistanceBrowsed", 1);
+
+  // Create the CalendarView again, and scroll once. The metric should record
+  // once, but only once the widget has been destroyed.
+  histogram_tester = std::make_unique<base::HistogramTester>();
+  CreateCalendarView();
+
+  ScrollDownOneMonth();
+  histogram_tester->ExpectTotalCount("Ash.Calendar.MaxDistanceBrowsed", 0);
+  DestroyCalendarViewWidget();
+
+  histogram_tester->ExpectTotalCount("Ash.Calendar.MaxDistanceBrowsed", 1);
+
+  // Create the CalendarView again, scroll a few more times. Still the metric
+  // should only record once.
+  histogram_tester = std::make_unique<base::HistogramTester>();
+  CreateCalendarView();
+
+  ScrollDownOneMonth();
+  ScrollDownOneMonth();
+  ScrollDownOneMonth();
+  ScrollUpOneMonth();
+
+  DestroyCalendarViewWidget();
+  histogram_tester->ExpectTotalCount("Ash.Calendar.MaxDistanceBrowsed", 1);
+}
+
+// Tests the Ash.Calendar.MaxDistanceBrowsed metric records max distance
+// traveled from today.
+TEST_F(CalendarViewTest,
+       MaxDistanceBrowsedRecordsAbsoluteValueOfDistanceTraveled) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("24 Oct 2021 10:00 GMT", &date));
+
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  auto histogram_tester = base::HistogramTester();
+
+  CreateCalendarView();
+  const int scroll_up_count = 10;
+  const int scroll_down_count = scroll_up_count - 1;
+  // Scroll up.
+  for (int i = 0; i < scroll_up_count; ++i)
+    ScrollUpOneMonth();
+  // Return to today.
+  for (int i = 0; i < scroll_up_count; ++i)
+    ScrollDownOneMonth();
+  // Scroll down from today.
+  for (int i = 0; i < scroll_down_count; ++i)
+    ScrollDownOneMonth();
+
+  DestroyCalendarViewWidget();
+
+  // `scroll_up_count` is the furthest traveled.
+  histogram_tester.ExpectBucketCount("Ash.Calendar.MaxDistanceBrowsed",
+                                     scroll_up_count, 1);
 }
 
 // Used to determine whether focus goes directly to the proper CalendarDateCell

@@ -71,11 +71,6 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // Clears out all events that start in a non-prunable month.
   void ClearAllPrunableEvents();
 
-  // Resets to defaults the values of all event fetch metrics recorded over the
-  // lifetime of a calendar session, i.e. between a single open and close of the
-  // calendar.
-  void ResetLifetimeMetrics(const base::Time& currently_shown_date);
-
   // Logs to UMA all event fetch metrics recorded over the lifetime of a
   // calendar session.
   void UploadLifetimeMetrics();
@@ -113,6 +108,11 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // Redistributes all the fetched events to the date map with the
   // time difference. This method is only called when there's a timezone change.
   void RedistributeEvents();
+
+  // Checks whether `start_of_month` is further than we've gone, so far, from
+  // the on-screen month with which the calendar was opened and, if it has, then
+  // update our max distance.
+  void UpdateMaxDistanceBrowsed(const base::Time& start_of_month);
 
  protected:
   // Fetch events for `start_of_month`.
@@ -207,11 +207,6 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
       base::Time start_of_month,
       CalendarEventFetchInternalErrorCode error);
 
-  // Checks whether `start_of_month` is further than we've gone, so far, from
-  // the on-screen month with which the calendar was opened and, if it has, then
-  // update our max distance.
-  void UpdateMaxDistanceBrowsed(const base::Time& start_of_month);
-
   // Internal storage for fetched events, with each fetched month having a
   // map of days to events.
   MonthToEventsMap event_months_;
@@ -227,15 +222,6 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
 
   // All fetch requests that are still in-progress.
   std::map<base::Time, std::unique_ptr<CalendarEventFetch>> pending_fetches_;
-
-  // The first on-screen month to have been displayed when the calendar was
-  // opened.
-  base::Time first_on_screen_month_;
-
-  // Maximum distance, in months, from the on-screen month first displayed in
-  // the calendar when it was opened. This is logged as a metric when the
-  // calendar is closed.
-  size_t max_distance_browsed_;
 
   ScopedSessionObserver session_observer_;
 

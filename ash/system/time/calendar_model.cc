@@ -193,16 +193,7 @@ void CalendarModel::ClearAllPrunableEvents() {
   mru_months_.clear();
 }
 
-void CalendarModel::ResetLifetimeMetrics(
-    const base::Time& currently_shown_date) {
-  max_distance_browsed_ = 0;
-  first_on_screen_month_ =
-      calendar_utils::GetFirstDayOfMonth(currently_shown_date);
-}
-
 void CalendarModel::UploadLifetimeMetrics() {
-  base::UmaHistogramCounts100000("Ash.Calendar.FetchEvents.MaxDistanceBrowsed",
-                                 max_distance_browsed_);
   base::UmaHistogramCounts100000(
       "Ash.Calendar.FetchEvents.TotalCacheSizeMonths", event_months_.size());
 }
@@ -332,10 +323,6 @@ void CalendarModel::OnEventsFetched(
   // Record the size of the month, and the total number of months.
   base::UmaHistogramCounts1M("Ash.Calendar.FetchEvents.SingleMonthSize",
                              GetEventMapSize(event_months_[start_of_month]));
-
-  // If `start_of_month` is further, in months, from the on-screen month when
-  // the calendar first opened, then update the max distance.
-  UpdateMaxDistanceBrowsed(start_of_month);
 }
 
 void CalendarModel::OnEventFetchFailedInternalError(
@@ -345,13 +332,6 @@ void CalendarModel::OnEventFetchFailedInternalError(
   pending_fetches_.erase(start_of_month);
   // TODO(https://crbug.com/1298187): May need to respond further based on the
   // specific error code, retry in some cases, etc.
-}
-
-void CalendarModel::UpdateMaxDistanceBrowsed(const base::Time& start_of_month) {
-  max_distance_browsed_ =
-      std::max(max_distance_browsed_,
-               static_cast<size_t>(abs(calendar_utils::GetMonthsBetween(
-                   first_on_screen_month_, start_of_month))));
 }
 
 bool CalendarModel::ShouldInsertEvent(const CalendarEvent* event) const {

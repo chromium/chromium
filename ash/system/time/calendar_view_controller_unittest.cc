@@ -239,4 +239,19 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
   EXPECT_EQ(u"December", next_month_name);
 }
 
+// Tests that Ash.Calendar.MaxDistanceBrowsed records once on destruction of
+// CalendarViewController.
+TEST_F(CalendarViewControllerUnittest, MaxDistanceBrowsedRecordedOnClose) {
+  base::HistogramTester histogram_tester;
+  auto controller = std::make_unique<CalendarViewController>();
+
+  histogram_tester.ExpectTotalCount("Ash.Calendar.MaxDistanceBrowsed", 0);
+
+  // Destroy the controller (this happens when the calendar is closed). The
+  // metric should be recorded once.
+  controller.reset();
+
+  histogram_tester.ExpectTotalCount("Ash.Calendar.MaxDistanceBrowsed", 1);
+}
+
 }  // namespace ash

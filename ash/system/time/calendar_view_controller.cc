@@ -34,15 +34,14 @@ constexpr float kExpandedCalendarViewHeightScale = 1.1;
 CalendarViewController::CalendarViewController()
     : currently_shown_date_(base::Time::Now()),
       calendar_open_time_(base::TimeTicks::Now()),
-      month_dwell_time_(base::TimeTicks::Now()) {
+      month_dwell_time_(base::TimeTicks::Now()),
+      first_shown_date_(base::Time::Now()) {
   std::set<base::Time> months = calendar_utils::GetSurroundingMonthsUTC(
       base::Time::Now() +
           calendar_utils::GetTimeDifference(currently_shown_date_),
       calendar_utils::kNumSurroundingMonthsCached);
   Shell::Get()->system_tray_model()->calendar_model()->AddNonPrunableMonths(
       months);
-  Shell::Get()->system_tray_model()->calendar_model()->ResetLifetimeMetrics(
-      currently_shown_date_);
 }
 
 CalendarViewController::~CalendarViewController() {
@@ -58,8 +57,10 @@ CalendarViewController::~CalendarViewController() {
   if (user_journey_time_recorded_)
     return;
 
-  UmaHistogramMediumTimes("Ash.Calendar.UserJourneyTime.EventNotLaunched",
-                          base::TimeTicks::Now() - calendar_open_time_);
+  base::UmaHistogramMediumTimes("Ash.Calendar.UserJourneyTime.EventNotLaunched",
+                                base::TimeTicks::Now() - calendar_open_time_);
+  base::UmaHistogramCounts100000("Ash.Calendar.MaxDistanceBrowsed",
+                                 max_distance_browsed_);
 }
 
 void CalendarViewController::AddObserver(Observer* observer) {
@@ -84,9 +85,14 @@ void CalendarViewController::UpdateMonth(
   month_dwell_time_ = base::TimeTicks::Now();
 
   currently_shown_date_ = current_month_first_date;
-  for (auto& observer : observers_) {
+
+  max_distance_browsed_ =
+      std::max(max_distance_browsed_,
+               static_cast<size_t>(abs(calendar_utils::GetMonthsBetween(
+                   first_shown_date_, current_month_first_date))));
+
+  for (auto& observer : observers_)
     observer.OnMonthChanged();
-  }
 }
 
 base::Time CalendarViewController::GetOnScreenMonthFirstDayLocal() {

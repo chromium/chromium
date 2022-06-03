@@ -192,6 +192,14 @@ class ASH_EXPORT CalendarViewController {
   // The current row index when the event list view is shown.
   int expanded_row_index_ = 0;
 
+  // Maximum distance, in months, from the on-screen month first displayed in
+  // the calendar when it was opened. This is logged as a metric when the
+  // calendar is closed.
+  size_t max_distance_browsed_ = 0;
+
+  // The first date shown, used to record max distance browsed metrics.
+  const base::Time first_shown_date_;
+
   base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<CalendarViewController> weak_factory_{this};
