@@ -429,6 +429,9 @@ NET_EXPORT extern const base::Feature kClampCookieExpiryTo400Days;
 // Controls whether static key pinning is enforced.
 NET_EXPORT extern const base::Feature kStaticKeyPinningEnforcement;
 
+// When enabled, cookies with a non-ASCII domain attribute will be rejected.
+NET_EXPORT extern const base::Feature kCookieDomainRejectNonASCII;
+
 }  // namespace features
 }  // namespace net
 

@@ -307,6 +307,12 @@ std::string GetEffectiveDomain(const std::string& scheme,
 bool GetCookieDomainWithString(const GURL& url,
                                const std::string& domain_string,
                                std::string* result) {
+  // Disallow non-ASCII domain names.
+  if (base::FeatureList::IsEnabled(features::kCookieDomainRejectNonASCII) &&
+      !base::IsStringASCII(domain_string)) {
+    return false;
+  }
+
   const std::string url_host(url.host());
   // If no domain was specified in the domain string, default to a host cookie.
   // We match IE/Firefox in allowing a domain=IPADDR if it matches (case

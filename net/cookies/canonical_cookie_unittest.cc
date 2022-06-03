@@ -454,6 +454,49 @@ TEST(CanonicalCookieTest, CreateWithInvalidDomain) {
       {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
 }
 
+TEST(CanonicalCookieTest, CreateWithNonASCIIDomain) {
+  GURL url("http://www.xn--xample-9ua.com/test/foo.html");
+  base::Time now = base::Time::Now();
+  absl::optional<base::Time> server_time = absl::nullopt;
+
+  // Test with feature flag enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kCookieDomainRejectNonASCII);
+    CookieInclusionStatus status;
+
+    // Test that non-ascii characters are rejected.
+    std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
+        url, "A=1; Domain=\xC3\xA9xample.com", now, server_time,
+        absl::nullopt /* cookie_partition_key */, &status);
+    EXPECT_EQ(nullptr, cookie.get());
+    EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+        {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
+  }
+
+  // Test with feature flag disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kCookieDomainRejectNonASCII);
+    CookieInclusionStatus status2;
+
+    std::unique_ptr<CanonicalCookie> cookie2 = CanonicalCookie::Create(
+        url, "A=2; Domain=\xC3\xA9xample.com", now, server_time,
+        absl::nullopt /* cookie_partition_key */, &status2);
+
+    EXPECT_TRUE(cookie2.get());
+    EXPECT_TRUE(status2.IsInclude());
+  }
+
+  // Test that regular ascii punycode still works.
+  CookieInclusionStatus status3;
+  std::unique_ptr<CanonicalCookie> cookie3 = CanonicalCookie::Create(
+      url, "A=3; Domain=xn--xample-9ua.com", now, server_time,
+      absl::nullopt /* cookie_partition_key */, &status3);
+  EXPECT_TRUE(cookie3.get());
+  EXPECT_TRUE(status3.IsInclude());
+}
+
 TEST(CanonicalCookieTest, CreateWithDomainAsIP) {
   GURL url("http://1.1.1.1");
   GURL url6("http://[2606:2800:220:1:248:1893:25c8:1946]");
@@ -2686,6 +2729,20 @@ TEST(CanonicalCookieTest, IsCanonical) {
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
                   "A", "B", "localhost", "/path", base::Time(), base::Time(),
                   base::Time(), base::Time(), false, false,
+                  CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW, false)
+                  ->IsCanonical());
+
+  // non-ASCII domain.
+  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                   "A", "B", "\xC3\xA9xample.com", "/path", base::Time(),
+                   base::Time(), base::Time(), base::Time(), false, false,
+                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW, false)
+                   ->IsCanonical());
+
+  // punycode domain.
+  EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "A", "B", "xn--xample-9ua.com", "/path", base::Time(),
+                  base::Time(), base::Time(), base::Time(), false, false,
                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW, false)
                   ->IsCanonical());
 
