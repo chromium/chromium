@@ -127,13 +127,12 @@ void HttpCache::DefaultBackend::SetAppStatusListener(
 //-----------------------------------------------------------------------------
 
 HttpCache::ActiveEntry::ActiveEntry(disk_cache::Entry* entry, bool opened_in)
-    : disk_entry(entry), opened(opened_in) {}
+    : disk_entry(entry), opened(opened_in) {
+  DCHECK(disk_entry);
+}
 
 HttpCache::ActiveEntry::~ActiveEntry() {
-  if (disk_entry) {
-    disk_entry->Close();
-    disk_entry = nullptr;
-  }
+  disk_entry->Close();
 }
 
 bool HttpCache::ActiveEntry::HasNoTransactions() {
@@ -199,7 +198,6 @@ class HttpCache::WorkItem {
 
   // Calls back the transaction with the result of the operation.
   void NotifyTransaction(int result, ActiveEntry* entry) {
-    DCHECK(!entry || entry->disk_entry);
     if (entry_)
       *entry_ = entry;
     if (transaction_)
@@ -745,7 +743,6 @@ HttpCache::ActiveEntry* HttpCache::ActivateEntry(disk_cache::Entry* disk_entry,
 
 void HttpCache::DeactivateEntry(ActiveEntry* entry) {
   DCHECK(!entry->doomed);
-  DCHECK(entry->disk_entry);
   DCHECK(entry->SafeToDestroy());
 
   std::string key = entry->disk_entry->GetKey();
@@ -1390,6 +1387,7 @@ void HttpCache::OnIOComplete(int result, PendingOp* pending_op) {
       // Anything after a Doom has to be restarted.
       try_restart_requests = true;
     } else if (item->IsValid()) {
+      DCHECK(pending_op->entry);
       key = pending_op->entry->GetKey();
       entry = ActivateEntry(pending_op->entry, pending_op->entry_opened);
     } else {

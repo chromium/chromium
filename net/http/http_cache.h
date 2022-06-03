@@ -360,7 +360,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
     bool TransactionInReaders(Transaction* transaction) const;
 
-    raw_ptr<disk_cache::Entry> disk_entry = nullptr;
+    const raw_ptr<disk_cache::Entry> disk_entry;
 
     // Indicates if the disk_entry was opened or not (i.e.: created).
     // It is set to true when a transaction is added to an entry so that other,
