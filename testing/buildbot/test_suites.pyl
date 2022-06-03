@@ -1788,6 +1788,7 @@
       },
       'crypto_unittests': {},
       'events_unittests': {},
+      'filesystem_service_unittests': {},
       'fuchsia_mojo_unittests': {},
       'gcm_unit_tests': {},
       'gin_unittests': {},
@@ -1877,7 +1878,6 @@
           'shards': 8,
         },
       },
-      'filesystem_service_unittests': {},
       'unit_tests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.unit_tests.filter',
