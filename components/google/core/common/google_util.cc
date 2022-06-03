@@ -72,7 +72,7 @@ bool IsValidHostName(base::StringPiece host,
   if (!allowed_tlds.contains(tld))
     return false;
 
-  if (base::LowerCaseEqualsASCII(host_minus_tld, domain_in_lower_case))
+  if (base::EqualsCaseInsensitiveASCII(host_minus_tld, domain_in_lower_case))
     return true;
 
   if (subdomain_permission == ALLOW_SUBDOMAIN) {
@@ -82,7 +82,7 @@ bool IsValidHostName(base::StringPiece host,
   }
 
   std::string www_domain = base::StrCat({"www.", domain_in_lower_case});
-  return base::LowerCaseEqualsASCII(host_minus_tld, www_domain);
+  return base::EqualsCaseInsensitiveASCII(host_minus_tld, www_domain);
 }
 
 // True if |url| is a valid URL with HTTP or HTTPS scheme. If |port_permission|
@@ -311,7 +311,7 @@ bool IsGoogleAssociatedDomainUrl(const GURL& url) {
       "googleweblight.com",
   };
   for (size_t i = 0; i < std::size(kHostsToSetHeadersFor); ++i) {
-    if (base::LowerCaseEqualsASCII(host, kHostsToSetHeadersFor[i]))
+    if (base::EqualsCaseInsensitiveASCII(host, kHostsToSetHeadersFor[i]))
       return true;
   }
 
