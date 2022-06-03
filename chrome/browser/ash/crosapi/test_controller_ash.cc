@@ -386,15 +386,9 @@ void TestControllerAsh::OnSelectContextMenuForShelfItem(
     uint32_t index,
     std::unique_ptr<ui::SimpleMenuModel> model) {
   if (index < model->GetItemCount()) {
-    int command_id = model->GetCommandIdAt(index);
-    ash::ShelfItemDelegate* delegate =
-        ash::ShelfModel::Get()->GetShelfItemDelegate(ash::ShelfID(item_id));
-    if (delegate) {
-      delegate->ExecuteCommand(/*from_context_menu=*/true, command_id,
-                               /*event_flags=*/0, /*display_id=*/0);
-      std::move(callback).Run(/*success=*/true);
-      return;
-    }
+    model->ActivatedAt(index, /*event_flags=*/0);
+    std::move(callback).Run(/*success=*/true);
+    return;
   }
   std::move(callback).Run(/*success=*/false);
 }
