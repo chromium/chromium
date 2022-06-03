@@ -627,31 +627,51 @@ void ExtensionDownloader::ReportManifestFetchFailure(
 
 bool ExtensionDownloader::TryFetchingExtensionsFromCache(
     ManifestFetchData* fetch_data) {
-  const ExtensionIdSet extension_ids = fetch_data->GetExtensionIds();
+#if DCHECK_IS_ON()
+  // Ensure that IDs in `fetch_data`'s associated tasks are unique. Should be
+  // true given the way how we associate tasks to the fetch data: fetch data
+  // won't accept a duplicate ID and we won't add a task if extension ID wasn't
+  // added.
+  {
+    ExtensionIdSet ids;
+    for (const ExtensionDownloaderTask& task :
+         fetch_data->GetAssociatedTasks()) {
+      DCHECK(ids.insert(task.id).second)
+          << "ManifestFetchData has tasks with duplicate IDs!";
+    }
+  }
+#endif
   ExtensionIdSet extensions_fetched_from_cache;
-  for (const auto& extension_id : extension_ids) {
+  std::vector<ExtensionDownloaderTask> tasks_left;
+  for (ExtensionDownloaderTask& task : fetch_data->TakeAssociatedTasks()) {
     // Extension is fetched here only in cases when we fail to fetch the update
     // manifest or parsing of update manifest failed. In such cases, we don't
     // have expected version and expected hash. Thus, passing empty hash and
     // version would not be a problem as we only check for the expected hash and
     // version if we have them.
     auto extension_fetch_data(std::make_unique<ExtensionFetch>(
-        extension_id, fetch_data->base_url(), /*hash not fetched*/ "",
+        task.id, fetch_data->base_url(), /*hash not fetched*/ "",
         /*version not fetched*/ "", fetch_data->request_ids(),
         fetch_data->fetch_priority()));
     absl::optional<base::FilePath> cached_crx_path = GetCachedExtension(
         *extension_fetch_data, /*manifest_fetch_failed*/ true);
     if (cached_crx_path) {
       delegate_->OnExtensionDownloadStageChanged(
-          extension_id, ExtensionDownloaderDelegate::Stage::FINISHED);
+          task.id, ExtensionDownloaderDelegate::Stage::FINISHED);
       NotifyDelegateDownloadFinished(std::move(extension_fetch_data), true,
                                      cached_crx_path.value(), false);
-      extensions_fetched_from_cache.insert(extension_id);
+      extensions_fetched_from_cache.insert(task.id);
+    } else {
+      tasks_left.emplace_back(std::move(task));
     }
   }
+  bool all_found = tasks_left.empty();
   fetch_data->RemoveExtensions(extensions_fetched_from_cache,
                                manifest_query_params_);
-  return extensions_fetched_from_cache.size() == extension_ids.size();
+  // Re-add tasks which weren't found in cache for continued processing.
+  for (ExtensionDownloaderTask& task : tasks_left)
+    fetch_data->AddAssociatedTask(std::move(task));
+  return all_found;
 }
 
 void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
@@ -779,7 +799,11 @@ void ExtensionDownloader::HandleManifestResults(
   std::vector<DownloadFailure> failures;
 
   // Examine the parsed manifest and kick off fetches of any new crx files.
-  DetermineUpdates(*fetch_data, *results, &to_update, &failures);
+  // NOTE: This transfers ownership on tasks to the DetermineUpdates method.
+  // Currently the tasks are destructed there, but in the future
+  // DetermineUpdates will return them back via its output arguments.
+  DetermineUpdates(fetch_data->TakeAssociatedTasks(), *results, &to_update,
+                   &failures);
   for (const UpdateManifestResult* update : to_update) {
     const std::string& extension_id = update->extension_id;
 
@@ -899,7 +923,7 @@ ExtensionDownloader::GetUpdateAvailability(
 }
 
 void ExtensionDownloader::DetermineUpdates(
-    const ManifestFetchData& fetch_data,
+    std::vector<ExtensionDownloaderTask> tasks,
     const UpdateManifestResults& possible_updates,
     std::vector<UpdateManifestResult*>* to_update,
     std::vector<DownloadFailure>* failures) {
@@ -914,10 +938,10 @@ void ExtensionDownloader::DetermineUpdates(
   // are already inserted into |errors|.
   ExtensionIdSet extension_errors;
 
-  const ExtensionIdSet extension_ids = fetch_data.GetExtensionIds();
   // For each extensions in the current batch, greedily find an update from
   // |possible_updates|.
-  for (const auto& extension_id : extension_ids) {
+  for (const ExtensionDownloaderTask& task : tasks) {
+    const ExtensionId& extension_id = task.id;
     const auto it = update_groups.find(extension_id);
     if (it == update_groups.end()) {
       VLOG(2) << "Manifest doesn't have an update entry for " << extension_id;

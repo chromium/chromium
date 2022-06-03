@@ -924,8 +924,8 @@ class ExtensionUpdaterTest : public testing::Test {
     UpdateManifestResults updates;
     std::vector<UpdateManifestResult*> updateable;
     std::vector<DownloadFailure> failures;
-    helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &failures);
+    helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
+                                         updates, &updateable, &failures);
     EXPECT_TRUE(updateable.empty());
     EXPECT_TRUE(failures.empty());
 
@@ -950,8 +950,8 @@ class ExtensionUpdaterTest : public testing::Test {
 
     updateable.clear();
     failures.clear();
-    helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &failures);
+    helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
+                                         updates, &updateable, &failures);
     ASSERT_EQ(1u, failures.size());
     EXPECT_EQ(id2, failures[0].id);
     EXPECT_EQ(ExtensionDownloaderDelegate::Error::NO_UPDATE_AVAILABLE,
@@ -1023,8 +1023,8 @@ class ExtensionUpdaterTest : public testing::Test {
 
     std::vector<UpdateManifestResult*> updateable;
     std::vector<DownloadFailure> failures;
-    helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &failures);
+    helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
+                                         updates, &updateable, &failures);
     std::vector<ExtensionId> ids_not_updateable({id2, id3});
     for (const auto& id : ids_not_updateable) {
       const auto* failure = GetFailureWithId(failures, id);
@@ -1074,8 +1074,8 @@ class ExtensionUpdaterTest : public testing::Test {
 
     std::vector<UpdateManifestResult*> updateable;
     std::vector<DownloadFailure> failures;
-    helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &failures);
+    helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
+                                         updates, &updateable, &failures);
     // All the apps should be updateable.
     EXPECT_EQ(3u, updateable.size());
     EXPECT_TRUE(failures.empty());
@@ -1141,8 +1141,8 @@ class ExtensionUpdaterTest : public testing::Test {
 
     std::vector<UpdateManifestResult*> updateable;
     std::vector<DownloadFailure> failures;
-    helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &failures);
+    helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
+                                         updates, &updateable, &failures);
     std::vector<ExtensionId> ids_not_updateable({id1, id4});
     for (const auto& id : ids_not_updateable) {
       const auto* failure = GetFailureWithId(failures, id);

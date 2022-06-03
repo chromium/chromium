@@ -284,16 +284,16 @@ class ExtensionDownloader {
                              std::unique_ptr<UpdateManifestResults> results,
                              const absl::optional<ManifestParseFailure>& error);
 
-  // This function partition extension IDs stored in |fetch_data| into 3 sets:
-  // update/no update/error using the update information from
-  // |possible_updates| and the extension system. When the function returns:
+  // This function partition extensions from given |tasks| into two sets:
+  // update/error using the update information from |possible_updates| and
+  // the extension system. When the function returns:
   // - |to_update| stores entries from |possible_updates| that will be updated.
-  // - |no_updates| stores the set of extension IDs that will not be updated.
   // - |errors| stores the entries of extension IDs along with the error that
-  // occurred in the process
-  //   determining updates. For example, a common error is |possible_updates|
-  //   doesn't have any update information for some extensions in |fetch_data|.
-  void DetermineUpdates(const ManifestFetchData& fetch_data,
+  // occurred in the process (no update available is considered an error from
+  // ExtensionDownloader's perspective).
+  //   For example, a common error is |possible_updates| doesn't have any update
+  //   information for some extensions.
+  void DetermineUpdates(std::vector<ExtensionDownloaderTask> tasks,
                         const UpdateManifestResults& possible_updates,
                         std::vector<UpdateManifestResult*>* to_update,
                         std::vector<DownloadFailure>* errors);
