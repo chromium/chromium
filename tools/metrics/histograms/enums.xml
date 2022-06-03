@@ -53427,6 +53427,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="10" label="kAtomics"/>
   <int value="11" label="kBulkMemory"/>
   <int value="12" label="kNonTrappingFloatToInt"/>
+  <int value="13" label="kGC"/>
+  <int value="14" label="kRelaxedSimd"/>
   <int value="20" label="kOtherReason"/>
 </enum>
 
