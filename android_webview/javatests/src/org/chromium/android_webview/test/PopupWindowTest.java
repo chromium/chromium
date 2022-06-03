@@ -6,7 +6,6 @@ package org.chromium.android_webview.test;
 
 import android.graphics.Rect;
 import android.net.Uri;
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.webkit.JavascriptInterface;
 
@@ -32,7 +31,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePort;
@@ -388,7 +386,7 @@ public class PopupWindowTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q, message = "https://crbug.com/1251900")
+    @DisabledTest(message = "https://crbug.com/1251900")
     public void testPopupWindowHasUserGestureForUserInitiated() throws Throwable {
         runPopupUserGestureTest(true);
     }
@@ -396,7 +394,7 @@ public class PopupWindowTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/1331093")
+    @DisabledTest(message = "https://crbug.com/1251900")
     public void testPopupWindowHasUserGestureForUserInitiatedNoOpener() throws Throwable {
         runPopupUserGestureTest(false);
     }
