@@ -94,6 +94,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
     FrameCaptionButtonContainerView* container_view_;
   };
 
+  views::FrameCaptionButton* size_button() { return size_button_; }
+
   // Sets the id of the vector image to paint the button for |icon|. The
   // FrameCaptionButtonContainerView will keep track of the image to use for
   // |icon| even if none of the buttons currently use |icon|.

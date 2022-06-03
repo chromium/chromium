@@ -157,6 +157,7 @@ class MessageCenterController;
 class MouseCursorEventFilter;
 class MruWindowTracker;
 class MultiDeviceNotificationPresenter;
+class MultitaskMenuNudgeController;
 class NearbyShareControllerImpl;
 class DesksTemplatesDelegate;
 class NearbyShareDelegate;
@@ -500,6 +501,9 @@ class ASH_EXPORT Shell : public SessionObserver,
     return mouse_cursor_filter_.get();
   }
   MruWindowTracker* mru_window_tracker() { return mru_window_tracker_.get(); }
+  MultitaskMenuNudgeController* multitask_menu_nudge_controller() {
+    return multitask_menu_nudge_controller_.get();
+  }
   NearbyShareControllerImpl* nearby_share_controller() {
     return nearby_share_controller_.get();
   }
@@ -821,6 +825,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<MruWindowTracker> mru_window_tracker_;
   std::unique_ptr<MultiDeviceNotificationPresenter>
       multidevice_notification_presenter_;
+  std::unique_ptr<MultitaskMenuNudgeController>
+      multitask_menu_nudge_controller_;
   std::unique_ptr<NearbyShareControllerImpl> nearby_share_controller_;
   std::unique_ptr<NearbyShareDelegate> nearby_share_delegate_;
   std::unique_ptr<ParentAccessController> parent_access_controller_;

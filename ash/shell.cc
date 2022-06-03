@@ -166,6 +166,7 @@
 #include "ash/wm/immersive_context_ash.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/multitask_menu_nudge_controller.h"
 #include "ash/wm/native_cursor_manager_ash.h"
 #include "ash/wm/overlay_event_filter.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -777,6 +778,7 @@ Shell::~Shell() {
   // Close all widgets (including the shelf) and destroy all window containers.
   CloseAllRootWindowChildWindows();
 
+  multitask_menu_nudge_controller_.reset();
   capture_mode_controller_.reset();
   tablet_mode_controller_.reset();
   login_screen_controller_.reset();
@@ -1063,6 +1065,8 @@ void Shell::Init(
       peripheral_battery_listener_.get());
   power_event_observer_ = std::make_unique<PowerEventObserver>();
   window_cycle_controller_ = std::make_unique<WindowCycleController>();
+  multitask_menu_nudge_controller_ =
+      std::make_unique<MultitaskMenuNudgeController>();
 
   capture_mode_controller_ = std::make_unique<CaptureModeController>(
       shell_delegate_->CreateCaptureModeDelegate());
