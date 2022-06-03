@@ -152,6 +152,9 @@ class DrmThread : public base::Thread,
   void TakeDisplayControl(base::OnceCallback<void(bool)> callback) override;
   void RelinquishDisplayControl(
       base::OnceCallback<void(bool)> callback) override;
+  void ShouldDisplayEventTriggerConfiguration(
+      const EventPropertyMap& event_props,
+      base::OnceCallback<void(bool)> callback) override;
   void RefreshNativeDisplays(
       base::OnceCallback<void(MovableDisplaySnapshots)> callback) override;
   void AddGraphicsDevice(const base::FilePath& path, base::File file) override;

@@ -225,6 +225,19 @@ DrmDisplayHostManager::~DrmDisplayHostManager() {
   proxy_->RemoveGpuThreadObserver(this);
 }
 
+DrmDisplayHostManager::DisplayEvent::DisplayEvent(
+    DeviceEvent::ActionType action_type,
+    const base::FilePath& path,
+    const EventPropertyMap& properties)
+    : action_type(action_type), path(path), display_event_props(properties) {}
+
+DrmDisplayHostManager::DisplayEvent::DisplayEvent(const DisplayEvent&) =
+    default;
+DrmDisplayHostManager::DisplayEvent&
+DrmDisplayHostManager::DisplayEvent::operator=(const DisplayEvent&) = default;
+
+DrmDisplayHostManager::DisplayEvent::~DisplayEvent() = default;
+
 DrmDisplayHost* DrmDisplayHostManager::GetDisplay(int64_t display_id) {
   auto it = std::find_if(displays_.begin(), displays_.end(),
                          FindDrmDisplayHostById(display_id));
@@ -313,7 +326,8 @@ void DrmDisplayHostManager::OnDeviceEvent(const DeviceEvent& event) {
   if (event.device_type() != DeviceEvent::DISPLAY)
     return;
 
-  event_queue_.push(DisplayEvent(event.action_type(), event.path()));
+  event_queue_.push(
+      DisplayEvent(event.action_type(), event.path(), event.properties()));
   ProcessEvent();
 }
 
@@ -321,8 +335,12 @@ void DrmDisplayHostManager::ProcessEvent() {
   while (!event_queue_.empty() && !task_pending_) {
     DisplayEvent event = event_queue_.front();
     event_queue_.pop();
+    auto seqnum_it = event.display_event_props.find("SEQNUM");
+    const std::string seqnum = seqnum_it == event.display_event_props.end()
+                                   ? ""
+                                   : ("(SEQNUM:" + seqnum_it->second + ")");
     VLOG(1) << "Got display event " << kDisplayActionString[event.action_type]
-            << " for " << event.path.value();
+            << seqnum << " for " << event.path.value();
     switch (event.action_type) {
       case DeviceEvent::ADD:
         if (drm_devices_.find(event.path) == drm_devices_.end()) {
@@ -342,7 +360,8 @@ void DrmDisplayHostManager::ProcessEvent() {
         task_pending_ = base::ThreadTaskRunnerHandle::Get()->PostTask(
             FROM_HERE,
             base::BindOnce(&DrmDisplayHostManager::OnUpdateGraphicsDevice,
-                           weak_ptr_factory_.GetWeakPtr()));
+                           weak_ptr_factory_.GetWeakPtr(),
+                           event.display_event_props));
         break;
       case DeviceEvent::REMOVE:
         DCHECK(event.path != primary_graphics_card_path_)
@@ -374,10 +393,9 @@ void DrmDisplayHostManager::OnAddGraphicsDevice(
   ProcessEvent();
 }
 
-void DrmDisplayHostManager::OnUpdateGraphicsDevice() {
-  NotifyDisplayDelegate();
-  task_pending_ = false;
-  ProcessEvent();
+void DrmDisplayHostManager::OnUpdateGraphicsDevice(
+    const EventPropertyMap& udev_event_props) {
+  proxy_->GpuShouldDisplayEventTriggerConfiguration(udev_event_props);
 }
 
 void DrmDisplayHostManager::OnRemoveGraphicsDevice(
@@ -531,6 +549,15 @@ void DrmDisplayHostManager::GpuRelinquishedDisplayControl(bool status) {
       base::BindOnce(std::move(relinquish_display_control_callback_), status));
   relinquish_display_control_callback_.Reset();
   display_control_change_pending_ = false;
+}
+
+void DrmDisplayHostManager::GpuShouldDisplayEventTriggerConfiguration(
+    bool should_trigger) {
+  if (should_trigger)
+    NotifyDisplayDelegate();
+
+  task_pending_ = false;
+  ProcessEvent();
 }
 
 void DrmDisplayHostManager::RunUpdateDisplaysCallback(
