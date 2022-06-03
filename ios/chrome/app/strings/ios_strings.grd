@@ -1528,6 +1528,9 @@ See your search engine’s instructions for deleting your search history, if app
 
 Handoff must also be enabled in the General section of Settings, and your devices must use the same iCloud account.
       </message>
+      <message name="IDS_IOS_OPTIONS_ENABLE_INCOGNITO_INTERSTITIAL" desc="Title for the option to enable the Incognito interstitial, which lets users open links from other apps in Incognito. [iOS only]">
+        Ask to Open Links from Other Apps in Incognito
+      </message>
       <message name="IDS_IOS_OPTIONS_GENERAL_TAB_LABEL" desc="The title of the Basics section of the Settings page. [iOS only]" meaning="The title of the Basics section of the Settings page.">
         Basics
       </message>

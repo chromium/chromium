@@ -4,6 +4,28 @@
 
 # import("//build/config/ios/ios_sdk.gni")
 
+source_set("info_popover_view_controller") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "info_popover_view_controller.h",
+    "info_popover_view_controller.mm",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+
+  deps = [
+    ":constants",
+    "//base:base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
 source_set("enterprise_info_popover_view_controller") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
@@ -16,12 +38,12 @@ source_set("enterprise_info_popover_view_controller") {
 
   deps = [
     ":constants",
+    ":info_popover_view_controller",
     "//base:base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/elements:popover_label_view_controller",
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
