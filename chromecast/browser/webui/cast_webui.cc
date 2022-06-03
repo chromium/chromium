@@ -52,18 +52,18 @@ CastWebUI::CastWebUI(content::WebUI* webui,
 CastWebUI::~CastWebUI() {}
 
 void CastWebUI::InvokeCallback(const std::string& message,
-                               const base::ListValue* args) {
+                               const base::Value::List& args) {
   if (message_callbacks_.count(message) == 0) {
     return;
   }
-  message_callbacks_[message]->OnMessage(args->Clone());
+  message_callbacks_[message]->OnMessage(args.Clone());
 }
 
 void CastWebUI::RegisterMessageCallback(
     const std::string& message,
     mojo::PendingRemote<mojom::MessageCallback> callback) {
   message_callbacks_.emplace(message, std::move(callback));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       message,
       base::BindRepeating(&CastWebUI::InvokeCallback, weak_this_, message));
 }
