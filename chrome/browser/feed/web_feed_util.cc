@@ -43,6 +43,8 @@ void FindWebFeedInfoForPage(
       [](base::WeakPtr<content::WebContents> web_contents,
          base::OnceCallback<void(WebFeedMetadata)> callback,
          WebFeedPageInformation page_info) {
+        if (!web_contents)
+          return;
         Profile* profile =
             Profile::FromBrowserContext(web_contents->GetBrowserContext());
         if (!profile) {
@@ -75,7 +77,7 @@ void FollowWebFeed(
          base::OnceCallback<void(WebFeedSubscriptions::FollowWebFeedResult)>
              callback,
          WebFeedPageInformation page_info) {
-        if (page_info.url().is_empty())
+        if (page_info.url().is_empty() || !web_contents)
           return;
 
         Profile* profile =
