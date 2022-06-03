@@ -1006,17 +1006,15 @@ void AshNotificationView::CreateOrUpdateSmallIconView(
 void AshNotificationView::CreateOrUpdateInlineSettingsViews(
     const message_center::Notification& notification) {
   if (inline_settings_enabled()) {
-    // TODO(crbug/1265636): Fix this logic when grouped parent notification has
-    // inline settings.
-    DCHECK(is_grouped_parent_view_ ||
-           (message_center::SettingsButtonHandler::INLINE ==
-            notification.rich_notification_data().settings_button_handler));
+    DCHECK(message_center::SettingsButtonHandler::INLINE ==
+           notification.rich_notification_data().settings_button_handler);
     return;
   }
 
   set_inline_settings_enabled(
+      !is_grouped_child_view_ &&
       notification.rich_notification_data().settings_button_handler ==
-      message_center::SettingsButtonHandler::INLINE);
+          message_center::SettingsButtonHandler::INLINE);
 
   if (!inline_settings_enabled()) {
     return;
