@@ -212,7 +212,7 @@ struct NetworkContextFilePaths {
 
   // Points to a path that might contain existing network service data files and
   // databases from network contexts created with the same `data_directory`.
-  // This parameter must be specified if `perform_migration` is set to true.
+  // This parameter must be specified if `trigger_migration` is set to true.
   // Once migration has been successful (see below), data is no longer read from
   // this path. Data could continue to be read from this path if migration
   // fails, or if `trigger_migration` has never been set to true.
