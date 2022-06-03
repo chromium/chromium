@@ -175,8 +175,7 @@ void UserNoteService::OnNoteCreationDone(const base::UnguessableToken& id,
   DCHECK(creation_entry_it != creation_map_.end())
       << "Attempted to complete the creation of a note that doesn't exist";
   // TODO(gujen): Call
-  // UserNoteStorage::UpdateNote(entry.model, content, /*is_creation=*/true),
-  // which doesn't exist yet.
+  // UserNoteStorage::UpdateNote(entry.model, content, /*is_creation=*/true).
 
   // TODO(gujen): Make sure to transfer the model from the creation map to the
   // model map in the OnNotesChanged() event sent by the storage layer.

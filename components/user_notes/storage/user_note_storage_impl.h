@@ -38,15 +38,9 @@ class UserNoteStorageImpl : public UserNoteStorage {
       base::OnceCallback<void(std::vector<std::unique_ptr<UserNote>>)> callback)
       override;
 
-  void CreateNote(base::UnguessableToken id,
+  void UpdateNote(const UserNote* model,
                   std::string note_body_text,
-                  UserNoteTarget::TargetType target_type,
-                  std::string original_text,
-                  GURL target_page,
-                  std::string selector) override;
-
-  void UpdateNote(base::UnguessableToken id,
-                  std::string note_body_text) override;
+                  bool is_creation = false) override;
 
   void DeleteNote(const base::UnguessableToken& id) override;
 

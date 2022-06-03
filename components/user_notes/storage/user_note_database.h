@@ -37,14 +37,9 @@ class UserNoteDatabase {
   std::vector<std::unique_ptr<UserNote>> GetNotesById(
       std::vector<base::UnguessableToken> ids);
 
-  void CreateNote(base::UnguessableToken id,
+  void UpdateNote(const UserNote* model,
                   std::string note_body_text,
-                  UserNoteTarget::TargetType target_type,
-                  std::string original_text,
-                  GURL target_page,
-                  std::string selector);
-
-  void UpdateNote(base::UnguessableToken id, std::string note_body_text);
+                  bool is_creation);
 
   void DeleteNote(const base::UnguessableToken& id);
 
@@ -55,11 +50,21 @@ class UserNoteDatabase {
   void DeleteAllNotes();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, UpdateNote);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, CreateNote);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, DeleteNote);
+
+  // Initialises internal database if needed.
+  bool EnsureDBInit();
+
   // Called by the database to report errors.
   void DatabaseErrorCallback(int error, sql::Statement* stmt);
 
   // Creates or migrates to the new schema if needed.
   bool InitSchema();
+
+  // Called by UpdateNote() with is_creation=true to create a new note.
+  void CreateNote(const UserNote* model, std::string note_body_text);
 
   bool CreateSchema();
 

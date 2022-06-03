@@ -48,17 +48,10 @@ class UserNoteStorage {
       base::OnceCallback<void(std::vector<std::unique_ptr<UserNote>>)>
           callback) = 0;
 
-  // Saves a brand-new note to disk.
-  virtual void CreateNote(base::UnguessableToken id,
+  // Saves a brand-new note or a modified note to disk.
+  virtual void UpdateNote(const UserNote* model,
                           std::string note_body_text,
-                          UserNoteTarget::TargetType target_type,
-                          std::string original_text,
-                          GURL target_page,
-                          std::string selector) = 0;
-
-  // Saves a modified note to disk.
-  virtual void UpdateNote(base::UnguessableToken id,
-                          std::string note_body_text) = 0;
+                          bool is_creation = false) = 0;
 
   // Deletes a note from disk.
   virtual void DeleteNote(const base::UnguessableToken& guid) = 0;

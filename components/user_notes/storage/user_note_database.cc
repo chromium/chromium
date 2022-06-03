@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
+#include "sql/statement.h"
 #include "sql/transaction.h"
 
 namespace user_notes {
@@ -86,28 +87,160 @@ std::vector<std::unique_ptr<UserNote>> UserNoteDatabase::GetNotesById(
   return std::vector<std::unique_ptr<UserNote>>();
 }
 
-void UserNoteDatabase::CreateNote(base::UnguessableToken id,
-                                  std::string note_body_text,
-                                  UserNoteTarget::TargetType target_type,
-                                  std::string original_text,
-                                  GURL target_page,
-                                  std::string selector) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(gayane): Implement.
-}
-
-void UserNoteDatabase::UpdateNote(base::UnguessableToken id,
+void UserNoteDatabase::CreateNote(const UserNote* model,
                                   std::string note_body_text) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(gayane): Implement.
+  if (!EnsureDBInit())
+    return;
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin())
+    return;
+
+  sql::Statement create_note(db_.GetCachedStatement(SQL_FROM_HERE,
+                                                    "INSERT INTO notes("
+                                                    "id,"
+                                                    "creation_date,"
+                                                    "modification_date,"
+                                                    "url,"
+                                                    "origin,"
+                                                    "type)"
+                                                    "VALUES(?,?,?,?,?,?)"));
+
+  if (!create_note.is_valid())
+    return;
+
+  // TODO: possibly the time should be passed to this function, for example for
+  // sync to add notes with past creation date.
+  create_note.BindString(0, model->id().ToString());
+  create_note.BindTime(1, model->metadata().creation_date());
+  create_note.BindTime(2, model->metadata().modification_date());
+  create_note.BindString(3, model->target().target_page().spec());
+  create_note.BindString(
+      4, url::Origin::Create(model->target().target_page()).Serialize());
+  create_note.BindInt(5, model->target().type());
+
+  if (!create_note.Run())
+    return;
+
+  if (model->target().type() == UserNoteTarget::TargetType::kPageText) {
+    sql::Statement notes_text_target(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        "INSERT INTO notes_text_target(note_id, original_text, selector) "
+        "VALUES(?,?,?)"));
+    if (!notes_text_target.is_valid())
+      return;
+
+    notes_text_target.BindString(0, model->id().ToString());
+    notes_text_target.BindString(1, model->target().original_text());
+    notes_text_target.BindString(2, model->target().selector());
+
+    if (!notes_text_target.Run())
+      return;
+  }
+
+  sql::Statement notes_body(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT INTO notes_body(note_id, type, plain_text) "
+      "VALUES(?,?,?)"));
+  if (!notes_body.is_valid())
+    return;
+
+  notes_body.BindString(0, model->id().ToString());
+  notes_body.BindInt(1, UserNoteBody::BodyType::PLAIN_TEXT);
+  notes_body.BindString(2, note_body_text);
+
+  if (!notes_body.Run())
+    return;
+
+  transaction.Commit();
+}
+
+void UserNoteDatabase::UpdateNote(const UserNote* model,
+                                  std::string note_body_text,
+                                  bool is_creation) {
+  if (is_creation) {
+    CreateNote(model, note_body_text);
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!EnsureDBInit())
+    return;
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin())
+    return;
+
+  // Only the text of the note body can be modified.
+  // TODO(crbug.com/1313967): This will need to be updated if in the future we
+  // wish to support changing the target text.
+  sql::Statement update_notes_body(db_.GetCachedStatement(
+      SQL_FROM_HERE, "UPDATE notes_body SET plain_text = ? WHERE note_id = ?"));
+  if (!update_notes_body.is_valid())
+    return;
+
+  update_notes_body.BindString(0, note_body_text);
+  update_notes_body.BindString(1, model->id().ToString());
+
+  if (!update_notes_body.Run())
+    return;
+
+  sql::Statement update_modification_date(db_.GetCachedStatement(
+      SQL_FROM_HERE, "UPDATE notes SET modification_date = ? WHERE id = ?"));
+  if (!update_modification_date.is_valid())
+    return;
+
+  update_modification_date.BindTime(0, base::Time::Now());
+  update_modification_date.BindString(1, model->id().ToString());
+
+  if (!update_modification_date.Run())
+    return;
+
+  transaction.Commit();
 }
 
 void UserNoteDatabase::DeleteNote(const base::UnguessableToken& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(gayane): Implement.
+  if (!EnsureDBInit())
+    return;
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin())
+    return;
+
+  sql::Statement delete_notes_body(db_.GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM notes_body WHERE note_id = ?"));
+
+  if (!delete_notes_body.is_valid())
+    return;
+
+  delete_notes_body.BindString(0, id.ToString());
+  if (!delete_notes_body.Run())
+    return;
+
+  sql::Statement delete_notes_text_target(db_.GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM notes_text_target WHERE note_id = ?"));
+  if (!delete_notes_text_target.is_valid())
+    return;
+
+  delete_notes_text_target.BindString(0, id.ToString());
+  if (!delete_notes_text_target.Run())
+    return;
+
+  sql::Statement delete_notes(
+      db_.GetCachedStatement(SQL_FROM_HERE, "DELETE FROM notes WHERE id = ?"));
+  if (!delete_notes.is_valid())
+    return;
+
+  delete_notes.BindString(0, id.ToString());
+  if (!delete_notes.Run())
+    return;
+
+  transaction.Commit();
 }
 
 void UserNoteDatabase::DeleteAllForUrl(const GURL& url) {
@@ -128,12 +261,18 @@ void UserNoteDatabase::DeleteAllNotes() {
   // TODO(gayane): Implement.
 }
 
+bool UserNoteDatabase::EnsureDBInit() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (db_.is_open())
+    return true;
+  return Init();
+}
+
 void UserNoteDatabase::DatabaseErrorCallback(int error, sql::Statement* stmt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!sql::IsErrorCatastrophic(error)) {
+  if (!sql::IsErrorCatastrophic(error))
     return;
-  }
 
   // Ignore repeated callbacks.
   db_.reset_error_callback();
@@ -149,6 +288,7 @@ bool UserNoteDatabase::InitSchema() {
   sql::MetaTable meta_table;
   bool has_metatable = meta_table.DoesTableExist(&db_);
   bool has_schema = db_.DoesTableExist("notes");
+
   if (!has_metatable && has_schema) {
     // Existing DB with no meta table. Cannot determine DB version.
     db_.Raze();
