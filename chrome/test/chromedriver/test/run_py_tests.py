@@ -123,6 +123,8 @@ _OS_SPECIFIC_FILTER['win'] = [
     'RemoteBrowserTest.testConnectToRemoteBrowser',
     'SessionHandlingTest.testQuitASessionMoreThanOnce',
     'SupportIPv4AndIPv6.testSupportIPv4AndIPv6',
+    # Flaky on Win7 bots: crbug.com/1132559
+    'ChromeDriverTest.testTakeElementScreenshotInIframe',
 ]
 _OS_SPECIFIC_FILTER['linux'] = [
 ]
