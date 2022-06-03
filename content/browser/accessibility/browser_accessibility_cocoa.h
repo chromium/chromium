@@ -113,9 +113,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // on the characteristics of this accessibility node.
 - (content::BrowserAccessibility*)actionTarget;
 
-// Internally-used property.
-@property(nonatomic, readonly) NSPoint origin;
-
 @property(nonatomic, readonly) NSArray* children;
 @property(nonatomic, readonly) NSArray* columns;
 @property(nonatomic, readonly) NSValue* columnIndexRange;
@@ -150,7 +147,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @property(nonatomic, readonly) NSString* selectedText;
 @property(nonatomic, readonly) NSValue* selectedTextRange;
 @property(nonatomic, readonly) id selectedTextMarkerRange;
-@property(nonatomic, readonly) NSValue* size;
 @property(nonatomic, readonly) NSString* sortDirection;
 // Returns a text marker that points to the first character in the document that
 // can be selected with Voiceover.

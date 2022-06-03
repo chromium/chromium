@@ -1,0 +1,4 @@
+div.accessibilityAttributeNames.has(AXSize)='yes'
+div.accessibilityAttributeValue(AXSize)={w: 784, h: 18}
+clipped.accessibilityAttributeNames.has(AXSize)='yes'
+clipped.accessibilityAttributeValue(AXSize)={w: 80, h: 36}

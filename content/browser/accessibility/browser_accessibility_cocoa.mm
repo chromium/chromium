@@ -630,7 +630,6 @@ bool content::IsNSRange(id value) {
       {NSAccessibilitySelectedTextRangeAttribute, @"selectedTextRange"},
       {NSAccessibilitySelectedTextMarkerRangeAttribute,
        @"selectedTextMarkerRange"},
-      {NSAccessibilitySizeAttribute, @"size"},
       {NSAccessibilitySortDirectionAttribute, @"sortDirection"},
       {NSAccessibilitySubroleAttribute, @"subrole"},
       {NSAccessibilityTabsAttribute, @"tabs"},
@@ -1071,16 +1070,6 @@ bool content::IsNSRange(id value) {
   return nil;
 }
 
-// The origin of this accessibility object in the page's document.
-// This is relative to webkit's top-left origin, not Cocoa's
-// bottom-left origin.
-- (NSPoint)origin {
-  if (![self instanceActive])
-    return NSMakePoint(0, 0);
-  gfx::Rect bounds = _owner->GetClippedRootFrameBoundsRect();
-  return NSMakePoint(bounds.x(), bounds.y());
-}
-
 - (id)parent {
   if (![self instanceActive])
     return nil;
@@ -1101,10 +1090,7 @@ bool content::IsNSRange(id value) {
 - (NSValue*)position {
   if (![self instanceActive])
     return nil;
-  NSPoint origin = [self origin];
-  NSSize size = [[self size] sizeValue];
-  NSPoint pointInScreen =
-      [self rectInScreen:gfx::Rect(gfx::Point(origin), gfx::Size(size))].origin;
+  NSPoint pointInScreen = [self accessibilityFrame].origin;
   return [NSValue valueWithPoint:pointInScreen];
 }
 
@@ -1426,13 +1412,6 @@ bool content::IsNSRange(id value) {
   // Voiceover expects this range to be backwards in order to read the selected
   // words correctly.
   return AXRangeToAXTextMarkerRange(ax_range.AsBackwardRange());
-}
-
-- (NSValue*)size {
-  if (![self instanceActive])
-    return nil;
-  gfx::Rect bounds = _owner->GetClippedRootFrameBoundsRect();
-  return [NSValue valueWithSize:NSMakeSize(bounds.width(), bounds.height())];
 }
 
 - (NSString*)sortDirection {
@@ -2483,7 +2462,6 @@ bool content::IsNSRange(id value) {
                        NSAccessibilityRoleAttribute,
                        NSAccessibilityRoleDescriptionAttribute,
                        NSAccessibilitySelectedTextMarkerRangeAttribute,
-                       NSAccessibilitySizeAttribute,
                        NSAccessibilityStartTextMarkerAttribute,
                        NSAccessibilitySubroleAttribute,
                        NSAccessibilityTopLevelUIElementAttribute,

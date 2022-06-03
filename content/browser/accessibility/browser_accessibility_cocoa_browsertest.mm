@@ -204,7 +204,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_NE(nil, cocoa_text);
 
   NSPoint position = [[cocoa_text position] pointValue];
-  NSSize size = [[cocoa_text size] sizeValue];
+
+  NSSize size = cocoa_text.accessibilityFrame.size;
   NSRect frame = NSMakeRect(position.x, position.y, size.width, size.height);
 
   NSPoint p0_before = position;

@@ -381,6 +381,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXSelectedRows) {
   RunTypedTest<kMacAttributes>("ax-selected-rows.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXSize) {
+  RunTypedTest<kMacAttributes>("ax-size.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXTitleUIElement) {
   RunTypedTest<kMacAttributes>("ax-title-ui-element.html");
 }
