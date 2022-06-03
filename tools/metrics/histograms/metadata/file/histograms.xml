@@ -115,6 +115,7 @@ chromium-metrics-reviews@google.com.
     <variant name="crx"/>
     <variant name="gz"/>
     <variant name="iso"/>
+    <variant name="lz"/>
     <variant name="lzma"/>
     <variant name="rar"/>
     <variant name="tar"/>
