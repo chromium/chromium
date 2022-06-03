@@ -64,6 +64,7 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   virtual void NotifyPopupClosed(MessagePopupView* popup);
 
   // NotificationViewController:
+  void AnimateResize() override;
   MessageView* GetMessageViewForNotificationId(
       const std::string& notification_id) override;
   void ConvertNotificationViewToGroupedNotificationView(

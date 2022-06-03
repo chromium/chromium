@@ -19,6 +19,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -88,6 +89,16 @@ GetActiveNotificationViewControllerForDisplay(int64_t display_id) {
       ->unified_system_tray()
       ->GetNotificationGroupingController()
       ->GetActiveNotificationViewController();
+}
+
+message_center::NotificationViewController*
+GetActiveNotificationViewControllerForNotificationView(
+    views::View* notification_view) {
+  aura::Window* window = notification_view->GetWidget()->GetNativeWindow();
+  auto display_id =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+
+  return GetActiveNotificationViewControllerForDisplay(display_id);
 }
 
 void InitLayerForAnimations(views::View* view) {

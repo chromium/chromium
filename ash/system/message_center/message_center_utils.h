@@ -45,6 +45,13 @@ size_t ASH_EXPORT GetNotificationCount();
 message_center::NotificationViewController*
 GetActiveNotificationViewControllerForDisplay(int64_t display_id);
 
+// Get the currently active notification view controller for the provided
+// `notification_view`. Each screen has it's own `MessagePopupCollection` and
+// `UnifiedMessageListView`.
+message_center::NotificationViewController*
+GetActiveNotificationViewControllerForNotificationView(
+    views::View* notification_view);
+
 // Utils for animation within a notification view.
 
 // Initializes the layer for the specified `view` for animations.

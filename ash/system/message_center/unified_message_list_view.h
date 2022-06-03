@@ -125,6 +125,7 @@ class ASH_EXPORT UnifiedMessageListView
   const char* GetClassName() const override;
 
   // message_center::NotificationViewController:
+  void AnimateResize() override;
   message_center::MessageView* GetMessageViewForNotificationId(
       const std::string& id) override;
   void ConvertNotificationViewToGroupedNotificationView(

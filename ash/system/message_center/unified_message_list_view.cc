@@ -673,6 +673,11 @@ const char* UnifiedMessageListView::GetClassName() const {
   return "UnifiedMessageListView";
 }
 
+void UnifiedMessageListView::AnimateResize() {
+  // TODO(crbug/1330026): Refactor UnifiedMessageListView animations to use
+  // animation builder instead of the existing layout based animations.
+}
+
 message_center::MessageView*
 UnifiedMessageListView::GetMessageViewForNotificationId(const std::string& id) {
   auto it =

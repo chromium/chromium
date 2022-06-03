@@ -50,6 +50,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/vector_icons.h"
@@ -239,6 +240,13 @@ using Orientation = views::BoxLayout::Orientation;
 
 BEGIN_METADATA(AshNotificationView, NotificationTitleRow, views::View)
 END_METADATA
+
+void AshNotificationView::Layout() {
+  if (is_animating_)
+    return;
+
+  message_center::NotificationViewBase::Layout();
+}
 
 void AshNotificationView::GroupedNotificationsContainer::
     ChildPreferredSizeChanged(views::View* view) {
@@ -478,6 +486,8 @@ AshNotificationView::AshNotificationView(
                 CreateGroupedNotificationsContainerBuilder(this).CopyAddressTo(
                     &grouped_notifications_container_))
             .Build());
+    static_cast<views::BoxLayout*>(GetLayoutManager())
+        ->SetFlexForView(grouped_notifications_scroll_view_, 1);
   } else {
     AddChildView(CreateGroupedNotificationsContainerBuilder(this)
                      .CopyAddressTo(&grouped_notifications_container_)
@@ -796,39 +806,37 @@ void AshNotificationView::PopulateGroupNotifications(
 
 void AshNotificationView::RemoveGroupNotification(
     const std::string& notification_id) {
-  AshNotificationView* to_be_deleted = static_cast<AshNotificationView*>(
+  AshNotificationView* to_be_removed = static_cast<AshNotificationView*>(
       FindGroupNotificationView(notification_id));
 
-  if (!to_be_deleted)
+  if (!to_be_removed)
     return;
 
   auto on_notification_slid_out = base::BindRepeating(
       [](base::WeakPtr<AshNotificationView> self,
          const std::string& notification_id) {
-        if (!self || !self->grouped_notifications_container_)
+        if (!self)
           return;
 
-        views::View* to_be_deleted =
+        views::View* to_be_removed =
             self->FindGroupNotificationView(notification_id);
-        if (!to_be_deleted)
+        if (!to_be_removed)
           return;
-
-        self->grouped_notifications_container_->RemoveChildViewT(to_be_deleted);
 
         self->total_grouped_notifications_--;
         self->expand_button_->UpdateGroupedNotificationsCount(
             self->total_grouped_notifications_);
 
-        self->PreferredSizeChanged();
+        self->AnimateResizeAfterRemoval(to_be_removed);
       },
       weak_factory_.GetWeakPtr(), notification_id);
 
   // If the removed notification has a layer transform it has already been slid
   // out (For example user swiped it by dragging). We only need to animate a
   // slide out if there is no transform.
-  if (to_be_deleted->layer()->transform().IsIdentity()) {
+  if (to_be_removed->layer()->transform().IsIdentity()) {
     message_center_utils::SlideOutView(
-        to_be_deleted, on_notification_slid_out,
+        to_be_removed, on_notification_slid_out,
         /*delay_in_ms=*/0,
         /*duration_in_ms=*/kSlideOutGroupedNotificationAnimationDurationMs,
         gfx::Tween::LINEAR,
@@ -1426,6 +1434,65 @@ void AshNotificationView::UpdateIconAndButtonsColor(
 
   if (snooze_button_)
     snooze_button_->SetIconColor(button_color);
+}
+
+void AshNotificationView::AnimateResizeAfterRemoval(
+    views::View* to_be_removed) {
+  auto on_resize_complete = base::BindRepeating(
+      [](base::WeakPtr<AshNotificationView> self) {
+        if (!self)
+          return;
+
+        self->set_is_animating(false);
+
+        if (self->shown_in_popup_) {
+          self->grouped_notifications_scroll_view_->Layout();
+        }
+      },
+      weak_factory_.GetWeakPtr());
+
+  int group_container_previous_height =
+      grouped_notifications_container_->height();
+  int removed_index =
+      grouped_notifications_container_->GetIndexOf(to_be_removed);
+  grouped_notifications_container_->RemoveChildViewT(to_be_removed).reset();
+
+  message_center_utils::GetActiveNotificationViewControllerForNotificationView(
+      this)
+      ->AnimateResize();
+
+  if (shown_in_popup_) {
+    grouped_notifications_scroll_view_->Layout();
+  } else {
+    Layout();
+    PreferredSizeChanged();
+  }
+
+  int grouped_container_height_reduction =
+      group_container_previous_height -
+      grouped_notifications_container_->height();
+
+  views::AnimationBuilder animation_builder;
+
+  if (grouped_notifications_container_->children().begin() + removed_index >=
+      grouped_notifications_container_->children().end()) {
+    return;
+  }
+  set_is_animating(true);
+  animation_builder.OnEnded(on_resize_complete);
+  for (auto it =
+           grouped_notifications_container_->children().begin() + removed_index;
+       it != grouped_notifications_container_->children().end(); it++) {
+    gfx::Rect child_bounds = (*it)->layer()->GetTargetBounds();
+    (*it)->layer()->SetBounds(gfx::Rect(
+        child_bounds.x(), child_bounds.y() + grouped_container_height_reduction,
+        child_bounds.width(), child_bounds.height()));
+
+    animation_builder.Once()
+        .SetDuration(base::Milliseconds(
+            message_center::kNotificationResizeAnimationDurationMs))
+        .SetBounds((*it), child_bounds, gfx::Tween::EASE_OUT);
+  }
 }
 
 void AshNotificationView::PerformExpandCollapseAnimation() {

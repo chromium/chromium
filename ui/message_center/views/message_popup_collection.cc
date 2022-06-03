@@ -10,6 +10,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/message_center/message_center_types.h"
@@ -18,6 +19,7 @@
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_view.h"
+#include "ui/views/animation/animation_builder.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -125,6 +127,21 @@ void MessagePopupCollection::NotifyPopupClosed(MessagePopupView* popup) {
   for (auto& item : popup_items_) {
     if (item.popup == popup)
       item.popup = nullptr;
+  }
+}
+
+void MessagePopupCollection::AnimateResize() {
+  CalculateBounds();
+
+  views::AnimationBuilder animation_builder;
+  for (auto popup : popup_items_) {
+    auto target_bounds = gfx::Rect(
+        popup.popup->GetWidget()->GetLayer()->bounds().x(), popup.bounds.y(),
+        popup.bounds.width(), popup.bounds.height());
+    animation_builder.Once()
+        .SetDuration(base::Milliseconds(kNotificationResizeAnimationDurationMs))
+        .SetBounds(popup.popup->GetWidget()->GetLayer(), target_bounds,
+                   gfx::Tween::EASE_OUT);
   }
 }
 
