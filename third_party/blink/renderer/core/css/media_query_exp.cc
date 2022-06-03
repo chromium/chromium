@@ -453,15 +453,7 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
                                 numeric_literal->GetType());
     }
 
-    const auto* math_value = To<CSSMathFunctionValue>(value);
-    CSSPrimitiveValue::UnitType expression_unit =
-        math_value->ExpressionNode()->ResolvedUnitType();
-    if (expression_unit == CSSPrimitiveValue::UnitType::kUnknown) {
-      // TODO(crbug.com/982542): Support math expressions involving type
-      // conversions properly. For example, calc(10px + 1em).
-      return absl::nullopt;
-    }
-    return MediaQueryExpValue(math_value->DoubleValue(), expression_unit);
+    return MediaQueryExpValue(*value);
   }
 
   return absl::nullopt;
@@ -566,6 +558,9 @@ String MediaQueryExpValue::CssText() const {
       break;
     case Type::kId:
       output.Append(getValueName(Id()));
+      break;
+    case Type::kCSSValue:
+      output.Append(GetCSSValue().CssText());
       break;
   }
 

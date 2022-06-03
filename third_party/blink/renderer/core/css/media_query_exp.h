@@ -57,14 +57,15 @@ class CORE_EXPORT MediaQueryExpValue {
       : type_(Type::kNumeric), numeric_({value, unit}) {}
   MediaQueryExpValue(unsigned numerator, unsigned denominator)
       : type_(Type::kRatio), ratio_({numerator, denominator}) {}
-  void Trace(Visitor*) const {
-    // TODO(crbug.com/1312000): Trace a CSSValue here when it's added.
-  }
+  explicit MediaQueryExpValue(const CSSPrimitiveValue& value)
+      : type_(Type::kCSSValue), css_value_(&value) {}
+  void Trace(Visitor* visitor) const { visitor->Trace(css_value_); }
 
   bool IsValid() const { return type_ != Type::kInvalid; }
   bool IsId() const { return type_ == Type::kId; }
   bool IsNumeric() const { return type_ == Type::kNumeric; }
   bool IsRatio() const { return type_ == Type::kRatio; }
+  bool IsCSSValue() const { return type_ == Type::kCSSValue; }
 
   CSSValueID Id() const {
     DCHECK(IsId());
@@ -91,6 +92,12 @@ class CORE_EXPORT MediaQueryExpValue {
     return ratio_.denominator;
   }
 
+  const CSSPrimitiveValue& GetCSSValue() const {
+    DCHECK(IsCSSValue());
+    DCHECK(css_value_);
+    return *css_value_;
+  }
+
   enum UnitFlags {
     kNone = 0x0,
     kFontRelative = 0x1,
@@ -115,6 +122,8 @@ class CORE_EXPORT MediaQueryExpValue {
       case Type::kRatio:
         return (ratio_.numerator == other.ratio_.numerator) &&
                (ratio_.denominator == other.ratio_.denominator);
+      case Type::kCSSValue:
+        return base::ValuesEquivalent(css_value_, other.css_value_);
     }
   }
   bool operator!=(const MediaQueryExpValue& other) const {
@@ -132,7 +141,7 @@ class CORE_EXPORT MediaQueryExpValue {
       const ExecutionContext*);
 
  private:
-  enum class Type { kInvalid, kId, kNumeric, kRatio };
+  enum class Type { kInvalid, kId, kNumeric, kRatio, kCSSValue };
 
   Type type_ = Type::kInvalid;
 
@@ -147,6 +156,10 @@ class CORE_EXPORT MediaQueryExpValue {
       unsigned denominator;
     } ratio_;
   };
+
+  // Used when the value can't be represented by the above union (e.g. math
+  // functions).
+  Member<const CSSPrimitiveValue> css_value_;
 };
 
 // https://drafts.csswg.org/mediaqueries-4/#mq-syntax

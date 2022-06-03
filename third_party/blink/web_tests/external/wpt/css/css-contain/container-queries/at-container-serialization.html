@@ -24,6 +24,7 @@
   @container (10px <=  width  <=  100px) { }
   @container (100px>WIDTH>10px) { }
   @container (  100px >= width >= 10px  ) { }
+  @container (calc(1em + 1px) >= width >= max(10em, 10px)) { }
 </style>
 <script>
   setup(() => assert_implements_container_queries());
@@ -31,7 +32,7 @@
   let rules = testSheet.sheet.cssRules;
 
   test(() => {
-    assert_equals(rules.length, 13);
+    assert_equals(rules.length, 14);
     assert_equals(rules[0].cssRules.length, 2);
 
     assert_equals(rules[0].conditionText, "(width = 100px)");
@@ -66,4 +67,8 @@
     assert_equals(rules[11].conditionText, "(100px > width > 10px)");
     assert_equals(rules[12].conditionText, "(100px >= width >= 10px)");
   }, "Serialization of range condition syntax");
+
+  test(() => {
+    assert_equals(rules[13].conditionText, "(calc(1em + 1px) >= width >= max(10em, 10px))");
+  }, "Serialization of calc()");
 </script>

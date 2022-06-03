@@ -563,6 +563,11 @@ static bool GridMediaFeatureEval(const MediaQueryExpValue& value,
 static bool ComputeLength(const MediaQueryExpValue& value,
                           const MediaValues& media_values,
                           double& result) {
+  if (value.IsCSSValue()) {
+    result = value.GetCSSValue().ComputeLength<double>(media_values);
+    return true;
+  }
+
   if (!value.IsNumeric())
     return false;
 

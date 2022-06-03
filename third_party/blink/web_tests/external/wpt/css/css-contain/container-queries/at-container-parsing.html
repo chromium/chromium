@@ -112,6 +112,14 @@
   test_query_known('(100px > width >= 200px)');
   test_query_known('(100px >= width > 200px)');
 
+  test_query_known('(width: calc(10px))');
+  test_query_known('(width: calc(10em))');
+  test_query_known('(width: calc(10px + 10em))');
+  test_query_known('(width < calc(10px + 10em))');
+  test_query_known('(width < max(10px, 10em))');
+  test_query_known('(calc(10px + 10em) < width)');
+  test_query_known('(calc(10px + 10em) < width < max(30px, 30em))');
+
   test_query_unknown('foo(width)');
   test_query_unknown('size(width)');
   test_query_unknown('(asdf)');
