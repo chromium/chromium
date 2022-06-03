@@ -68,6 +68,7 @@
         "crx",
         "gz",
         "iso",
+        "lz",
         "lzma",
         "rar",
         "tar",

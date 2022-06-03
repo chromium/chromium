@@ -93,6 +93,7 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFileManager() {
                         "crx",    //
                         "gz",     //
                         "iso",    //
+                        "lz",     //
                         "lzma",   //
                         "rar",    //
                         "tar",    //

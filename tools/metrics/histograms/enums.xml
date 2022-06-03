@@ -21141,6 +21141,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="16" label="Z">Z-compressed File</int>
   <int value="17" label="TAR.ZST">Zstandard-compressed TAR</int>
   <int value="18" label="ZST">Zstandard-compressed File</int>
+  <int value="19" label="TAR.LZ">LZIP-compressed TAR</int>
+  <int value="20" label="LZ">LZIP-compressed File</int>
 </enum>
 
 <enum name="CrosDisksClientFormatError">

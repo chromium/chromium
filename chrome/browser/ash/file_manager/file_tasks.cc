@@ -528,10 +528,11 @@ void PostProcessFoundTasks(
   // manifest.json is allowed.
   if (!base::FeatureList::IsEnabled(ash::features::kFilesArchivemount2)) {
     for (const auto& entry : entries) {
-      // Deny-list: various compressed formats.
+      // Deny-list: "slow-mounter" compressed formats.
       if (entry.path.MatchesFinalExtension(".bz") ||
           entry.path.MatchesFinalExtension(".bz2") ||
           entry.path.MatchesFinalExtension(".gz") ||
+          entry.path.MatchesFinalExtension(".lz") ||
           entry.path.MatchesFinalExtension(".lzma") ||
           entry.path.MatchesFinalExtension(".taz") ||
           entry.path.MatchesFinalExtension(".tb2") ||
