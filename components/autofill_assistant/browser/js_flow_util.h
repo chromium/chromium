@@ -12,8 +12,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 
-namespace autofill_assistant {
-namespace js_flow_util {
+namespace autofill_assistant::js_flow_util {
 
 // Returns true if |value| contains only allowed value types, which are INT,
 // BOOL, DOUBLE, and NONE. Dictionaries and lists are allowed, so long as they
@@ -67,7 +66,9 @@ ClientStatus ExtractJsFlowActionReturnValue(
 std::unique_ptr<base::Value> NativeActionResultToResultValue(
     const ProcessedActionProto& processed_action);
 
-}  // namespace js_flow_util
-}  // namespace autofill_assistant
+// Serializes the proto as base64.
+std::string SerializeToBase64(const google::protobuf::MessageLite* proto);
+
+}  // namespace autofill_assistant::js_flow_util
 
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_JS_FLOW_UTIL_H_

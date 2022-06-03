@@ -167,13 +167,13 @@ ClientStatus ExtractJsFlowActionReturnValue(
   return ClientStatus(static_cast<ProcessedActionStatusProto>(*flow_status));
 }
 
-namespace {
-
 std::string SerializeToBase64(const google::protobuf::MessageLite* proto) {
   std::string serialized_result_base64;
   base::Base64Encode(proto->SerializeAsString(), &serialized_result_base64);
   return serialized_result_base64;
 }
+
+namespace {
 
 absl::optional<std::string> SerializeActionResult(
     const ProcessedActionProto& processed_action) {

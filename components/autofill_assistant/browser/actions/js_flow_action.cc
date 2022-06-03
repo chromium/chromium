@@ -90,6 +90,8 @@ void JsFlowAction::OnNativeActionFinished(
 
   current_native_action_.reset();
 
+  delegate_->MaybeSetPreviousAction(*processed_action);
+
   std::move(finished_callback)
       .Run(ClientStatus(processed_action->status(),
                         processed_action->status_details()),

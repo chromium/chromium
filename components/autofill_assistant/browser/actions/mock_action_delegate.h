@@ -222,6 +222,8 @@ class MockActionDelegate : public ActionDelegate {
                     base::OnceCallback<void(const external::Result& result)>
                         end_action_callback));
   MOCK_CONST_METHOD0(MustUseBackendData, bool());
+  MOCK_METHOD1(MaybeSetPreviousAction,
+               void(const ProcessedActionProto& processed_action));
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();

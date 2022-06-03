@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
 #include "components/autofill_assistant/browser/public/external_script_controller.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/tts_button_state.h"
 #include "components/autofill_assistant/browser/viewport_mode.h"
 
@@ -487,6 +488,11 @@ class ActionDelegate {
   // Returns whether or not this instance of Autofill Assistant must use a
   // backend endpoint to query data.
   virtual bool MustUseBackendData() const = 0;
+
+  // Maybe sets the previously executed action. JS flow actions are excluded
+  // because they act as a script executor.
+  virtual void MaybeSetPreviousAction(
+      const ProcessedActionProto& processed_action) = 0;
 
   virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 

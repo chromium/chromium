@@ -274,6 +274,8 @@ class ScriptExecutor : public ActionDelegate,
       base::OnceCallback<void(const external::Result& result)>
           end_action_callback) override;
   bool MustUseBackendData() const override;
+  void MaybeSetPreviousAction(
+      const ProcessedActionProto& processed_action) override;
 
  private:
   // TODO(b/220079189): remove this friend declaration.
