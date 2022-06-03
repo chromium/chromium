@@ -358,7 +358,7 @@ void Frame::RenderFallbackContentWithResourceTiming(
 
 bool Frame::IsInFencedFrameTree() const {
   DCHECK(!IsDetached());
-  auto ff_impl = GetPage()->FencedFramesImplementationType();
+  const auto& ff_impl = GetPage()->FencedFramesImplementationType();
   if (!ff_impl)
     return false;
 
@@ -375,7 +375,7 @@ bool Frame::IsInFencedFrameTree() const {
 
 bool Frame::IsFencedFrameRoot() const {
   DCHECK(!IsDetached());
-  auto ff_impl = GetPage()->FencedFramesImplementationType();
+  const auto& ff_impl = GetPage()->FencedFramesImplementationType();
   if (!ff_impl)
     return false;
 
@@ -394,7 +394,7 @@ absl::optional<mojom::blink::FencedFrameMode> Frame::GetFencedFrameMode()
     const {
   DCHECK(!IsDetached());
 
-  auto ff_impl = GetPage()->FencedFramesImplementationType();
+  const auto& ff_impl = GetPage()->FencedFramesImplementationType();
   if (!ff_impl)
     return absl::nullopt;
 
@@ -415,7 +415,7 @@ absl::optional<mojom::blink::FencedFrameMode> Frame::GetFencedFrameMode()
 }
 
 bool Frame::IsInShadowDOMOpaqueAdsFencedFrameTree() const {
-  auto ff_impl = GetPage()->FencedFramesImplementationType();
+  const auto& ff_impl = GetPage()->FencedFramesImplementationType();
   if (!ff_impl)
     return false;
 
@@ -433,7 +433,7 @@ bool Frame::IsInShadowDOMOpaqueAdsFencedFrameTree() const {
 }
 
 bool Frame::IsInMPArchOpaqueAdsFencedFrameTree() const {
-  auto ff_impl = GetPage()->FencedFramesImplementationType();
+  const auto& ff_impl = GetPage()->FencedFramesImplementationType();
   if (!ff_impl)
     return false;
 
@@ -738,7 +738,7 @@ bool Frame::FocusCrossesFencedBoundary() {
 }
 
 bool Frame::ShouldAllowScriptFocus() {
-  auto ff_impl = GetPage()->FencedFramesImplementationType();
+  const auto& ff_impl = GetPage()->FencedFramesImplementationType();
   if (!ff_impl)
     return true;
 

@@ -223,7 +223,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     return window_features_;
   }
 
-  absl::optional<features::FencedFramesImplementationType>
+  const absl::optional<features::FencedFramesImplementationType>&
   FencedFramesImplementationType() const {
     return fenced_frames_impl_;
   }
