@@ -103,6 +103,9 @@ export class FakeBluetoothConfig {
      * @private {?FakeDevicePairingHandler}
      */
     this.lastPairingHandler_ = null;
+
+    /** @private {number} */
+    this.numStartDiscoveryCalls_ = 0;
   }
 
   /**
@@ -144,6 +147,7 @@ export class FakeBluetoothConfig {
     this.lastDiscoveryDelegate_ = delegate;
     this.notifyDiscoveryStarted_();
     this.notifyDelegatesPropertiesUpdated_();
+    this.numStartDiscoveryCalls_++;
   }
 
   /**
@@ -496,5 +500,12 @@ export class FakeBluetoothConfig {
     const device = this.systemProperties_.pairedDevices.find(
         d => d.deviceProperties.id === deviceId);
     return device ? device : null;
+  }
+
+  /**
+   * @return {number}
+   */
+  getNumStartDiscoveryCalls() {
+    return this.numStartDiscoveryCalls_;
   }
 }
