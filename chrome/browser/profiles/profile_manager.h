@@ -112,6 +112,8 @@ class ProfileManager : public Profile::Delegate {
   // profile will be on the list if it is initialized successfully, but its
   // index on the list will depend on when it was opened (it is not necessarily
   // the last one).
+  // Note: The list returned might contain on-the-record irregular profiles
+  // like the System profile.
   static std::vector<Profile*> GetLastOpenedProfiles();
 
   // WARNING: do not use this function on Desktop platforms (Windows, Mac,
@@ -202,6 +204,8 @@ class ProfileManager : public Profile::Delegate {
   // - only returns profiles owned by the ProfileManager. In particular, this
   //   does not return incognito profiles, because they are owned by their
   //   original profiles.
+  // - may also return irregular profiles like on-the-record System or Guest
+  //   profiles.
   std::vector<Profile*> GetLoadedProfiles() const;
 
   // If a profile with the given path is currently managed by this object and
