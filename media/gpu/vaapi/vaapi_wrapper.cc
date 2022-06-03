@@ -5,7 +5,6 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 
 #include <dlfcn.h>
-#include <drm_fourcc.h>
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -54,7 +53,6 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -258,144 +256,6 @@ bool UseGlobalVaapiLock(media::VAImplementation implementation_type) {
            media::VAImplementation::kIntelIHD});
   return !kNoVaapiLockImplementations.contains(implementation_type) ||
          base::FeatureList::IsEnabled(media::kGlobalVaapiLock);
-}
-
-bool FillVADRMPRIMESurfaceDescriptor(const gfx::NativePixmap& pixmap,
-                                     VADRMPRIMESurfaceDescriptor& descriptor) {
-  memset(&descriptor, 0, sizeof(VADRMPRIMESurfaceDescriptor));
-
-  const gfx::BufferFormat buffer_format = pixmap.GetBufferFormat();
-  const uint32_t va_fourcc = BufferFormatToVAFourCC(buffer_format);
-  DCHECK(va_fourcc);
-
-  const gfx::Size size = pixmap.GetBufferSize();
-  const size_t num_planes = pixmap.GetNumberOfPlanes();
-  const int drm_fourcc = ui::GetFourCCFormatFromBufferFormat(buffer_format);
-  if (drm_fourcc == DRM_FORMAT_INVALID) {
-    LOG(ERROR) << "Failed to get the DRM format from the buffer format";
-    return false;
-  }
-  if (num_planes > std::size(descriptor.objects)) {
-    LOG(ERROR) << "Too many planes in the NativePixmap; got " << num_planes
-               << " but the maximum number is "
-               << std::size(descriptor.objects);
-    return false;
-  }
-  static_assert(std::size(VADRMPRIMESurfaceDescriptor{}.layers) ==
-                std::size(VADRMPRIMESurfaceDescriptor{}.objects));
-  static_assert(
-      std::size(VADRMPRIMESurfaceDescriptor{}.layers[0].object_index) ==
-      std::size(VADRMPRIMESurfaceDescriptor{}.objects));
-  static_assert(std::size(VADRMPRIMESurfaceDescriptor{}.layers[0].offset) ==
-                std::size(VADRMPRIMESurfaceDescriptor{}.objects));
-  static_assert(std::size(VADRMPRIMESurfaceDescriptor{}.layers[0].pitch) ==
-                std::size(VADRMPRIMESurfaceDescriptor{}.objects));
-
-  descriptor.fourcc = va_fourcc;
-  descriptor.width = base::checked_cast<uint32_t>(size.width());
-  descriptor.height = base::checked_cast<uint32_t>(size.height());
-
-  // We can pass the planes as separate layers or all in one layer. The choice
-  // of doing the latter was arbitrary.
-  descriptor.num_layers = 1u;
-  descriptor.layers[0].drm_format = base::checked_cast<uint32_t>(drm_fourcc);
-  descriptor.layers[0].num_planes = base::checked_cast<uint32_t>(num_planes);
-
-  descriptor.num_objects = base::checked_cast<uint32_t>(num_planes);
-  for (size_t i = 0u; i < num_planes; i++) {
-    const int dma_buf_fd = pixmap.GetDmaBufFd(i);
-    if (dma_buf_fd < 0) {
-      LOG(ERROR) << "Failed to get dmabuf from an Ozone NativePixmap";
-      return false;
-    }
-    const off_t data_size = lseek(dma_buf_fd, /*offset=*/0, SEEK_END);
-    if (data_size == static_cast<off_t>(-1)) {
-      PLOG(ERROR) << "Failed to get the size of the dma-buf";
-      return false;
-    }
-    if (lseek(dma_buf_fd, /*offset=*/0, SEEK_SET) == static_cast<off_t>(-1)) {
-      PLOG(ERROR) << "Failed to reset the file offset of the dma-buf";
-      return false;
-    }
-
-    descriptor.objects[i].fd = dma_buf_fd;
-    descriptor.objects[i].size = base::checked_cast<uint32_t>(data_size);
-    descriptor.objects[i].drm_format_modifier =
-        pixmap.GetBufferFormatModifier();
-
-    descriptor.layers[0].object_index[i] = base::checked_cast<uint32_t>(i);
-    if (!base::IsValueInRangeForNumericType<uint32_t>(
-            pixmap.GetDmaBufOffset(i))) {
-      LOG(ERROR) << "The offset for plane " << i << " is out-of-range";
-      return false;
-    }
-    descriptor.layers[0].offset[i] =
-        base::checked_cast<uint32_t>(pixmap.GetDmaBufOffset(i));
-    descriptor.layers[0].pitch[i] = pixmap.GetDmaBufPitch(i);
-  }
-
-  return true;
-}
-
-bool FillVASurfaceAttribExternalBuffers(
-    const gfx::NativePixmap& pixmap,
-    VASurfaceAttribExternalBuffers& va_attrib_extbuf) {
-  memset(&va_attrib_extbuf, 0, sizeof(VASurfaceAttribExternalBuffers));
-
-  const uint32_t va_fourcc = BufferFormatToVAFourCC(pixmap.GetBufferFormat());
-  DCHECK(va_fourcc);
-
-  const gfx::Size size = pixmap.GetBufferSize();
-  const size_t num_planes = pixmap.GetNumberOfPlanes();
-
-  va_attrib_extbuf.pixel_format = va_fourcc;
-  va_attrib_extbuf.width = base::checked_cast<uint32_t>(size.width());
-  va_attrib_extbuf.height = base::checked_cast<uint32_t>(size.height());
-
-  static_assert(std::size(VASurfaceAttribExternalBuffers{}.pitches) ==
-                std::size(VASurfaceAttribExternalBuffers{}.offsets));
-  if (num_planes > std::size(va_attrib_extbuf.pitches)) {
-    LOG(ERROR) << "Too many planes in the NativePixmap; got " << num_planes
-               << " but the maximum number is "
-               << std::size(va_attrib_extbuf.pitches);
-    return false;
-  }
-  for (size_t i = 0; i < num_planes; ++i) {
-    va_attrib_extbuf.pitches[i] = pixmap.GetDmaBufPitch(i);
-    va_attrib_extbuf.offsets[i] =
-        base::checked_cast<uint32_t>(pixmap.GetDmaBufOffset(i));
-    DVLOG(4) << "plane " << i << ": pitch: " << va_attrib_extbuf.pitches[i]
-             << " offset: " << va_attrib_extbuf.offsets[i];
-  }
-  va_attrib_extbuf.num_planes = base::checked_cast<uint32_t>(num_planes);
-
-  const int dma_buf_fd = pixmap.GetDmaBufFd(0);
-  if (dma_buf_fd < 0) {
-    LOG(ERROR) << "Failed to get dmabuf from an Ozone NativePixmap";
-    return false;
-  }
-  const off_t data_size = lseek(dma_buf_fd, /*offset=*/0, SEEK_END);
-  if (data_size == static_cast<off_t>(-1)) {
-    PLOG(ERROR) << "Failed to get the size of the dma-buf";
-    return false;
-  }
-  if (lseek(dma_buf_fd, /*offset=*/0, SEEK_SET) == static_cast<off_t>(-1)) {
-    PLOG(ERROR) << "Failed to reset the file offset of the dma-buf";
-    return false;
-  }
-  // If the data size doesn't fit in a uint32_t, we probably have bigger
-  // problems.
-  va_attrib_extbuf.data_size = base::checked_cast<uint32_t>(data_size);
-
-  // We only have to pass the first file descriptor to a driver. A VA-API driver
-  // shall create a VASurface from the single fd correctly.
-  uintptr_t fd = base::checked_cast<uintptr_t>(dma_buf_fd);
-  va_attrib_extbuf.buffers = &fd;
-  va_attrib_extbuf.num_buffers = 1u;
-
-  DCHECK_EQ(va_attrib_extbuf.flags, 0u);
-  DCHECK_EQ(va_attrib_extbuf.private_data, nullptr);
-  return true;
 }
 
 }  // namespace
@@ -2292,31 +2152,65 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());
   const gfx::BufferFormat buffer_format = pixmap->GetBufferFormat();
-  if (!BufferFormatToVAFourCC(buffer_format)) {
+
+  const uint32_t va_fourcc = BufferFormatToVAFourCC(buffer_format);
+  if (!va_fourcc) {
     LOG(ERROR) << "Failed to get the VA fourcc from the buffer format";
     return nullptr;
   }
 
-  // TODO(b/233894465): use the DRM_PRIME_2 API with the Mesa Gallium driver
-  // when AMD supports it.
-  // TODO(b/233924862): use the DRM_PRIME_2 API with protected content.
-  // TODO(b/233929647): use the DRM_PRIME_2 API with the i965 driver.
-  const bool use_drm_prime_2 =
-      GetImplementationType() == VAImplementation::kIntelIHD &&
-      !protected_content;
+  const size_t num_planes = pixmap->GetNumberOfPlanes();
 
-  union {
-    VADRMPRIMESurfaceDescriptor descriptor;
-    VASurfaceAttribExternalBuffers va_attrib_extbuf;
-  };
+  // Create a VASurface for a NativePixmap by importing the underlying dmabufs.
+  const gfx::Size size = pixmap->GetBufferSize();
+  VASurfaceAttribExternalBuffers va_attrib_extbuf{};
+  va_attrib_extbuf.pixel_format = va_fourcc;
+  va_attrib_extbuf.width = base::checked_cast<uint32_t>(size.width());
+  va_attrib_extbuf.height = base::checked_cast<uint32_t>(size.height());
 
-  if (use_drm_prime_2) {
-    if (!FillVADRMPRIMESurfaceDescriptor(*pixmap, descriptor))
-      return nullptr;
-  } else {
-    if (!FillVASurfaceAttribExternalBuffers(*pixmap, va_attrib_extbuf))
-      return nullptr;
+  static_assert(std::size(va_attrib_extbuf.pitches) ==
+                std::size(va_attrib_extbuf.offsets));
+  if (num_planes > std::size(va_attrib_extbuf.pitches)) {
+    LOG(ERROR) << "Too many planes in the NativePixmap; got " << num_planes
+               << " but the maximum number is "
+               << std::size(va_attrib_extbuf.pitches);
+    return nullptr;
   }
+  for (size_t i = 0; i < num_planes; ++i) {
+    va_attrib_extbuf.pitches[i] = pixmap->GetDmaBufPitch(i);
+    va_attrib_extbuf.offsets[i] =
+        base::checked_cast<uint32_t>(pixmap->GetDmaBufOffset(i));
+    DVLOG(4) << "plane " << i << ": pitch: " << va_attrib_extbuf.pitches[i]
+             << " offset: " << va_attrib_extbuf.offsets[i];
+  }
+  va_attrib_extbuf.num_planes = base::checked_cast<uint32_t>(num_planes);
+
+  const int dma_buf_fd = pixmap->GetDmaBufFd(0);
+  if (dma_buf_fd < 0) {
+    LOG(ERROR) << "Failed to get dmabuf from an Ozone NativePixmap";
+    return nullptr;
+  }
+  const off_t data_size = lseek(dma_buf_fd, /*offset=*/0, SEEK_END);
+  if (data_size == static_cast<off_t>(-1)) {
+    PLOG(ERROR) << "Failed to get the size of the dma-buf";
+    return nullptr;
+  }
+  if (lseek(dma_buf_fd, /*offset=*/0, SEEK_SET) == static_cast<off_t>(-1)) {
+    PLOG(ERROR) << "Failed to reset the file offset of the dma-buf";
+    return nullptr;
+  }
+  // If the data size doesn't fit in a uint32_t, we probably have bigger
+  // problems.
+  va_attrib_extbuf.data_size = base::checked_cast<uint32_t>(data_size);
+
+  // We only have to pass the first file descriptor to a driver. A VA-API driver
+  // shall create a VASurface from the single fd correctly.
+  uintptr_t fd = base::checked_cast<uintptr_t>(dma_buf_fd);
+  va_attrib_extbuf.buffers = &fd;
+  va_attrib_extbuf.num_buffers = 1u;
+
+  DCHECK_EQ(va_attrib_extbuf.flags, 0u);
+  DCHECK_EQ(va_attrib_extbuf.private_data, nullptr);
 
   unsigned int va_format =
       base::strict_cast<unsigned int>(BufferFormatToVARTFormat(buffer_format));
@@ -2337,17 +2231,13 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
   va_attribs[0].type = VASurfaceAttribMemoryType;
   va_attribs[0].flags = VA_SURFACE_ATTRIB_SETTABLE;
   va_attribs[0].value.type = VAGenericValueTypeInteger;
-  va_attribs[0].value.value.i = use_drm_prime_2
-                                    ? VA_SURFACE_ATTRIB_MEM_TYPE_DRM_PRIME_2
-                                    : VA_SURFACE_ATTRIB_MEM_TYPE_DRM_PRIME;
+  va_attribs[0].value.value.i = VA_SURFACE_ATTRIB_MEM_TYPE_DRM_PRIME;
 
   va_attribs[1].type = VASurfaceAttribExternalBufferDescriptor;
   va_attribs[1].flags = VA_SURFACE_ATTRIB_SETTABLE;
   va_attribs[1].value.type = VAGenericValueTypePointer;
-  va_attribs[1].value.value.p =
-      use_drm_prime_2 ? static_cast<void*>(&descriptor) : &va_attrib_extbuf;
+  va_attribs[1].value.value.p = &va_attrib_extbuf;
 
-  const gfx::Size size = pixmap->GetBufferSize();
   VASurfaceID va_surface_id = VA_INVALID_ID;
   {
     base::AutoLockMaybe auto_lock(va_lock_);
