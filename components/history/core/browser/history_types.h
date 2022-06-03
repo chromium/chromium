@@ -884,14 +884,37 @@ struct ClusterVisit {
 
 // Additional data for a cluster keyword.
 struct ClusterKeywordData {
+  // Types are ordered according to preferences.
+  enum ClusterKeywordType {
+    kUnknown = 0,
+    kEntityCategory = 1,
+    kEntityAlias = 2,
+    kEntity = 3,
+    kSearchTerms = 4
+  };
+
   ClusterKeywordData();
   explicit ClusterKeywordData(
       const std::vector<std::string>& entity_collections);
+  ClusterKeywordData(ClusterKeywordType type,
+                     float score,
+                     const std::vector<std::string>& entity_collections);
   ClusterKeywordData(const ClusterKeywordData&);
   ClusterKeywordData(ClusterKeywordData&&);
   ClusterKeywordData& operator=(const ClusterKeywordData&);
   ClusterKeywordData& operator=(ClusterKeywordData&&);
   ~ClusterKeywordData();
+  bool operator==(const ClusterKeywordData& data) const;
+
+  // Updates cluster keyword type if a new type is preferred over the existing
+  // type.
+  void MaybeUpdateKeywordType(ClusterKeywordType other_type);
+
+  ClusterKeywordType type;
+
+  // A floating point score describing how important this
+  // keyword is to the containing cluster.
+  float score;
 
   // Entity collections associated with the keyword this is attached to.
   std::vector<std::string> entity_collections;

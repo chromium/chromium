@@ -121,6 +121,12 @@ struct Config {
   // the visit's host.
   bool keyword_filter_on_visit_hosts = true;
 
+  // The weight for category keyword scores per cluster.
+  float category_keyword_score_weight = 1.0;
+
+  // Maximum number of keywords to keep per cluster.
+  size_t max_num_keywords_per_cluster = 20;
+
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.
   // Does nothing if `kJourneys` is disabled.
   bool non_user_visible_debug = false;

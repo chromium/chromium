@@ -116,6 +116,14 @@ Config::Config() {
       history_clusters::features::kOnDeviceClusteringKeywordFiltering,
       "keyword_filter_on_visit_hosts", keyword_filter_on_visit_hosts);
 
+  category_keyword_score_weight = GetFieldTrialParamByFeatureAsDouble(
+      features::kOnDeviceClusteringKeywordFiltering,
+      "category_keyword_score_weight", category_keyword_score_weight);
+
+  max_num_keywords_per_cluster = GetFieldTrialParamByFeatureAsInt(
+      features::kOnDeviceClusteringKeywordFiltering,
+      "max_num_keywords_per_cluster", max_num_keywords_per_cluster);
+
   non_user_visible_debug =
       base::FeatureList::IsEnabled(internal::kNonUserVisibleDebug);
 

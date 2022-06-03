@@ -12,6 +12,12 @@
 
 namespace history {
 
+namespace {
+
+static constexpr float kScoreEpsilon = 1e-8;
+
+}  // namespace
+
 // VisitRow --------------------------------------------------------------------
 
 VisitRow::VisitRow() = default;
@@ -425,6 +431,11 @@ ClusterKeywordData::ClusterKeywordData() = default;
 ClusterKeywordData::ClusterKeywordData(
     const std::vector<std::string>& entity_collections)
     : entity_collections(entity_collections) {}
+ClusterKeywordData::ClusterKeywordData(
+    ClusterKeywordData::ClusterKeywordType type,
+    float score,
+    const std::vector<std::string>& entity_collections)
+    : type(type), score(score), entity_collections(entity_collections) {}
 ClusterKeywordData::ClusterKeywordData(const ClusterKeywordData&) = default;
 ClusterKeywordData::ClusterKeywordData(ClusterKeywordData&&) = default;
 ClusterKeywordData& ClusterKeywordData::operator=(const ClusterKeywordData&) =
@@ -432,6 +443,18 @@ ClusterKeywordData& ClusterKeywordData::operator=(const ClusterKeywordData&) =
 ClusterKeywordData& ClusterKeywordData::operator=(ClusterKeywordData&&) =
     default;
 ClusterKeywordData::~ClusterKeywordData() = default;
+
+bool ClusterKeywordData::operator==(const ClusterKeywordData& data) const {
+  return type == data.type && std::fabs(score - data.score) < kScoreEpsilon &&
+         entity_collections == data.entity_collections;
+}
+
+void ClusterKeywordData::MaybeUpdateKeywordType(
+    ClusterKeywordData::ClusterKeywordType other_type) {
+  if (type < other_type) {
+    type = other_type;
+  }
+}
 
 Cluster::Cluster() = default;
 Cluster::Cluster(int64_t cluster_id,
