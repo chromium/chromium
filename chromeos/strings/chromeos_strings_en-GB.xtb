@@ -859,7 +859,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="894617464444543719">Device is a phone.</translation>
 <translation id="8968751544471797276">Charging rate</translation>
 <translation id="8970109610781093811">Run again</translation>
-<translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scan}=1{Scan page {NUMBER_OF_PAGES}}other{Scan page {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Device has <ph name="BATTERY_PERCENTAGE" />% battery.</translation>

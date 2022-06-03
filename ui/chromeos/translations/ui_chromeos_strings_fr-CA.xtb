@@ -646,6 +646,7 @@
 <translation id="6423031066725912715">Vietnamien avec clavier TCVN</translation>
 <translation id="6485131920355264772">Échec de récupération de l'information sur l'espace</translation>
 <translation id="6495925982925244349">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>
+<translation id="649877868557234318">Extraction de <ph name="FILE_NAME" /> vers <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Interdire les mandataires pour les réseaux partagés</translation>
 <translation id="6509122719576673235">Norvégien</translation>
 <translation id="6528513914570774834">Autoriser d'autres utilisateurs de cet appareil à utiliser ce réseau</translation>

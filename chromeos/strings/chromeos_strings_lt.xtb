@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Paleidimo priemonė</translation>
 <translation id="1512982610995527443">Įrenginys bus išjungtas po penkių sekundžių</translation>
 <translation id="1522984060396982789">Sėkmingai sutvarkyta. Galite išjungti įrenginį arba atlikti papildomų veiksmų.</translation>
+<translation id="1526389707933164996">Ekrano užsklandos animacija</translation>
 <translation id="152892567002884378">Padidinti garsumą</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
 <translation id="155865706765934889">Jutiklinis kilimėlis</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Pavadinimas</translation>
 <translation id="3865414814144988605">Skyra</translation>
 <translation id="387301095347517405">Kartų, kai akumuliatorius buvo įkraunamas visą ciklą, skaičius</translation>
+<translation id="3885327323343477505">Keisti ekrano užsklandą</translation>
 <translation id="3923184630988645767">Duomenų naudojimas</translation>
 <translation id="3924044641767672375">Kad taisymo procesas būtų paprastesnis, rekomenduojama prisijungti prie „Wi-Fi“. Jūsų tinklas bus išsaugotas.</translation>
 <translation id="3932043219784172185">Nėra susieto įrenginio</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Nedelsdami pasirinkite naują</translation>
 <translation id="4891842000192098784">Įtampa</translation>
 <translation id="4897058166682006107">Įrenginio kairiosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
+<translation id="4905998861748258752">Įjunkite funkciją, kad pasirinktumėte ekrano užsklandos parinktis</translation>
 <translation id="4908030561598728899">Įdiegiama programinė aparatinė įranga...</translation>
 <translation id="4915052247106771211">Bus atkurti gamykliniai įrenginio nustatymai („Powerwash“).</translation>
 <translation id="4917385247580444890">Stiprus</translation>
@@ -856,12 +859,12 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="894617464444543719">Įrenginys yra telefonas.</translation>
 <translation id="8968751544471797276">Įkrovimo rodiklis</translation>
 <translation id="8970109610781093811">Paleisti dar kartą</translation>
-<translation id="8970887620466824814">Kažkas ne taip.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Nuskaityti}=1{Nuskaityti {NUMBER_OF_PAGES} puslapį}one{Nuskaityti {NUMBER_OF_PAGES} puslapį}few{Nuskaityti {NUMBER_OF_PAGES} puslapį}many{Nuskaityti {NUMBER_OF_PAGES} puslapį}other{Nuskaityti {NUMBER_OF_PAGES} puslapį}}</translation>
 <translation id="8997710128084572139">Įrenginio akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="9003704114456258138">Dažnis</translation>
 <translation id="9025198690966128418">Naudoti kaip asmeninį įrenginį</translation>
+<translation id="9028832514430399253">Įjunkite perjungiklį, kad pasirinktumėte ekrano užsklandos parinktis</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS pavadinimų konvertavimo delsa didelė</translation>
 <translation id="9063121522582193837">Nepavyko sukalibruoti kelių komponentų</translation>

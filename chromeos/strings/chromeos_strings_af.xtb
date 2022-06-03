@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Lanseerder</translation>
 <translation id="1512982610995527443">Toestel sal oor 5 sekondes afskakel</translation>
 <translation id="1522984060396982789">Herstelling was suksesvol. Jy kan die toestel afskakel of bykomende handelinge uitvoer.</translation>
+<translation id="1526389707933164996">Sluimerskerm-animasie</translation>
 <translation id="152892567002884378">Volume harder</translation>
 <translation id="1555130319947370107">Blou</translation>
 <translation id="155865706765934889">Raakpaneel</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3865414814144988605">Resolusie</translation>
 <translation id="387301095347517405">Die aantal keer wat jou battery deur 'n volledige laaisiklus gegaan het</translation>
+<translation id="3885327323343477505">Verander sluimerskerm</translation>
 <translation id="3923184630988645767">Datagebruik</translation>
 <translation id="3924044641767672375">Daar word aanbeveel dat jy aan wi-fi koppel om die herstelproses makliker te maak. Jou netwerk sal gestoor word.</translation>
 <translation id="3932043219784172185">Geen toestel is gekoppel nie</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Kies onmiddellik 'n nuwe een</translation>
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4897058166682006107">Toestel het <ph name="BATTERY_PERCENTAGE" />% batterykrag in linkerknoppie.</translation>
+<translation id="4905998861748258752">Skakel die kenmerk aan om sluimerskermopsies te kies</translation>
 <translation id="4908030561598728899">Installeer tans fermware …</translation>
 <translation id="4915052247106771211">Dit sal die toestel na fabriekinstellings terugstel (Powerwash).</translation>
 <translation id="4917385247580444890">Sterk</translation>
@@ -856,12 +859,12 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="894617464444543719">Toestel is 'n foon.</translation>
 <translation id="8968751544471797276">Laaikoers</translation>
 <translation id="8970109610781093811">Laat loop weer</translation>
-<translation id="8970887620466824814">Iets is fout.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skandeer}=1{Skandeer bladsy {NUMBER_OF_PAGES}}other{Skandeer bladsy {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Toestel het <ph name="BATTERY_PERCENTAGE" />% batterykrag.</translation>
 <translation id="9003704114456258138">Frekwensie</translation>
 <translation id="9025198690966128418">Gebruik as ’n persoonlike toestel</translation>
+<translation id="9028832514430399253">Skakel die wisselaar aan om die sluimerskermopsies te kies</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-resolusie het hoë traagheid</translation>
 <translation id="9063121522582193837">Kon sekere komponente nie kalibreer nie</translation>

@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Lansator</translation>
 <translation id="1512982610995527443">Dispozitivul se va închide în cinci secunde</translation>
 <translation id="1522984060396982789">Reparația s-a finalizat. Poți să închizi dispozitivul sau să faci acțiuni suplimentare.</translation>
+<translation id="1526389707933164996">Animație pentru screensaver</translation>
 <translation id="152892567002884378">Mărește volumul</translation>
 <translation id="1555130319947370107">Albastru</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Nume</translation>
 <translation id="3865414814144988605">Rezoluție</translation>
 <translation id="387301095347517405">Numărul de cicluri complete de încărcare a bateriei</translation>
+<translation id="3885327323343477505">Schimbă screensaverul</translation>
 <translation id="3923184630988645767">Utilizarea datelor</translation>
 <translation id="3924044641767672375">Conectarea la Wi-Fi este recomandată pentru a simplifica procesul de reparare. Rețeaua se va salva.</translation>
 <translation id="3932043219784172185">Niciun dispozitiv conectat</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Alege imediat una nouă</translation>
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4897058166682006107">Nivelul bateriei căștii stângi a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4905998861748258752">Activează funcția ca să selectezi opțiuni pentru screensaver</translation>
 <translation id="4908030561598728899">Se instalează firmware-ul…</translation>
 <translation id="4915052247106771211">Astfel, dispozitivul va reveni la setările din fabrică (Powerwash).</translation>
 <translation id="4917385247580444890">Puternic</translation>
@@ -856,12 +859,12 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="894617464444543719">Dispozitivul este un telefon.</translation>
 <translation id="8968751544471797276">Rata de încărcare</translation>
 <translation id="8970109610781093811">Rulați din nou</translation>
-<translation id="8970887620466824814">A apărut o eroare.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scanează}=1{Scanează {NUMBER_OF_PAGES} pagină}few{Scanează {NUMBER_OF_PAGES} pagini}other{Scanează {NUMBER_OF_PAGES} de pagini}}</translation>
 <translation id="8997710128084572139">Nivelul bateriei dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frecvență</translation>
 <translation id="9025198690966128418">Folosește ca dispozitiv personal</translation>
+<translation id="9028832514430399253">Activează comutatorul pentru a selecta opțiunile pentru screensaver</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Rezolvarea DNS are latență mare</translation>
 <translation id="9063121522582193837">Unele componente nu au putut fi calibrate</translation>

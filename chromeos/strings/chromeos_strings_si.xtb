@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">දියත්කරණය</translation>
 <translation id="1512982610995527443">තත්පර 5කින් උපාංගය වැසෙනු ඇත</translation>
 <translation id="1522984060396982789">ඔබගේ අලුත්වැඩියාව සාර්ථක විය. ඔබට උපාංගය වැසීමට හෝ යම් අමතර ක්‍රියාමාර්ග ගැනීමට හැකිය.</translation>
+<translation id="1526389707933164996">තිර රූ සජීවිකරණය</translation>
 <translation id="152892567002884378">හඬ පරිමාව වැඩි</translation>
 <translation id="1555130319947370107">නිල්</translation>
 <translation id="155865706765934889">ස්පර්ශ පුවරුව</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">නම</translation>
 <translation id="3865414814144988605">විභේදනය</translation>
 <translation id="387301095347517405">ඔබගේ බැටරිය පූර්ණ ආරෝපණ චක්‍රයක් හරහා ගිය වාර ගණන</translation>
+<translation id="3885327323343477505">තිර සුරැකුම වෙනස් කරන්න</translation>
 <translation id="3923184630988645767">දත්ත භාවිතය</translation>
 <translation id="3924044641767672375">අලුත්වැඩියා කිරීමේ ක්‍රියාවලිය වඩා පහසු කිරීමට Wi-Fi වෙත සම්බන්ධ කිරීම නිර්දේශ කෙරේ. ඔබගේ ජාලය සුරකිනු ඇත.</translation>
 <translation id="3932043219784172185">උපාංගයක් සම්බන්ධ නැත</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">වහාම අලුත් එකක් තෝරන්න</translation>
 <translation id="4891842000192098784">ආතතිය</translation>
 <translation id="4897058166682006107">උපාංගයෙහි බැටරි බඩ් <ph name="BATTERY_PERCENTAGE" />% ඉතිරිව ඇත.</translation>
+<translation id="4905998861748258752">තිර සුරැකුම් විකල්ප තේරීමට විශේෂාංගය ක්‍රියාත්මක කරන්න</translation>
 <translation id="4908030561598728899">නිත්‍ය මෘදුකාංග ස්ථාපනය කරමින්...</translation>
 <translation id="4915052247106771211">මෙය උපාංගය කර්මාන්තශාලා සැකසීම් වෙත යළි සකසනු ඇත (Powerwash).</translation>
 <translation id="4917385247580444890">ශක්තිමත්</translation>
@@ -856,12 +859,12 @@
 <translation id="894617464444543719">උපාංගය දුරකථනයකි.</translation>
 <translation id="8968751544471797276">ආරෝපණ වේගය</translation>
 <translation id="8970109610781093811">නැවත ධාවනය කරන්න</translation>
-<translation id="8970887620466824814">යම් දෙයක් වැරදිණි</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ස්කෑන් කරන්න}=1{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}one{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}other{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}}</translation>
 <translation id="8997710128084572139">උපාංගයට බැටරිය <ph name="BATTERY_PERCENTAGE" />% ක් ඇත.</translation>
 <translation id="9003704114456258138">සංඛ්‍යාතය</translation>
 <translation id="9025198690966128418">පුද්ගලික උපාංගයක් ලෙස භාවිත කරන්න</translation>
+<translation id="9028832514430399253">තිර සුරැකුම් විකල්ප තේරීමට ටොගල කිරීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS විභේදනයට ඉහළ පමාවක් ඇත</translation>
 <translation id="9063121522582193837">සමහර සංරචක ක්‍රමාංකනය කිරීමට නොහැකි විය</translation>

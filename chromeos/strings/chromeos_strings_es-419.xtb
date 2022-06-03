@@ -856,7 +856,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="894617464444543719">El dispositivo es un teléfono.</translation>
 <translation id="8968751544471797276">Velocidad de carga</translation>
 <translation id="8970109610781093811">Volver a ejecutar</translation>
-<translation id="8970887620466824814">Se produjo un error</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Analizar}=1{Analizar {NUMBER_OF_PAGES} página}other{Analizar {NUMBER_OF_PAGES} páginas}}</translation>
 <translation id="8997710128084572139">Nivel de batería del dispositivo <ph name="BATTERY_PERCENTAGE" />%.</translation>

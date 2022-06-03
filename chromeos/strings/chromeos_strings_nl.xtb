@@ -856,7 +856,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="894617464444543719">Apparaat is een telefoon.</translation>
 <translation id="8968751544471797276">Oplaadsnelheid</translation>
 <translation id="8970109610781093811">Opnieuw uitvoeren</translation>
-<translation id="8970887620466824814">Er is iets misgegaan.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scannen}=1{Pagina {NUMBER_OF_PAGES} scannen}other{Pagina {NUMBER_OF_PAGES} scannen}}</translation>
 <translation id="8997710128084572139">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading.</translation>

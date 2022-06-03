@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Ræsiforrit</translation>
 <translation id="1512982610995527443">Tækið slekkur á sér eftir 5 sekúndur</translation>
 <translation id="1522984060396982789">Viðgerðin heppnaðist. Þú getur slökkt á tækinu eða gripið til annarra aðgerða.</translation>
+<translation id="1526389707933164996">Hreyfimynd skjávara</translation>
 <translation id="152892567002884378">Hækka hljóð</translation>
 <translation id="1555130319947370107">Blár</translation>
 <translation id="155865706765934889">Snertiflötur</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3865414814144988605">Upplausn</translation>
 <translation id="387301095347517405">Fjöldi skipta sem rafhlaðan hefur tæmst og verið fullhlaðin aftur</translation>
+<translation id="3885327323343477505">Breyta skjávara</translation>
 <translation id="3923184630988645767">Gagnanotkun</translation>
 <translation id="3924044641767672375">Ráðlagt er að tengjast Wi-Fi til að einfalda viðgerðarferlið. Netkerfið þitt verður vistað.</translation>
 <translation id="3932043219784172185">Ekkert tæki tengt</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Veldu nýtt án tafar</translation>
 <translation id="4891842000192098784">Álag</translation>
 <translation id="4897058166682006107">Rafhleðsla vinstra heyrnartóls er <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4905998861748258752">Kveiktu á eiginleikanum til að velja skjávaravalkosti</translation>
 <translation id="4908030561598728899">Setur upp fastbúnað...</translation>
 <translation id="4915052247106771211">Þetta mun núllstilla tækið (djúphreinsun).</translation>
 <translation id="4917385247580444890">Sterkt</translation>
@@ -856,12 +859,12 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="894617464444543719">Tækið er sími.</translation>
 <translation id="8968751544471797276">Hleðsluhraði</translation>
 <translation id="8970109610781093811">Keyra aftur</translation>
-<translation id="8970887620466824814">Eitthvað fór úrskeiðis.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanna}=1{Skanna síðu {NUMBER_OF_PAGES}}one{Skanna síðu {NUMBER_OF_PAGES}}other{Skanna síðu {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Rafhleðsla tækisins er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Tíðni</translation>
 <translation id="9025198690966128418">Nota sem einkatæki</translation>
+<translation id="9028832514430399253">Kveiktu á rofanum til að velja skjávaravalkosti</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Mikill biðtími á DNS-lausn</translation>
 <translation id="9063121522582193837">Ekki tókst að kvarða tiltekna íhluti</translation>

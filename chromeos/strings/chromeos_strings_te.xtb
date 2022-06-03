@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">లాంచర్</translation>
 <translation id="1512982610995527443">పరికరం 5 సెకన్లలో షట్ డౌన్ అవుతుంది</translation>
 <translation id="1522984060396982789">మీ రిపేర్ విజయవంతమైంది. మీరు పరికరాన్ని షట్ డౌన్ చేయవచ్చు లేదా కొన్ని అదనపు చర్యలు తీసుకోవచ్చు.</translation>
+<translation id="1526389707933164996">స్క్రీన్ సేవర్ యానిమేషన్</translation>
 <translation id="152892567002884378">వాల్యూమ్ పెంచండి</translation>
 <translation id="1555130319947370107">నీలం</translation>
 <translation id="155865706765934889">టచ్‌ప్యాడ్</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">పేరు</translation>
 <translation id="3865414814144988605">రిజల్యూషన్</translation>
 <translation id="387301095347517405">మీ బ్యాటరీ పూర్తిగా ఛార్జ్ అయిన పర్యాయాల సంఖ్య</translation>
+<translation id="3885327323343477505">స్క్రీన్ సేవర్‌ను మార్చండి</translation>
 <translation id="3923184630988645767">డేటా వినియోగం</translation>
 <translation id="3924044641767672375">రిపేర్ ప్రాసెస్‌ను సులభతరం చేయడానికి Wi-Fiకు కనెక్ట్ చేయమని సిఫార్సు చేస్తున్నాము. మీ నెట్‌వర్క్ సేవ్ చేయబడుతుంది.</translation>
 <translation id="3932043219784172185">పరికరం ఏదీ కనెక్ట్ చేయబడలేదు</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">వెంటనే ఒక కొత్త దానిని ఎంచుకోండి</translation>
 <translation id="4891842000192098784">ఒత్తిడి</translation>
 <translation id="4897058166682006107">పరికరంలో ఎడమ వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
+<translation id="4905998861748258752">స్క్రీన్ సేవర్ ఆప్షన్‌లను ఎంచుకోవడానికి ఈ ఫీచర్‌ను ఆన్ చేయండి</translation>
 <translation id="4908030561598728899">ఫర్మ్‌వేర్ ఇన్‌స్టాల్ అవుతోంది...</translation>
 <translation id="4915052247106771211">ఇది పరికరాన్ని ఫ్యాక్టరీ సెట్టింగ్‌లకు (పవర్‌వాష్) రీసెట్ చేస్తుంది.</translation>
 <translation id="4917385247580444890">బలమైన</translation>
@@ -855,12 +858,12 @@
 <translation id="894617464444543719">పరికర రకం ఫోన్.</translation>
 <translation id="8968751544471797276">ఛార్జింగ్ రేట్</translation>
 <translation id="8970109610781093811">మళ్లీ అమలు చేయి</translation>
-<translation id="8970887620466824814">ఏదో తప్పు జరిగింది.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{స్కాన్ చేయండి}=1{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}other{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}}</translation>
 <translation id="8997710128084572139">పరికరంలో <ph name="BATTERY_PERCENTAGE" />% బ్యాటరీ ఉంది.</translation>
 <translation id="9003704114456258138">పౌనఃపున్యం</translation>
 <translation id="9025198690966128418">వ్యక్తిగత పరికరంగా ఉపయోగించండి</translation>
+<translation id="9028832514430399253">స్క్రీన్ సేవర్ ఆప్షన్‌లను ఎంచుకోవడానికి టోగుల్‌ను ఆన్ చేయండి</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS రిజల్యూషన్ అధిక ప్రతిస్పందన సమయాన్ని కలిగి ఉంది</translation>
 <translation id="9063121522582193837">కొన్ని భాగాలను క్యాలిబ్రేట్ చేయడం సాధ్యం కాలేదు</translation>

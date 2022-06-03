@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1512982610995527443">Magsa-shut down ang device sa loob ng 5 segundo</translation>
 <translation id="1522984060396982789">Matagumpay ang iyong pag-aayos. Magagawa mong i-shut down ang device o gumawa ng ilang karagdagang pagkilos.</translation>
+<translation id="1526389707933164996">Animation ng screen saver</translation>
 <translation id="152892567002884378">Lakasan ang volume</translation>
 <translation id="1555130319947370107">Asul</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Pangalan</translation>
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="387301095347517405">Ang dami ng beses na na-full charge ang iyong baterya</translation>
+<translation id="3885327323343477505">Palitan ang screen saver</translation>
 <translation id="3923184630988645767">Paggamit ng data</translation>
 <translation id="3924044641767672375">Inirerekomenda ang pagkonekta sa Wi-Fi para mas mapadali ang proseso ng pag-aayos. Ise-save ang iyong network.</translation>
 <translation id="3932043219784172185">Walang nakakonektang device</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Pumili agad ng bago</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kaliwang bud ng device.</translation>
+<translation id="4905998861748258752">I-on ang feature para pumili ng mga opsyon sa screen saver</translation>
 <translation id="4908030561598728899">Ini-install ang firmware...</translation>
 <translation id="4915052247106771211">Ire-reset nito ang device sa mga factory setting</translation>
 <translation id="4917385247580444890">Malakas</translation>
@@ -856,12 +859,12 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="894617464444543719">Telepono ang device.</translation>
 <translation id="8968751544471797276">Rate ng Pag-charge</translation>
 <translation id="8970109610781093811">Patakbuhing muli</translation>
-<translation id="8970887620466824814">Nagkaproblema.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{I-scan}=1{I-scan ang page {NUMBER_OF_PAGES}}one{I-scan ang page {NUMBER_OF_PAGES}}other{I-scan ang page {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">May <ph name="BATTERY_PERCENTAGE" />% baterya ang device.</translation>
 <translation id="9003704114456258138">Frequency</translation>
 <translation id="9025198690966128418">Gamitin bilang personal na device</translation>
+<translation id="9028832514430399253">I-on ang toggle para piliin ang mga opsyon ng screen saver</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Mataas ang latency ng resolution ng DNS</translation>
 <translation id="9063121522582193837">Hindi ma-calibrate ang ilang bahagi</translation>

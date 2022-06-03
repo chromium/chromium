@@ -26,7 +26,7 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 <translation id="225614027745146050">Dobro došli</translation>
 <translation id="2320166752086256636">Sakrij tastaturu</translation>
 <translation id="2329392777730037872">Otvaranje <ph name="URL" /> na klijentu nije uspelo.</translation>
-<translation id="2359808026110333948">Nastavite</translation>
+<translation id="2359808026110333948">Nastavi</translation>
 <translation id="2366718077645204424">Nije moguće uspostaviti vezu sa hostom. Do ovoga je verovatno došlo zbog konfiguracije mreže koju koristite.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Poslednji put je viđen onlajn <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Dajte dozvolu za „Pristupačnost“ proizvodu <ph name="PRODUCT_NAME" /></translation>

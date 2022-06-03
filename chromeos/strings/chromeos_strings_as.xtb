@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">লঞ্চাৰ</translation>
 <translation id="1512982610995527443">৫ ছেকেণ্ডত ডিভাইচটো শ্বাট ডাউন হ’ব</translation>
 <translation id="1522984060396982789">আপোনাৰ মেৰামতি কৰাটো সফল হৈছে। আপুনি ডিভাইচটো শ্বাট ডাউন কৰিব পাৰে অথবা কিছুমান অতিৰিক্ত কাৰ্য কৰিব পাৰে।</translation>
+<translation id="1526389707933164996">স্ক্ৰীন ছেভাৰৰ এনিমেশ্বন</translation>
 <translation id="152892567002884378">ভলিউম বঢ়াওক</translation>
 <translation id="1555130319947370107">নীলা</translation>
 <translation id="155865706765934889">টাচ্চ্‌পেড</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3865414814144988605">ৰিজ'লিউশ্বন</translation>
 <translation id="387301095347517405">আপোনাৰ বেটাৰীটোৱে এটা সম্পূৰ্ণ চাৰ্জিং চক্ৰৰ মাজেৰে যোৱাৰ সংখ্যা</translation>
+<translation id="3885327323343477505">স্ক্ৰীন ছেভাৰ সলনি কৰক</translation>
 <translation id="3923184630988645767">ডেটাৰ ব্যৱহাৰ</translation>
 <translation id="3924044641767672375">মেৰামতিৰ প্ৰক্ৰিয়াটো সহজ কৰিবলৈ ৱাই-ফাইৰ সৈতে সংযোগ কৰাৰ চুপাৰিছ কৰা হয়। আপোনাৰ নেটৱৰ্ক ছেভ কৰা হ’ব।</translation>
 <translation id="3932043219784172185">কোনো ডিভাইচ সংযোগ কৰি থোৱা নাই</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">তৎক্ষণাত নতুন এটা বাছনি কৰক</translation>
 <translation id="4891842000192098784">চাপ</translation>
 <translation id="4897058166682006107">ডিভাইচটোৰ বাওঁফালৰ বাডটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
+<translation id="4905998861748258752">স্ক্ৰীন ছেভাৰৰ বিকল্পসমূহ বাছনি কৰিবলৈ সুবিধাটো অন কৰক</translation>
 <translation id="4908030561598728899">ফাৰ্মৱেৰ ইনষ্টল কৰি থকা হৈছে...</translation>
 <translation id="4915052247106771211">এইটোৱে ডিভাইচটো ফেক্টৰীৰ ছেটিঙলৈ ৰিছেট কৰিব (পাৱাৰৱাশ্ব)।</translation>
 <translation id="4917385247580444890">শক্তিশালী</translation>
@@ -856,12 +859,12 @@
 <translation id="894617464444543719">ডিভাইচটো এটা ফ’ন।</translation>
 <translation id="8968751544471797276">চাৰ্জিঙৰ হাৰ</translation>
 <translation id="8970109610781093811">পুনৰ চলাওক</translation>
-<translation id="8970887620466824814">কিবা ভুল হ’ল।</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{স্কেন কৰক}=1{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}one{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}other{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}}</translation>
 <translation id="8997710128084572139">ডিভাইচটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
 <translation id="9003704114456258138">ফ্ৰিকুৱেন্সী</translation>
 <translation id="9025198690966128418">এটা ব্যক্তিগত ডিভাইচ হিচাপে ব্যৱহাৰ কৰক</translation>
+<translation id="9028832514430399253">স্ক্ৰীন ছেভাৰৰ বিকল্প বাছনি কৰিবলৈ ট’গল অন কৰক</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ৰিজ’লিউশ্বনটোত অধিক বিলম্বতা আছে</translation>
 <translation id="9063121522582193837">কিছুমান উপাদান কেলিব্ৰে’ট কৰিব পৰা নগ’ল</translation>

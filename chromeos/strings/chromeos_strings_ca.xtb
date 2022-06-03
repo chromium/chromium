@@ -856,7 +856,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="894617464444543719">El dispositiu és un telèfon.</translation>
 <translation id="8968751544471797276">Percentatge de càrrega</translation>
 <translation id="8970109610781093811">Torna a executar</translation>
-<translation id="8970887620466824814">S'ha produït un error.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escaneja}=1{Escaneja {NUMBER_OF_PAGES} pàgina}other{Escaneja {NUMBER_OF_PAGES} pàgines}}</translation>
 <translation id="8997710128084572139">El dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>

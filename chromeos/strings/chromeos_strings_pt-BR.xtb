@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Iniciador</translation>
 <translation id="1512982610995527443">O dispositivo vai ser desligado em cinco segundos</translation>
 <translation id="1522984060396982789">O reparo foi concluído. Você pode desligar o dispositivo ou realizar mais algumas ações.</translation>
+<translation id="1526389707933164996">Animação do protetor de tela</translation>
 <translation id="152892567002884378">Aumentar volume</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3865414814144988605">Resolução</translation>
 <translation id="387301095347517405">O número de vezes que a bateria passou por um ciclo completo de carregamento</translation>
+<translation id="3885327323343477505">Mudar o protetor de tela</translation>
 <translation id="3923184630988645767">Uso de dados</translation>
 <translation id="3924044641767672375">Recomendamos conectar o dispositivo ao Wi-Fi para facilitar o processo de reparo. Sua rede será salva.</translation>
 <translation id="3932043219784172185">Nenhum dispositivo conectado</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Escolha uma nova imediatamente</translation>
 <translation id="4891842000192098784">Estresse</translation>
 <translation id="4897058166682006107">O fone esquerdo tem <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
+<translation id="4905998861748258752">Ative o recurso para selecionar opções de protetor de tela</translation>
 <translation id="4908030561598728899">Instalando o firmware...</translation>
 <translation id="4915052247106771211">Esta ação redefine o dispositivo para as configurações originais (Powerwash).</translation>
 <translation id="4917385247580444890">Forte</translation>
@@ -856,12 +859,12 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="894617464444543719">Este dispositivo é um smartphone.</translation>
 <translation id="8968751544471797276">Taxa de carregamento</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
-<translation id="8970887620466824814">Algo deu errado.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Digitalizar}=1{Digitalizar {NUMBER_OF_PAGES} página}one{Digitalizar {NUMBER_OF_PAGES} página}other{Digitalizar {NUMBER_OF_PAGES} páginas}}</translation>
 <translation id="8997710128084572139">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% bateria.</translation>
 <translation id="9003704114456258138">Frequência</translation>
 <translation id="9025198690966128418">Usar como dispositivo pessoal</translation>
+<translation id="9028832514430399253">Ative o modo ambiente para selecionar as opções de protetor de tela</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">A resolução de DNS tem alta latência</translation>
 <translation id="9063121522582193837">Não foi possível calibrar alguns componentes</translation>

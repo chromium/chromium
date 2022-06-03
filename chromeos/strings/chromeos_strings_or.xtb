@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">ଲଞ୍ଚର୍</translation>
 <translation id="1512982610995527443">ଡିଭାଇସଟି 5 ସେକେଣ୍ଡରେ ବନ୍ଦ ହୋଇଯିବ</translation>
 <translation id="1522984060396982789">ଆପଣଙ୍କ ମରାମତି ସଫଳ ହୋଇଛି। ଆପଣ ଡିଭାଇସକୁ ବନ୍ଦ କରିପାରିବେ କିମ୍ବା କିଛି ଅତିରିକ୍ତ ପଦକ୍ଷେପ ନେଇପାରିବେ।</translation>
+<translation id="1526389707933164996">ସ୍କ୍ରିନ ସେଭର ଆନିମେସନ</translation>
 <translation id="152892567002884378">ଭଲ୍ୟୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="1555130319947370107">ନୀଳ</translation>
 <translation id="155865706765934889">ଟଚ୍‌ପ୍ୟାଡ୍</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">ନାମ</translation>
 <translation id="3865414814144988605">ରିଜୋଲ୍ୟୁଶନ୍</translation>
 <translation id="387301095347517405">ଆପଣଙ୍କ ବ୍ୟାଟେରୀ ଯେତେ ଥର ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଚାର୍ଜ ହୋଇଛି</translation>
+<translation id="3885327323343477505">ସ୍କ୍ରିନ ସେଭର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="3923184630988645767">ଡାଟାର ବ୍ୟବହାର</translation>
 <translation id="3924044641767672375">ମରାମତି ପ୍ରକ୍ରିୟାକୁ ସହଜ କରିବା ପାଇଁ ୱାଇ-ଫାଇ ସହିତ ସଂଯୋଗ କରିବାକୁ ସୁପାରିଶ କରାଯାଇଛି। ଆପଣଙ୍କ ନେଟୱାର୍କକୁ ସେଭ କରାଯିବ।</translation>
 <translation id="3932043219784172185">କୌଣସି ଡିଭାଇସ ସଂଯୋଗ କରାଯାଇନାହିଁ</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">ତୁରନ୍ତ ଏକ ନୂଆ ବାଛନ୍ତୁ</translation>
 <translation id="4891842000192098784">ଷ୍ଟ୍ରେସ୍</translation>
 <translation id="4897058166682006107">ଡିଭାଇସର ବାମପଟ ବଡରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
+<translation id="4905998861748258752">ସ୍କ୍ରିନ ସେଭର ବିକଳ୍ପଗୁଡ଼ିକୁ ଚୟନ କରିବା ପାଇଁ ଫିଚର ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="4908030561598728899">ଫାର୍ମୱେର ଇନଷ୍ଟଲ କରାଯାଉଛି...</translation>
 <translation id="4915052247106771211">ଏହା ଡିଭାଇସକୁ ଫ୍ୟାକ୍ଟୋରୀ ସେଟିଂସ (ପାୱାରୱାସ)ରେ ରିସେଟ କରିବ।</translation>
 <translation id="4917385247580444890">ଦୃଢ଼</translation>
@@ -856,12 +859,12 @@
 <translation id="894617464444543719">ଡିଭାଇସଟି ଏକ ଫୋନ ଅଟେ।</translation>
 <translation id="8968751544471797276">ଚାର୍ଜିଂ ରେଟ୍</translation>
 <translation id="8970109610781093811">ପୁଣି ଚଲାନ୍ତୁ</translation>
-<translation id="8970887620466824814">କିଛି ଭୁଲ ହୋଇଗଲା।</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ସ୍କାନ୍ କରନ୍ତୁ}=1{{NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠା ସ୍କାନ୍ କରନ୍ତୁ}other{{NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠା ସ୍କାନ୍ କରନ୍ତୁ}}</translation>
 <translation id="8997710128084572139">ଡିଭାଇସରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
 <translation id="9003704114456258138">ଫ୍ରିକ୍ୱେନ୍ସୀ</translation>
 <translation id="9025198690966128418">ଏକ ବ୍ୟକ୍ତିଗତ ଡିଭାଇସ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="9028832514430399253">ସ୍କ୍ରିନ ସେଭର ବିକଳ୍ପଗୁଡ଼ିକୁ ଚୟନ କରିବା ପାଇଁ ଟୋଗଲ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ରିଜୋଲ୍ୟୁସନର ଲାଟେନ୍ସି ଅଧିକ ଅଛି</translation>
 <translation id="9063121522582193837">କିଛି କମ୍ପୋନେଟକୁ କାଲିବ୍ରେଟ କରାଯାଇପାରିଲା ନାହିଁ</translation>

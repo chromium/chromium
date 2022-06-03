@@ -859,7 +859,6 @@
 <translation id="894617464444543719">裝置類型係手機。</translation>
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再執行一次</translation>
-<translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{掃瞄}=1{掃瞄第 {NUMBER_OF_PAGES} 頁}other{掃瞄第 {NUMBER_OF_PAGES} 頁}}</translation>
 <translation id="8997710128084572139">裝置有 <ph name="BATTERY_PERCENTAGE" />% 電。</translation>
