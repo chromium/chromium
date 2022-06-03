@@ -622,7 +622,7 @@ void CollectUserDataAction::UseChromeData(UserData* user_data) {
   delegate_->GetPersonalDataManager()->AddObserver(this);
   UpdatePersonalDataManagerProfiles(user_data);
   UpdatePersonalDataManagerCards(user_data);
-  UpdateMetrics(user_data);
+  UpdateMetrics(user_data, Metrics::UserDataSource::CHROME_AUTOFILL);
   UpdateUi();
 
   action_stopwatch_.StartWaitTime();
@@ -645,7 +645,7 @@ void CollectUserDataAction::OnRequestUserData(
     return;
   }
   UpdateUserDataFromProto(response, user_data);
-  UpdateMetrics(user_data);
+  UpdateMetrics(user_data, Metrics::UserDataSource::BACKEND);
   UpdateUi();
 
   action_stopwatch_.StartWaitTime();
@@ -692,16 +692,15 @@ void CollectUserDataAction::UpdateUi() {
   delegate_->CollectUserData(collect_user_data_options_.get());
 }
 
-void CollectUserDataAction::UpdateMetrics(UserData* user_data) {
+void CollectUserDataAction::UpdateMetrics(
+    UserData* user_data,
+    Metrics::UserDataSource user_data_source) {
   DCHECK(user_data);
   if (!shown_to_user_) {
     shown_to_user_ = true;
     metrics_data_.source_id =
         delegate_->GetWebContents()->GetMainFrame()->GetPageUkmSourceId();
-    metrics_data_.user_data_source =
-        ShouldUseBackendData(proto_.collect_user_data())
-            ? Metrics::UserDataSource::BACKEND
-            : Metrics::UserDataSource::CHROME_AUTOFILL;
+    metrics_data_.user_data_source = user_data_source;
     FillInitialDataStateForMetrics(user_data->available_contacts_,
                                    user_data->available_addresses_,
                                    user_data->available_payment_instruments_);

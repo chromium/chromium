@@ -94,7 +94,8 @@ class CollectUserDataAction : public Action,
                          bool success,
                          const GetUserDataResponseProto& response);
   void FallbackToChromeData(UserData* user_data);
-  void UpdateMetrics(UserData* user_data);
+  void UpdateMetrics(UserData* user_data,
+                     Metrics::UserDataSource user_data_source);
   void UpdateUi();
 
   // Creates a new instance of |CollectUserDataOptions| from |proto_|.

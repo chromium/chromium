@@ -4144,6 +4144,12 @@ TEST_F(CollectUserDataActionTest, FallBackToChromeDataOnFailedRequest) {
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
+
+  EXPECT_THAT(
+      GetUkmUserDataSource(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          source_id_, kUserDataSource,
+          static_cast<int64_t>(Metrics::UserDataSource::CHROME_AUTOFILL))}));
 }
 
 TEST_F(CollectUserDataActionTest, FailActionIfFallbackIsNotPossible) {
