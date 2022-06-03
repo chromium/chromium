@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_format.h"
 #include "ui/gl/gpu_preference.h"
@@ -35,13 +36,14 @@ GL_INIT_EXPORT std::vector<GLImplementationParts> GetAllowedGLImplementations();
 // Initializes GL bindings and extension settings.
 // |system_device_id| specifies which GPU to use on a multi-GPU system.
 // If its value is 0, use the default GPU of the system.
-GL_INIT_EXPORT bool InitializeGLOneOff(uint64_t system_device_id);
+GL_INIT_EXPORT GLDisplay* InitializeGLOneOff(uint64_t system_device_id);
 
 // Initializes GL bindings without initializing extension settings.
 // |system_device_id| specifies which GPU to use on a multi-GPU system.
 // If its value is 0, use the default GPU of the system.
-GL_INIT_EXPORT bool InitializeGLNoExtensionsOneOff(bool init_bindings,
-                                                   uint64_t system_device_id);
+GL_INIT_EXPORT GLDisplay* InitializeGLNoExtensionsOneOff(
+    bool init_bindings,
+    uint64_t system_device_id);
 
 // Initializes GL bindings - load dlls and get proc address according to gl
 // command line switch.
@@ -49,7 +51,8 @@ GL_INIT_EXPORT bool InitializeStaticGLBindingsOneOff();
 
 // Initialize plaiform dependent extension settings, including bindings,
 // capabilities, etc.
-GL_INIT_EXPORT bool InitializeExtensionSettingsOneOffPlatform();
+GL_INIT_EXPORT bool InitializeExtensionSettingsOneOffPlatform(
+    GLDisplay* display);
 
 // Initializes GL bindings using the provided parameters. This might be required
 // for use in tests.
@@ -62,14 +65,15 @@ GL_INIT_EXPORT bool InitializeStaticGLBindingsImplementation(
 // successfully.
 // |system_device_id| specifies which GPU to use on a multi-GPU system.
 // If its value is 0, use the default GPU of the system.
-GL_INIT_EXPORT bool InitializeGLOneOffPlatformImplementation(
+GL_INIT_EXPORT GLDisplay* InitializeGLOneOffPlatformImplementation(
     bool fallback_to_software_gl,
     bool disable_gl_drawing,
     bool init_extensions,
     uint64_t system_device_id);
 
 // Clears GL bindings and resets GL implementation.
-GL_INIT_EXPORT void ShutdownGL(bool due_to_fallback);
+// Calling this function a second time on the same |display| is a no-op.
+GL_INIT_EXPORT void ShutdownGL(GLDisplay* display, bool due_to_fallback);
 
 // Return information about the GL window system binding implementation (e.g.,
 // EGL, GLX, WGL). Returns true if the information was retrieved successfully.

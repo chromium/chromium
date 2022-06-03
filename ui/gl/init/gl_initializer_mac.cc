@@ -18,6 +18,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_display_manager.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
@@ -170,28 +171,29 @@ bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
 
 }  // namespace
 
-bool InitializeGLOneOffPlatform(uint64_t system_device_id) {
+GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) {
   switch (GetGLImplementation()) {
     case kGLImplementationDesktopGL:
     case kGLImplementationDesktopGLCoreProfile:
     case kGLImplementationAppleGL:
       if (!InitializeOneOffForSandbox()) {
         LOG(ERROR) << "GLSurfaceCGL::InitializeOneOff failed.";
-        return false;
       }
-      return true;
+      return GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
 #if defined(USE_EGL)
     case kGLImplementationEGLGLES2:
-    case kGLImplementationEGLANGLE:
-      if (!GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform(0),
-                                          system_device_id)) {
+    case kGLImplementationEGLANGLE: {
+      GLDisplay* display = GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform(0),
+                                                          system_device_id);
+      if (!display) {
         LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
-        return false;
+        return nullptr;
       }
-      return true;
+      return display;
+    }
 #endif  // defined(USE_EGL)
     default:
-      return true;
+      return GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
   }
 }
 
@@ -229,10 +231,10 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
   return false;
 }
 
-void ShutdownGLPlatform() {
+void ShutdownGLPlatform(GLDisplay* display) {
   ClearBindingsGL();
 #if defined(USE_EGL)
-  GLSurfaceEGL::ShutdownOneOff();
+  GLSurfaceEGL::ShutdownOneOff(static_cast<GLDisplayEGL*>(display));
   ClearBindingsEGL();
 #endif  // defined(USE_EGL)
 }

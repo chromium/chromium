@@ -35,25 +35,26 @@ namespace gpu {
 const uint8_t GLTestHelper::kCheckClearValue;
 #endif
 
-bool GLTestHelper::InitializeGL(gl::GLImplementation gl_impl) {
+gl::GLDisplay* GLTestHelper::InitializeGL(gl::GLImplementation gl_impl) {
+  gl::GLDisplay* display = nullptr;
   if (gl_impl == gl::GLImplementation::kGLImplementationNone) {
-    if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
-                                                  /*system_device_id=*/0))
-      return false;
+    display = gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
+                                                       /*system_device_id=*/0);
   } else {
     if (!gl::init::InitializeStaticGLBindingsImplementation(
             gl::GLImplementationParts(gl_impl),
             /*fallback_to_software_gl=*/false))
-      return false;
+      return nullptr;
 
-    if (!gl::init::InitializeGLOneOffPlatformImplementation(
-            /*fallback_to_software_gl=*/false,
-            /*disable_gl_drawing=*/false,
-            /*init_extensions=*/false,
-            /*system_device_id=*/0)) {
-      return false;
-    }
+    display = gl::init::InitializeGLOneOffPlatformImplementation(
+        /*fallback_to_software_gl=*/false,
+        /*disable_gl_drawing=*/false,
+        /*init_extensions=*/false,
+        /*system_device_id=*/0);
   }
+
+  if (!display)
+    return nullptr;
 
   gpu::GPUInfo gpu_info;
   gpu::CollectGraphicsInfoForTesting(&gpu_info);
@@ -64,10 +65,12 @@ bool GLTestHelper::InitializeGL(gl::GLImplementation gl_impl) {
 
   gl::init::SetDisabledExtensionsPlatform(
       gpu::GLManager::g_gpu_feature_info.disabled_extensions);
-  return gl::init::InitializeExtensionSettingsOneOffPlatform();
+  if (!gl::init::InitializeExtensionSettingsOneOffPlatform(display))
+    return nullptr;
+  return display;
 }
 
-bool GLTestHelper::InitializeGLDefault() {
+gl::GLDisplay* GLTestHelper::InitializeGLDefault() {
   return GLTestHelper::InitializeGL(
       gl::GLImplementation::kGLImplementationNone);
 }
@@ -409,8 +412,9 @@ bool GpuCommandBufferTestEGL::InitializeEGL(int width, int height) {
     }
 
     gl_reinitialized_ = true;
-    gl::init::ShutdownGL(false /* due_to_fallback */);
-    if (!GLTestHelper::InitializeGL(new_impl.gl)) {
+    gl::init::ShutdownGL(gl_display_, false /* due_to_fallback */);
+    gl_display_ = GLTestHelper::InitializeGL(new_impl.gl);
+    if (!gl_display_) {
       LOG(INFO) << "Skip test, failed to initialize EGL";
       return false;
     }
@@ -444,8 +448,8 @@ void GpuCommandBufferTestEGL::RestoreGLDefault() {
   gl_.Destroy();
 
   if (gl_reinitialized_) {
-    gl::init::ShutdownGL(false /* due_to_fallback */);
-    GLTestHelper::InitializeGLDefault();
+    gl::init::ShutdownGL(gl_display_, false /* due_to_fallback */);
+    gl_display_ = GLTestHelper::InitializeGLDefault();
   }
 
   gl_reinitialized_ = false;

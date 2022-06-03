@@ -15,13 +15,15 @@
 
 namespace ui {
 
-bool GLOzoneEGL::InitializeGLOneOffPlatform() {
-  if (!gl::GLSurfaceEGL::InitializeOneOff(GetNativeDisplay(),
-                                          /*system_device_id=*/0)) {
+gl::GLDisplay* GLOzoneEGL::InitializeGLOneOffPlatform(
+    uint64_t system_device_id) {
+  gl::GLDisplay* display =
+      gl::GLSurfaceEGL::InitializeOneOff(GetNativeDisplay(), system_device_id);
+  if (!display) {
     LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
-    return false;
+    return nullptr;
   }
-  return true;
+  return display;
 }
 
 bool GLOzoneEGL::InitializeStaticGLBindings(
@@ -41,12 +43,14 @@ void GLOzoneEGL::SetDisabledExtensionsPlatform(
   gl::SetDisabledExtensionsEGL(disabled_extensions);
 }
 
-bool GLOzoneEGL::InitializeExtensionSettingsOneOffPlatform() {
-  return gl::InitializeExtensionSettingsOneOffEGL();
+bool GLOzoneEGL::InitializeExtensionSettingsOneOffPlatform(
+    gl::GLDisplay* display) {
+  return gl::InitializeExtensionSettingsOneOffEGL(
+      static_cast<gl::GLDisplayEGL*>(display));
 }
 
-void GLOzoneEGL::ShutdownGL() {
-  gl::GLSurfaceEGL::ShutdownOneOff();
+void GLOzoneEGL::ShutdownGL(gl::GLDisplay* display) {
+  gl::GLSurfaceEGL::ShutdownOneOff(static_cast<gl::GLDisplayEGL*>(display));
   gl::ClearBindingsGL();
   gl::ClearBindingsEGL();
 }

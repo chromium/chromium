@@ -39,8 +39,8 @@ class GPUTimingTest : public testing::Test {
     context_ = nullptr;
     surface_ = nullptr;
     if (setup_) {
-      MockGLInterface::SetGLInterface(NULL);
-      init::ShutdownGL(false);
+      MockGLInterface::SetGLInterface(nullptr);
+      GLSurfaceTestSupport::ShutdownGL(display_);
     }
     setup_ = false;
     cpu_time_bounded_ = false;
@@ -51,7 +51,7 @@ class GPUTimingTest : public testing::Test {
   void SetupGLContext(const char* gl_version, const char* gl_extensions) {
     ASSERT_FALSE(setup_) << "Cannot setup GL context twice.";
     SetGLGetProcAddressProc(MockGLInterface::GetGLProcAddress);
-    GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
+    display_ = GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
     gl_ = std::make_unique<::testing::StrictMock<MockGLInterface>>();
     MockGLInterface::SetGLInterface(gl_.get());
 
@@ -86,6 +86,7 @@ class GPUTimingTest : public testing::Test {
   scoped_refptr<GLContextStub> context_;
   scoped_refptr<GLSurfaceStub> surface_;
   GPUTimingFake gpu_timing_fake_queries_;
+  GLDisplay* display_ = nullptr;
 };
 
 TEST_F(GPUTimingTest, FakeTimerTest) {

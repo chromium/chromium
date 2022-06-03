@@ -38,7 +38,7 @@ class ImageReaderGLOwnerTest : public testing::Test {
 
     gl::init::InitializeStaticGLBindingsImplementation(
         gl::GLImplementationParts(gl::kGLImplementationEGLGLES2), false);
-    gl::init::InitializeGLOneOffPlatformImplementation(
+    display_ = gl::init::InitializeGLOneOffPlatformImplementation(
         /*fallback_to_software_gl=*/false,
         /*disable_gl_drawing=*/false,
         /*init_extensions=*/true,
@@ -83,7 +83,7 @@ class ImageReaderGLOwnerTest : public testing::Test {
     context_ = nullptr;
     share_group_ = nullptr;
     surface_ = nullptr;
-    gl::init::ShutdownGL(false);
+    gl::init::ShutdownGL(display_, false);
   }
 
   bool IsImageReaderSupported() const {
@@ -99,6 +99,7 @@ class ImageReaderGLOwnerTest : public testing::Test {
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLSurface> surface_;
   base::test::TaskEnvironment task_environment_;
+  gl::GLDisplay* display_ = nullptr;
 };
 
 TEST_F(ImageReaderGLOwnerTest, ImageReaderObjectCreation) {

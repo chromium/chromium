@@ -1047,7 +1047,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
   using GetColorCallback = base::RepeatingCallback<SkColor(int, int)>;
 
   void SetUp() override {
-    gl::GLSurfaceTestSupport::InitializeOneOff();
+    display_ = gl::GLSurfaceTestSupport::InitializeOneOff();
     enable_pixels_.emplace();
     media_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
         viz::TestContextType::kGpuRaster, /*support_locking=*/false);
@@ -1074,7 +1074,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
     media_context_.reset();
     enable_pixels_.reset();
     viz::TestGpuServiceHolder::ResetInstance();
-    gl::GLSurfaceTestSupport::ShutdownGL();
+    gl::GLSurfaceTestSupport::ShutdownGL(display_);
   }
 
   // Uses CopyVideoFrameTexturesToGLTexture to copy |frame| into a GL texture,
@@ -1237,6 +1237,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
   PaintCanvasVideoRenderer renderer_;
   scoped_refptr<VideoFrame> cropped_frame_;
   base::test::TaskEnvironment task_environment_;
+  gl::GLDisplay* display_ = nullptr;
 };
 
 TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {

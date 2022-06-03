@@ -23,6 +23,8 @@ template <typename GLDisplayPlatform>
 class GL_EXPORT GLDisplayManager {
  public:
   // Getter for the singleton. This will return nullptr on failure.
+  // This should only be called inside the ui/gl module. In component build,
+  // calling this outside ui/gl module returns a different instance.
   static GLDisplayManager<GLDisplayPlatform>* GetInstance() {
     static base::NoDestructor<GLDisplayManager<GLDisplayPlatform>> instance;
     return instance.get();

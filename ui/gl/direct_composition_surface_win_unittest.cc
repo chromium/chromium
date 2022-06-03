@@ -123,8 +123,8 @@ class DirectCompositionSurfaceTest : public testing::Test {
     fake_power_monitor_source_.SetOnBatteryPower(true);
 
     // Without this, the following check always fails.
-    gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
-                                             /*system_device_id=*/0);
+    display_ = gl::init::InitializeGLNoExtensionsOneOff(
+        /*init_bindings=*/true, /*system_device_id=*/0);
     if (!DirectCompositionSurfaceWin::GetDirectCompositionDevice()) {
       LOG(WARNING) << "DirectComposition not supported, skipping test.";
       return;
@@ -142,7 +142,7 @@ class DirectCompositionSurfaceTest : public testing::Test {
     context_ = nullptr;
     if (surface_)
       DestroySurface(std::move(surface_));
-    gl::init::ShutdownGL(false);
+    gl::init::ShutdownGL(display_, false);
   }
 
   scoped_refptr<DirectCompositionSurfaceWin>
@@ -176,6 +176,7 @@ class DirectCompositionSurfaceTest : public testing::Test {
   scoped_refptr<DirectCompositionSurfaceWin> surface_;
   scoped_refptr<GLContext> context_;
   base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
+  GLDisplay* display_ = nullptr;
 };
 
 TEST_F(DirectCompositionSurfaceTest, TestMakeCurrent) {

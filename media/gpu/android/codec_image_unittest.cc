@@ -52,7 +52,7 @@ class CodecImageTest : public testing::Test {
 
     gl::init::InitializeStaticGLBindingsImplementation(
         gl::GLImplementationParts(gl::kGLImplementationEGLGLES2), false);
-    gl::init::InitializeGLOneOffPlatformImplementation(
+    display_ = gl::init::InitializeGLOneOffPlatformImplementation(
         /*fallback_to_software_gl=*/false,
         /*disable_gl_drawing=*/false,
         /*init_extensions=*/false,
@@ -83,7 +83,7 @@ class CodecImageTest : public testing::Test {
     context_ = nullptr;
     share_group_ = nullptr;
     surface_ = nullptr;
-    gl::init::ShutdownGL(false);
+    gl::init::ShutdownGL(display_, false);
     wrapper_->TakeCodecSurfacePair();
   }
 
@@ -121,6 +121,7 @@ class CodecImageTest : public testing::Test {
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLSurface> surface_;
   GLuint texture_id_ = 0;
+  gl::GLDisplay* display_ = nullptr;
 
   class PromotionHintReceiver {
    public:

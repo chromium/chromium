@@ -37,7 +37,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/buildflags.h"
-#include "ui/gl/gl_display_manager.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_switches.h"
@@ -271,8 +271,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
 #if defined(USE_EGL)
   if (system_device_id != 0) {
-    gl::GLDisplayManagerEGL::GetInstance()->SetGpuPreference(
-        gl::GpuPreference::kDefault, system_device_id);
+    gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault, system_device_id);
   }
 #endif  // USE_EGL
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -421,10 +420,12 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     return false;
 #else   // !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
     SaveHardwareGpuInfoAndGpuFeatureInfo();
-    gl::init::ShutdownGL(true);
+    gl::init::ShutdownGL(nullptr, true);
     gl_initialized = false;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   }
+
+  gl::GLDisplay* gl_display = nullptr;
 
   if (!gl_initialized) {
     // Pause watchdog. LoadLibrary in GLBindings may take long time.
@@ -439,8 +440,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     if (watchdog_thread_)
       watchdog_thread_->ResumeWatchdog();
     if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
-      gl_initialized = gl::init::InitializeGLNoExtensionsOneOff(
+      gl_display = gl::init::InitializeGLNoExtensionsOneOff(
           /*init_bindings*/ false, system_device_id);
+      gl_initialized = !!gl_display;
       if (!gl_initialized) {
         VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
         return false;
@@ -514,11 +516,12 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
         return false;
 #else
         SaveHardwareGpuInfoAndGpuFeatureInfo();
-        gl::init::ShutdownGL(true);
+        gl::init::ShutdownGL(gl_display, true);
         watchdog_thread_ = nullptr;
         watchdog_init.SetGpuWatchdogPtr(nullptr);
-        if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true,
-                                                      system_device_id)) {
+        gl_display = gl::init::InitializeGLNoExtensionsOneOff(
+            /*init_bindings=*/true, system_device_id);
+        if (!gl_display) {
           VLOG(1)
               << "gl::init::InitializeGLNoExtensionsOneOff with SwiftShader "
               << "failed";
@@ -621,7 +624,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       gl::init::SetDisabledExtensionsPlatform(
           gpu_feature_info_.disabled_extensions);
     }
-    if (!gl::init::InitializeExtensionSettingsOneOffPlatform()) {
+    if (!gl::init::InitializeExtensionSettingsOneOffPlatform(gl_display)) {
       VLOG(1) << "gl::init::InitializeExtensionSettingsOneOffPlatform failed";
       return false;
     }
@@ -804,11 +807,14 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   }
 #endif  // !BUILDFLAG(IS_CHROMECAST)
 
+  gl::GLDisplay* gl_display = nullptr;
+
   gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
       command_line, gpu_feature_info_,
       gpu_preferences_.disable_software_rasterizer, needs_more_info);
-  if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
-                                                /*system_device_id=*/0)) {
+  gl_display = gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
+                                                        /*system_device_id=*/0);
+  if (!gl_display) {
     VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
     return;
   }
@@ -823,9 +829,10 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
         gpu_preferences_.disable_software_rasterizer, false);
     if (gl_use_swiftshader_) {
       SaveHardwareGpuInfoAndGpuFeatureInfo();
-      gl::init::ShutdownGL(true);
-      if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
-                                                    /*system_device_id=*/0)) {
+      gl::init::ShutdownGL(gl_display, true);
+      gl_display = gl::init::InitializeGLNoExtensionsOneOff(
+          /*init_bindings=*/true, /*system_device_id=*/0);
+      if (!gl_display) {
         VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed "
                 << "with SwiftShader";
         return;
@@ -853,7 +860,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
       gl::init::SetDisabledExtensionsPlatform(
           gpu_feature_info_.disabled_extensions);
     }
-    if (!gl::init::InitializeExtensionSettingsOneOffPlatform()) {
+    if (!gl::init::InitializeExtensionSettingsOneOffPlatform(gl_display)) {
       VLOG(1) << "gl::init::InitializeExtensionSettingsOneOffPlatform failed";
     }
     default_offscreen_surface_ =
@@ -878,9 +885,10 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
         gpu_preferences_.disable_software_rasterizer, false);
     if (gl_use_swiftshader_) {
       SaveHardwareGpuInfoAndGpuFeatureInfo();
-      gl::init::ShutdownGL(true);
-      if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
-                                                    /*system_device_id=*/0)) {
+      gl::init::ShutdownGL(gl_display, true);
+      gl_display = gl::init::InitializeGLNoExtensionsOneOff(
+          /*init_bindings=*/true, /*system_device_id=*/0);
+      if (!gl_display) {
         VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed "
                 << "with SwiftShader";
         return;

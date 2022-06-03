@@ -44,7 +44,7 @@ void GLTestSetupHelper::OnTestStart(const testing::TestInfo& test_info) {
   ui::OzonePlatform::InitializeForGPU(params);
 #endif  // defined(USE_OZONE)
 
-  gpu::GLTestHelper::InitializeGLDefault();
+  display_ = gpu::GLTestHelper::InitializeGLDefault();
   ::gles2::Initialize();
 }
 
@@ -53,7 +53,7 @@ void GLTestSetupHelper::OnTestEnd(const testing::TestInfo& test_info) {
   // Otherwise the gpu-service tries to access GL during tear-down and causes
   // crashes.
   viz::TestGpuServiceHolder::ResetInstance();
-  gl::init::ShutdownGL(/*due_to_fallback=*/false);
+  gl::init::ShutdownGL(display_, /*due_to_fallback=*/false);
   task_environment_ = nullptr;
 }
 

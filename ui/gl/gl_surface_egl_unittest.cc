@@ -32,15 +32,18 @@ class GLSurfaceEGLTest : public testing::Test {
  protected:
   void SetUp() override {
 #if BUILDFLAG(IS_WIN)
-    GLSurfaceTestSupport::InitializeOneOffImplementation(
+    display_ = GLSurfaceTestSupport::InitializeOneOffImplementation(
         GLImplementationParts(kGLImplementationEGLANGLE), true);
 #else
-    GLSurfaceTestSupport::InitializeOneOffImplementation(
+    display_ = GLSurfaceTestSupport::InitializeOneOffImplementation(
         GLImplementationParts(kGLImplementationEGLGLES2), true);
 #endif
   }
 
-  void TearDown() override { gl::init::ShutdownGL(false); }
+  void TearDown() override { GLSurfaceTestSupport::ShutdownGL(display_); }
+
+ private:
+  GLDisplay* display_ = nullptr;
 };
 
 #if !defined(MEMORY_SANITIZER)

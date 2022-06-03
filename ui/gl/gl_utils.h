@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_export.h"
+#include "ui/gl/gpu_preference.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <dxgi1_6.h>
@@ -21,6 +22,12 @@
 
 namespace gl {
 class GLApi;
+#if defined(USE_EGL)
+class GLDisplayEGL;
+#endif  // USE_EGL
+#if defined(USE_GLX)
+class GLDisplayX11;
+#endif  // USE_GLX
 
 GL_EXPORT void Crash();
 GL_EXPORT void Hang();
@@ -58,6 +65,25 @@ void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
 // operations.
 void LabelSwapChainBuffers(IDXGISwapChain* swap_chain, const char* name_prefix);
 #endif
+
+// The following functions expose functionalities from GLDisplayManagerEGL
+// and GLDisplayManagerX11 for access outside the ui/gl module. This is because
+// the two GLDisplayManager classes are singletons and in component build,
+// calling GetInstance() directly returns different instances in different
+// components.
+#if defined(USE_EGL)
+// Add an entry <preference, system_device_id> to GLDisplayManagerEGL.
+GL_EXPORT void SetGpuPreferenceEGL(GpuPreference preference,
+                                   uint64_t system_device_id);
+
+// Query the default GLDisplayEGL.
+GL_EXPORT GLDisplayEGL* GetDefaultDisplayEGL();
+#endif  // USE_EGL
+
+#if defined(USE_GLX)
+// Query the GLDisplayX11 by |system_device_id|.
+GL_EXPORT GLDisplayX11* GetDisplayX11(uint64_t system_device_id);
+#endif  // USE_GLX
 
 // Temporarily allows compilation of shaders that use the
 // ARB_texture_rectangle/ANGLE_texture_rectangle extension. We don't want to

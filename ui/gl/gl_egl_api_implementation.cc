@@ -134,8 +134,8 @@ void SetDisabledExtensionsEGL(const std::string& disabled_extensions) {
   g_current_egl_context->SetDisabledExtensions(disabled_extensions);
 }
 
-bool InitializeExtensionSettingsOneOffEGL() {
-  return GLSurfaceEGL::InitializeExtensionSettingsOneOff();
+bool InitializeExtensionSettingsOneOffEGL(GLDisplayEGL* display) {
+  return GLSurfaceEGL::InitializeExtensionSettingsOneOff(display);
 }
 
 }  // namespace gl
