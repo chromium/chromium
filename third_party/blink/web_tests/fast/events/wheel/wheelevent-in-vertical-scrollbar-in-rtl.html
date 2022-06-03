@@ -5,18 +5,12 @@
 <script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <script>
   const pixelsToScroll1 = 10;
-  const { x: pixelsToScrollX1, y: pixelsToScrollY1 } = calculatePixelsToScroll(
-    document.scrollingElement, pixelsToScroll1, pixelsToScroll1
-  );
   const pixelsToScroll2 = 30;
-  const { x: pixelsToScrollX2, y: pixelsToScrollY2 } = calculatePixelsToScroll(
-    document.scrollingElement, pixelsToScroll2, pixelsToScroll2
-  );
   const testScrolls = [
-    {distance: pixelsToScrollX1, expectedX: 110, expectedY: -100, direction: 'right'},
-    {distance: pixelsToScrollX2, expectedX: 80, expectedY: -100, direction: 'left'},
-    {distance: pixelsToScrollY1, expectedX: 80, expectedY: -90, direction: 'down'},
-    {distance: pixelsToScrollY2, expectedX: 80, expectedY: -120, direction: 'up'},
+    {distance: pixelsToScroll1, expectedX: 110, expectedY: -100, direction: 'right'},
+    {distance: pixelsToScroll2, expectedX: 80, expectedY: -100, direction: 'left'},
+    {distance: pixelsToScroll1, expectedX: 80, expectedY: -90, direction: 'down'},
+    {distance: pixelsToScroll2, expectedX: 80, expectedY: -120, direction: 'up'},
   ];
   var currentTest = -1;
 
@@ -28,7 +22,7 @@
     var testCase = testScrolls[currentTest];
     promise_test(async () => {
       await mouseMoveTo(100, 100);
-      await smoothScroll(testCase.distance, 100, 100,
+      await percentBasedSmoothScroll(testCase.distance, 100, 100,
           GestureSourceType.MOUSE_INPUT, testCase.direction, SPEED_INSTANT);
       await waitForAnimationEndTimeBased(() => { return window.scrollX; });
       await waitForAnimationEndTimeBased(() => { return window.scrollY; });
