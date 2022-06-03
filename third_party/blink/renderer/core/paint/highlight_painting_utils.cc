@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 
 #include "components/shared_highlighting/core/common/fragment_directives_constants.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -208,10 +209,8 @@ Color HighlightColor(const Document& document,
                                                    pseudo_argument);
 
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  if (pseudo_style &&
-      ((!RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
-        pseudo != PseudoId::kPseudoIdHighlight) ||
-       !UseUaHighlightColors(pseudo, *pseudo_style))) {
+  if (pseudo_style && (!StyleResolver::UsesHighlightPseudoInheritance(pseudo) ||
+                       !UseUaHighlightColors(pseudo, *pseudo_style))) {
     if (!document.InForcedColorsMode() ||
         pseudo_style->ForcedColorAdjust() != EForcedColorAdjust::kAuto) {
       if (pseudo_style->ColorIsCurrentColor()) {
@@ -241,8 +240,7 @@ scoped_refptr<const ComputedStyle> HighlightPaintingUtils::HighlightPseudoStyle(
     const ComputedStyle& style,
     PseudoId pseudo,
     const AtomicString& pseudo_argument) {
-  if (!RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
-      pseudo != PseudoId::kPseudoIdHighlight) {
+  if (!StyleResolver::UsesHighlightPseudoInheritance(pseudo)) {
     return HighlightPseudoStyleWithOriginatingInheritance(node, pseudo,
                                                           pseudo_argument);
   }
@@ -283,10 +281,8 @@ Color HighlightPaintingUtils::HighlightBackgroundColor(
       HighlightPseudoStyle(node, style, pseudo, pseudo_argument);
 
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  if (pseudo_style &&
-      ((!RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
-        pseudo != PseudoId::kPseudoIdHighlight) ||
-       !UseUaHighlightColors(pseudo, *pseudo_style))) {
+  if (pseudo_style && (!StyleResolver::UsesHighlightPseudoInheritance(pseudo) ||
+                       !UseUaHighlightColors(pseudo, *pseudo_style))) {
     if (!document.InForcedColorsMode() ||
         pseudo_style->ForcedColorAdjust() != EForcedColorAdjust::kAuto) {
       Color highlight_color =

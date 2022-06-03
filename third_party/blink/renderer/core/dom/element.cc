@@ -6319,11 +6319,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
   StyleRequest style_request;
   style_request.pseudo_id = pseudo_element_specifier;
   style_request.type = StyleRequest::kForComputedStyle;
-  // IsHighlightPseudoElement returns true for all kinds of highlights including
-  // custom highlights which use Highlight Inheritance even when it is off.
-  if ((RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
-       IsHighlightPseudoElement(pseudo_element_specifier)) ||
-      pseudo_element_specifier == PseudoId::kPseudoIdHighlight) {
+  if (StyleResolver::UsesHighlightPseudoInheritance(pseudo_element_specifier)) {
     const ComputedStyle* highlight_element_style = nullptr;
     ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(*this);
     if (parent && parent->GetComputedStyle()->HighlightData()) {
@@ -6697,9 +6693,7 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(
     const AtomicString& pseudo_argument) {
   // Highlight pseudos are resolved into StyleHighlightData during originating
   // style recalc, and should never be stored in StyleCachedData.
-  DCHECK((!RuntimeEnabledFeatures::HighlightInheritanceEnabled() ||
-          !IsHighlightPseudoElement(pseudo_id)) &&
-         pseudo_id != PseudoId::kPseudoIdHighlight);
+  DCHECK(!StyleResolver::UsesHighlightPseudoInheritance(pseudo_id));
 
   const ComputedStyle* style = GetComputedStyle();
 
@@ -6725,9 +6719,7 @@ scoped_refptr<ComputedStyle> Element::UncachedStyleForPseudoElement(
     const StyleRequest& request) {
   // Highlight pseudos are resolved into StyleHighlightData during originating
   // style recalc, where we have the actual StyleRecalcContext.
-  DCHECK((!RuntimeEnabledFeatures::HighlightInheritanceEnabled() ||
-          !IsHighlightPseudoElement(request.pseudo_id)) &&
-         request.pseudo_id != PseudoId::kPseudoIdHighlight);
+  DCHECK(!StyleResolver::UsesHighlightPseudoInheritance(request.pseudo_id));
 
   return StyleForPseudoElement(
       StyleRecalcContext::FromInclusiveAncestors(*this), request);

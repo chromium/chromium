@@ -89,55 +89,33 @@ InspectorStyleResolver::InspectorStyleResolver(
     match->pseudo_id = kPseudoIdNone;
     parent_rules_.push_back(match);
 
-    if (RuntimeEnabledFeatures::HighlightInheritanceEnabled()) {
-      InspectorCSSMatchedPseudoElements* matched_pseudo_elements =
-          MakeGarbageCollected<InspectorCSSMatchedPseudoElements>();
-      matched_pseudo_elements->element = parent_element;
+    InspectorCSSMatchedPseudoElements* matched_pseudo_elements =
+        MakeGarbageCollected<InspectorCSSMatchedPseudoElements>();
+    matched_pseudo_elements->element = parent_element;
 
-      for (PseudoId pseudo_id = kFirstPublicPseudoId;
-           pseudo_id < kAfterLastInternalPseudoId;
-           pseudo_id = static_cast<PseudoId>(pseudo_id + 1)) {
-        // Only highlight pseudos can be inherited.
-        if (!PseudoElement::IsWebExposed(pseudo_id, element_) ||
-            !IsHighlightPseudoElement(pseudo_id))
-          continue;
-
-        RuleIndexList* matched_rules = style_resolver.PseudoCSSRulesForElement(
-            parent_element, pseudo_id, g_null_atom,
-            StyleResolver::kAllButUACSSRules);
-        if (matched_rules && matched_rules->size()) {
-          InspectorCSSMatchedRules* pseudo_match =
-              MakeGarbageCollected<InspectorCSSMatchedRules>();
-          pseudo_match->element = parent_element;
-          pseudo_match->matched_rules = matched_rules;
-          pseudo_match->pseudo_id = pseudo_id;
-
-          matched_pseudo_elements->pseudo_element_rules.push_back(pseudo_match);
-        }
-      }
-
-      parent_pseudo_element_rules_.push_back(matched_pseudo_elements);
-    } else {
-      InspectorCSSMatchedPseudoElements* matched_pseudo_elements =
-          MakeGarbageCollected<InspectorCSSMatchedPseudoElements>();
-      matched_pseudo_elements->element = parent_element;
+    for (PseudoId pseudo_id = kFirstPublicPseudoId;
+         pseudo_id < kAfterLastInternalPseudoId;
+         pseudo_id = static_cast<PseudoId>(pseudo_id + 1)) {
+      // Only highlight pseudos can be inherited.
+      if (!PseudoElement::IsWebExposed(pseudo_id, element_) ||
+          !StyleResolver::UsesHighlightPseudoInheritance(pseudo_id))
+        continue;
 
       RuleIndexList* matched_rules = style_resolver.PseudoCSSRulesForElement(
-          parent_element, kPseudoIdHighlight, g_null_atom,
+          parent_element, pseudo_id, g_null_atom,
           StyleResolver::kAllButUACSSRules);
       if (matched_rules && matched_rules->size()) {
         InspectorCSSMatchedRules* pseudo_match =
             MakeGarbageCollected<InspectorCSSMatchedRules>();
         pseudo_match->element = parent_element;
         pseudo_match->matched_rules = matched_rules;
-        pseudo_match->pseudo_id = kPseudoIdHighlight;
+        pseudo_match->pseudo_id = pseudo_id;
 
         matched_pseudo_elements->pseudo_element_rules.push_back(pseudo_match);
       }
-
-      parent_pseudo_element_rules_.push_back(matched_pseudo_elements);
     }
 
+    parent_pseudo_element_rules_.push_back(matched_pseudo_elements);
     parent_element = FlatTreeTraversal::ParentElement(*parent_element);
   }
 }

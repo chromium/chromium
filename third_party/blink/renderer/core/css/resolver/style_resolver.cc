@@ -953,9 +953,7 @@ static bool AllowsInheritance(const StyleRequest& style_request,
 void StyleResolver::ApplyInheritance(Element& element,
                                      const StyleRequest& style_request,
                                      StyleResolverState& state) {
-  if ((RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
-       IsHighlightPseudoElement(style_request.pseudo_id)) ||
-      style_request.pseudo_id == PseudoId::kPseudoIdHighlight) {
+  if (UsesHighlightPseudoInheritance(style_request.pseudo_id)) {
     // When resolving highlight styles for children, we need to default all
     // properties (whether or not defined as inherited) to parent values.
 
@@ -1680,8 +1678,8 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
     if (state.Style()->StyleType() == kPseudoIdMarker)
       filter = filter.Add(CSSProperty::kValidForMarker, false);
     if (IsHighlightPseudoElement(state.Style()->StyleType())) {
-      if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() ||
-          state.Style()->StyleType() == PseudoId::kPseudoIdHighlight) {
+      if (StyleResolver::UsesHighlightPseudoInheritance(
+              state.Style()->StyleType())) {
         filter = filter.Add(CSSProperty::kValidForHighlight, false);
       } else {
         filter = filter.Add(CSSProperty::kValidForHighlightLegacy, false);
@@ -1920,6 +1918,15 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   }
 
   return true;
+}
+
+bool StyleResolver::UsesHighlightPseudoInheritance(PseudoId pseudo_id) {
+  // ::highlight() pseudos use highlight inheritance rather than originating
+  // inheritance even if highlight inheritance is not enabled for the other
+  // pseudos.
+  return ((IsHighlightPseudoElement(pseudo_id) &&
+           RuntimeEnabledFeatures::HighlightInheritanceEnabled()) ||
+          pseudo_id == PseudoId::kPseudoIdHighlight);
 }
 
 const CSSValue* StyleResolver::ComputeValue(

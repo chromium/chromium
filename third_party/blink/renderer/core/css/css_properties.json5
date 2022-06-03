@@ -495,8 +495,8 @@
     // Theoretically matches
     // https://drafts.csswg.org/css-pseudo-4/#highlight-styling,
     // but includes additional properties for compatibility reasons.
-    // Used when RuntimeEnabledFeatures::HighlightInheritanceEnabled()
-    // is not enabled.
+    // Applied to highlight pseudos that use originating inheritance
+    // instead of highlight inheritance.
     valid_for_highlight_legacy: {
       default: false,
       valid_type: "bool",
