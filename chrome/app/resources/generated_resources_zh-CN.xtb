@@ -2521,7 +2521,7 @@
 <translation id="343115368966109153">下载 <ph name="FILE_NAME" />？所有使用此设备的用户都能查看该文件。</translation>
 <translation id="3432227430032737297">移除显示的所有 Cookie</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
-<translation id="3433507769937235446">退出时锁定</translation>
+<translation id="3433507769937235446">离开时锁定</translation>
 <translation id="3433621910545056227">糟糕！系统无法建立设备安装时间属性锁定。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。您可在 families.google.com 上详细了解这些设置以及如何调整它们。</translation>
