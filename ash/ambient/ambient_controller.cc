@@ -259,8 +259,13 @@ void AmbientController::OnAmbientUiVisibilityChanged(
         auto elapsed = base::Time::Now() - start_time_.value();
         DVLOG(2) << "Exit ambient mode. Elapsed time: " << elapsed;
         ambient::RecordAmbientModeTimeElapsed(
-            /*time_delta=*/elapsed,
-            /*tablet_mode=*/Shell::Get()->IsInTabletMode());
+            elapsed, Shell::Get()->IsInTabletMode(),
+            // The user currently has no way of changing the animation theme
+            // (|current_theme_from_pref_|) without exiting screensaver first,
+            // so it is safe to assume that |current_theme_from_pref_| did not
+            // change while the screensaver was active.
+            current_theme_from_pref_ ? *current_theme_from_pref_
+                                     : kDefaultAmbientAnimationTheme);
         start_time_.reset();
       }
 
@@ -688,7 +693,7 @@ void AmbientController::OnAnimationThemePrefChanged() {
           static_cast<int>(AmbientAnimationTheme::kMaxValue)) {
     LOG(WARNING) << "Loaded invalid ambient theme from pref storage: "
                  << current_theme_as_int << ". Default to "
-                 << kDefaultAmbientAnimationTheme;
+                 << ToString(kDefaultAmbientAnimationTheme);
     current_theme_as_int = static_cast<int>(kDefaultAmbientAnimationTheme);
   }
   current_theme_from_pref_ =
@@ -696,8 +701,8 @@ void AmbientController::OnAnimationThemePrefChanged() {
 
   if (previous_theme_from_pref.has_value()) {
     DVLOG(4) << "AmbientAnimationTheme changed from "
-             << *previous_theme_from_pref << " to "
-             << *current_theme_from_pref_;
+             << ToString(*previous_theme_from_pref) << " to "
+             << ToString(*current_theme_from_pref_);
     // For a given topic category, the topics downloaded from IMAX and saved to
     // cache differ from theme to theme:
     // 1) Slideshow mode keeps primary/related photos paired within a topic,
@@ -718,7 +723,7 @@ void AmbientController::OnAnimationThemePrefChanged() {
     ambient_photo_controller_->ClearCache();
   } else {
     DVLOG(4) << "AmbientAnimationTheme initialized to "
-             << *current_theme_from_pref_;
+             << ToString(*current_theme_from_pref_);
   }
 }
 
@@ -867,7 +872,7 @@ AmbientPhotoConfig AmbientController::CreatePhotoConfigForCurrentTheme() {
     DCHECK(current_theme_from_pref_);
     current_theme = *current_theme_from_pref_;
   }
-  DVLOG(4) << "Loaded ambient theme " << current_theme;
+  DVLOG(4) << "Loaded ambient theme " << ToString(current_theme);
 
   pending_animation_static_resources_.reset();
   if (current_theme == AmbientAnimationTheme::kSlideshow) {

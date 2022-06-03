@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AmbientModeThemes">
+  <variant name="FeelTheBreeze" summary="Feel the breeze"/>
+  <variant name="FloatOnBy" summary="Float on by"/>
+  <variant name="SlideShow" summary="Slide show"/>
+</variants>
+
 <variants name="DeviceActiveClientState">
   <variant name="CheckingIn"
       summary="The device active reporting client is in Checking In State"/>
@@ -181,9 +187,21 @@ chromium-metrics-reviews@google.com.
   <owner>xiaohuic@chromium.org</owner>
   <summary>
     Among eligible users with ambient mode enabled, records the length of each
-    session. The metric is uploaded when ambient mode is ended.
+    session. The metric is emitted when ambient mode is ended. 2 new animated
+    ambient mode themes have been added started in M104.
   </summary>
   <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.AmbientMode.EngagementTime.{Theme}" units="ms"
+    expires_after="2022-12-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>esum@google.com</owner>
+  <summary>
+    Among eligible users with ambient mode enabled, records the length of each
+    session for {Theme}. The metric is emitted when ambient mode is ended.
+  </summary>
+  <token key="Theme" variants="AmbientModeThemes"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.PhotoSource" enum="AmbientModePhotoSource"

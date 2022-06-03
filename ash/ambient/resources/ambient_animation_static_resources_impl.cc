@@ -88,7 +88,8 @@ AssetIdToResourceIdMap GetAssetIdToResourceIdMapForTheme(
       }
       // End Themes
   };
-  DCHECK(m.contains(theme)) << "Asset/resource ids missing for " << theme;
+  DCHECK(m.contains(theme))
+      << "Asset/resource ids missing for " << ToString(theme);
   return m.at(theme);
 }
 

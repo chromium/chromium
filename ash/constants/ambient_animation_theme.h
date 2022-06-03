@@ -5,9 +5,8 @@
 #ifndef ASH_CONSTANTS_AMBIENT_ANIMATION_THEME_H_
 #define ASH_CONSTANTS_AMBIENT_ANIMATION_THEME_H_
 
-#include <ostream>
-
 #include "base/component_export.h"
+#include "base/strings/string_piece.h"
 
 namespace ash {
 
@@ -30,8 +29,10 @@ enum class AmbientAnimationTheme {
 inline constexpr AmbientAnimationTheme kDefaultAmbientAnimationTheme =
     AmbientAnimationTheme::kSlideshow;
 
+// The returned StringPiece is guaranteed to be null-terminated and point to
+// memory valid for the lifetime of the program.
 COMPONENT_EXPORT(ASH_CONSTANTS)
-std::ostream& operator<<(std::ostream& os, AmbientAnimationTheme theme);
+base::StringPiece ToString(AmbientAnimationTheme theme);
 
 }  // namespace ash
 

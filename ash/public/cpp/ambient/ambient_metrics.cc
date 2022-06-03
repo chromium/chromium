@@ -9,6 +9,7 @@
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 
 namespace ash {
@@ -16,7 +17,12 @@ namespace ambient {
 
 namespace {
 
-// 144 == 24 * 60 / 10. Each histogram bucket therefore represents 10 minutes.
+// Histograms default to exponential bucketing, so the smallest bucket occupies
+// 24 hours / (2 ^ (144 - 1)) milliseconds. Exponential bucketing is desirable
+// for engagement time because most users exit screensaver on the order of
+// several minutes, while a small fraction of users exit screensaver after
+// many hours. So the histogram's highest resolution should occupy the smaller
+// engagement times.
 constexpr int kAmbientModeElapsedTimeHistogramBuckets = 144;
 
 std::string GetHistogramName(const char* prefix, bool tablet_mode) {
@@ -60,11 +66,24 @@ void RecordAmbientModeActivation(AmbientUiMode ui_mode, bool tablet_mode) {
 }
 
 void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
-                                  bool tablet_mode) {
+                                  bool tablet_mode,
+                                  AmbientAnimationTheme theme) {
   base::UmaHistogramCustomTimes(
       /*name=*/GetHistogramName("Ash.AmbientMode.EngagementTime", tablet_mode),
       /*sample=*/time_delta,
       /*min=*/base::Hours(0),
+      /*max=*/base::Hours(24),
+      /*buckets=*/kAmbientModeElapsedTimeHistogramBuckets);
+
+  base::UmaHistogramCustomTimes(
+      /*name=*/base::StrCat(
+          {"Ash.AmbientMode.EngagementTime.", ToString(theme)}),
+      /*sample=*/time_delta,
+      // There is no value in bucketing engagement times that are on the order
+      // of milliseconds. A 1 second minimum is imposed here but not in the
+      // metric above for legacy reasons (the metric above was already pushed
+      // to the field and established before this change was made).
+      /*min=*/base::Seconds(1),
       /*max=*/base::Hours(24),
       /*buckets=*/kAmbientModeElapsedTimeHistogramBuckets);
 }
